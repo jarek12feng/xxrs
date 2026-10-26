@@ -1,1 +1,1 @@
-export * from "./chapter";
+export * from "./world";

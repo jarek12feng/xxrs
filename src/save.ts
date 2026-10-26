@@ -13,7 +13,7 @@ function newer(value: unknown) {
     typeof value === "object" &&
     "version" in value &&
     typeof value.version === "number" &&
-    value.version > 3
+    value.version > 4
   );
 }
 function read(value: unknown) {
@@ -66,7 +66,7 @@ export async function save(state: State) {
         return;
       }
       if (read(old.result)) store.put(old.result, "previous");
-      if ([1, 2].includes(old.result?.version) && read(old.result)) {
+      if ([1, 2, 3].includes(old.result?.version) && read(old.result)) {
         const key = `original-v${old.result.version}`;
         const backup = store.get(key);
         backup.onsuccess = () => {

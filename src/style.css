@@ -1362,3 +1362,184 @@ button:disabled {
     height: 220px;
   }
 }
+/* Chapter four: small, readable places and people rather than another dashboard. */
+.challenge-card {
+  margin-top: 14px;
+  padding: 16px;
+  background: #e8e6d8;
+  border: 1px solid #b5b39c;
+  border-radius: 8px;
+}
+.challenge-card > strong {
+  color: #74452f;
+  font-size: 18px;
+}
+.challenge-card details {
+  margin-top: 10px;
+}
+.aid-options {
+  margin-top: 12px;
+  border-top: 1px solid #ccc8b5;
+}
+.aid-options small {
+  display: inline-block;
+}
+.world-panel {
+  margin-top: 22px;
+  background: #fbf8ef;
+  border: 1px solid #d9ddcc;
+  border-radius: 14px;
+  padding: 22px;
+}
+.world-panel nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 16px 0;
+}
+.world-panel nav button {
+  padding: 9px 12px;
+}
+.world-content p {
+  line-height: 1.8;
+}
+.world-content button {
+  margin: 6px 6px 0 0;
+}
+.world-panel button {
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 9px 12px;
+  background: #e3e9d9;
+  color: #344d35;
+  border: 1px solid #becbb1;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.world-panel button:hover:not(:disabled) {
+  background: #d4dfc5;
+}
+.world-panel button:disabled {
+  opacity: 1;
+  color: #7e8478;
+  background: #eeeee5;
+  border-color: #dedfd3;
+  cursor: not-allowed;
+}
+.world-panel nav button.active {
+  background: #35573e;
+  color: #fffbed;
+  border-color: #35573e;
+}
+.world-panel summary {
+  cursor: pointer;
+  line-height: 1.6;
+}
+.map-card {
+  border-left: 3px solid #79917b;
+  background: #f2f1e7;
+  padding: 16px;
+  margin: 14px 0;
+  border-radius: 0 10px 10px 0;
+}
+.map-card.finished {
+  border-color: #b7aa72;
+}
+.map-card h3,
+.technique-card h3,
+.mentor-card h3 {
+  margin: 0;
+}
+.map-card small {
+  color: #5c6a54;
+}
+.mentor-card {
+  display: grid;
+  grid-template-columns: 135px 1fr;
+  gap: 18px;
+  margin: 16px 0;
+}
+.mentor-card img {
+  width: 100%;
+  height: 205px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.mentor-card blockquote {
+  margin: 12px 0;
+  font-family: serif;
+  color: #53664e;
+}
+.mentor-card p {
+  font-size: 13px;
+}
+.world-actions {
+  display: grid;
+  gap: 8px;
+}
+.world-actions button {
+  text-align: left;
+  padding: 12px;
+}
+.world-actions small {
+  display: block;
+  margin-top: 4px;
+}
+.mentor-question {
+  padding: 16px;
+  margin-top: 16px;
+  background: #e8eddc;
+  border-radius: 8px;
+}
+.technique-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #d9ddcc;
+}
+.technique-card p {
+  margin: 6px 0;
+  font-size: 13px;
+}
+.technique-card small {
+  font-weight: normal;
+  color: #687565;
+}
+.queue-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+}
+.queue-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.queue-form input {
+  width: 75px;
+}
+.retirement {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #d9ddcc;
+}
+@media (max-width: 600px) {
+  .world-panel {
+    padding: 14px;
+  }
+  .mentor-card {
+    grid-template-columns: 90px 1fr;
+    gap: 12px;
+  }
+  .mentor-card img {
+    height: 145px;
+  }
+  .technique-card {
+    align-items: start;
+    flex-direction: column;
+  }
+}

@@ -2,6 +2,7 @@ import "fake-indexeddb/auto";
 import { beforeEach, it, expect } from "vitest";
 import { createGame as legacyGame } from "../src/legacy-v1";
 import { createGame as v2Game } from "../src/legacy-v2";
+import { createGame as v3Game } from "../src/chapter";
 import { createGame, dispatch } from "../src/core";
 import { save, load } from "../src/save";
 beforeEach(async () => {
@@ -85,7 +86,7 @@ it("upgrades v2 without resetting progress and preserves its first original snap
   old.qi = 28;
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(3);
+  expect(upgraded.version).toBe(4);
   expect(upgraded.qi).toBe(28);
   expect(upgraded.seed).toBe(88);
   expect(await raw("current")).toEqual(old);
@@ -100,4 +101,23 @@ it("upgrades v2 without resetting progress and preserves its first original snap
   );
   expect(await raw("original-v2")).toEqual(old);
   expect((await load()).state?.pending?.kind).toBe("meeting");
+});
+
+it("preserves original v3 and reloads v4 world and queued work exactly", async () => {
+  const old = v3Game("旧档", "wood", 89);
+  await raw("current", old);
+  let s = (await load()).state!;
+  s = dispatch(s, {
+    id: "queue",
+    type: "enqueue",
+    action: "gather",
+    repeat: 6,
+  });
+  s = dispatch(s, { id: "tick", type: "queueTick" });
+  await save(s);
+  expect(await raw("original-v3")).toEqual(old);
+  expect((await load()).state).toEqual(s);
+  expect(s.journey.queue[0].remaining).toBe(5);
+  await save(dispatch(s, { id: "second", type: "queueTick" }));
+  expect(await raw("original-v3")).toEqual(old);
 });

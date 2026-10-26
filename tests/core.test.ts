@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+// Frozen v3 chapter contract; v4 integration and world replays live in world.test.ts.
 import {
   createGame,
   dispatch,
@@ -9,7 +10,7 @@ import {
   type State,
   type Intent,
   type Path,
-} from "../src/core";
+} from "../src/chapter";
 import { createGame as oldGame } from "../src/legacy-v1";
 let id = 0;
 const run = (s: State, c: Intent) => dispatch(s, { ...c, id: String(++id) });

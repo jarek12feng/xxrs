@@ -1,7 +1,11 @@
 import type { State } from "./chapter";
 
 // Projection only: presentation never changes the story or its random seed.
-export function luchiView(s: State) {
+export function luchiView(
+  s: Omit<State, "version"> & {
+    journey?: { maps: { sea: number; peak: number } };
+  },
+) {
   const kind = s.pending?.kind;
   const portrait =
     s.story.luchi === "foundation"
@@ -55,8 +59,14 @@ export function luchiView(s: State) {
   return {
     portrait: "/characters/luchi-" + portrait + ".png",
     scene,
-    whereabouts,
+    whereabouts:
+      s.journey?.maps.sea === 3 ? "故乡 · 与母亲读父亲的来信" : whereabouts,
     known,
-    quote,
+    quote:
+      s.journey?.maps.sea === 3
+        ? "“她终于肯把窗边的灯放下了。谢谢你，把这封信带回来。”"
+        : s.journey?.maps.peak === 3
+          ? "“原来他还活着。你去雾海时，替我把这封信带上。”"
+          : quote,
   };
 }

@@ -33,6 +33,7 @@ import {
   type Intent,
 } from "./core";
 import { luchiView } from "./characters";
+import WorldPanel from "./WorldPanel.vue";
 import { load, save } from "./save";
 const useSession = defineStore("session", {
   state: () => ({ running: false, busy: false, history: false }),
@@ -50,6 +51,7 @@ const ready = ref(false),
   saved = ref(""),
   dialog = ref(""),
   pill = ref(false);
+const queueMode = ref(false);
 const npc = computed(() => (game.value ? luchiView(game.value) : null));
 const costs = computed(() => (game.value ? refineCost(game.value) : null));
 const fileInput = ref<HTMLInputElement>();
@@ -101,14 +103,22 @@ async function act(intent: Intent) {
   if (!game.value || ui.busy) return false;
   const old = game.value,
     n = dispatch(old, { ...intent, id: crypto.randomUUID() });
-  if (n === old) return false;
+  if (n === old) {
+    if (intent.type === "queueTick") {
+      ui.running = false;
+      notice.value = "修行安排已暂停：请检查行动条件或材料。";
+    }
+    return false;
+  }
   const ok = await persist(n);
   if (
     ok &&
     (n.pending ||
       n.status !== "alive" ||
-      (old.qi < MAX_QI && n.qi === MAX_QI) ||
-      actionError(n, activity.value))
+      (n.realm === 0 && old.qi < MAX_QI && n.qi === MAX_QI) ||
+      (queueMode.value
+        ? n.journey.queue.length === 0
+        : actionError(n, activity.value)))
   )
     ui.running = false;
   return ok;
@@ -125,7 +135,16 @@ async function start() {
     );
 }
 async function advance(months: number) {
+  queueMode.value = false;
   await act({ type: "advance", activity: activity.value, months });
+}
+async function worldAct(intent: Intent) {
+  ui.running = false;
+  await act(intent);
+}
+function runQueue() {
+  queueMode.value = true;
+  ui.running = true;
 }
 async function prepare(kind: "refine" | "retreat") {
   ui.running = false;
@@ -241,7 +260,7 @@ onMounted(async () => {
   ready.value = true;
   timer = setInterval(() => {
     if (ui.running && !ui.busy && !modal.value && !document.hidden)
-      void advance(1);
+      void (queueMode.value ? act({ type: "queueTick" }) : advance(1));
   }, 800);
 });
 onUnmounted(() => {
@@ -259,7 +278,7 @@ onUnmounted(() => {
         ><span>修仙人生<small>一卷山海 · 几世修行</small></span></a
       >
       <div class="header-right">
-        <span class="edition">人物与资质 · v0.3.0</span
+        <span class="edition">山外有天地 · v0.4.0</span
         ><button class="quiet" @click="dialog = 'help'">玩法说明</button
         ><button class="quiet" @click="fileInput?.click()">导入存档</button
         ><button v-if="game" class="quiet" @click="download(game)">导出</button>
@@ -419,10 +438,21 @@ onUnmounted(() => {
           </div>
           <section class="cultivation-panel">
             <div class="progress-label">
-              <h2>{{ game.realm ? "天关已过，前缘待续" : "炼气 → 筑基" }}</h2>
-              <strong>{{ game.qi }} / {{ MAX_QI }}</strong>
+              <h2>{{ game.realm ? "筑基已成 · 山外寻人" : "炼气 → 筑基" }}</h2>
+              <strong v-if="game.realm === 0"
+                >{{ game.qi }} / {{ MAX_QI }}</strong
+              >
+              <strong v-else
+                >探索
+                {{
+                  game.journey.maps.valley +
+                  game.journey.maps.peak +
+                  game.journey.maps.sea
+                }}
+                / 9</strong
+              >
             </div>
-            <div class="qi-track">
+            <div v-if="game.realm === 0" class="qi-track">
               <i :style="{ width: (game.qi / MAX_QI) * 100 + '%' }"></i>
             </div>
             <p class="next-goal">{{ nextGoal(game) }}</p>
@@ -447,8 +477,13 @@ onUnmounted(() => {
             <div class="cultivation-actions">
               <button
                 class="primary"
-                :disabled="ui.busy || !!actionError(game, activity)"
-                @click="ui.running = !ui.running"
+                :disabled="
+                  ui.busy || (!ui.running && !!actionError(game, activity))
+                "
+                @click="
+                  queueMode = false;
+                  ui.running = !ui.running;
+                "
               >
                 {{ ui.running ? "暂停" : "自动行动" }}</button
               ><button
@@ -505,8 +540,15 @@ onUnmounted(() => {
               叩问天关 · 尝试筑基 ↗
             </button>
             <p v-if="game.result" class="last-result">{{ game.result }}</p>
-          </section></template
-        >
+          </section>
+          <WorldPanel
+            :game="game"
+            :busy="ui.busy"
+            :running="ui.running"
+            @act="worldAct"
+            @run-queue="runQueue"
+          />
+        </template>
         <section class="timeline">
           <div class="panel-heading">
             <h2>人生卷宗</h2>
@@ -581,7 +623,7 @@ onUnmounted(() => {
             >
               遗府孤丹 · 留己或赠友
             </li>
-            <li :class="{ done: game.realm === 1 }">跨过天关 · 此篇落笔</li>
+            <li :class="{ done: game.realm === 1 }">跨过天关 · 山外寻人</li>
           </ol>
         </section>
         <section class="guide-card">
@@ -670,10 +712,18 @@ onUnmounted(() => {
         <p class="muted">
           {{
             game.status === "complete"
-              ? "这不是寿终。此后的故事暂且留白，下一世将探索另一种可能。"
+              ? "此篇已记入传承。可以继续此世探索山外，也可以选择另一种人生。"
               : "寿元耗尽，已获得的传承仍可带走。"
           }}
         </p>
+        <button
+          v-if="game.status === 'complete' && game.age < game.limit"
+          class="primary full"
+          :disabled="ui.busy"
+          @click="act({ type: 'continue' })"
+        >
+          继续此世 · 追寻山外故事
+        </button>
         <p>
           本篇所得 {{ game.earned }} · 累计阅历
           {{ game.legacy }}（纪念分，不消耗）
@@ -807,7 +857,7 @@ onUnmounted(() => {
         </p>
         <p class="event-body">
           修为达到 360
-          后主动突破。完成陆迟故事并筑基即可结算，选择一项已解锁传承和新的路线再来。每次行动先保存再显示；后台暂停，无离线收益。请定期导出备份，只使用一个标签页。
+          后主动突破。完成陆迟故事并筑基会记入传承，仍可继续山外寻人，或主动封存再轮回。宗门与散修都可获得功法；遇妖修或邪修挑战，可准备灵器、提升实力或请人护持。正常刷新会保留存档，清理浏览器数据、换设备或地址则可能丢失或不可见。每次行动先保存再显示；后台暂停，无离线收益。请定期导出备份，只使用一个标签页。
         </p>
         <button class="primary full" @click="dialog = ''">
           我已知晓

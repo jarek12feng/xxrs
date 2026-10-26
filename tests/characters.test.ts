@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+// Frozen v3 aptitude/story contract; current-world migration is tested separately.
 import {
   createGame,
   dispatch,
@@ -12,7 +13,7 @@ import {
   type State,
   type Intent,
   type Aptitude,
-} from "../src/core";
+} from "../src/chapter";
 import { createGame as v2Game, dispatch as v2Dispatch } from "../src/legacy-v2";
 import { luchiView } from "../src/characters";
 let seq = 0;
