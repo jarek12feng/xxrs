@@ -1143,3 +1143,81 @@ footer i {
     scroll-behavior: auto !important;
   }
 }
+/* Chapter two: explicit actions and bounded inheritance. */
+.activity-grid,
+.inheritance-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0;
+}
+.activity-grid button,
+.inheritance-list button {
+  text-align: left;
+  padding: 12px;
+  border: 1px solid #d7dfd4;
+  border-radius: 8px;
+  background: #fafbf7;
+  color: #344a40;
+}
+.activity-grid small,
+.inheritance-list small,
+.preparations small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+  margin-top: 5px;
+}
+.activity-grid .selected,
+.inheritance-list .selected {
+  background: #e0ecdf;
+  border-color: #497b60;
+}
+.preparations {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 14px 0;
+}
+.next-goal {
+  padding: 12px;
+  border-left: 3px solid #73917b;
+  background: #f0f4eb;
+  line-height: 1.7;
+  font-size: 13px;
+}
+select {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 16px;
+  border: 1px solid #b7c8b7;
+  border-radius: 6px;
+  background: white;
+  color: #344a40;
+}
+.modal {
+  max-height: 90vh;
+  overflow: auto;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+.guide-card + .guide-card {
+  margin-top: 16px;
+}
+@media (max-width: 600px) {
+  .preparations {
+    grid-template-columns: 1fr;
+  }
+  .header-right {
+    flex-wrap: wrap;
+  }
+  .edition {
+    display: none;
+  }
+  .cultivation-actions {
+    flex-wrap: wrap;
+  }
+}

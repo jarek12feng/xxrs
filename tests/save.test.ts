@@ -13,7 +13,8 @@ describe("save snapshots", () => {
   it("restores the exact state and RNG after reload", async () => {
     const a = dispatch(createGame("存档", "wood", 87), {
       id: "tick",
-      type: "tick",
+      type: "advance",
+      activity: "work",
       months: 12,
     });
     await save(a);
@@ -22,7 +23,9 @@ describe("save snapshots", () => {
   it("falls back to the previous snapshot if current is corrupt", async () => {
     const a = createGame("备份", "wood");
     await save(a);
-    await save(dispatch(a, { id: "tick", type: "tick", months: 1 }));
+    await save(
+      dispatch(a, { id: "tick", type: "advance", activity: "work", months: 1 }),
+    );
     await new Promise<void>((resolve, reject) => {
       const r = indexedDB.open("cultivation-life", 1);
       r.onsuccess = () => {
