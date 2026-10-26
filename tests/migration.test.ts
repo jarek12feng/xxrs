@@ -12,11 +12,21 @@ beforeEach(async () => {
     r.onsuccess = () => resolve();
   });
 });
+it("keeps original-v5 intact on the first scene-aware save", async () => {
+  const { adventure: _, ...state } = createGame("旧人", "wood");
+  const old = { ...state, version: 5 };
+  await raw("current", old);
+  const migrated = (await load()).state!;
+  expect(migrated.adventure.step).toBe("invitation");
+  expect(await raw("current")).toEqual(old);
+  await save(migrated);
+  expect(await raw("original-v5")).toEqual(old);
+});
 it("preserves the original v4 save while migrating social data", async () => {
   const old = v4Game("旧世", "wood", 3);
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(5);
+  expect(upgraded.version).toBe(6);
   expect(upgraded.social.gender).toBeNull();
   expect(await raw("current")).toEqual(old);
   await save(upgraded);
@@ -97,7 +107,7 @@ it("upgrades v2 without resetting progress and preserves its first original snap
   old.qi = 28;
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(5);
+  expect(upgraded.version).toBe(6);
   expect(upgraded.qi).toBe(28);
   expect(upgraded.seed).toBe(88);
   expect(await raw("current")).toEqual(old);

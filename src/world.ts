@@ -106,14 +106,24 @@ export interface Journey {
   equipped: Relic | null;
   encounters: Record<TrialPlace, Encounter | null>;
 }
+import {
+  freshAdventure,
+  validAdventure,
+  runAdventure,
+  type Adventure,
+  type AdventureAction,
+} from "./adventure";
+export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 5;
+  version: 6;
+  adventure: Adventure;
   journey: Journey;
   social: SocialState;
 }
 export type Command =
   | chapter.Command
   | SocialCommand
+  | { id: string; type: "adventure"; action: AdventureAction }
   | { id: string; type: "join"; branch: Exclude<Branch, "none"> }
   | { id: string; type: "duty"; duty: "herbs" | "watch" | "copy" }
   | { id: string; type: "promote" }
@@ -156,15 +166,16 @@ const fresh = (): Journey => ({
   encounters: { peak: null, sea: null },
 });
 function base(s: State): chapter.State {
-  const { journey: _, social: __, ...rest } = s;
+  const { journey: _, social: __, adventure: ___, ...rest } = s;
   return { ...rest, version: 3 };
 }
 function lift(
   s: chapter.State,
   journey = fresh(),
   social = freshSocial(),
+  adventure = freshAdventure(true),
 ): State {
-  return { ...s, version: 5, journey, social };
+  return { ...s, version: 6, journey, social, adventure };
 }
 export function createGame(
   name: string,
@@ -177,10 +188,21 @@ export function createGame(
     chapter.createGame(name, path, seed, aptitude),
     fresh(),
     freshSocial(gender),
+    freshAdventure(),
   );
 }
-export const eventView = (s: State) =>
-  s.pending ? chapter.eventView(base(s)) : heartEvent(s);
+export const eventView = (s: State) => {
+  const event = s.pending ? chapter.eventView(base(s)) : heartEvent(s);
+  if (event && s.pending?.kind === "meeting" && s.adventure.step === "done")
+    return {
+      ...event,
+      title: "渡口再逢 · 未寄的家书",
+      body:
+        "救回药工后，你再次遇见陆迟。这次他提起了自己的家事，托你寄一封家书，并邀你在第三十六个月一起寻找青石遗府的筑基机缘。" +
+        (s.inherited === "bond" ? "他的旧剑又唤起了你前世的记忆。" : ""),
+    };
+  return event;
+};
 export const activeEventId = (s: State) =>
   s.pending?.id ?? s.social.scene?.id ?? "";
 export const canGather = (s: State) => chapter.canGather(base(s));
@@ -276,6 +298,8 @@ export function nextGoal(s: State) {
   if (s.social.arena.duel)
     return "擂台交锋中：查看对手意图，选择应对方式，或主动认负。时间暂停。";
   if (s.social.scene) return "眼前的人在等你的回应，完成对话后再继续修行。";
+  if (s.story.stage === "unmet" && s.adventure.step === "done")
+    return "药工已平安归家。先修炼与休整，第三个月赴渡口，再听陆迟未说完的心事。";
   if (s.realm === 0 || s.story.stage !== "resolved")
     return chapter.nextGoal(base(s));
   if (s.journey.maps.valley < 3)
@@ -337,6 +361,7 @@ function normalize(n: State, old: State) {
 }
 export function dispatch(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (c.type === "adventure") return runAdventure(input, c.action, c.id);
   if (
     socialCommands.includes(c.type) ||
     (c.type === "choose" && !input.pending && input.social.scene)
@@ -366,7 +391,12 @@ export function dispatch(input: State, c: Command): State {
         if (result === b) break;
         const old = n;
         n = normalize(
-          lift(result, structuredClone(n.journey), structuredClone(n.social)),
+          lift(
+            result,
+            structuredClone(n.journey),
+            structuredClone(n.social),
+            structuredClone(n.adventure),
+          ),
           n,
         );
         if (n.status === "alive") {
@@ -410,6 +440,9 @@ export function dispatch(input: State, c: Command): State {
         ["next", "beginChapter"].includes(c.type)
           ? freshSocial()
           : structuredClone(input.social),
+        ["next", "beginChapter"].includes(c.type)
+          ? freshAdventure()
+          : structuredClone(input.adventure),
       ),
       input,
     );
@@ -438,7 +471,7 @@ export function dispatch(input: State, c: Command): State {
         activity: "work",
         months: 1,
       });
-    s = normalize(lift(n, s.journey, s.social), input);
+    s = normalize(lift(n, s.journey, s.social, s.adventure), input);
     if (s.status === "alive") {
       s.stones -= 4; // no labour income while travelling
       s.log = s.log.filter(
@@ -801,7 +834,13 @@ export function validState(x: unknown): x is State {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
-  if (s.version !== 5 || !j || !chapter.validState(base(s)) || !validSocial(s))
+  if (
+    s.version !== 6 ||
+    !j ||
+    !chapter.validState(base(s)) ||
+    !validSocial(s) ||
+    !validAdventure(s.adventure)
+  )
     return false;
   const integer = (v: unknown, max = 1e9) =>
     Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= max;
@@ -868,8 +907,22 @@ export function validState(x: unknown): x is State {
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 5) {
+    const upgraded = {
+      ...structuredClone(x),
+      version: 6,
+      adventure: freshAdventure(true),
+    };
+    if (validState(upgraded)) return upgraded;
+    throw new Error("旧存档损坏，原始数据未被修改。");
+  }
   if (validV4(x))
-    return { ...structuredClone(x), version: 5, social: freshSocial() };
+    return {
+      ...structuredClone(x),
+      version: 6,
+      social: freshSocial(),
+      adventure: freshAdventure(true),
+    };
   if (
     x &&
     typeof x === "object" &&

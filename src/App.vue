@@ -37,6 +37,8 @@ import {
 } from "./core";
 import { luchiView } from "./characters";
 import WorldPanel from "./WorldPanel.vue";
+import AdventurePanel from "./AdventurePanel.vue";
+const view = ref<"story" | "cultivation">("story");
 import { load, save } from "./save";
 const useSession = defineStore("session", {
   state: () => ({ running: false, busy: false, history: false }),
@@ -55,6 +57,15 @@ const ready = ref(false),
   saved = ref(""),
   dialog = ref(""),
   pill = ref(false);
+watch(
+  () => !!game.value?.social.arena.duel,
+  (active) => {
+    if (active) view.value = "cultivation";
+  },
+);
+watch(view, () => {
+  ui.running = false;
+});
 const queueMode = ref(false);
 const npc = computed(() => (game.value ? luchiView(game.value) : null));
 const heart = computed(() =>
@@ -306,7 +317,7 @@ onUnmounted(() => {
         ><span>修仙人生<small>一卷山海 · 几世修行</small></span></a
       >
       <div class="header-right">
-        <span class="edition">松风有约 · v0.5.0</span
+        <span class="edition">雨中归途 · v0.6.0</span
         ><button class="quiet" @click="dialog = 'help'">玩法说明</button
         ><button class="quiet" @click="fileInput?.click()">导入存档</button
         ><button v-if="game" class="quiet" @click="download(game)">导出</button>
@@ -381,7 +392,35 @@ onUnmounted(() => {
         </p>
       </section>
     </main>
-    <main v-else-if="game" class="game-layout">
+    <main
+      v-else-if="game"
+      class="game-layout"
+      :class="{ 'story-mode': view === 'story' && !ui.history }"
+    >
+      <details v-if="view === 'story' && !ui.history" class="player-summary">
+        <summary>
+          {{ game.name }} · {{ game.realm ? "筑基" : "炼气" }}
+          <span>灵石 {{ game.stones }} · 查看行囊与属性</span>
+        </summary>
+        <div>
+          <p>
+            根骨 {{ game.root }} · 悟性 {{ game.wisdom }} · 神识
+            {{ game.sense }}
+          </p>
+          <p>
+            根基 {{ game.foundation }} · 剑意 {{ game.mastery }} · 伤势
+            {{ game.injury }}
+          </p>
+          <p>
+            灵草 {{ game.herbs }} · 筑基丹 {{ game.pills }} · 年岁
+            {{ Math.floor(game.age / 12) }} 岁
+          </p>
+          <p>{{ saved }}</p>
+          <button @click="view = 'cultivation'">
+            查看功法、装备与完整修行面板
+          </button>
+        </div>
+      </details>
       <aside class="character">
         <div class="life-label">
           第 {{ game.life }} 世 · 修行第 {{ game.month }} 月
@@ -455,13 +494,35 @@ onUnmounted(() => {
       </aside>
       <section class="journey">
         <nav>
-          <button :class="{ active: !ui.history }" @click="ui.history = false">
+          <button
+            :class="{ active: !ui.history && view === 'story' }"
+            @click="
+              ui.history = false;
+              view = 'story';
+            "
+          >
+            当前冒险
+          </button>
+          <button
+            :class="{ active: !ui.history && view === 'cultivation' }"
+            @click="
+              ui.history = false;
+              view = 'cultivation';
+            "
+          >
             洞府修行</button
           ><button :class="{ active: ui.history }" @click="ui.history = true">
             人生卷宗
           </button>
         </nav>
-        <template v-if="!ui.history"
+        <AdventurePanel
+          v-if="!ui.history && view === 'story'"
+          :game="game"
+          :busy="ui.busy || ui.running"
+          @act="worldAct"
+          @cultivate="view = 'cultivation'"
+        />
+        <template v-if="!ui.history && view === 'cultivation'"
           ><div class="landscape">
             <img src="/mountains.svg" alt="听松山居" />
             <div class="landscape-title">

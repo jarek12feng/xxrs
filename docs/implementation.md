@@ -1,6 +1,10 @@
 # 实施记录
 
-## 当前版本 v0.5.0：松风有约
+## 当前版本 v0.6.0：雨中归途
+
+状态版本 6，新增 adventure.ts 纯规则与 AdventurePanel.vue 场景主界面。默认以探索和人物互动驱动开篇，旧档保留完整进度并自愿接取。移动端单列与触控区域适配，详见 [v6-scene-first.md](v6-scene-first.md)。下文为历史版本记录。
+
+## v0.5.0：松风有约
 
 当前状态版本为 5，新增纯规则 social.ts、SocialPanel.vue 与四张人物/场景插画。v4 规则冻结至 legacy-v4.ts 用于迁移校验。关系、擂台、场景、存档及验证记录见 [v5-social-scenes.md](v5-social-scenes.md)。下文保留 v0.4 历史实施记录，其中状态版本与当前版本不同。
 
