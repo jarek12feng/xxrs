@@ -23,9 +23,14 @@ const choose = (s: State, option: string) =>
 function meeting(path: Path = "wood") {
   return choose(advance(createGame("测试", path, 1), 3), "aid");
 }
+function settleMid(s: State) {
+  if (s.pending?.kind === "letter") return choose(s, "listen");
+  if (s.pending?.kind === "visit") return choose(s, "herbs");
+  return s;
+}
 function relic(path: Path = "wood") {
   let s = meeting(path);
-  while (s.month < 36) s = advance(s, 12);
+  while (s.month < 36) s = settleMid(advance(s, 12));
   return choose(choose(s, "go"), "detour");
 }
 describe("筑基篇", () => {
@@ -69,7 +74,7 @@ describe("筑基篇", () => {
   });
   it("retreat across appointment misses it, ordinary travel stops for choice", () => {
     let s = meeting();
-    while (s.month < 30) s = advance(s, Math.min(12, 30 - s.month));
+    while (s.month < 30) s = settleMid(advance(s, Math.min(12, 30 - s.month)));
     const missed = run(s, { type: "prepare", kind: "retreat" });
     expect(missed.story.choice).toBe("missed");
     expect(missed.pending).toBeNull();
@@ -141,7 +146,7 @@ describe("筑基篇", () => {
     expect(eventView(s)?.options.some((o) => o.id === "remember")).toBe(true);
     s = choose(s, "remember");
     expect(s.story.trust).toBe(3);
-    while (s.month < 36) s = advance(s, 12);
+    while (s.month < 36) s = settleMid(advance(s, 12));
     s = choose(s, "go");
     expect(choose(s, "memory").injury).toBe(0);
   });
@@ -206,15 +211,19 @@ describe("筑基篇", () => {
             type: "choose",
             instanceId: s.pending.id,
             option:
-              k === "meeting"
-                ? "aid"
-                : k === "departure"
-                  ? choice === "missed"
-                    ? "stay"
-                    : "go"
-                  : k === "crossing"
-                    ? "detour"
-                    : choice,
+              k === "letter"
+                ? "listen"
+                : k === "visit"
+                  ? "herbs"
+                  : k === "meeting"
+                    ? "aid"
+                    : k === "departure"
+                      ? choice === "missed"
+                        ? "stay"
+                        : "go"
+                      : k === "crossing"
+                        ? "detour"
+                        : choice,
           });
         } else if (s.injury)
           command({ type: "advance", activity: "rest", months: 1 });

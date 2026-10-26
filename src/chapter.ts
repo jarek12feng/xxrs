@@ -2,11 +2,38 @@ import {
   validState as validLegacy,
   type State as LegacyState,
 } from "./legacy-v1";
+import { validState as validV2 } from "./legacy-v2";
+export type Aptitude = "sturdy" | "insightful" | "perceptive";
+export const aptitudes = {
+  sturdy: {
+    name: "山岳之骨",
+    root: 8,
+    wisdom: 4,
+    sense: 3,
+    description: "根骨 8 · 悟性 4 · 神识 3。吐纳更快，能以体魄护友。",
+  },
+  insightful: {
+    name: "明心善悟",
+    root: 4,
+    wisdom: 8,
+    sense: 3,
+    description: "根骨 4 · 悟性 8 · 神识 3。研读更快，领悟替代丹方。",
+  },
+  perceptive: {
+    name: "灵台清明",
+    root: 4,
+    wisdom: 4,
+    sense: 7,
+    description: "根骨 4 · 悟性 4 · 神识 7。接近识阵门槛，控火省灵石。",
+  },
+};
 export type Path = "wood" | "sword";
-export type Inheritance = "none" | "herbal" | "sword" | "bond";
-export type Activity = "cultivate" | "gather" | "train" | "work" | "rest";
+export type Inheritance = "none" | "herbal" | "sword" | "bond" | "ember";
+export type Activity =
+  "cultivate" | "gather" | "train" | "work" | "rest" | "meditate" | "study";
 export type Stage = "unmet" | "waiting" | "crossing" | "relic" | "resolved";
-export type Decision = "meeting" | "departure" | "crossing" | "relic";
+export type Decision =
+  "meeting" | "departure" | "crossing" | "relic" | "letter" | "visit";
 export const paths = {
   wood: {
     name: "长春医道",
@@ -26,6 +53,11 @@ export const inheritances: Record<
   Inheritance,
   { name: string; description: string }
 > = {
+  ember: {
+    name: "孤灯丹诀",
+    description:
+      "自留孤丹后结算解锁。下一世首次突破失败保留九成修为且不减寿；不叠加。",
+  },
   none: { name: "白纸新生", description: "不带传承，重新选择这一世的道路。" },
   herbal: {
     name: "长春丹札",
@@ -41,7 +73,20 @@ export const inheritances: Record<
   },
 };
 export interface State {
-  version: 2;
+  version: 3;
+  aptitude: Aptitude;
+  root: number;
+  wisdom: number;
+  sense: number;
+  study: number;
+  ward: boolean;
+  memories: {
+    letter: boolean;
+    visit: boolean;
+    confided: boolean;
+    support: string;
+    crossing: string;
+  };
   seed: number;
   name: string;
   path: Path;
@@ -81,8 +126,14 @@ export type Command =
   | { id: string; type: "prepare"; kind: "refine" | "retreat" }
   | { id: string; type: "choose"; instanceId: string; option: string }
   | { id: string; type: "break"; pill: boolean }
-  | { id: string; type: "next"; path: Path; inheritance: Inheritance }
-  | { id: string; type: "beginChapter"; path: Path };
+  | {
+      id: string;
+      type: "next";
+      path: Path;
+      inheritance: Inheritance;
+      aptitude?: Aptitude;
+    }
+  | { id: string; type: "beginChapter"; path: Path; aptitude?: Aptitude };
 export type Intent = Command extends infer C
   ? C extends Command
     ? Omit<C, "id">
@@ -100,9 +151,27 @@ export interface EventView {
   options: Option[];
 }
 export const MAX_QI = 360;
-export function createGame(name: string, path: Path, seed = 12345): State {
+export function createGame(
+  name: string,
+  path: Path,
+  seed = 12345,
+  aptitude: Aptitude = "insightful",
+): State {
   return {
-    version: 2,
+    version: 3,
+    aptitude,
+    root: aptitudes[aptitude].root,
+    wisdom: aptitudes[aptitude].wisdom,
+    sense: aptitudes[aptitude].sense,
+    study: 0,
+    ward: false,
+    memories: {
+      letter: false,
+      visit: false,
+      confided: false,
+      support: "none",
+      crossing: "none",
+    },
     seed: seed >>> 0 || 1,
     name: name.trim().slice(0, 16) || "无名",
     path,
@@ -189,9 +258,37 @@ export function breakthroughDetails(s: State, pill = false) {
     ),
   };
 }
+export function cultivationGain(s: State) {
+  return paths[s.path].gain + Math.max(0, s.root - 4);
+}
+export function refineCost(s: State) {
+  return {
+    herbs: s.wisdom >= 8 && s.study >= 2 ? 4 : 6,
+    stones: s.sense >= 8 ? 8 : 12,
+  };
+}
+export function replayHints(s: State) {
+  const hints: string[] = [];
+  if (s.memories.crossing !== "sense")
+    hints.push("下一世凝神至神识 8，可看见青石阵眼，另寻无伤通路。");
+  if (s.memories.crossing !== "decipher")
+    hints.push("选择明心善悟并研读至心得 2，可读懂石门残诀。");
+  if (s.story.choice !== "self")
+    hints.push("留下孤丹会得到一次护脉丹纹，并解锁另一份独行传承。");
+  if (s.story.choice !== "gift")
+    hints.push("赠丹后的故人，会以不同身份再次站在你身边。");
+  if (!s.memories.confided)
+    hints.push("下次读懂陆迟那封未寄出的信，或许能听见他真正的心愿。");
+  return hints.slice(0, 3);
+}
 export function nextGoal(s: State) {
   if (s.status !== "alive") return "此篇已落笔，选择传承与下一世路线。";
   if (s.story.stage === "unmet") return "第三个月，去渡口认识同行之人。";
+  if (s.pending) return "完成眼前的选择，时间已暂停。";
+  if (s.story.stage === "waiting" && !s.memories.letter && s.month < 12)
+    return `第十二月，陆迟邀你煮茶叙旧；还有 ${12 - s.month} 个月。第三十六月仍须赴约。`;
+  if (s.story.stage === "waiting" && !s.memories.visit && s.month < 24)
+    return `第二十四月，陆迟将带回山外消息；还有 ${24 - s.month} 个月。第三十六月仍须赴约。`;
   if (s.story.stage === "waiting")
     return `第三十六个月与陆迟会合，还剩 ${Math.max(0, 36 - s.month)} 个月。闭关六个月若跨过约期，将失约。`;
   if (s.pending) return "完成眼前的选择，时间已暂停。";
@@ -232,6 +329,39 @@ export function eventView(s: State): EventView | null {
           ),
         ],
       };
+    case "letter":
+      return {
+        title: "未寄出的家书",
+        body: "茶水凉了，陆迟仍握着那封信。他说父亲当年进山采药，再没回来；母亲却每年在渡口留一盏灯。“我想筑基，不是要她再等一百年。是想有本事进山，把父亲带回家。”他低头抚过剑柄上的三道刻痕。",
+        options: [
+          o("listen", "陪他把这盏茶喝完", "信任 +1 · 记下他的心愿，不消耗月份"),
+          o(
+            "read",
+            "读懂信中没有写出的那句话",
+            "悟性至少 8 · 信任 +1 · 研读心得 +1",
+            s.wisdom < 8 ? "需要悟性 8" : undefined,
+          ),
+          o("leave", "将信收好，暂不追问", "尊重他的沉默 · 不改变信任"),
+        ],
+      };
+    case "visit":
+      return {
+        title: "风雪里的一盏灯",
+        body: "山门外的雪还没化，陆迟已经把药包放在桌上。“上回是你帮我。这次，换我。”他没有带稀世灵物，只带来跑了三处集市换来的灵草、温养经脉的药，以及一卷他反复读过的残诀。你可以告诉他眼下最需要什么。",
+        options: [
+          o("herbs", "收下灵草，留作炼丹", "灵草 +4 · 陆迟仍保留其他物资"),
+          o(
+            "heal",
+            "请他温养受损经脉",
+            "伤势 −2（最低 0） · 根基 +2（上限 24）",
+          ),
+          o(
+            "lesson",
+            "与他共读残诀",
+            "神识 +1（上限 12） · 研读心得 +1（上限 4）",
+          ),
+        ],
+      };
     case "departure":
       return {
         title: "三年之约",
@@ -260,6 +390,24 @@ export function eventView(s: State): EventView | null {
           ...(s.inherited === "bond"
             ? [o("memory", "沿梦中的旧路绕行", "前缘专属 · 无伤通过 · 信任 +1")]
             : []),
+          o(
+            "endure",
+            "以山岳根骨护住陆迟",
+            "根骨至少 8 · 伤势 +1 · 信任 +1",
+            s.root < 8 ? "需要根骨 8" : undefined,
+          ),
+          o(
+            "sense",
+            "以神识窥见阵眼",
+            "神识至少 8 · 无伤通过 · 信任 +1",
+            s.sense < 8 ? "需要神识 8" : undefined,
+          ),
+          o(
+            "decipher",
+            "参透石门残诀",
+            "悟性至少 8、研读心得 2 · 无伤通过 · 信任 +1",
+            s.wisdom < 8 || s.study < 2 ? "需要悟性 8 与心得 2" : undefined,
+          ),
           o(
             "medicine",
             "以灵草解瘴",
@@ -290,7 +438,7 @@ export function eventView(s: State): EventView | null {
           o(
             "self",
             "留下筑基丹，自寻长生",
-            "筑基丹 +1 · 陆迟仍在炼气 · 本世无护法 · 保留独行结局",
+            "筑基丹 +1 · 一次护脉丹纹（失败保留九成、不减寿） · 结算解锁「孤灯丹诀」 · 无陆迟护法",
           ),
           o(
             "gift",
@@ -313,12 +461,13 @@ function finish(s: State, dead = false) {
   if (s.crafted > 0) unlock("herbal");
   if (s.mastery >= 4) unlock("sword");
   if (s.story.choice === "gift") unlock("bond");
+  if (s.story.choice === "self") unlock("ember");
   s.result = dead
     ? "灯尽山中：你未能完成此篇，但修行所得仍可传给下一世。"
     : s.story.choice === "gift"
       ? "双星照渡：你与陆迟都已筑基，今后可并肩而行。那句三年之约，终于有了回音。"
       : s.story.choice === "self"
-        ? "独剑入云：你带走丹药，独自跨过天关。陆迟尚在炼气，你们各赴前程。"
+        ? "独剑入云：你以孤丹叩开天关，记下护脉丹诀。陆迟留下家书，决定先回乡陪母亲过冬；你答应将来替他寻访父亲的下落。"
         : "山门独成：你错过了渡口之约，以自己的准备筑基。山下那道身影，已渐行渐远。";
   record(s, s.result, "major");
 }
@@ -348,15 +497,25 @@ function month(s: State) {
   return true;
 }
 function hooks(s: State) {
-  if (s.story.stage === "unmet" && s.month >= 3) decision(s, "meeting");
-  if (s.story.stage === "waiting" && s.month === 18)
-    record(
-      s,
-      "陆迟来信：遗府第三十六个月开启。带四株灵草可解瘴，剑意四重可破阵，筑基修士也能从容通行。",
-    );
-  if (s.story.stage === "waiting" && s.month >= 36) decision(s, "departure");
+  if (s.pending || s.status !== "alive") return;
+  if (s.story.stage === "unmet" && s.month >= 3) {
+    decision(s, "meeting");
+    return;
+  }
+  if (s.story.stage !== "waiting") return;
+  if (s.month >= 36) {
+    decision(s, "departure");
+    return;
+  }
+  if (s.month >= 12 && !s.memories.letter) {
+    decision(s, "letter");
+    return;
+  }
+  if (s.month >= 24 && !s.memories.visit) decision(s, "visit");
 }
 export function actionError(s: State, activity: Activity) {
+  if (activity === "meditate" && s.sense >= 12) return "神识已达本篇上限";
+  if (activity === "study" && s.study >= 4) return "研读心得已满";
   if (activity === "gather" && !canGather(s)) return "需长春医道或长春丹札传承";
   if (activity === "train" && !canTrain(s)) return "需青锋剑道或青锋残谱传承";
   if (activity === "train" && s.mastery >= 12) return "剑意已满";
@@ -368,7 +527,9 @@ export function actionError(s: State, activity: Activity) {
 export function preparationError(s: State, kind: "refine" | "retreat") {
   if (kind === "refine") {
     if (!canGather(s)) return "需长春医道或长春丹札";
-    if (s.herbs < 6 || s.stones < 12) return "需要灵草 6、灵石 12";
+    const cost = refineCost(s);
+    if (s.herbs < cost.herbs || s.stones < cost.stones)
+      return `需要灵草 ${cost.herbs}、灵石 ${cost.stones}`;
     if (
       (s.story.stage === "unmet" && s.month + 3 >= 3) ||
       (s.story.stage === "waiting" && s.month + 3 >= 36)
@@ -383,6 +544,12 @@ export function preparationError(s: State, kind: "refine" | "retreat") {
 }
 export function dispatch(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (
+    (c.type === "next" || c.type === "beginChapter") &&
+    c.aptitude !== undefined &&
+    !Object.hasOwn(aptitudes, c.aptitude)
+  )
+    return input;
   const s = structuredClone(input);
   const accept = () => {
     s.seen = [...s.seen, c.id].slice(-512);
@@ -391,7 +558,7 @@ export function dispatch(input: State, c: Command): State {
   if (c.type === "beginChapter") {
     if (s.status !== "legacy" || !s.archive || !Object.hasOwn(paths, c.path))
       return input;
-    const n = createGame(s.name, c.path, s.seed);
+    const n = createGame(s.name, c.path, s.seed, c.aptitude);
     n.life = s.archive.life + 1;
     n.legacy = s.archive.legacy;
     n.archive = s.archive;
@@ -408,7 +575,7 @@ export function dispatch(input: State, c: Command): State {
     )
       return input;
     rng(s);
-    const n = createGame(s.name, c.path, s.seed);
+    const n = createGame(s.name, c.path, s.seed, c.aptitude);
     n.life = s.life + 1;
     n.legacy = s.legacy;
     n.unlocked = [...s.unlocked];
@@ -417,6 +584,7 @@ export function dispatch(input: State, c: Command): State {
     n.seen = [c.id];
     if (c.inheritance === "herbal") n.herbs = 4;
     if (c.inheritance === "sword") n.mastery = 2;
+    if (c.inheritance === "ember") n.ward = true;
     record(
       n,
       `第 ${n.life} 世，选择${paths[c.path].name}，带来「${inheritances[c.inheritance].name}」。传承每世只选一项，不叠加。`,
@@ -441,6 +609,37 @@ export function dispatch(input: State, c: Command): State {
         `${option.label}。陆迟与你定下第三十六个月的渡口之约。信任 ${s.story.trust}。`,
         "major",
       );
+    } else if (kind === "letter") {
+      s.memories.letter = true;
+      if (c.option !== "leave") {
+        s.memories.confided = true;
+        s.story.trust = Math.min(6, s.story.trust + 1);
+      }
+      if (c.option === "read") s.study = Math.min(4, s.study + 1);
+      record(
+        s,
+        `未寄出的家书：${option.label}。陆迟想入山寻找失踪的父亲，不愿母亲永远守着渡口的灯。`,
+        "major",
+      );
+      hooks(s);
+    } else if (kind === "visit") {
+      s.memories.visit = true;
+      s.memories.support = c.option;
+      if (c.option === "herbs") s.herbs += 4;
+      if (c.option === "heal") {
+        s.injury = Math.max(0, s.injury - 2);
+        s.foundation = Math.min(24, s.foundation + 2);
+      }
+      if (c.option === "lesson") {
+        s.sense = Math.min(12, s.sense + 1);
+        s.study = Math.min(4, s.study + 1);
+      }
+      record(
+        s,
+        `陆迟冒雪来访：${option.label}，${option.hint}。这次换他照顾你。`,
+        "major",
+      );
+      hooks(s);
     } else if (kind === "departure") {
       if (c.option === "stay") {
         missed(s);
@@ -454,9 +653,15 @@ export function dispatch(input: State, c: Command): State {
       if (c.option === "medicine") s.herbs -= 4;
       s.injury = Math.min(
         6,
-        s.injury + (c.option === "detour" ? 2 : c.option === "blade" ? 1 : 0),
+        s.injury +
+          (c.option === "detour"
+            ? 2
+            : ["blade", "endure"].includes(c.option)
+              ? 1
+              : 0),
       );
-      if (c.option !== "detour") s.story.trust++;
+      if (c.option !== "detour") s.story.trust = Math.min(6, s.story.trust + 1);
+      s.memories.crossing = c.option;
       record(s, `${option.label}：${option.hint}。`);
       s.story.stage = "relic";
       decision(s, "relic");
@@ -465,7 +670,7 @@ export function dispatch(input: State, c: Command): State {
       s.story.stage = "resolved";
       if (c.option === "gift") {
         s.story.luchi = "foundation";
-        s.story.trust += 2;
+        s.story.trust = Math.min(6, s.story.trust + 2);
         record(
           s,
           "你将唯一的筑基丹交给陆迟。他筑基后承诺为你护法，突破概率随信任增加 10–15%。",
@@ -473,9 +678,10 @@ export function dispatch(input: State, c: Command): State {
         );
       } else {
         s.pills++;
+        s.ward = true;
         record(
           s,
-          "你留下遗府筑基丹，陆迟尊重你的选择，仍以炼气之身寻找自己的路。",
+          "你留下孤丹并拓下匣底护脉丹纹：可抵消一次突破失败的减寿，保留九成修为。陆迟说：“那我先回家。等你出关，替我去山里看一眼。”",
           "major",
         );
       }
@@ -490,7 +696,15 @@ export function dispatch(input: State, c: Command): State {
   if (s.pending) return input;
   if (c.type === "advance") {
     if (
-      !["cultivate", "gather", "train", "work", "rest"].includes(c.activity) ||
+      ![
+        "cultivate",
+        "gather",
+        "train",
+        "work",
+        "rest",
+        "meditate",
+        "study",
+      ].includes(c.activity) ||
       !Number.isInteger(c.months) ||
       c.months < 1 ||
       c.months > 12 ||
@@ -501,7 +715,7 @@ export function dispatch(input: State, c: Command): State {
       const previousQi = s.qi;
       if (actionError(s, c.activity) || !month(s)) break;
       if (c.activity === "cultivate")
-        s.qi = Math.min(MAX_QI, s.qi + paths[s.path].gain);
+        s.qi = Math.min(MAX_QI, s.qi + cultivationGain(s));
       if (c.activity === "gather") {
         s.herbs += 2;
         s.qi = Math.min(MAX_QI, s.qi + 3);
@@ -511,12 +725,18 @@ export function dispatch(input: State, c: Command): State {
         s.qi = Math.min(MAX_QI, s.qi + 10);
         if (s.mastery % 4 === 0) s.injury = Math.min(6, s.injury + 1);
       }
+      if (c.activity === "meditate") {
+        s.sense = Math.min(12, s.sense + 1);
+        s.qi = Math.min(MAX_QI, s.qi + 2);
+      }
+      if (c.activity === "study")
+        s.study = Math.min(4, s.study + (s.wisdom >= 8 ? 2 : 1));
       if (c.activity === "work") s.stones += 4;
       if (c.activity === "rest") s.injury = Math.max(0, s.injury - 1);
       if (c.activity !== "cultivate")
         record(
           s,
-          `${{ gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: "山下劳作，额外灵石 +4", rest: "静养经脉，伤势 −1" }[c.activity]}。`,
+          `${{ meditate: "凝神内观，神识 +1（上限 12）、修为 +2", study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: "山下劳作，额外灵石 +4", rest: "静养经脉，伤势 −1" }[c.activity]}。`,
         );
       hooks(s);
       if (
@@ -531,15 +751,16 @@ export function dispatch(input: State, c: Command): State {
     if (!["refine", "retreat"].includes(c.kind) || preparationError(s, c.kind))
       return input;
     if (c.kind === "refine") {
-      s.herbs -= 6;
-      s.stones -= 12;
+      const cost = refineCost(s);
+      s.herbs -= cost.herbs;
+      s.stones -= cost.stones;
       for (let i = 0; i < 3; i++) if (!month(s)) break;
       if (s.status === "alive") {
         s.pills++;
         s.crafted++;
         record(
           s,
-          "耗时三个月炼成筑基丹：灵草 −6、灵石 −12。丹药可与陆迟护法叠加。",
+          `耗时三个月炼成筑基丹：灵草 −${cost.herbs}、灵石 −${cost.stones}。悟性配合研读可省灵草，神识控火可省灵石。`,
           "major",
         );
         hooks(s);
@@ -553,6 +774,7 @@ export function dispatch(input: State, c: Command): State {
         record(s, "闭关六个月：根基 +6、修为 +30。世间约期仍在流逝。");
         if (s.story.stage === "waiting" && s.month >= 36) missed(s);
         maybeFinish(s);
+        hooks(s);
       }
     }
     return accept();
@@ -570,10 +792,12 @@ export function dispatch(input: State, c: Command): State {
       record(s, s.result, "major");
       maybeFinish(s);
     } else {
-      s.qi = Math.floor((s.qi * 7) / 10);
+      const protectedFailure = s.ward;
+      s.qi = Math.floor((s.qi * (protectedFailure ? 9 : 7)) / 10);
+      s.ward = false;
       s.injury = Math.min(6, s.injury + 2);
-      s.limit -= 12;
-      s.result = `突破未成：判定 ${roll}/100，成功率 ${chance}%。修为保留七成，伤势 +2、寿元上限 −1 年；可养伤、炼丹或再打磨根基。`;
+      if (!protectedFailure) s.limit -= 12;
+      s.result = `突破未成：判定 ${roll}/100，成功率 ${chance}%。${protectedFailure ? "护脉丹纹消耗：保留九成修为、不减寿" : "修为保留七成、寿元上限 −1 年"}，伤势 +2；可养伤、炼丹或再打磨根基。`;
       record(s, s.result, "warning");
       if (s.age >= s.limit) finish(s, true);
     }
@@ -588,7 +812,7 @@ export function validState(x: unknown): x is State {
   if (!x || typeof x !== "object") return false;
   const s = x as State;
   if (
-    s.version !== 2 ||
+    s.version !== 3 ||
     typeof s.name !== "string" ||
     !s.name.trim() ||
     s.name.length > 16 ||
@@ -596,6 +820,35 @@ export function validState(x: unknown): x is State {
     !oneOf(s.status, ["alive", "complete", "dead", "legacy"])
   )
     return false;
+  if (
+    !Object.hasOwn(aptitudes, s.aptitude) ||
+    s.root !== aptitudes[s.aptitude].root ||
+    s.wisdom !== aptitudes[s.aptitude].wisdom ||
+    !int(s.sense, aptitudes[s.aptitude].sense, 12) ||
+    !int(s.study, 0, 4) ||
+    typeof s.ward !== "boolean"
+  )
+    return false;
+  if (
+    !s.memories ||
+    !["letter", "visit", "confided"].every(
+      (k) => typeof s.memories[k as keyof State["memories"]] === "boolean",
+    ) ||
+    !oneOf(s.memories.support, ["none", "herbs", "heal", "lesson"]) ||
+    !oneOf(s.memories.crossing, [
+      "none",
+      "protect",
+      "memory",
+      "medicine",
+      "blade",
+      "detour",
+      "endure",
+      "sense",
+      "decipher",
+    ])
+  )
+    return false;
+  if (s.memories.confided && !s.memories.letter) return false;
   if (
     !int(s.seed, 1, 0xffffffff) ||
     !int(s.life, 1) ||
@@ -639,9 +892,9 @@ export function validState(x: unknown): x is State {
   if (
     !oneOf(s.inherited, Object.keys(inheritances)) ||
     !Array.isArray(s.unlocked) ||
-    s.unlocked.length > 3 ||
+    s.unlocked.length > 4 ||
     new Set(s.unlocked).size !== s.unlocked.length ||
-    !s.unlocked.every((k) => oneOf(k, ["herbal", "sword", "bond"]))
+    !s.unlocked.every((k) => oneOf(k, ["herbal", "sword", "bond", "ember"]))
   )
     return false;
   if (s.inherited !== "none" && !s.unlocked.includes(s.inherited)) return false;
@@ -673,13 +926,22 @@ export function validState(x: unknown): x is State {
       s.status !== "alive" ||
       !s.pending ||
       typeof s.pending.id !== "string" ||
-      !oneOf(s.pending.kind, ["meeting", "departure", "crossing", "relic"])
+      !oneOf(s.pending.kind, [
+        "meeting",
+        "departure",
+        "crossing",
+        "relic",
+        "letter",
+        "visit",
+      ])
     )
       return false;
     if (s.pending.id !== `${s.life}:${s.month}:${s.pending.kind}`) return false;
     if (
       (
         {
+          letter: "waiting",
+          visit: "waiting",
           meeting: "unmet",
           departure: "waiting",
           crossing: "crossing",
@@ -700,6 +962,36 @@ export function validState(x: unknown): x is State {
 }
 export function migrateSave(value: unknown): State {
   if (validState(value)) return structuredClone(value);
+  if (validV2(value)) {
+    const upgraded: State = {
+      ...structuredClone(value),
+      version: 3,
+      aptitude: "insightful",
+      root: 4,
+      wisdom: 8,
+      sense: 3,
+      study: 0,
+      ward: false,
+      memories: {
+        letter: value.month >= 12,
+        visit: value.month >= 24,
+        confided: false,
+        support: "none",
+        crossing: "none",
+      },
+    };
+    if (
+      value.story.choice === "self" &&
+      ["complete", "dead"].includes(value.status) &&
+      !upgraded.unlocked.includes("ember")
+    )
+      upgraded.unlocked.push("ember");
+    record(
+      upgraded,
+      "人物与资质版已接续旧进度：补入明心善悟资质。已经过去的相处节点不补发奖励；下一世可重新选择资质。",
+    );
+    return upgraded;
+  }
   if (validLegacy(value)) {
     const s = createGame(
       value.name,

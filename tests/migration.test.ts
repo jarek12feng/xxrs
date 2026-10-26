@@ -1,6 +1,7 @@
 import "fake-indexeddb/auto";
 import { beforeEach, it, expect } from "vitest";
 import { createGame as legacyGame } from "../src/legacy-v1";
+import { createGame as v2Game } from "../src/legacy-v2";
 import { createGame, dispatch } from "../src/core";
 import { save, load } from "../src/save";
 beforeEach(async () => {
@@ -75,4 +76,28 @@ it("rejects invalid writes before touching the database", async () => {
   await save(valid);
   await expect(save({ ...valid, qi: -1 })).rejects.toThrow("非法");
   expect(await raw("current")).toEqual(valid);
+});
+
+it("upgrades v2 without resetting progress and preserves its first original snapshot", async () => {
+  const old = v2Game("筑基旧人", "sword", 88);
+  old.month = 2;
+  old.age += 2;
+  old.qi = 28;
+  await raw("current", old);
+  const upgraded = (await load()).state!;
+  expect(upgraded.version).toBe(3);
+  expect(upgraded.qi).toBe(28);
+  expect(upgraded.seed).toBe(88);
+  expect(await raw("current")).toEqual(old);
+  await save(upgraded);
+  await save(
+    dispatch(upgraded, {
+      id: "after-upgrade",
+      type: "advance",
+      activity: "work",
+      months: 1,
+    }),
+  );
+  expect(await raw("original-v2")).toEqual(old);
+  expect((await load()).state?.pending?.kind).toBe("meeting");
 });

@@ -1221,3 +1221,144 @@ button:disabled {
     flex-wrap: wrap;
   }
 }
+/* Character-and-aptitude chapter: art remains subordinate to readable choices. */
+.story-dialog .event-body {
+  margin: 16px 0;
+  line-height: 1.8;
+}
+.story-dialog h2 {
+  margin: 14px 0;
+}
+.story-dialog .choice {
+  padding: 12px 16px;
+}
+.aptitude-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+.aptitude-list button {
+  text-align: left;
+  background: #faf9f2;
+  border: 1px solid #d0dacb;
+  padding: 12px;
+  border-radius: 8px;
+  color: #344a40;
+}
+.aptitude-list .selected {
+  background: #e4eddf;
+  border-color: #547b62;
+}
+.aptitude-list small {
+  display: block;
+  margin-top: 5px;
+  line-height: 1.6;
+}
+.aptitude-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin: 16px 0;
+}
+.aptitude-stats div {
+  text-align: center;
+  background: #edf1e7;
+  border-radius: 6px;
+  padding: 10px 3px;
+}
+.aptitude-stats strong,
+.aptitude-stats span,
+.aptitude-stats small {
+  display: block;
+}
+.aptitude-stats strong {
+  font-size: 24px;
+}
+.aptitude-stats small {
+  font-size: 10px;
+  margin-top: 5px;
+}
+.npc-card-art {
+  display: block;
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  object-position: 50% 24%;
+  border-radius: 8px;
+  margin-bottom: 18px;
+}
+.npc-subtitle {
+  font-size: 12px;
+  font-weight: normal;
+  color: #748575;
+}
+.npc-quote {
+  font-family: serif;
+  font-size: 16px !important;
+  color: #4c6554;
+  line-height: 1.8;
+}
+.story-dialog {
+  width: min(650px, calc(100vw - 32px));
+}
+.story-scene {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  background: #e5e7df;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+.speaker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 14px 0;
+  text-align: left;
+}
+.speaker img {
+  width: 68px;
+  height: 78px;
+  object-fit: cover;
+  object-position: 50% 20%;
+  border-radius: 6px;
+}
+.speaker span {
+  font-size: 20px;
+}
+.speaker small {
+  display: block;
+  font-size: 11px;
+  margin-top: 6px;
+  color: #75816e;
+}
+.dossier-art {
+  display: block;
+  width: 100%;
+  height: 290px;
+  object-fit: cover;
+  object-position: 50% 20%;
+  border-radius: 8px;
+}
+.next-life {
+  background: #eef2e7;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 14px 0;
+}
+.next-life p {
+  font-size: 12px;
+  line-height: 1.8;
+}
+@media (max-width: 600px) {
+  .story-dialog {
+    padding: 22px;
+  }
+  .story-scene {
+    max-height: 130px;
+  }
+  .npc-card-art {
+    height: 220px;
+  }
+}

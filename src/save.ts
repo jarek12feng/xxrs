@@ -13,7 +13,7 @@ function newer(value: unknown) {
     typeof value === "object" &&
     "version" in value &&
     typeof value.version === "number" &&
-    value.version > 2
+    value.version > 3
   );
 }
 function read(value: unknown) {
@@ -66,10 +66,11 @@ export async function save(state: State) {
         return;
       }
       if (read(old.result)) store.put(old.result, "previous");
-      if (old.result?.version === 1 && read(old.result)) {
-        const backup = store.get("original-v1");
+      if ([1, 2].includes(old.result?.version) && read(old.result)) {
+        const key = `original-v${old.result.version}`;
+        const backup = store.get(key);
         backup.onsuccess = () => {
-          if (!backup.result) store.put(old.result, "original-v1");
+          if (!backup.result) store.put(old.result, key);
         };
       }
       store.put(structuredClone(state), "current");

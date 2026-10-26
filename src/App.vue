@@ -10,6 +10,11 @@ import {
 } from "vue";
 import { defineStore } from "pinia";
 import {
+  aptitudes,
+  cultivationGain,
+  refineCost,
+  replayHints,
+  type Aptitude,
   createGame,
   dispatch,
   paths,
@@ -27,6 +32,7 @@ import {
   type Inheritance,
   type Intent,
 } from "./core";
+import { luchiView } from "./characters";
 import { load, save } from "./save";
 const useSession = defineStore("session", {
   state: () => ({ running: false, busy: false, history: false }),
@@ -37,12 +43,15 @@ const ready = ref(false),
   loadError = ref(false),
   name = ref("沈青禾"),
   path = ref<Path>("wood"),
+  aptitude = ref<Aptitude>("insightful"),
   inheritance = ref<Inheritance>("none"),
   activity = ref<Activity>("cultivate"),
   notice = ref(""),
   saved = ref(""),
   dialog = ref(""),
   pill = ref(false);
+const npc = computed(() => (game.value ? luchiView(game.value) : null));
+const costs = computed(() => (game.value ? refineCost(game.value) : null));
 const fileInput = ref<HTMLInputElement>();
 const event = computed(() => (game.value ? eventView(game.value) : null));
 const modal = computed(() =>
@@ -56,7 +65,17 @@ const details = computed(() =>
   game.value ? breakthroughDetails(game.value, pill.value) : null,
 );
 const activities: { id: Activity; name: string; hint: string }[] = [
-  { id: "cultivate", name: "吐纳", hint: "医道 +10 / 剑道 +14 修为" },
+  { id: "cultivate", name: "吐纳", hint: "根骨影响吐纳速度" },
+  {
+    id: "meditate",
+    name: "凝神",
+    hint: "神识 +1 · 修为 +2；神识 8 可识阵、省炼丹灵石",
+  },
+  {
+    id: "study",
+    name: "研读",
+    hint: "心得 +1，高悟性 +2；悟性 8 与心得 2 可解阵、省灵草",
+  },
   { id: "gather", name: "采药", hint: "灵草 +2 · 修为 +3" },
   { id: "train", name: "历练", hint: "剑意 +1 · 修为 +10；每四重受伤" },
   { id: "work", name: "劳作", hint: "每月共得 5 灵石" },
@@ -101,6 +120,7 @@ async function start() {
         name.value,
         path.value,
         crypto.getRandomValues(new Uint32Array(1))[0],
+        aptitude.value,
       ),
     );
 }
@@ -128,6 +148,7 @@ async function nextLife() {
       type: "next",
       path: path.value,
       inheritance: inheritance.value,
+      aptitude: aptitude.value,
     })
   ) {
     activity.value = "cultivate";
@@ -238,7 +259,7 @@ onUnmounted(() => {
         ><span>修仙人生<small>一卷山海 · 几世修行</small></span></a
       >
       <div class="header-right">
-        <span class="edition">筑基篇 · v0.2.0</span
+        <span class="edition">人物与资质 · v0.3.0</span
         ><button class="quiet" @click="dialog = 'help'">玩法说明</button
         ><button class="quiet" @click="fileInput?.click()">导入存档</button
         ><button v-if="game" class="quiet" @click="download(game)">导出</button>
@@ -265,6 +286,23 @@ onUnmounted(() => {
         <h2>写下这一世的名字</h2>
         <label for="name">道号</label
         ><input id="name" v-model="name" maxlength="16" class="name-input" />
+        <h3>选择先天资质</h3>
+        <div class="aptitude-list">
+          <button
+            v-for="(a, id) in aptitudes"
+            :key="id"
+            :class="{ selected: aptitude === id }"
+            :aria-pressed="aptitude === id"
+            @click="aptitude = id"
+          >
+            <strong>{{ a.name }}</strong
+            ><small>{{ a.description }}</small>
+          </button>
+        </div>
+        <p class="fineprint">
+          三组初始属性总和均为
+          15。根骨、悟性先天固定；神识可通过凝神成长。资质不锁定路线。
+        </p>
         <h3>选择修行之路</h3>
         <button
           v-for="(p, id) in paths"
@@ -328,6 +366,28 @@ onUnmounted(() => {
           ><strong>{{ value }}</strong>
         </div>
         <div class="character-line"></div>
+        <span class="eyebrow">资质 · {{ aptitudes[game.aptitude].name }}</span>
+        <div class="aptitude-stats">
+          <div>
+            <strong>{{ game.root }}</strong
+            ><span>根骨</span
+            ><small>吐纳 +{{ cultivationGain(game) }} / 月</small>
+          </div>
+          <div>
+            <strong>{{ game.wisdom }}</strong
+            ><span>悟性</span
+            ><small>研读 +{{ game.wisdom >= 8 ? 2 : 1 }} 心得</small>
+          </div>
+          <div>
+            <strong>{{ game.sense }}</strong
+            ><span>神识</span><small>可修炼至 12</small>
+          </div>
+        </div>
+        <p class="fineprint">
+          研读心得 {{ game.study }} / 4 · 根基是后天积累，不是根骨。{{
+            game.ward ? "护脉丹纹：可抵消一次失败的减寿，保留九成修为。" : ""
+          }}
+        </p>
         <span class="eyebrow">今世传承</span>
         <h3>{{ inheritances[game.inherited].name }}</h3>
         <p class="muted">{{ inheritances[game.inherited].description }}</p>
@@ -376,7 +436,12 @@ onUnmounted(() => {
                 @click="activity = a.id"
               >
                 <strong>{{ a.name }}</strong
-                ><small>{{ actionError(game, a.id) || a.hint }}</small>
+                ><small>{{
+                  actionError(game, a.id) ||
+                  (a.id === "cultivate"
+                    ? `每月修为 +${cultivationGain(game)}（含根骨加成）`
+                    : a.hint)
+                }}</small>
               </button>
             </div>
             <div class="cultivation-actions">
@@ -416,7 +481,7 @@ onUnmounted(() => {
               >
                 炼筑基丹 · 三月<small>{{
                   preparationError(game, "refine") ||
-                  "灵草 −6 / 灵石 −12 / 筑基丹 +1"
+                  `灵草 −${costs?.herbs} / 灵石 −${costs?.stones} / 筑基丹 +1`
                 }}</small></button
               ><button
                 class="secondary"
@@ -462,13 +527,27 @@ onUnmounted(() => {
       </section>
       <aside class="right-column">
         <section class="guide-card">
+          <img
+            v-if="npc"
+            class="npc-card-art"
+            :src="npc.portrait"
+            alt="散修陆迟，青灰旧衣与刻痕旧剑"
+            loading="lazy"
+          />
           <span class="eyebrow">同行之人</span>
-          <h2>陆迟</h2>
+          <h2>陆迟 <small class="npc-subtitle">旧剑 · 守诺</small></h2>
+          <p class="npc-quote">{{ npc?.quote }}</p>
+          <button class="secondary full" @click="dialog = 'npc'">
+            人物档案 · 查看往事
+          </button>
           <p>
             {{
               {
                 stranger: "尚未相识",
-                companion: "炼气散修 · 与你有约",
+                companion:
+                  game.story.choice === "self"
+                    ? "炼气散修 · 已归乡探亲"
+                    : "炼气散修 · 与你有约",
                 foundation: "筑基修士 · 愿为你护法",
                 distant: "错过约期 · 已各赴前程",
               }[game.story.luchi]
@@ -478,12 +557,18 @@ onUnmounted(() => {
             信任 {{ game.story.trust }} / 6<br />{{
               game.story.luchi === "foundation"
                 ? "护法加成 +" + (game.story.trust >= 4 ? 15 : 10) + "%"
-                : "信任达到 4，赠丹后的护法由 +10% 提升为 +15%。"
+                : game.story.stage === "resolved"
+                  ? "本世没有陆迟护法，可自行炼丹、固本准备突破。"
+                  : "信任达到 4，赠丹后的护法由 +10% 提升为 +15%。"
             }}
           </p>
           <ol>
             <li :class="{ done: game.story.stage !== 'unmet' }">
               第三月 · 渡口相逢
+            </li>
+            <li :class="{ done: game.memories.letter }">第十二月 · 未寄家书</li>
+            <li :class="{ done: game.memories.visit }">
+              第二十四月 · 风雪回访
             </li>
             <li :class="{ done: game.story.stage === 'resolved' }">
               第三十六月 · 三年之约
@@ -503,7 +588,7 @@ onUnmounted(() => {
           <span class="eyebrow">轮回不是数值叠加</span>
           <h3>带一件前世之物</h3>
           <p>
-            丹札可让剑修炼丹，剑谱可让医修练剑，旧约让第二世认出故人。每世只带一项，随结局解锁。
+            丹札可让剑修炼丹，剑谱可让医修练剑，旧约让第二世认出故人，孤灯丹诀为独行者抵挡一次突破失败的减寿。每世只带一项。
           </p>
         </section>
       </aside>
@@ -516,12 +601,24 @@ onUnmounted(() => {
   <div v-if="modal" class="overlay">
     <section
       class="modal"
+      :class="{ 'story-dialog': !!event }"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
     >
       <template v-if="event && game"
         ><span class="eyebrow">前缘 · 时光暂驻</span>
+        <img
+          v-if="npc?.scene"
+          class="story-scene"
+          :src="npc.scene"
+          :alt="event.title + '场景插画'"
+        />
+        <div class="speaker">
+          <img v-if="npc" :src="npc.portrait" alt="陆迟此刻的神情" /><span
+            >陆迟<small>{{ npc?.whereabouts }}</small></span
+          >
+        </div>
         <h2 id="modal-title" tabindex="-1">{{ event.title }}</h2>
         <p class="event-body">{{ event.body }}</p>
         <button
@@ -559,9 +656,9 @@ onUnmounted(() => {
         ><button
           class="primary full"
           :disabled="ui.busy"
-          @click="act({ type: 'beginChapter', path })"
+          @click="act({ type: 'beginChapter', path, aptitude })"
         >
-          保留旧档，以十六岁重新开篇
+          保留旧档，以十六岁重新开篇（明心善悟）
         </button></template
       >
       <template v-else-if="game && ['complete', 'dead'].includes(game.status)"
@@ -594,6 +691,18 @@ onUnmounted(() => {
             </option>
           </select></label
         >
+        <label class="field-label"
+          >下一世资质<select v-model="aptitude">
+            <option v-for="(a, id) in aptitudes" :key="id" :value="id">
+              {{ a.name }} · 根骨 {{ a.root }} / 悟性 {{ a.wisdom }} / 神识
+              {{ a.sense }}
+            </option>
+          </select></label
+        >
+        <section class="next-life">
+          <h3>下一世，你可以试试</h3>
+          <p v-for="hint in replayHints(game)" :key="hint">{{ hint }}</p>
+        </section>
         <div class="inheritance-list">
           <button
             v-for="(item, id) in inheritances"
@@ -629,8 +738,11 @@ onUnmounted(() => {
           />使用筑基丹（持有 {{ game.pills }} 枚）</label
         >
         <p class="warning-text">
-          成功延寿十八年。失败保留七成修为、伤势 +2、寿元上限 −1
-          年。可养伤、炼丹、固本后再试。
+          成功延寿十八年。{{
+            game.ward
+              ? "护脉丹纹生效：首次失败保留九成修为、不减寿，随后消耗；伤势仍 +2。"
+              : "失败保留七成修为、伤势 +2、寿元上限 −1 年。"
+          }}可养伤、炼丹、固本后再试。
         </p>
         <button class="primary full" :disabled="ui.busy" @click="commitBreak">
           凝神，突破</button
@@ -657,10 +769,41 @@ onUnmounted(() => {
           先去赴约
         </button></template
       >
+      <template v-else-if="dialog === 'npc' && game && npc">
+        <h2 id="modal-title" tabindex="-1">陆迟 · 人物档案</h2>
+        <img class="dossier-art" :src="npc.portrait" alt="陆迟人物立绘" />
+        <p class="npc-quote">{{ npc.quote }}</p>
+        <p class="eyebrow">{{ npc.whereabouts }}</p>
+        <p class="event-body">{{ npc.known }}</p>
+        <h3>与你的往事</h3>
+        <p>
+          {{
+            game.story.stage === "unmet"
+              ? "你们尚未相识。"
+              : "你们在渡口相识，定下第三十六个月之约。"
+          }}
+        </p>
+        <p v-if="game.memories.confided">
+          你听他说起家人与那盏灯。他终于把心事告诉了你。
+        </p>
+        <p v-if="game.memories.support !== 'none'">
+          风雪回访：{{
+            {
+              herbs: "他为你带来炼丹的灵草。",
+              heal: "他为你温养经脉，稳固根基。",
+              lesson: "你们共读残诀，彼此印证。",
+            }[game.memories.support as "herbs" | "heal" | "lesson"]
+          }}
+        </p>
+        <p v-if="game.memories.crossing !== 'none'">
+          青石遗府，你们曾共同穿过石阵。
+        </p>
+        <button class="primary full" @click="dialog = ''">合上档案</button>
+      </template>
       <template v-else
         ><h2 id="modal-title" tabindex="-1">如何写下这一世</h2>
         <p class="event-body">
-          医道采药炼丹，剑道历练争先。伤势可通过养伤消除；闭关固本提高突破把握，却可能错过第三十六个月的约定。陆迟事件链只在关键节点暂停，不会反复打断行动。
+          根骨提高吐纳速度，悟性影响研读和替代丹方，神识通过凝神成长并影响识阵与控火。三项资质不是简单的突破率加点。医道采药炼丹，剑道历练争先。伤势可通过养伤消除；闭关固本提高突破把握，却可能错过第三十六个月的约定。陆迟事件链只在关键节点暂停，不会反复打断行动。
         </p>
         <p class="event-body">
           修为达到 360
