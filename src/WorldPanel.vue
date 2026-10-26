@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import {
   places,
   techniques,
@@ -15,9 +15,19 @@ import {
   type QueueAction,
 } from "./core";
 import ChallengeCard from "./ChallengeCard.vue";
+import SocialPanel from "./SocialPanel.vue";
 const props = defineProps<{ game: State; busy: boolean; running: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent]; runQueue: [] }>();
-const tab = ref<"world" | "sect" | "skills" | "queue" | "gear">("world");
+const tab = ref<
+  "world" | "sect" | "skills" | "queue" | "gear" | "relationship" | "arena"
+>("world");
+watch(
+  () => !!props.game.social.arena.duel,
+  (active) => {
+    if (active) tab.value = "arena";
+  },
+  { immediate: true },
+);
 const job = ref<QueueAction>("gather"),
   repeat = ref(3);
 const locked = computed(
@@ -25,7 +35,9 @@ const locked = computed(
     props.busy ||
     props.running ||
     props.game.status !== "alive" ||
-    !!props.game.pending,
+    !!props.game.pending ||
+    !!props.game.social.scene ||
+    !!props.game.social.arena.duel,
 );
 const mentors = {
   dan: {
@@ -67,6 +79,15 @@ const queueError = computed(() => {
       <button :class="{ active: tab === 'world' }" @click="tab = 'world'">
         山河见闻
       </button>
+      <button
+        :class="{ active: tab === 'relationship' }"
+        @click="tab = 'relationship'"
+      >
+        人物缘分
+      </button>
+      <button :class="{ active: tab === 'arena' }" @click="tab = 'arena'">
+        听松擂台
+      </button>
       <button :class="{ active: tab === 'sect' }" @click="tab = 'sect'">
         宗门师承
       </button>
@@ -80,7 +101,16 @@ const queueError = computed(() => {
         修行安排
       </button>
     </nav>
-    <div v-if="tab === 'world'" class="world-content">
+    <SocialPanel
+      v-if="tab === 'relationship' || tab === 'arena'"
+      :key="tab"
+      :game="game"
+      :mode="tab"
+      :busy="busy"
+      :running="running"
+      @act="emit('act', $event)"
+    />
+    <div v-else-if="tab === 'world'" class="world-content">
       <p class="muted">
         回春谷 → 筑基后的雾岭 →
         雾海孤灯。每次探索用时一月；先处理待决事件，伤势不超过 2。

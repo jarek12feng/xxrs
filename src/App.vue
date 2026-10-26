@@ -11,6 +11,9 @@ import {
 import { defineStore } from "pinia";
 import {
   aptitudes,
+  activeEventId,
+  companion,
+  type Gender,
   cultivationGain,
   refineCost,
   replayHints,
@@ -45,6 +48,7 @@ const ready = ref(false),
   name = ref("沈青禾"),
   path = ref<Path>("wood"),
   aptitude = ref<Aptitude>("insightful"),
+  gender = ref<Gender>("male"),
   inheritance = ref<Inheritance>("none"),
   activity = ref<Activity>("cultivate"),
   notice = ref(""),
@@ -53,12 +57,33 @@ const ready = ref(false),
   pill = ref(false);
 const queueMode = ref(false);
 const npc = computed(() => (game.value ? luchiView(game.value) : null));
+const heart = computed(() =>
+  game.value && !game.value.pending && game.value.social.scene
+    ? companion(game.value)
+    : null,
+);
+const eventMood = computed(() =>
+  game.value?.social.scene?.kind === "watch"
+    ? "arena"
+    : ["night", "pledge"].includes(game.value?.social.scene?.kind ?? "")
+      ? "moon"
+      : "day",
+);
+const eventScene = computed(() =>
+  heart.value
+    ? eventMood.value === "moon"
+      ? "/scenes/moon-terrace.png"
+      : eventMood.value === "arena"
+        ? "/scenes/sect-arena.png"
+        : "/mountains.svg"
+    : npc.value?.scene,
+);
 const costs = computed(() => (game.value ? refineCost(game.value) : null));
 const fileInput = ref<HTMLInputElement>();
 const event = computed(() => (game.value ? eventView(game.value) : null));
 const modal = computed(() =>
   event.value
-    ? game.value!.pending!.id
+    ? activeEventId(game.value!)
     : game.value?.status !== "alive" && game.value
       ? game.value.status
       : dialog.value,
@@ -114,6 +139,8 @@ async function act(intent: Intent) {
   if (
     ok &&
     (n.pending ||
+      n.social.scene ||
+      n.social.arena.duel ||
       n.status !== "alive" ||
       (n.realm === 0 && old.qi < MAX_QI && n.qi === MAX_QI) ||
       (queueMode.value
@@ -131,6 +158,7 @@ async function start() {
         path.value,
         crypto.getRandomValues(new Uint32Array(1))[0],
         aptitude.value,
+        gender.value,
       ),
     );
 }
@@ -278,7 +306,7 @@ onUnmounted(() => {
         ><span>修仙人生<small>一卷山海 · 几世修行</small></span></a
       >
       <div class="header-right">
-        <span class="edition">山外有天地 · v0.4.0</span
+        <span class="edition">松风有约 · v0.5.0</span
         ><button class="quiet" @click="dialog = 'help'">玩法说明</button
         ><button class="quiet" @click="fileInput?.click()">导入存档</button
         ><button v-if="game" class="quiet" @click="download(game)">导出</button>
@@ -306,6 +334,12 @@ onUnmounted(() => {
         <label for="name">道号</label
         ><input id="name" v-model="name" maxlength="16" class="name-input" />
         <h3>选择先天资质</h3>
+        <label class="field-label"
+          >角色性别<select v-model="gender">
+            <option value="male">男修 · 成年后可结识沈听澜</option>
+            <option value="female">女修 · 成年后可结识尹照川</option>
+          </select></label
+        >
         <div class="aptitude-list">
           <button
             v-for="(a, id) in aptitudes"
@@ -436,7 +470,11 @@ onUnmounted(() => {
               <p>{{ paths[game.path].label }}</p>
             </div>
           </div>
-          <section class="cultivation-panel">
+          <fieldset
+            class="cultivation-panel"
+            :disabled="!!game.social.arena.duel"
+            aria-label="洞府修行"
+          >
             <div class="progress-label">
               <h2>{{ game.realm ? "筑基已成 · 山外寻人" : "炼气 → 筑基" }}</h2>
               <strong v-if="game.realm === 0"
@@ -540,7 +578,7 @@ onUnmounted(() => {
               叩问天关 · 尝试筑基 ↗
             </button>
             <p v-if="game.result" class="last-result">{{ game.result }}</p>
-          </section>
+          </fieldset>
           <WorldPanel
             :game="game"
             :busy="ui.busy"
@@ -640,8 +678,9 @@ onUnmounted(() => {
       <span>修仙人生 · 筑基篇</span><span>本地单机 / 请只在一个标签页游玩</span>
     </footer>
   </div>
-  <div v-if="modal" class="overlay">
+  <div v-if="modal" class="overlay" :data-mood="heart ? eventMood : 'day'">
     <section
+      :key="game ? activeEventId(game) || game.status : 'loading'"
       class="modal"
       :class="{ 'story-dialog': !!event }"
       role="dialog"
@@ -651,14 +690,19 @@ onUnmounted(() => {
       <template v-if="event && game"
         ><span class="eyebrow">前缘 · 时光暂驻</span>
         <img
-          v-if="npc?.scene"
+          v-if="eventScene"
           class="story-scene"
-          :src="npc.scene"
+          :src="eventScene"
           :alt="event.title + '场景插画'"
         />
         <div class="speaker">
-          <img v-if="npc" :src="npc.portrait" alt="陆迟此刻的神情" /><span
-            >陆迟<small>{{ npc?.whereabouts }}</small></span
+          <img
+            v-if="heart || npc"
+            :src="heart?.portrait ?? npc!.portrait"
+            :alt="heart ? heart.name + '此刻的神情' : '陆迟此刻的神情'"
+          /><span
+            >{{ heart?.name ?? "陆迟"
+            }}<small>{{ heart?.title ?? npc?.whereabouts }}</small></span
           >
         </div>
         <h2 id="modal-title" tabindex="-1">{{ event.title }}</h2>
@@ -669,7 +713,11 @@ onUnmounted(() => {
           class="choice"
           :disabled="ui.busy || !!o.disabled"
           @click="
-            act({ type: 'choose', instanceId: game.pending!.id, option: o.id })
+            act({
+              type: 'choose',
+              instanceId: activeEventId(game),
+              option: o.id,
+            })
           "
         >
           <span

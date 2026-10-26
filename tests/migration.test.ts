@@ -3,6 +3,7 @@ import { beforeEach, it, expect } from "vitest";
 import { createGame as legacyGame } from "../src/legacy-v1";
 import { createGame as v2Game } from "../src/legacy-v2";
 import { createGame as v3Game } from "../src/chapter";
+import { createGame as v4Game } from "../src/legacy-v4";
 import { createGame, dispatch } from "../src/core";
 import { save, load } from "../src/save";
 beforeEach(async () => {
@@ -10,6 +11,16 @@ beforeEach(async () => {
     const r = indexedDB.deleteDatabase("cultivation-life");
     r.onsuccess = () => resolve();
   });
+});
+it("preserves the original v4 save while migrating social data", async () => {
+  const old = v4Game("旧世", "wood", 3);
+  await raw("current", old);
+  const upgraded = (await load()).state!;
+  expect(upgraded.version).toBe(5);
+  expect(upgraded.social.gender).toBeNull();
+  expect(await raw("current")).toEqual(old);
+  await save(upgraded);
+  expect(await raw("original-v4")).toEqual(old);
 });
 async function raw(key: string, value?: unknown) {
   return new Promise<unknown>((resolve, reject) => {
@@ -86,7 +97,7 @@ it("upgrades v2 without resetting progress and preserves its first original snap
   old.qi = 28;
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(4);
+  expect(upgraded.version).toBe(5);
   expect(upgraded.qi).toBe(28);
   expect(upgraded.seed).toBe(88);
   expect(await raw("current")).toEqual(old);

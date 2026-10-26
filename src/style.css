@@ -767,6 +767,202 @@ footer i {
   padding: 20px;
   overflow: auto;
 }
+.cultivation-panel {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+}
+.social-content {
+  --scene-accent: #536c55;
+  animation: scene-arrive 0.4s ease-out;
+}
+.social-content[data-mood="moon"] {
+  --scene-accent: #596c89;
+}
+.social-content[data-mood="arena"] {
+  --scene-accent: #967548;
+}
+.social-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  height: 240px;
+  margin: 18px 0;
+  background: #334943;
+}
+.social-stage > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.social-stage > div {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  padding: 24px;
+  color: #fff6dd;
+  background: linear-gradient(transparent 30%, #13261cda);
+}
+.social-stage .eyebrow {
+  color: #eee0bb;
+}
+.social-stage h2 {
+  margin: 8px 0 0;
+  letter-spacing: 4px;
+}
+.relationship-card {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 24px;
+  margin: 22px 0;
+  align-items: center;
+}
+.relationship-card > img {
+  width: 100%;
+  border-radius: 7px;
+}
+.relationship-card h3 {
+  font-size: 25px;
+  margin: 10px 0;
+}
+.relationship-steps > article,
+.rival-card {
+  padding: 18px;
+  margin: 14px 0;
+  border: 1px solid #d9ddcf;
+  border-radius: 7px;
+}
+.relationship-steps > article {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+.relationship-steps h4 {
+  margin: 0;
+}
+.identity-choice button {
+  margin: 8px;
+}
+.keepsake,
+.duel-board {
+  padding: 24px;
+  margin: 20px 0;
+  background: #edf0e7;
+  border: 1px solid var(--scene-accent);
+  border-radius: 8px;
+}
+.duel-vitals {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.stance-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.stance-options button {
+  min-width: 0;
+  padding: 14px 8px;
+}
+.stance-options small {
+  display: block;
+  margin-top: 10px;
+  line-height: 1.7;
+}
+.intent-hint {
+  padding: 14px;
+  background: #e2e9dc;
+  border-left: 3px solid var(--scene-accent);
+  line-height: 1.8;
+}
+.rival-current {
+  border-color: var(--scene-accent);
+}
+.rival-card small {
+  display: block;
+  margin-bottom: 12px;
+}
+.memory-review,
+.arena-builds {
+  margin: 24px 0;
+  line-height: 1.9;
+}
+.match-result {
+  line-height: 1.9;
+  padding: 18px;
+  background: #eeeade;
+}
+.overlay[data-mood="moon"] {
+  background: #142135d9;
+}
+.overlay[data-mood="moon"] .modal {
+  background: #edf0f3;
+  border-color: #a2afbd;
+}
+.overlay[data-mood="arena"] {
+  background: #352c1dc9;
+}
+.overlay[data-mood="arena"] .modal {
+  background: #f6efdf;
+}
+.story-dialog {
+  animation: scene-arrive 0.4s ease-out;
+}
+.story-dialog .story-scene {
+  max-height: 260px;
+  object-fit: cover;
+}
+@keyframes scene-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.scene-fade-enter-active,
+.scene-fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.scene-fade-enter-from,
+.scene-fade-leave-to {
+  opacity: 0;
+}
+@media (max-width: 600px) {
+  .relationship-card {
+    grid-template-columns: 100px 1fr;
+    gap: 14px;
+  }
+  .relationship-steps > article {
+    display: block;
+  }
+  .stance-options {
+    grid-template-columns: 1fr;
+  }
+  .social-stage {
+    height: 190px;
+  }
+  .duel-board {
+    padding: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .social-content,
+  .story-dialog {
+    animation: none;
+  }
+  .scene-fade-enter-active,
+  .scene-fade-leave-active {
+    transition: none;
+  }
+}
 .modal {
   background: #f8f6ed;
   width: 470px;
