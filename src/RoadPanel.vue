@@ -575,6 +575,15 @@ const person = computed(() =>
                 : "为眼前的山口安排修行"
             }}
           </h3>
+          <p v-if="road.stage === 'camp' && !road.passed" class="camp-guidance">
+            {{
+              game.realm === 1
+                ? "你已经筑基。返回青嶂关观察一种解法，再按它的条件准备；不必练满神识、剑意或炼制全部灵器。"
+                : game.qi < 360
+                  ? "先用「修炼至下一段进展」积累修为，遇到陆迟的故事会自动停下。修为达到 360 后可查看突破；固本和丹药用于提高把握，不必把所有准备项做完。"
+                  : "修为已足，可以查看突破风险。若想提高把握，可闭关固本或准备筑基丹；突破成功后返回山口选择解法。"
+            }}
+          </p>
           <div class="road-preparations">
             <button
               v-if="road.stage === 'camp' && game.realm === 0"
@@ -689,12 +698,20 @@ const person = computed(() =>
             </button>
           </div>
           <button
-            v-if="road.stage === 'camp'"
+            v-if="road.stage === 'camp' && !road.passed"
             class="primary full"
             :disabled="locked || game.realm === 1 || game.qi < 360"
             @click="emit('breakthrough')"
           >
-            准备突破筑基 · 查看丹药与把握<small
+            {{
+              game.realm === 1
+                ? "筑基已成 · 可返回山口"
+                : "准备突破筑基 · 查看丹药与把握"
+            }}<small v-if="game.realm === 1"
+              >三种解法不要求全部准备，按你选中的路线补齐条件即可。</small
+            ><small v-else-if="game.qi < 360"
+              >修为 {{ game.qi }}/360；先修炼至 360，遇到剧情先处理。</small
+            ><small v-else
               >当前不服丹把握
               {{
                 breakthroughDetails(game, false).chance

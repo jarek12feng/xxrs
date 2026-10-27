@@ -313,3 +313,25 @@ it("shows all three tradeoffs before commitment and persistent characters after 
   expect(html).toContain("没有摆出茶碗");
   expect(html).not.toContain("选择留给后来人的归路");
 });
+
+it("names only the array clues still missing, without losing acquired discoveries", () => {
+  const p = session();
+  expect(roadError(p.state, "traceArray")).toContain(
+    "坊市药队账册和山口石阶刻痕",
+  );
+  p.road("market");
+  p.road("examineLedger");
+  p.road("pass");
+  expect(roadError(p.state, "traceArray")).toBe("先调查山口石阶刻痕");
+  expect(p.road("traceArray").adventure.road.prepared).toBe("none");
+  p.road("examineMarks");
+  expect(roadError(p.state, "traceArray")).toBe("");
+  p.road("traceArray");
+  expect(p.state.adventure.road.prepared).toBe("array");
+  expect(p.state.adventure.road.discoveries).toEqual(
+    expect.arrayContaining(["ledger", "marks"]),
+  );
+  const q = session();
+  q.road("examineMarks");
+  expect(roadError(q.state, "traceArray")).toBe("先调查坊市药队账册");
+});

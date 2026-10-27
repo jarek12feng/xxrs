@@ -40,3 +40,19 @@ it.each(["medicine", "sword", "array", "legacy"] as const)(
     expect(html.match(/disabled/g)).toHaveLength(2);
   },
 );
+
+it("explains why breakthrough is locked and points a prepared player back to the pass", async () => {
+  const s = mistCheckpoint(42, "wood", "male", true);
+  s.adventure.road.stage = "camp";
+  let html = await render(s);
+  expect(html).toContain("筑基已成 · 可返回山口");
+  expect(html).toContain("不必练满神识");
+  s.realm = 0;
+  s.qi = 120;
+  html = await render(s);
+  expect(html).toContain("修为 120/360；先修炼至 360");
+  s.qi = 360;
+  expect(await render(s)).toContain("修为已足，可以查看突破风险");
+  s.adventure.road.passed = true;
+  expect(await render(s)).not.toContain("camp-guidance");
+});

@@ -294,3 +294,36 @@ it("an expanded ordinary receipt stays readable beyond the toast timeout", async
   );
   expect(save).toHaveBeenCalledTimes(1);
 });
+
+it("cancels an appointment-crossing retreat without advancing time and explains the safe alternative", async () => {
+  let s = state();
+  let id = 0;
+  while (s.month < 30) {
+    s = dispatch(
+      s,
+      s.pending
+        ? {
+            type: "choose",
+            instanceId: s.pending.id,
+            option: s.pending.kind === "letter" ? "listen" : "herbs",
+            id: `retreat-help-${id++}`,
+          }
+        : {
+            type: "advance",
+            activity: "work",
+            months: Math.min(12, 30 - s.month),
+            id: `retreat-help-${id++}`,
+          },
+    );
+  }
+  expect(s.story.stage).toBe("waiting");
+  await mount(s);
+  await click("闭关固本");
+  const dialog = document.querySelector('[role="dialog"]');
+  expect(dialog?.textContent).toContain("这次闭关将错过约期");
+  expect(dialog?.textContent).toContain("普通行动遇到赴约剧情会自动暂停");
+  await click("暂不闭关 · 保留约定");
+  expect(document.querySelector('[role="dialog"]')).toBeNull();
+  expect(save).not.toHaveBeenCalled();
+  expect(text()).toContain("修行第 30 月");
+});

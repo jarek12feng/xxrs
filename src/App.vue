@@ -1097,6 +1097,9 @@ onUnmounted(() => {
         <p class="event-body">
           闭关六个月无法中途出关。陆迟会独行，本世遗府、孤丹和护法机会将关闭。确定仍要闭关吗？
         </p>
+        <p class="event-body">
+          若想守约，先取消闭关，再用劳作或凝神推进到第三十六个月；普通行动遇到赴约剧情会自动暂停。
+        </p>
         <button
           class="primary full"
           :disabled="ui.busy"
@@ -1108,7 +1111,7 @@ onUnmounted(() => {
         >
           仍然闭关，接受失约</button
         ><button class="quiet full" @click="dialog = ''">
-          先去赴约
+          暂不闭关 · 保留约定
         </button></template
       >
       <template v-else-if="dialog === 'npc' && game && npc">

@@ -62,7 +62,15 @@ export function passActionError(s: State, action: PassAction): string {
       key === "array" &&
       !(r.discoveries.includes("ledger") && r.discoveries.includes("marks"))
     )
-      return "先调查坊市药队账册和山口石阶刻痕";
+      return (
+        "先调查" +
+        [
+          !r.discoveries.includes("ledger") ? "坊市药队账册" : "",
+          !r.discoveries.includes("marks") ? "山口石阶刻痕" : "",
+        ]
+          .filter(Boolean)
+          .join("和")
+      );
     return "";
   }
   if (r.prepared !== key) return "先观察这条解法；此时还不会扣费或改变归路";
@@ -81,7 +89,15 @@ export function passActionError(s: State, action: PassAction): string {
   }
   if (key === "array") {
     if (!(r.discoveries.includes("ledger") && r.discoveries.includes("marks")))
-      return "需要药队账册与石阶刻痕";
+      return (
+        "需要" +
+        [
+          !r.discoveries.includes("ledger") ? "坊市药队账册" : "",
+          !r.discoveries.includes("marks") ? "山口石阶刻痕" : "",
+        ]
+          .filter(Boolean)
+          .join("和")
+      );
     if (s.sense < 8 || s.study < 2) return "需要神识 8、心得 2 辨清阵纹";
   }
   const cost = { medicine: 4, sword: 8, array: 6 }[key];
