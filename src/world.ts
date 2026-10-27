@@ -1,4 +1,6 @@
 import * as chapter from "./chapter";
+import { freshMist, validMist, runMist, type MistAction } from "./mist";
+export * from "./mist";
 import { freshRoad, validRoad, runRoad, type RoadAction } from "./road";
 export * from "./road";
 import { validState as validV4 } from "./legacy-v4";
@@ -117,7 +119,7 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 8;
+  version: 9;
   adventure: Adventure;
   journey: Journey;
   social: SocialState;
@@ -125,6 +127,7 @@ export interface State extends Omit<chapter.State, "version"> {
 export type Command =
   | chapter.Command
   | SocialCommand
+  | { id: string; type: "mist"; action: MistAction }
   | { id: string; type: "road"; action: RoadAction }
   | { id: string; type: "adventure"; action: AdventureAction }
   | { id: string; type: "join"; branch: Exclude<Branch, "none"> }
@@ -178,7 +181,7 @@ function lift(
   social = freshSocial(),
   adventure = freshAdventure(true),
 ): State {
-  return { ...s, version: 8, journey, social, adventure };
+  return { ...s, version: 9, journey, social, adventure };
 }
 export function createGame(
   name: string,
@@ -368,6 +371,7 @@ function normalize(n: State, old: State) {
 }
 export function dispatch(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (c.type === "mist") return runMist(input, c.action, c.id);
   if (c.type === "road") return runRoad(input, c.action, c.id);
   if (c.type === "adventure") return runAdventure(input, c.action, c.id);
   if (
@@ -843,12 +847,13 @@ export function validState(x: unknown): x is State {
   const s = x as State,
     j = s.journey;
   if (
-    s.version !== 8 ||
+    s.version !== 9 ||
     !j ||
     !chapter.validState(base(s)) ||
     !validSocial(s) ||
     !validAdventure(s.adventure) ||
-    !validRoad(s.adventure.road, s)
+    !validRoad(s.adventure.road, s) ||
+    !validMist(s)
   )
     return false;
   const integer = (v: unknown, max = 1e9) =>
@@ -916,6 +921,18 @@ export function validState(x: unknown): x is State {
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 8) {
+    const old = x as State;
+    if (!validAdventure(old.adventure))
+      throw new Error("旧冒险存档损坏，原档未修改。");
+    const upgraded = {
+      ...structuredClone(old),
+      version: 9,
+      adventure: { ...structuredClone(old.adventure), mist: freshMist() },
+    };
+    if (validState(upgraded)) return upgraded;
+    throw new Error("旧存档损坏，原档未修改。");
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 7) {
     const old = x as State;
     if (
@@ -926,9 +943,10 @@ export function migrateSave(x: unknown): State {
       throw new Error("旧行路存档损坏，原档未修改。");
     const upgraded = {
       ...structuredClone(old),
-      version: 8,
+      version: 9,
       adventure: {
         ...structuredClone(old.adventure),
+        mist: freshMist(),
         road: {
           ...structuredClone(old.adventure.road),
           discoveries: [],
@@ -945,8 +963,12 @@ export function migrateSave(x: unknown): State {
       throw new Error("旧冒险存档损坏，原档未修改。");
     const upgraded = {
       ...structuredClone(old),
-      version: 8,
-      adventure: { ...structuredClone(old.adventure), road: freshRoad() },
+      version: 9,
+      adventure: {
+        ...structuredClone(old.adventure),
+        road: freshRoad(),
+        mist: freshMist(),
+      },
     };
     if (validState(upgraded)) return upgraded;
     throw new Error("旧存档损坏，原始数据未被修改。");
@@ -954,7 +976,7 @@ export function migrateSave(x: unknown): State {
   if (x && typeof x === "object" && "version" in x && x.version === 5) {
     const upgraded = {
       ...structuredClone(x),
-      version: 8,
+      version: 9,
       adventure: freshAdventure(true),
     };
     if (validState(upgraded)) return upgraded;
@@ -963,7 +985,7 @@ export function migrateSave(x: unknown): State {
   if (validV4(x))
     return {
       ...structuredClone(x),
-      version: 8,
+      version: 9,
       social: freshSocial(),
       adventure: freshAdventure(true),
     };

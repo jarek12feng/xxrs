@@ -1,8 +1,10 @@
 import type { State } from "./world";
 import { freshRoad, type Road } from "./road";
+import { freshMist, type Mist } from "./mist";
 export type Step =
   "invitation" | "ferry" | "apothecary" | "forest" | "shrine" | "home" | "done";
 export interface Adventure {
+  mist: Mist;
   road: Road;
   step: Step;
   clue: boolean;
@@ -12,6 +14,7 @@ export interface Adventure {
   result: string;
 }
 export const freshAdventure = (old = false): Adventure => ({
+  mist: freshMist(),
   road: freshRoad(),
   step: old ? "invitation" : "ferry",
   clue: false,

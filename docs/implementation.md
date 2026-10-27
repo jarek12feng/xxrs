@@ -1,6 +1,10 @@
 # 实施记录
 
-## 当前版本 v0.8.0：行路有痕
+## 当前版本 v0.9.0：雾海来信
+
+状态版本 9，纯规则 mist.ts 作为独立章节模块接入 core/world 命令分发，状态存入 adventure.mist；不引入浏览器 API 或 UI 依赖。MistPanel.vue 承载场景和独立操作区，RoadPanel 显式接取第三卷，SocialPanel 展示共同冒险记忆。v8 迁移只补 freshMist，保存时保留 original-v8；轮回重置本章能力与同行，不携带婚姻或探灵灯。两条支线、失败后的准备、探灵灯旧地新解及测试范围见 [v9-mist-letter.md](v9-mist-letter.md)。
+
+## v0.8.0：行路有痕
 
 状态版本 8，road.ts 新增可选调查与避风路线，RoadPanel 增加人物肖像、调查操作区及行路手记。调查通过命令记录，不推进时间、不消耗随机种子；过关仍共用种子判定。v7 迁移只补新字段，首次写入保留 original-v7。细节与验证见 [v8-investigations.md](v8-investigations.md)。下文为历史记录。
 

@@ -1,4 +1,67 @@
 /* Shared scene language: narrative over artwork, commands on a separate paper desk. */
+.mist-invitation {
+  padding: 20px;
+  margin: 16px 0;
+  background: #e5ebdf;
+  border: 1px solid #9cae92;
+  border-radius: 10px;
+}
+.mist-invitation p,
+.mist-route-note {
+  line-height: 1.9;
+  font-size: 14px;
+  color: #59654f;
+}
+.mist-routes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.mist-routes button {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: #f8f5e9;
+  min-height: 160px;
+  border: 1px solid #b4b99f;
+  border-radius: 10px;
+}
+.mist-routes button strong {
+  font-size: 17px;
+  line-height: 1.7;
+}
+.mist-routes button small {
+  line-height: 1.8;
+  color: #5b654d;
+}
+.mist-panel .scene-speaker > img {
+  width: 80px;
+  height: 104px;
+}
+.mist-panel button[aria-pressed="true"] {
+  border-color: #607650;
+  background: #e3eadb;
+  opacity: 1;
+}
+.mist-panel small {
+  display: block;
+  line-height: 1.8;
+}
+.mist-secondary {
+  margin-top: 20px;
+}
+@media (max-width: 600px) {
+  .mist-routes {
+    grid-template-columns: 1fr;
+  }
+  .mist-routes button {
+    min-height: 120px;
+    padding: 16px;
+  }
+}
 .scene-backdrop {
   position: relative;
   isolation: isolate;

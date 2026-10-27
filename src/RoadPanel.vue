@@ -22,6 +22,7 @@ const emit = defineEmits<{
   act: [intent: Intent];
   cultivate: [];
   breakthrough: [];
+  mist: [];
 }>();
 const panel = ref<HTMLElement>();
 const reveal = async () => {
@@ -254,6 +255,31 @@ const person = computed(() =>
           {{ game.herbs }} · 神识 {{ game.sense }} · 心得 {{ game.study }}
         </p>
       </div>
+      <section v-if="road.surveyed" class="mist-invitation">
+        <span class="eyebrow">第三卷 · 雾海来信</span>
+        <h3>
+          {{
+            game.adventure.mist.stage === "dormant"
+              ? "失踪者寄来的新信"
+              : "那封信的故事，还在这里"
+          }}
+        </h3>
+        <p>
+          {{
+            game.adventure.mist.stage === "dormant"
+              ? "归路重开后，旅亭收到陈渡的旧信。陆迟认出信上的护路印，与父亲的旧物有关。你想先找人问，还是先查信阵？"
+              : "返回本章保留的地点、线索与同行约定。"
+          }}
+        </p>
+        <button class="primary full" :disabled="locked" @click="emit('mist')">
+          {{
+            game.adventure.mist.stage === "dormant"
+              ? "拆开来信 · 开启第三卷"
+              : "继续雾海来信"
+          }}
+          →
+        </button>
+      </section>
       <section
         v-if="observations.length"
         class="scene-investigation"

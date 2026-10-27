@@ -88,6 +88,22 @@ const intentText: Record<Stance, string> = {
       :quote="mode === 'relationship' ? who?.title : undefined"
     >
       <p
+        v-if="
+          mode === 'relationship' &&
+          game.adventure.mist.settled &&
+          game.adventure.mist.partner === 'companion'
+        "
+        class="scene-result"
+      >
+        雾海同行 ·
+        {{
+          game.adventure.mist.vow === "steady"
+            ? "那一次，你先系好大家的归绳，才决定往前走。"
+            : "那一次，你追查来信，也记得回应约好的撤退信号。"
+        }}
+        {{ who?.name }}记得你们一起走过的路；下一次的远行，也想与你一起商量。
+      </p>
+      <p
         v-if="mode === 'arena' && duel?.log.length"
         class="scene-result"
         role="status"

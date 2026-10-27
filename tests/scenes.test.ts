@@ -4,9 +4,33 @@ import { renderToString } from "vue/server-renderer";
 import SceneBackdrop from "../src/SceneBackdrop.vue";
 import AdventurePanel from "../src/AdventurePanel.vue";
 import RoadPanel from "../src/RoadPanel.vue";
+import MistPanel from "../src/MistPanel.vue";
+import { mistCheckpoint } from "../tools/mist-checkpoint";
 import SocialPanel from "../src/SocialPanel.vue";
 import WorldPanel from "../src/WorldPanel.vue";
-import { createGame } from "../src/core";
+import { createGame, dispatch, mistScenes, type MistStage } from "../src/core";
+
+it.each(Object.keys(mistScenes).filter((k) => k !== "dormant") as MistStage[])(
+  "keeps %s chapter narration separate from touch controls",
+  async (stage) => {
+    let game = mistCheckpoint();
+    game = dispatch(game, {
+      id: "scene-letter",
+      type: "mist",
+      action: "receive",
+    });
+    game.adventure.mist.stage = stage;
+    const html = await renderToString(
+      createSSRApp({ render: () => h(MistPanel, { game, busy: false }) }),
+    );
+    const index = html.indexOf('class="scene-controls"');
+    expect(index).toBeGreaterThan(0);
+    expect(html.slice(0, index)).toContain(mistScenes[stage].title);
+    expect(html.slice(0, index)).not.toContain("<button");
+    expect(html.slice(index)).toContain("雾海探索操作区");
+    expect(html.slice(index)).toContain("<button");
+  },
+);
 
 it("keeps long narrative and speaker on the artwork without embedding action buttons", async () => {
   const html = await renderToString(

@@ -39,8 +39,10 @@ import { luchiView } from "./characters";
 import WorldPanel from "./WorldPanel.vue";
 import AdventurePanel from "./AdventurePanel.vue";
 import RoadPanel from "./RoadPanel.vue";
+import MistPanel from "./MistPanel.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 const view = ref<"story" | "cultivation">("story");
+const showRoad = ref(false);
 import { load, save } from "./save";
 const useSession = defineStore("session", {
   state: () => ({ running: false, busy: false, history: false }),
@@ -187,6 +189,11 @@ async function worldAct(intent: Intent) {
   }
   await act(intent);
 }
+async function openMist() {
+  if (game.value?.adventure.mist.stage === "dormant")
+    await worldAct({ type: "mist", action: "receive" });
+  showRoad.value = false;
+}
 function runQueue() {
   queueMode.value = true;
   ui.running = true;
@@ -323,7 +330,7 @@ onUnmounted(() => {
         ><span>修仙人生<small>一卷山海 · 几世修行</small></span></a
       >
       <div class="header-right">
-        <span class="edition">行路有痕 · v0.8.0</span
+        <span class="edition">雾海来信 · v0.9.0</span
         ><button class="quiet" @click="dialog = 'help'">玩法说明</button
         ><button class="quiet" @click="fileInput?.click()">导入存档</button
         ><button v-if="game" class="quiet" @click="download(game)">导出</button>
@@ -521,14 +528,28 @@ onUnmounted(() => {
             人生卷宗
           </button>
         </nav>
-        <RoadPanel
+        <MistPanel
           v-if="
+            !ui.history &&
+            view === 'story' &&
+            !showRoad &&
+            game.adventure.mist.stage !== 'dormant'
+          "
+          :game="game"
+          :busy="ui.busy || ui.running"
+          @act="worldAct"
+          @cultivate="view = 'cultivation'"
+          @road="showRoad = true"
+        />
+        <RoadPanel
+          v-else-if="
             !ui.history && view === 'story' && game.adventure.step === 'done'
           "
           :game="game"
           :busy="ui.busy || ui.running"
           @act="worldAct"
           @cultivate="view = 'cultivation'"
+          @mist="openMist"
           @breakthrough="
             pill = game.pills > 0;
             dialog = 'break';
