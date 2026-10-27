@@ -2,8 +2,8 @@
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import type { ActionReceipt } from "./action-feedback";
 const props = defineProps<{ receipt: ActionReceipt; expanded?: boolean }>();
-const emit = defineEmits<{ close: [] }>();
-const playing = ref(!!props.expanded);
+const emit = defineEmits<{ close: []; inspect: [] }>();
+const playing = ref(!!props.expanded && !!props.receipt.ritual);
 const heading = ref<HTMLElement>();
 let timer: ReturnType<typeof setTimeout> | undefined;
 function reveal() {
@@ -23,7 +23,7 @@ onMounted(() => {
   heading.value?.focus();
   document.addEventListener("keydown", escape, true);
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) reveal();
-  else timer = setTimeout(reveal, 1400);
+  else if (playing.value) timer = setTimeout(reveal, 1400);
 });
 onUnmounted(() => {
   clearTimeout(timer);
@@ -35,6 +35,7 @@ const ritualText = {
   retreat: ["山门暂掩", "静息凝神 · 温养根基", "静"],
   forge: ["灵纹初现", "淬炼 · 铭纹 · 成器", "器"],
   challenge: ["屏息迎敌", "审势 · 破阵 · 应战", "战"],
+  duel: ["交锋落定", "收势 · 行礼 · 胜负已分", "决"],
 };
 </script>
 
@@ -48,7 +49,11 @@ const ritualText = {
     :aria-labelledby="expanded ? 'feedback-title' : undefined"
     aria-live="polite"
   >
-    <div v-if="expanded" class="ritual-sky" aria-hidden="true">
+    <div
+      v-if="expanded && receipt.ritual"
+      class="ritual-sky"
+      aria-hidden="true"
+    >
       <div class="ritual-orbit"></div>
       <div class="ritual-orbit inner"></div>
       <span class="ritual-seal">{{
@@ -81,10 +86,28 @@ const ritualText = {
         <small class="muted">结果已保存，演出不会再次消耗材料。</small>
       </template>
       <template v-else>
+        <div v-if="receipt.person" class="reply-person">
+          <img
+            :src="receipt.person.portrait"
+            :alt="receipt.person.name + '肖像'"
+          />
+          <div>
+            <strong>{{ receipt.person.name }}</strong>
+            <p>“{{ receipt.person.response }}”</p>
+          </div>
+        </div>
+        <p v-if="receipt.person" class="relationship-change">
+          关系 · {{ receipt.person.relation }}
+        </p>
         <p v-if="receipt.months" class="receipt-time">
           此行经过 {{ receipt.months }} 个月
         </p>
-        <p v-if="expanded" class="receipt-cost">{{ receipt.cost }}</p>
+        <p v-if="expanded && receipt.changes.length" class="receipt-cost">
+          {{ receipt.cost }}
+        </p>
+        <ul v-if="receipt.unlocks?.length" class="discovery-chips">
+          <li v-for="item in receipt.unlocks" :key="item">{{ item }}</li>
+        </ul>
         <ul v-if="receipt.changes.length" class="receipt-changes">
           <li
             v-for="change in receipt.changes"
@@ -98,7 +121,6 @@ const ritualText = {
             ><small>{{ change.before }} → {{ change.after }}</small>
           </li>
         </ul>
-        <p v-else class="muted">本次没有资源或属性净变化。</p>
         <template v-if="expanded"
           ><p
             v-for="(note, index) in receipt.notes"
@@ -114,6 +136,9 @@ const ritualText = {
         >
         <template v-else
           ><p class="receipt-brief">{{ receipt.notes[0] || receipt.next }}</p>
+          <button class="quiet receipt-inspect" @click="emit('inspect')">
+            查看详情
+          </button>
           <button
             class="quiet"
             aria-label="收起行动回执"
@@ -161,6 +186,34 @@ const ritualText = {
 }
 .receipt-body {
   padding: 24px;
+}
+.reply-person {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+}
+.reply-person img {
+  width: 76px;
+  height: 104px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 8px;
+}
+.reply-person strong {
+  color: #e6d3a3;
+}
+.reply-person p {
+  margin: 8px 0 0;
+  line-height: 1.85;
+  font-size: 15px;
+}
+.relationship-change {
+  background: #a9c5aa12;
+  padding: 10px 12px;
+  color: #cbe0cb;
+  font-size: 14px;
+  border-radius: 6px;
 }
 .action-feedback h2 {
   font-size: 25px;
@@ -464,8 +517,57 @@ const ritualText = {
   }
   .receipt-dock {
     right: 12px;
-    bottom: calc(80px + env(safe-area-inset-bottom));
-    width: min(340px, calc(100vw - 24px));
+    top: 58px;
+    bottom: auto;
+    width: calc(100vw - 24px);
+  }
+  .receipt-dock .receipt-body {
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 4px 8px;
+    align-items: center;
+  }
+  .receipt-dock .receipt-body > .eyebrow,
+  .receipt-dock .receipt-brief,
+  .receipt-dock .receipt-time,
+  .receipt-dock .discovery-chips {
+    display: none;
+  }
+  .receipt-dock .receipt-changes {
+    grid-row: 2;
+    grid-column: 1/-1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 0;
+  }
+  .receipt-dock .receipt-changes li {
+    display: flex;
+    gap: 6px;
+    padding: 3px 6px;
+  }
+  .receipt-dock .receipt-body h2 {
+    grid-column: 1;
+    font-size: 15px;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .receipt-dock .quiet {
+    padding: 4px;
+    min-height: 44px;
+    margin: 0;
+    font-size: 12px;
+  }
+  .receipt-dock .receipt-inspect {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .receipt-dock button[aria-label] {
+    grid-column: 3;
+    grid-row: 1;
   }
   .action-feedback h2 {
     font-size: 22px;

@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch, nextTick, onMounted } from "vue";
+import RoadEpilogue from "./RoadEpilogue.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
+import SceneResponse from "./SceneResponse.vue";
+import type { ActionReceipt } from "./action-feedback";
 import {
   roadScenes,
+  passSolutions,
+  passEcho,
+  type PassSolution,
   roadGoal,
   roadDetails,
   roadError,
@@ -17,7 +23,11 @@ import {
   type State,
   type Intent,
 } from "./core";
-const props = defineProps<{ game: State; busy: boolean }>();
+const props = defineProps<{
+  game: State;
+  busy: boolean;
+  receipt?: ActionReceipt | null;
+}>();
 const emit = defineEmits<{
   act: [intent: Intent];
   cultivate: [];
@@ -31,11 +41,55 @@ const reveal = async () => {
 };
 onMounted(reveal);
 watch(() => props.game.adventure.road.stage, reveal);
-watch(() => props.game.adventure.road.discoveries.length, reveal);
+const showLegacy = ref(false);
+const epilogueDismissed = ref(false);
+const showEpilogue = computed(
+  () =>
+    road.value.surveyed &&
+    road.value.stage === "lookout" &&
+    !epilogueDismissed.value,
+);
+const readingSize = ref("standard");
+function keyboard(event: KeyboardEvent) {
+  const target = event.target as HTMLElement;
+  if (
+    event.repeat ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey ||
+    target.closest("input, textarea, select, [contenteditable], [inert]")
+  )
+    return;
+  if (event.key === "Escape") {
+    showLegacy.value = false;
+    panel.value
+      ?.querySelectorAll("details[open]")
+      .forEach((node) => node.removeAttribute("open"));
+    return;
+  }
+  if (
+    locked.value ||
+    road.value.stage !== "pass" ||
+    road.value.obstacle === "none" ||
+    road.value.passed
+  )
+    return;
+  const key = solutionKeys[Number(event.key) - 1];
+  if (!/^[123]$/.test(event.key) || !key || road.value.prepared === key) return;
+  const action = passSolutions[key].prepare;
+  if (!roadError(props.game, action)) {
+    event.preventDefault();
+    emit("act", { type: "road", action });
+  }
+}
+const solutionKeys = Object.keys(passSolutions) as PassSolution[];
+const echo = computed(() => passEcho(props.game));
 const road = computed(() => props.game.adventure.road);
 const scene = computed(() => {
   const r = road.value,
     base = roadScenes[r.stage];
+  if (echo.value) return { ...base, body: echo.value.body };
   if (r.stage === "beyond" && r.surveyed)
     return {
       ...base,
@@ -164,6 +218,13 @@ const growth = computed(() => [
 const visibleChoices = computed(() =>
   choices.value.filter(({ action }) => {
     const r = road.value;
+    if (
+      ["challenge", "shelteredChallenge", "art", "relic", "friend"].includes(
+        action,
+      ) &&
+      (!showLegacy.value || r.passed)
+    )
+      return false;
     if (action === "thanks") return !r.thanked;
     if (action === "talk") return !r.met;
     if (action === "accept") return r.met && !r.commission;
@@ -177,44 +238,46 @@ const visibleChoices = computed(() =>
   }),
 );
 const person = computed(() =>
-  road.value.stage === "home"
-    ? {
-        name: "温蘅",
-        image: "/characters/wenheng.png",
-        line:
-          props.game.adventure.method === "medicine"
-            ? "你肯先试药气，再救人。这样的稳重，我记得。"
-            : props.game.adventure.method === "guide"
-              ? "肯与人分工，也是一种本事。"
-              : "你把伤者背回来了，也别忘了照顾自己。",
-      }
-    : road.value.stage === "pass"
+  echo.value
+    ? { name: echo.value.name, image: echo.value.image, line: echo.value.quote }
+    : road.value.stage === "home"
       ? {
-          name: "青嶂",
-          image: "/characters/qingzhang.jpg",
-          line: road.value.discoveries.includes("marks")
-            ? "你肯低头看那道刻痕，我便知道你不是来逞强的。"
-            : "守路不只是拦人。看清危险，再来找我。",
-        }
-      : {
-          name:
-            road.value.stage === "market" ||
-            (road.value.stage === "camp" && road.value.ally)
-              ? "郁青"
-              : "郁青留下的话",
-          image: "/characters/yuqing.jpg",
+          name: "温蘅",
+          image: "/characters/wenheng.png",
           line:
-            road.value.discoveries.includes("names") &&
-            road.value.stage === "market"
-              ? "原来这些年，是他替我们守着回来的路。"
-              : road.value.surveyed && road.value.stage === "market"
-                ? "你留下的路，已经有人在走。"
-                : ["beyond", "lookout"].includes(road.value.stage)
-                  ? "旅亭看见的，也替我记下来。"
-                  : road.value.ally
-                    ? "你护住气息，我替你辨路。遇到险处，先喊我。"
-                    : "画图不是为了把世界圈起来，是为了让人能走回来。",
-        },
+            props.game.adventure.method === "medicine"
+              ? "你肯先试药气，再救人。这样的稳重，我记得。"
+              : props.game.adventure.method === "guide"
+                ? "肯与人分工，也是一种本事。"
+                : "你把伤者背回来了，也别忘了照顾自己。",
+        }
+      : road.value.stage === "pass"
+        ? {
+            name: "青嶂",
+            image: "/characters/qingzhang.jpg",
+            line: road.value.discoveries.includes("marks")
+              ? "你肯低头看那道刻痕，我便知道你不是来逞强的。"
+              : "守路不只是拦人。看清危险，再来找我。",
+          }
+        : {
+            name:
+              road.value.stage === "market" ||
+              (road.value.stage === "camp" && road.value.ally)
+                ? "郁青"
+                : "郁青留下的话",
+            image: "/characters/yuqing.jpg",
+            line:
+              road.value.discoveries.includes("names") &&
+              road.value.stage === "market"
+                ? "原来这些年，是他替我们守着回来的路。"
+                : road.value.surveyed && road.value.stage === "market"
+                  ? "你留下的路，已经有人在走。"
+                  : ["beyond", "lookout"].includes(road.value.stage)
+                    ? "旅亭看见的，也替我记下来。"
+                    : road.value.ally
+                      ? "你护住气息，我替你辨路。遇到险处，先喊我。"
+                      : "画图不是为了把世界圈起来，是为了让人能走回来。",
+          },
 );
 </script>
 <template>
@@ -222,282 +285,543 @@ const person = computed(() =>
     ref="panel"
     class="adventure-panel road-panel"
     :data-weather="scene.mood"
+    :data-reading-size="readingSize"
+    @keydown="keyboard"
     aria-label="走出听松山主线"
   >
-    <SceneBackdrop
-      :key="road.stage"
-      :image="scene.image"
-      :title="scene.name"
-      eyebrow="第二卷 · 航图之外"
-      :body="scene.body"
-      :speaker="person.name"
-      :portrait="person.image"
-      :quote="person.line"
-    >
-      <p v-if="road.result" class="scene-result" role="status">
-        {{ road.result }}
-      </p>
-    </SceneBackdrop>
-    <section class="scene-controls" aria-label="行路与准备操作区">
-      <h3 class="controls-heading">行路与准备</h3>
-      <ol class="chapter-track" aria-label="第二卷进度">
-        <li :class="{ passed: road.thanked }">归家回访</li>
-        <li :class="{ passed: road.map }">坊市补图</li>
-        <li :class="{ passed: road.obstacle !== 'none' }">看清险阻</li>
-        <li :class="{ passed: road.passed }">越过山口</li>
-        <li :class="{ passed: road.surveyed }">为后来者记路</li>
-      </ol>
-      <div class="adventure-task">
-        <span class="eyebrow">眼下要做的事</span>
-        <h2>{{ roadGoal(game) }}</h2>
-        <p>
-          {{ game.realm ? "筑基" : "炼气" }} · 灵石 {{ game.stones }} · 灵草
-          {{ game.herbs }} · 神识 {{ game.sense }} · 心得 {{ game.study }}
-        </p>
-      </div>
-      <section v-if="road.surveyed" class="mist-invitation">
-        <span class="eyebrow">第三卷 · 雾海来信</span>
-        <h3>
-          {{
-            game.adventure.mist.stage === "dormant"
-              ? "失踪者寄来的新信"
-              : "那封信的故事，还在这里"
-          }}
-        </h3>
-        <p>
-          {{
-            game.adventure.mist.stage === "dormant"
-              ? "归路重开后，旅亭收到陈渡的旧信。陆迟认出信上的护路印，与父亲的旧物有关。你想先找人问，还是先查信阵？"
-              : "返回本章保留的地点、线索与同行约定。"
-          }}
-        </p>
-        <button class="primary full" :disabled="locked" @click="emit('mist')">
-          {{
-            game.adventure.mist.stage === "dormant"
-              ? "拆开来信 · 开启第三卷"
-              : "继续雾海来信"
-          }}
-          →
-        </button>
-      </section>
-      <section
-        v-if="observations.length"
-        class="scene-investigation"
-        aria-label="环顾四周调查区"
+    <div class="road-toolbar">
+      <span>第二卷 · 行路</span>
+      <label
+        >阅读字号
+        <select v-model="readingSize" aria-label="阅读字号">
+          <option value="standard">标准</option>
+          <option value="large">大</option>
+          <option value="largest">特大</option>
+        </select>
+      </label>
+    </div>
+    <RoadEpilogue
+      v-if="showEpilogue"
+      :game="game"
+      :locked="locked"
+      @return="epilogueDismissed = true"
+      @continue="emit('mist')"
+    />
+    <template v-else>
+      <SceneBackdrop
+        :key="road.stage"
+        :image="scene.image"
+        :title="scene.name"
+        eyebrow="第二卷 · 航图之外"
+        :body="scene.body"
+        :speaker="person.name"
+        :portrait="person.image"
+        :quote="person.line"
       >
-        <h3>停下来，看看四周</h3>
-        <p>可选调查，不推进月份。发现会留在手记里，也可能改变你过关的办法。</p>
-        <button
-          v-for="object in observations"
-          :key="object.key"
-          :disabled="locked || !!roadError(game, object.action)"
-          @click="emit('act', { type: 'road', action: object.action })"
-        >
-          <span class="clue-symbol" aria-hidden="true">{{
-            road.discoveries.includes(object.key) ? "✓" : "◇"
-          }}</span>
-          <span
-            ><strong>{{ object.name }}</strong
-            ><small>{{
-              roadError(game, object.action) || object.hint
-            }}</small></span
-          ><span aria-hidden="true">→</span>
-        </button>
-      </section>
-      <details v-if="road.discoveries.length" class="road-journal">
-        <summary>
-          行路手记 · {{ road.discoveries.length }} 处发现{{
-            hasShelteredRoute(game) ? " · 已找到避风路" : ""
-          }}
-        </summary>
-        <article v-for="clue in road.discoveries" :key="clue">
-          <h4>{{ roadClues[clue].name }}</h4>
-          <p>{{ roadClues[clue].text }}</p>
-        </article>
-      </details>
-      <div
-        v-if="['pass', 'camp'].includes(road.stage) && road.obstacle !== 'none'"
-        class="road-plan"
-      >
-        <h3>
-          {{
-            road.obstacle === "mist"
-              ? "已知危险：迷雾误导感知"
-              : "已知危险：罡风连续冲击"
-          }}
-        </h3>
-        <p>
-          当前准备方向：{{
-            {
-              none: "尚未选择",
-              art: "功法护体",
-              relic: "灵器御风",
-              friend: "同行辨路",
-            }[road.route]
-          }}
-          · {{ road.ally ? "郁青已应约" : "尚未邀请同行" }}
-        </p>
-        <p>
-          {{ game.realm ? "当前过关把握" : "筑基后按当前准备估计" }}：<strong
-            >{{ roadDetails(game).chance }}%</strong
-          >；充分准备可达 100%。正面过关失败增加 1
-          伤势；两种过关方式都保留航图、装备与同行约定。
-        </p>
-        <p v-if="hasShelteredRoute(game)" class="sheltered-hint">
-          你已串起两处线索：避风路把握
-          {{ roadDetails(game, "sheltered").chance }}%，多用灵石
-          2，失败不新增伤势。仍需筑基与实际准备。
-        </p>
-        <details>
-          <summary>查看把握来自哪里</summary>
-          <p v-for="term in roadDetails(game).terms" :key="term.name">
-            {{ term.name }}：{{ term.value >= 0 ? "+" : "" }}{{ term.value }}
-          </p>
+        <SceneResponse
+          :text="road.result"
+          :receipt="
+            receipt?.scene?.chapter === 'road' ||
+            (receipt?.scene?.chapter === 'adventure' &&
+              game.adventure.step === 'done')
+              ? receipt
+              : null
+          "
+        />
+      </SceneBackdrop>
+      <section class="scene-controls" aria-label="行路与准备操作区">
+        <h3 class="controls-heading">行路与准备</h3>
+        <ol class="chapter-track" aria-label="第二卷进度">
+          <li :class="{ passed: road.thanked }">归家回访</li>
+          <li :class="{ passed: road.map }">坊市补图</li>
+          <li :class="{ passed: road.obstacle !== 'none' }">看清险阻</li>
+          <li :class="{ passed: road.passed }">越过山口</li>
+          <li :class="{ passed: road.surveyed }">为后来者记路</li>
+        </ol>
+        <div class="adventure-task">
+          <span class="eyebrow">眼下要做的事</span>
+          <h2>{{ roadGoal(game) }}</h2>
           <p>
-            每次有效挑战从存档种子抽取 1–100；不高于把握即成功。刷新不重抽。
+            {{ game.realm ? "筑基" : "炼气" }} · 灵石 {{ game.stones }} · 灵草
+            {{ game.herbs }} · 神识 {{ game.sense }} · 心得 {{ game.study }}
           </p>
-        </details>
-      </div>
-      <div class="adventure-actions">
-        <button
-          v-for="choice in visibleChoices"
-          :key="choice.action"
-          :disabled="locked || !!roadError(game, choice.action)"
-          @click="emit('act', { type: 'road', action: choice.action })"
-        >
-          <span
-            >{{ choice.label
-            }}<small v-if="roadError(game, choice.action)">{{
-              roadError(game, choice.action)
-            }}</small></span
-          ><span>→</span>
-        </button>
-      </div>
-      <section
-        v-if="road.stage === 'market' || road.stage === 'camp'"
-        class="road-plan"
-        aria-label="在场景中准备"
-      >
-        <h3>
-          {{
-            road.stage === "market"
-              ? "坊市便民与委托准备"
-              : "为眼前的山口安排修行"
-          }}
-        </h3>
-        <div class="road-preparations">
-          <button
-            v-if="road.stage === 'camp' && game.realm === 0"
-            :disabled="locked || !!preparationError(game, 'refine')"
-            @click="emit('act', { type: 'prepare', kind: 'refine' })"
-          >
-            炼制筑基丹 · 三月
-            <small>{{
-              preparationError(game, "refine") ||
-              "提升突破把握；可先购药，突破前再决定是否服用"
-            }}</small>
-          </button>
-          <button
-            :disabled="locked || game.stones < 8"
-            @click="emit('act', { type: 'supplies' })"
-          >
-            购灵草 4 · 灵石 −8<small>用于交药、炼丹或炼器</small>
-          </button>
-          <template v-if="road.stage === 'camp' && road.route === 'art'"
-            ><button
-              :disabled="
-                locked ||
-                game.journey.known.includes('guard') ||
-                game.study < 2 ||
-                game.stones < 20
-              "
-              @click="emit('act', { type: 'learn', technique: 'guard' })"
-            >
-              学习护身诀 · 心得 2 / 灵石 20<small
-                >心得不扣除；已有任意功法也可在完整面板装配</small
-              ></button
-            ><button
-              :disabled="
-                locked ||
-                !game.journey.known.includes('guard') ||
-                game.journey.support === 'guard'
-              "
-              @click="emit('act', { type: 'equip', technique: 'guard' })"
-            >
-              装配护身诀
-            </button></template
-          >
-          <template v-if="road.stage === 'camp' && road.route === 'relic'"
-            ><button
-              :disabled="locked || !!forgeError(game, 'vial')"
-              @click="emit('act', { type: 'forge', relic: 'vial' })"
-            >
-              {{ game.journey.relics.vial ? "精炼" : "炼制" }}归元灵瓶<small>{{
-                forgeError(game, "vial") || "心得 2 / 灵石 −24 / 灵草 −4"
-              }}</small></button
-            ><button
-              :disabled="
-                locked ||
-                !game.journey.relics.vial ||
-                game.journey.equipped === 'vial'
-              "
-              @click="emit('act', { type: 'equipRelic', relic: 'vial' })"
-            >
-              装配归元灵瓶
-            </button></template
-          >
-          <button
-            v-if="road.stage === 'camp' && road.route === 'friend'"
-            :disabled="locked || !!roadError(game, 'invite')"
-            @click="emit('act', { type: 'road', action: 'invite' })"
-          >
-            请郁青同行<small>{{
-              roadError(game, "invite") || "朋友辨路，你仍需自己筑基"
-            }}</small>
-          </button>
-          <button
-            v-for="item in growth.filter(
-              (x) =>
-                road.stage === 'camp' ||
-                ['study', 'meditate', 'work'].includes(
-                  x.intent.type === 'advance' ? x.intent.activity : '',
-                ),
-            )"
-            :key="item.label"
-            :disabled="locked || !!item.error"
-            @click="emit('act', item.intent)"
-          >
-            {{ item.label }}<small>{{ item.error || item.hint }}</small>
-          </button>
         </div>
         <button
-          v-if="road.stage === 'camp'"
-          class="primary full"
-          :disabled="locked || game.realm === 1 || game.qi < 360"
-          @click="emit('breakthrough')"
+          v-if="road.surveyed && road.stage === 'lookout'"
+          class="full"
+          @click="epilogueDismissed = false"
         >
-          准备突破筑基 · 查看丹药与把握<small
-            >当前不服丹把握
+          回看青嶂关篇章结语
+        </button>
+        <section v-if="road.surveyed" class="mist-invitation">
+          <span class="eyebrow">第三卷 · 雾海来信</span>
+          <h3>
             {{
-              breakthroughDetails(game, false).chance
-            }}%；先确认风险再尝试</small
+              game.adventure.mist.stage === "dormant"
+                ? "失踪者寄来的新信"
+                : "那封信的故事，还在这里"
+            }}
+          </h3>
+          <p>
+            {{
+              game.adventure.mist.stage === "dormant"
+                ? "归路重开后，旅亭收到陈渡的旧信。陆迟认出信上的护路印，与父亲的旧物有关。你想先找人问，还是先查信阵？"
+                : "返回本章保留的地点、线索与同行约定。"
+            }}
+          </p>
+          <button class="primary full" :disabled="locked" @click="emit('mist')">
+            {{
+              game.adventure.mist.stage === "dormant"
+                ? "拆开来信 · 开启第三卷"
+                : "继续雾海来信"
+            }}
+            →
+          </button>
+        </section>
+        <section
+          v-if="
+            road.stage === 'pass' && road.obstacle !== 'none' && !road.passed
+          "
+          class="pass-solutions"
+          aria-label="选择留给后来人的归路"
+        >
+          <h3>你要留下怎样的归路？</h3>
+          <p class="keyboard-hint">
+            在此面板内按 1 / 2 / 3 观察医道、剑道、识阵；实施请点击按钮。Esc
+            收起手记与旧路。
+          </p>
+          <p>
+            先观察，再决定。观察不扣资源，可以改看另一条路；真正实施后，本世的道路和人物回应会固定下来。满足条件即成功，不掷骰。
+          </p>
+          <article
+            v-for="key in solutionKeys"
+            :key="key"
+            class="road-plan"
+            :class="{ 'chosen-solution': road.prepared === key }"
           >
+            <h4>{{ passSolutions[key].name }}</h4>
+            <p>{{ passSolutions[key].consequence }}</p>
+            <p class="fineprint">
+              {{ passSolutions[key].requirement }}均需筑基、伤势低于
+              3；不推进月份。
+            </p>
+            <button
+              v-if="road.prepared !== key"
+              :disabled="
+                locked || !!roadError(game, passSolutions[key].prepare)
+              "
+              @click="
+                emit('act', {
+                  type: 'road',
+                  action: passSolutions[key].prepare,
+                })
+              "
+            >
+              {{ passSolutions[key].observe }}
+              <small>{{
+                roadError(game, passSolutions[key].prepare) ||
+                "只观察，暂不实施"
+              }}</small>
+            </button>
+            <template v-else>
+              <p>{{ passSolutions[key].finding }}</p>
+              <button
+                class="primary"
+                :disabled="
+                  locked || !!roadError(game, passSolutions[key].finish)
+                "
+                @click="
+                  emit('act', {
+                    type: 'road',
+                    action: passSolutions[key].finish,
+                  })
+                "
+              >
+                {{ passSolutions[key].commit }}
+                <small>{{
+                  roadError(game, passSolutions[key].finish) ||
+                  "按上述代价实施 · 本世无法改选"
+                }}</small>
+              </button>
+            </template>
+          </article>
+        </section>
+        <section
+          v-if="observations.length"
+          class="scene-investigation"
+          aria-label="环顾四周调查区"
+        >
+          <h3>停下来，看看四周</h3>
+          <p>
+            可选调查，不推进月份。发现会留在手记里，也可能改变你过关的办法。
+          </p>
+          <button
+            v-for="object in observations"
+            :key="object.key"
+            :disabled="locked || !!roadError(game, object.action)"
+            @click="emit('act', { type: 'road', action: object.action })"
+          >
+            <span class="clue-symbol" aria-hidden="true">{{
+              road.discoveries.includes(object.key) ? "✓" : "◇"
+            }}</span>
+            <span
+              ><strong>{{ object.name }}</strong
+              ><small>{{
+                roadError(game, object.action) || object.hint
+              }}</small></span
+            ><span aria-hidden="true">→</span>
+          </button>
+        </section>
+        <details v-if="road.discoveries.length" class="road-journal">
+          <summary>
+            行路手记 · {{ road.discoveries.length }} 处发现{{
+              hasShelteredRoute(game) ? " · 已找到避风路" : ""
+            }}
+          </summary>
+          <article v-for="clue in road.discoveries" :key="clue">
+            <h4>{{ roadClues[clue].name }}</h4>
+            <p>{{ roadClues[clue].text }}</p>
+          </article>
+        </details>
+        <aside
+          v-if="echo && road.solution !== 'none' && road.solution !== 'legacy'"
+          class="road-plan"
+          aria-label="本世归路"
+        >
+          <h3>{{ passSolutions[road.solution].name }} · 本世归路</h3>
+          <p>{{ passSolutions[road.solution].consequence }}</p>
+        </aside>
+        <button
+          v-if="['pass', 'camp'].includes(road.stage) && !road.passed"
+          class="quiet"
+          :aria-expanded="showLegacy"
+          @click="showLegacy = !showLegacy"
+        >
+          {{ showLegacy ? "收起" : "展开" }}沿旧路自行过关 ·
+          只求通行，不改变山口
         </button>
+        <div
+          v-if="
+            showLegacy &&
+            ['pass', 'camp'].includes(road.stage) &&
+            road.obstacle !== 'none' &&
+            !road.passed
+          "
+          class="road-plan"
+        >
+          <h3>
+            {{
+              road.obstacle === "mist"
+                ? "已知危险：迷雾误导感知"
+                : "已知危险：罡风连续冲击"
+            }}
+          </h3>
+          <p>
+            当前准备方向：{{
+              {
+                none: "尚未选择",
+                art: "功法护体",
+                relic: "灵器御风",
+                friend: "同行辨路",
+              }[road.route]
+            }}
+            · {{ road.ally ? "郁青已应约" : "尚未邀请同行" }}
+          </p>
+          <p>
+            {{ game.realm ? "当前过关把握" : "筑基后按当前准备估计" }}：<strong
+              >{{ roadDetails(game).chance }}%</strong
+            >；充分准备可达 100%。正面过关失败增加 1
+            伤势；两种过关方式都保留航图、装备与同行约定。
+          </p>
+          <p v-if="hasShelteredRoute(game)" class="sheltered-hint">
+            你已串起两处线索：避风路把握
+            {{ roadDetails(game, "sheltered").chance }}%，多用灵石
+            2，失败不新增伤势。仍需筑基与实际准备。
+          </p>
+          <details>
+            <summary>查看把握来自哪里</summary>
+            <p v-for="term in roadDetails(game).terms" :key="term.name">
+              {{ term.name }}：{{ term.value >= 0 ? "+" : "" }}{{ term.value }}
+            </p>
+            <p>
+              每次有效挑战从存档种子抽取 1–100；不高于把握即成功。刷新不重抽。
+            </p>
+          </details>
+        </div>
+        <div class="adventure-actions">
+          <button
+            v-for="choice in visibleChoices"
+            :key="choice.action"
+            :disabled="locked || !!roadError(game, choice.action)"
+            @click="emit('act', { type: 'road', action: choice.action })"
+          >
+            <span
+              >{{ choice.label
+              }}<small v-if="roadError(game, choice.action)">{{
+                roadError(game, choice.action)
+              }}</small></span
+            ><span>→</span>
+          </button>
+        </div>
+        <section
+          v-if="road.stage === 'market' || road.stage === 'camp'"
+          class="road-plan"
+          aria-label="在场景中准备"
+        >
+          <h3>
+            {{
+              road.stage === "market"
+                ? "坊市便民与委托准备"
+                : "为眼前的山口安排修行"
+            }}
+          </h3>
+          <div class="road-preparations">
+            <button
+              v-if="road.stage === 'camp' && game.realm === 0"
+              :disabled="locked || !!preparationError(game, 'refine')"
+              @click="emit('act', { type: 'prepare', kind: 'refine' })"
+            >
+              炼制筑基丹 · 三月
+              <small>{{
+                preparationError(game, "refine") ||
+                "提升突破把握；可先购药，突破前再决定是否服用"
+              }}</small>
+            </button>
+            <button
+              :disabled="locked || game.stones < 8"
+              @click="emit('act', { type: 'supplies' })"
+            >
+              购灵草 4 · 灵石 −8<small>用于交药、炼丹或炼器</small>
+            </button>
+            <template v-if="road.stage === 'camp' && road.route === 'art'"
+              ><button
+                :disabled="
+                  locked ||
+                  game.journey.known.includes('guard') ||
+                  game.study < 2 ||
+                  game.stones < 20
+                "
+                @click="emit('act', { type: 'learn', technique: 'guard' })"
+              >
+                学习护身诀 · 心得 2 / 灵石 20<small
+                  >心得不扣除；已有任意功法也可在完整面板装配</small
+                ></button
+              ><button
+                :disabled="
+                  locked ||
+                  !game.journey.known.includes('guard') ||
+                  game.journey.support === 'guard'
+                "
+                @click="emit('act', { type: 'equip', technique: 'guard' })"
+              >
+                装配护身诀
+              </button></template
+            >
+            <template v-if="road.stage === 'camp' && road.route === 'relic'"
+              ><button
+                :disabled="locked || !!forgeError(game, 'vial')"
+                @click="emit('act', { type: 'forge', relic: 'vial' })"
+              >
+                {{
+                  game.journey.relics.vial ? "精炼" : "炼制"
+                }}归元灵瓶<small>{{
+                  forgeError(game, "vial") || "心得 2 / 灵石 −24 / 灵草 −4"
+                }}</small></button
+              ><button
+                :disabled="
+                  locked ||
+                  !game.journey.relics.vial ||
+                  game.journey.equipped === 'vial'
+                "
+                @click="emit('act', { type: 'equipRelic', relic: 'vial' })"
+              >
+                装配归元灵瓶
+              </button></template
+            >
+            <button
+              v-if="road.stage === 'camp' && road.route === 'friend'"
+              :disabled="locked || !!roadError(game, 'invite')"
+              @click="emit('act', { type: 'road', action: 'invite' })"
+            >
+              请郁青同行<small>{{
+                roadError(game, "invite") || "朋友辨路，你仍需自己筑基"
+              }}</small>
+            </button>
+            <template v-if="road.stage === 'camp' && !road.passed">
+              <button
+                :disabled="
+                  locked ||
+                  game.journey.known.includes('herb') ||
+                  game.study < 2 ||
+                  game.stones < 20
+                "
+                @click="emit('act', { type: 'learn', technique: 'herb' })"
+              >
+                求教辨草录 · 灵石 20 / 心得 2<small
+                  >散修、剑修也可学会医道解法；医修无需另学</small
+                >
+              </button>
+              <button
+                :disabled="locked || !!actionError(game, 'train')"
+                @click="
+                  emit('act', { type: 'advance', activity: 'train', months: 3 })
+                "
+              >
+                历练剑意 · 最多三月<small
+                  >剑意 {{ game.mastery }}；剑道解法需要剑意 4 或装配灵剑，根基
+                  12</small
+                >
+              </button>
+            </template>
+            <button
+              v-for="item in growth.filter(
+                (x) =>
+                  road.stage === 'camp' ||
+                  ['study', 'meditate', 'work'].includes(
+                    x.intent.type === 'advance' ? x.intent.activity : '',
+                  ),
+              )"
+              :key="item.label"
+              :disabled="locked || !!item.error"
+              @click="emit('act', item.intent)"
+            >
+              {{ item.label }}<small>{{ item.error || item.hint }}</small>
+            </button>
+          </div>
+          <button
+            v-if="road.stage === 'camp'"
+            class="primary full"
+            :disabled="locked || game.realm === 1 || game.qi < 360"
+            @click="emit('breakthrough')"
+          >
+            准备突破筑基 · 查看丹药与把握<small
+              >当前不服丹把握
+              {{
+                breakthroughDetails(game, false).chance
+              }}%；先确认风险再尝试</small
+            >
+          </button>
+        </section>
+        <div class="adventure-actions">
+          <button @click="emit('cultivate')">
+            {{
+              road.surveyed
+                ? "展开山河见闻，寻访回春谷与雾海"
+                : "查看完整功法、灵器与修行面板"
+            }}
+            →
+          </button>
+        </div>
+        <p class="adventure-footnote">
+          交谈、调查和实施解法不计修行月份；修炼按真实月份推进，遇剧情暂停。
+          三种解法满足条件后必定成功，本世不能改选；也可沿旧路按把握过关。首次通过后可免费往返。
+        </p>
       </section>
-      <div class="adventure-actions">
-        <button @click="emit('cultivate')">
-          {{
-            road.surveyed
-              ? "展开山河见闻，寻访回春谷与雾海"
-              : "查看完整功法、灵器与修行面板"
-          }}
-          →
-        </button>
-      </div>
-      <p class="adventure-footnote">
-        交谈、调查与移动不计修行月份；修炼按真实月份推进，遇剧情暂停。青嶂关正面挑战消耗灵石
-        4，避风路消耗灵石 6，均不推进月份；首次通过后归路常开。
-      </p>
-    </section>
+    </template>
   </section>
 </template>
+
+<style scoped>
+.road-panel {
+  --road-reading: 16px;
+}
+.road-panel[data-reading-size="large"] {
+  --road-reading: 18px;
+}
+.road-panel[data-reading-size="largest"] {
+  --road-reading: 20px;
+}
+.road-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #ebe5d6;
+  border-radius: 10px 10px 0 0;
+}
+.road-toolbar label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.road-toolbar select {
+  padding: 6px 10px;
+  color: inherit;
+  background: #faf7ef;
+  border: 1px solid #a9b5a2;
+  border-radius: 6px;
+}
+.road-panel :deep(.scene-prose),
+.road-panel :deep(.scene-speaker p),
+.road-panel :deep(.scene-response p),
+.scene-controls p,
+.scene-controls button,
+.scene-controls button small,
+.scene-controls .fineprint {
+  font-size: var(--road-reading);
+  line-height: 1.8;
+}
+.pass-solutions > .road-plan {
+  margin: 0;
+}
+.keyboard-hint {
+  color: #52684f;
+}
+@media (min-width: 1100px) {
+  .road-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: start;
+    overflow: visible;
+  }
+  .road-toolbar {
+    grid-column: 1 / -1;
+  }
+  .road-panel :deep(.scene-backdrop) {
+    position: sticky;
+    top: 16px;
+    min-height: min(760px, calc(100dvh - 32px));
+    border-radius: 0 0 0 10px;
+  }
+  .road-panel :deep(.scene-narrative) {
+    padding: 64px 28px 28px;
+  }
+  .scene-controls {
+    min-width: 0;
+    border-top: 0;
+    border-left: 1px solid #c6cbb9;
+    border-radius: 0 0 10px 0;
+  }
+}
+@media (max-width: 600px) {
+  .keyboard-hint {
+    display: none;
+  }
+  .road-toolbar {
+    padding: 10px 12px;
+  }
+}
+
+.pass-solutions {
+  display: grid;
+  gap: 12px;
+}
+.pass-solutions h4 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.pass-solutions button {
+  width: 100%;
+  min-height: 48px;
+  white-space: normal;
+  text-align: left;
+}
+.pass-solutions small {
+  display: block;
+  margin-top: 6px;
+}
+.chosen-solution {
+  border-left: 3px solid #617c57;
+}
+</style>

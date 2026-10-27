@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
+import SceneResponse from "./SceneResponse.vue";
+import type { ActionReceipt } from "./action-feedback";
 import {
   mistScenes,
   mistPartner,
@@ -14,7 +16,11 @@ import {
   type Intent,
   type MistAction,
 } from "./core";
-const props = defineProps<{ game: State; busy: boolean }>();
+const props = defineProps<{
+  game: State;
+  busy: boolean;
+  receipt?: ActionReceipt | null;
+}>();
 const emit = defineEmits<{ act: [intent: Intent]; cultivate: []; road: [] }>();
 const panel = ref<HTMLElement>();
 const m = computed(() => props.game.adventure.mist);
@@ -23,7 +29,7 @@ const reveal = async () => {
   panel.value?.scrollIntoView({ block: "start", behavior: "instant" });
 };
 onMounted(reveal);
-watch(() => [m.value.stage, m.value.result], reveal);
+watch(() => m.value.stage, reveal);
 const scene = computed(() => {
   const base = mistScenes[m.value.stage];
   if (m.value.stage === "garden" && m.value.garden)
@@ -108,9 +114,12 @@ const choices = computed<Choice[]>(() => {
             {
               action: "attune",
               label: r.lamp ? "用探灵灯照见根脉" : "沿根脉疏通石渠",
-              hint: r.lamp
-                ? "新能力让旧问题有了新解法，不耗灵草"
-                : "医道心得 2，或请同行陆迟协作；不耗灵草",
+              hint:
+                props.game.adventure.road.solution === "medicine"
+                  ? "沿用青嶂关救草手法；可独自完成，不耗灵草"
+                  : r.lamp
+                    ? "新能力让旧问题有了新解法，不耗灵草"
+                    : "医道心得 2，或请同行陆迟协作；不耗灵草",
             },
           ];
     case "station":
@@ -126,7 +135,10 @@ const choices = computed<Choice[]>(() => {
             {
               action: "decode",
               label: "分辨送信与归家的灵脉",
-              hint: `神识 8 / 心得 2，或${companionName.value}协作；不消耗资源`,
+              hint:
+                props.game.adventure.road.solution === "array"
+                  ? "沿用青嶂关归阵手法；独自辨阵，不需同行或额外资源"
+                  : `神识 8 / 心得 2，或${companionName.value}协作；不消耗资源`,
             },
           ];
     case "gate":
@@ -226,14 +238,18 @@ const paths = computed<Choice[]>(() => [
       ? "已获引灯叶与证言，可以重访"
       : m.value.lamp
         ? "探灵灯能照出根脉，不耗灵草也能解开石角的难题"
-        : "交涉与救草：灵草 4 / 医道心得 2 / 陆迟援手，三选一",
+        : props.game.adventure.road.solution === "medicine"
+          ? "沿用青嶂关救草手法；独行也不耗药材"
+          : "交涉与救草：灵草 4 / 医道心得 2 / 陆迟援手，三选一",
   },
   {
     action: "station",
     label: "废驿 · 查清信从哪里寄来",
     hint: m.value.station
       ? "已记下归阵节拍，可以重访"
-      : `识阵：神识 8 + 心得 2，或${companionName.value}协作`,
+      : props.game.adventure.road.solution === "array"
+        ? "沿用青嶂关归阵手法；独自辨读旧阵"
+        : `识阵：神识 8 + 心得 2，或${companionName.value}协作`,
   },
   ...(m.value.garden || m.value.station
     ? [
@@ -290,7 +306,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
 <template>
   <section
     ref="panel"
-    class="adventure-panel mist-panel"
+    class="adventure-panel mist-panel desktop-scene"
     aria-label="雾海来信主线"
   >
     <SceneBackdrop
@@ -303,7 +319,10 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
       :portrait="person.portrait"
       :quote="mistQuote(game)"
     >
-      <p v-if="m.result" class="scene-result" role="status">{{ m.result }}</p>
+      <SceneResponse
+        :text="m.result"
+        :receipt="receipt?.scene?.chapter === 'mist' ? receipt : null"
+      />
     </SceneBackdrop>
     <section class="scene-controls" aria-label="雾海探索操作区">
       <ol class="chapter-track" aria-label="第三卷进度">
@@ -384,6 +403,26 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
             ><span aria-hidden="true">→</span>
           </button>
         </div>
+        <section
+          v-if="
+            game.adventure.road.solution === 'sword' && !m.ward && !m.passed
+          "
+          class="sheltered-hint"
+        >
+          <h3>青嶂关的商队追上来了</h3>
+          <p>
+            你斩开的宽路能运来桥材，提前架设归桥，不必先失败。青嶂送来护栏木，人却没有来。
+          </p>
+          <button
+            :disabled="locked || !!mistError(game, 'caravanBridge')"
+            @click="invoke('caravanBridge')"
+          >
+            请商队架设归桥 · 灵石 6<small>{{
+              mistError(game, "caravanBridge") ||
+              "护归准备 +20，与研究护归法不叠加"
+            }}</small>
+          </button>
+        </section>
         <section v-if="m.insight && !m.ward" class="sheltered-hint">
           <h3>失败带回了有用的东西</h3>
           <p>
@@ -486,7 +525,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
         </p>
         <p v-if="m.insight">
           阵眼情报：失败仍有进展，把握 +10。{{
-            m.ward ? "已经研究护归法，再 +20。" : "可回营研究护归法。"
+            m.ward ? "已有护归准备，再 +20（不叠加）。" : "可回营研究护归法。"
           }}
         </p>
         <p v-if="m.lamp">

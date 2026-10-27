@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { computed, ref, watch, nextTick, onMounted } from "vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
+import SceneResponse from "./SceneResponse.vue";
+import type { ActionReceipt } from "./action-feedback";
 import {
   adventureScenes,
   adventureOptions,
   type State,
   type Intent,
 } from "./core";
-const props = defineProps<{ game: State; busy: boolean }>();
+const props = defineProps<{
+  game: State;
+  busy: boolean;
+  receipt?: ActionReceipt | null;
+}>();
 const panel = ref<HTMLElement>();
 const reveal = async () => {
   await nextTick();
@@ -58,7 +64,7 @@ const person = computed(() =>
 <template>
   <section
     ref="panel"
-    class="adventure-panel"
+    class="adventure-panel desktop-scene"
     :data-weather="scene.mood"
     aria-label="寻人主线"
   >
@@ -72,9 +78,10 @@ const person = computed(() =>
       :portrait="person?.image"
       :quote="person?.line"
     >
-      <p v-if="game.adventure.result" class="scene-result" role="status">
-        {{ game.adventure.result }}
-      </p>
+      <SceneResponse
+        :text="game.adventure.result"
+        :receipt="receipt?.scene?.chapter === 'adventure' ? receipt : null"
+      />
     </SceneBackdrop>
     <section class="scene-controls" aria-label="冒险操作区">
       <h3 class="controls-heading">接下来，你来决定</h3>

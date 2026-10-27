@@ -1,4 +1,11 @@
 import type { State } from "./world";
+import {
+  passActionError,
+  applyPassAction,
+  passEcho,
+  isPassAction,
+} from "./pass-solutions";
+export * from "./pass-solutions";
 
 export type RoadStage =
   "home" | "market" | "pass" | "camp" | "beyond" | "lookout";
@@ -27,7 +34,10 @@ export const roadClues = {
     text: "路簿最旧的一页记着当年失散的药队，旁边是青嶂的刻印。他守着山口，不是为了拦住所有人，而是不愿再添一个没能归来的名字。你可以把这页故事带回坊市。",
   },
 } as const;
+export type PassSolution = "medicine" | "sword" | "array";
 export interface Road {
+  solution: "none" | "legacy" | PassSolution;
+  prepared: "none" | PassSolution;
   stage: RoadStage;
   thanked: boolean;
   met: boolean;
@@ -46,6 +56,8 @@ export interface Road {
   lastApproach: "direct" | "sheltered";
 }
 export const freshRoad = (): Road => ({
+  solution: "none",
+  prepared: "none",
   stage: "home",
   thanked: false,
   met: false,
@@ -64,6 +76,12 @@ export const freshRoad = (): Road => ({
   lastApproach: "direct",
 });
 export type RoadAction =
+  | "diagnoseRoots"
+  | "markCut"
+  | "traceArray"
+  | "healPass"
+  | "cutPass"
+  | "restorePass"
   | "thanks"
   | "market"
   | "talk"
@@ -150,7 +168,7 @@ export function roadGoal(s: State): string {
   if (r.obstacle === "none") return "先观察守境妖修与山风，别急着闯关。";
   if (s.realm === 0)
     return "准备筑基：积累修为、赴陆迟旧约、凝神固本，再挑战山口。";
-  return "按已知危险选择功法、灵器或同行援助，准备妥当后挑战青嶂关。";
+  return "观察镇风草、断崖与旧阵，选择你愿意留给后来人的归路。三种解法满足条件后必定成功。";
 }
 export function roadDetails(
   s: State,
@@ -212,6 +230,12 @@ export function roadError(s: State, action: RoadAction): string {
   )
     return "先处理眼前的事情";
   const allowed: Record<RoadAction, RoadStage[]> = {
+    diagnoseRoots: ["pass"],
+    markCut: ["pass"],
+    traceArray: ["pass"],
+    healPass: ["pass"],
+    cutPass: ["pass"],
+    restorePass: ["pass"],
     thanks: ["home"],
     market: ["home", "camp", "pass", "lookout"],
     talk: ["market"],
@@ -236,6 +260,7 @@ export function roadError(s: State, action: RoadAction): string {
   };
   if (!Object.hasOwn(allowed, action) || !allowed[action].includes(r.stage))
     return "不在对应地点";
+  if (isPassAction(action)) return passActionError(s, action);
   const clue = (Object.keys(roadClues) as RoadClue[]).find(
     (key) => roadClues[key].action === action,
   );
@@ -262,6 +287,8 @@ export function roadError(s: State, action: RoadAction): string {
   if (action === "invite" && r.ally) return "郁青已经答应同行";
   if (action === "inspect" && r.obstacle !== "none")
     return "已看清危险，不会刷新重抽";
+  if (r.passed && ["art", "relic", "friend"].includes(action))
+    return "归路已经留下，无需重新准备";
   if (["art", "relic", "friend"].includes(action) && r.route === action)
     return "已选择此准备方向";
   if (action === "challenge" || action === "shelteredChallenge") {
@@ -303,6 +330,7 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
     r.discoveries.push(clue);
     r.result = roadClues[clue].text;
   }
+  if (isPassAction(action)) applyPassAction(s, action);
   switch (action) {
     case "thanks":
       r.thanked = true;
@@ -387,6 +415,8 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
       r.roll = roll(s);
       if (r.roll <= r.chance) {
         r.passed = true;
+        r.solution = "legacy";
+        r.prepared = "none";
         r.stage = "beyond";
         r.result =
           {
@@ -426,6 +456,13 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
         "你记得回来的路。此后再过青嶂关不重复收费，也不会再次抽取胜负。";
       break;
   }
+  const echo = passEcho(s);
+  if (echo && ["market", "survey", "pass", "lookout", "back"].includes(action))
+    r.result =
+      echo.body +
+      " " +
+      echo.quote +
+      (action === "survey" ? " 旅亭谢礼：灵石 +8。" : "");
   s.seen = [...s.seen, id].slice(-512);
   s.log.unshift({
     month: s.month,
@@ -474,8 +511,10 @@ function validRoadProgress(r: Road, s: State): boolean {
       : r.roll >= 1 &&
         r.chance >= 5 &&
         r.route !== "none" &&
-        (r.passed || r.roll > r.chance)) &&
-    (!r.passed || (s.realm === 1 && r.attempts > 0 && r.roll <= r.chance)) &&
+        ((r.passed && r.solution === "legacy") || r.roll > r.chance)) &&
+    (!r.passed ||
+      (s.realm === 1 &&
+        (r.solution !== "legacy" || (r.attempts > 0 && r.roll <= r.chance)))) &&
     (!["beyond", "lookout"].includes(r.stage) || r.passed) &&
     (!r.surveyed || r.passed)
   );
@@ -483,12 +522,20 @@ function validRoadProgress(r: Road, s: State): boolean {
 export function validRoad(r: Road, s: State): boolean {
   return (
     validRoadProgress(r, s) &&
+    ["none", "legacy", "medicine", "sword", "array"].includes(r.solution) &&
+    ["none", "medicine", "sword", "array"].includes(r.prepared) &&
+    r.passed === (r.solution !== "none") &&
+    (r.prepared === "none" || (r.map && r.obstacle !== "none")) &&
+    (r.solution === "none" || r.solution === "legacy"
+      ? !r.passed || r.prepared === "none"
+      : r.prepared === r.solution) &&
     Array.isArray(r.discoveries) &&
     r.discoveries.length <= 3 &&
     r.discoveries.every(
       (k) => typeof k === "string" && Object.hasOwn(roadClues, k),
     ) &&
     new Set(r.discoveries).size === r.discoveries.length &&
+    (r.prepared !== "array" || hasShelteredRoute(s)) &&
     ["direct", "sheltered"].includes(r.lastApproach) &&
     (!r.discoveries.includes("ledger") || r.met) &&
     (!r.discoveries.includes("marks") || r.obstacle !== "none") &&

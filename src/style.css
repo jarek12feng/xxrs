@@ -2139,3 +2139,139 @@ button:disabled {
     padding: 13px;
   }
 }
+
+/* Keep reading controls and route costs legible in the desktop prototype. */
+.road-toolbar label {
+  width: auto;
+  white-space: nowrap;
+}
+.road-panel .pass-solutions .fineprint {
+  text-align: left;
+  color: #53604e;
+}
+
+/* Desktop reading: one scene beside its own commands; narrow screens retain source order. */
+.desktop-scene > *,
+.desktop-room > * {
+  min-width: 0;
+}
+@media (min-width: 1100px) {
+  .game-layout.story-mode {
+    max-width: 1440px;
+  }
+  .game-layout:not(.story-mode) {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+  .game-layout:not(.story-mode) > .right-column {
+    display: grid;
+    grid-column: 2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .game-layout:not(.story-mode) > .character {
+    position: sticky;
+    top: 16px;
+  }
+  .desktop-scene {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    overflow: visible;
+  }
+  .desktop-scene > .scene-backdrop {
+    position: sticky;
+    top: 16px;
+    min-height: min(680px, calc(100dvh - 32px));
+    border-radius: 10px 0 0 10px;
+  }
+  .desktop-scene > .scene-controls {
+    margin: 0;
+    border-top: 0;
+    border-left: 1px solid #c6cbb9;
+    border-radius: 0 10px 10px 0;
+  }
+  .desktop-scene .scene-narrative {
+    padding: 56px 24px 24px;
+  }
+  .desktop-scene .scene-prose {
+    font-size: 16px;
+    line-height: 1.9;
+  }
+  .cultivation-room,
+  .history-room {
+    margin-top: 20px;
+  }
+  .cultivation-room .activity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cultivation-room .cultivation-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cultivation-room .cultivation-actions button {
+    flex: 1 1 100px;
+  }
+  .world-panel nav {
+    flex-wrap: wrap;
+  }
+  .desktop-room {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .desktop-room > .panel-heading,
+  .desktop-room > nav {
+    grid-column: 1 / -1;
+  }
+  .desktop-room > .scene-backdrop {
+    position: sticky;
+    top: 16px;
+    min-height: 480px;
+  }
+  .desktop-room > .scene-controls {
+    margin: 0;
+    border-top: 0;
+  }
+  .player-summary > div {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px 24px;
+  }
+  .player-summary > div > button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  .story-mode .journey > div > .timeline {
+    display: none;
+  }
+}
+.story-mode .journey > div > .timeline {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .game-layout:not(.story-mode) > .character {
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
+  .desktop-scene .scene-controls p,
+  .desktop-room .scene-controls p {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .desktop-scene .scene-controls button,
+  .desktop-room .scene-controls button {
+    min-height: 44px;
+    font-size: 15px;
+  }
+  .desktop-scene .scene-controls button small,
+  .desktop-room .scene-controls button small {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+@media (min-width: 1100px) {
+  .history-room > .scene-backdrop {
+    min-height: 420px;
+  }
+}

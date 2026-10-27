@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch, nextTick, onUnmounted } from "vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 import {
   companion,
@@ -34,6 +34,27 @@ const locked = computed(
     !!props.game.social.scene,
 );
 const duel = computed(() => props.game.social.arena.duel);
+const board = ref<HTMLElement>();
+const resolving = ref(false);
+let impactTimer: ReturnType<typeof setTimeout> | undefined;
+watch(
+  () => duel.value?.turn,
+  async (turn, old) => {
+    clearTimeout(impactTimer);
+    if (turn === undefined) {
+      resolving.value = false;
+      return;
+    }
+    resolving.value = true;
+    impactTimer = setTimeout(
+      () => (resolving.value = false),
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650,
+    );
+    await nextTick();
+    board.value?.scrollIntoView({ block: "start", behavior: "instant" });
+  },
+);
+onUnmounted(() => clearTimeout(impactTimer));
 const mood = computed(() =>
   props.mode === "arena"
     ? "arena"
@@ -55,7 +76,7 @@ const intentText: Record<Stance, string> = {
 };
 </script>
 <template>
-  <div class="social-content" :data-mood="mood">
+  <div class="social-content desktop-scene" :data-mood="mood">
     <SceneBackdrop
       :key="mood"
       :image="backdrop"
@@ -111,7 +132,7 @@ const intentText: Record<Stance, string> = {
         {{ duel.log.at(-1) }}
       </p>
       <p
-        v-else-if="mode === 'arena' && game.social.arena.last"
+        v-else-if="mode === 'arena' && !duel && game.social.arena.last"
         class="scene-result"
         role="status"
       >
@@ -257,24 +278,85 @@ const intentText: Record<Stance, string> = {
           {{ game.social.arena.losses }}
           <strong v-if="game.social.arena.wins === 3">· 听松试剑魁首</strong>
         </p>
-        <div v-if="duel" class="duel-board" aria-live="polite">
+        <div
+          v-if="duel"
+          ref="board"
+          class="duel-board"
+          :class="{ 'duel-resolving': resolving }"
+          aria-live="polite"
+        >
           <span class="eyebrow">交锋中 · 时间暂停 / 装配锁定</span>
           <h3>{{ rivals[duel.opponent].name }} · 第 {{ duel.turn + 1 }} 合</h3>
-          <div class="duel-vitals">
-            <span
-              >你的气势 <strong>{{ duel.hp }} / {{ duel.maxHp }}</strong></span
-            ><span
-              >对手气势
-              <strong
-                >{{ duel.enemyHp }} / {{ rivals[duel.opponent].hp }}</strong
-              ></span
-            >
+          <div class="combatants">
+            <div>
+              <span class="fighter-seal">{{ game.name.slice(0, 1) }}</span
+              ><span
+                >你的气势
+                <strong>{{ duel.hp }} / {{ duel.maxHp }}</strong></span
+              >
+              <div
+                class="vital-track"
+                role="meter"
+                aria-label="你的气势"
+                :aria-valuenow="duel.hp"
+                :aria-valuemax="duel.maxHp"
+                aria-valuemin="0"
+              >
+                <i :style="{ width: (100 * duel.hp) / duel.maxHp + '%' }"></i>
+              </div>
+            </div>
+            <b class="clash-mark" aria-hidden="true">交锋</b>
+            <div>
+              <span class="fighter-seal enemy">{{
+                rivals[duel.opponent].name.slice(0, 1)
+              }}</span
+              ><span
+                >对手气势
+                <strong
+                  >{{ duel.enemyHp }} / {{ rivals[duel.opponent].hp }}</strong
+                ></span
+              >
+              <div
+                class="vital-track enemy"
+                role="meter"
+                aria-label="对手气势"
+                :aria-valuenow="duel.enemyHp"
+                :aria-valuemax="rivals[duel.opponent].hp"
+                aria-valuemin="0"
+              >
+                <i
+                  :style="{
+                    width:
+                      (100 * duel.enemyHp) / rivals[duel.opponent].hp + '%',
+                  }"
+                ></i>
+              </div>
+            </div>
           </div>
+          <p v-if="!duel.turn" class="combat-receipt">
+            你已登台，本场费用灵石 4（当月收入
+            1）。每合不再扣费，修行月份暂时停止。
+          </p>
+          <p
+            v-else
+            :key="duel.turn"
+            class="combat-receipt combat-impact"
+            role="status"
+          >
+            {{ duel.log.at(-1) }}
+          </p>
+          <p class="combat-intent">
+            <strong>下一合 · 看清对手</strong
+            >{{ intentText[duelIntent(game)!] }}
+          </p>
+          <p class="combat-phase">
+            {{ resolving ? "招式落定，稳住气息……" : "轮到你 · 选择应对" }}
+          </p>
           <div class="stance-options">
             <button
               v-for="(label, stance) in stances"
               :key="stance"
-              :disabled="locked"
+              :disabled="locked || resolving"
               @click="emit('act', { type: 'arenaTurn', stance })"
             >
               <strong>{{ label }}</strong
@@ -295,7 +377,7 @@ const intentText: Record<Stance, string> = {
             <p v-for="(line, index) in duel.log" :key="index">{{ line }}</p>
           </details>
           <button
-            :disabled="locked"
+            :disabled="locked || resolving"
             @click="emit('act', { type: 'arenaWithdraw' })"
           >
             主动认负 · 不新增伤势 / 费用不退
@@ -367,7 +449,11 @@ const intentText: Record<Stance, string> = {
             −1。根骨与根基提高自身气势，根骨、神识、心得和剑意共同提高伤害。比赛中不能换装，准备阶段可自由调整。
           </p>
         </details>
-        <p v-if="game.social.arena.last" class="match-result" role="status">
+        <p
+          v-if="!duel && game.social.arena.last"
+          class="match-result"
+          role="status"
+        >
           {{ game.social.arena.last }}
         </p>
         <p
@@ -384,3 +470,147 @@ const intentText: Record<Stance, string> = {
     </section>
   </div>
 </template>
+<style>
+.duel-board {
+  scroll-margin-top: 64px;
+}
+.combatants {
+  display: grid;
+  grid-template-columns: 1fr 36px 1fr;
+  gap: 8px;
+  align-items: center;
+  margin: 18px 0;
+}
+.combatants > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  text-align: center;
+}
+.fighter-seal {
+  display: grid;
+  place-items: center;
+  align-self: center;
+  border: 1px solid #5e8272;
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  background: #284d41;
+  color: #f1e5c4;
+  font: 28px serif;
+}
+.fighter-seal.enemy {
+  background: #664439;
+  border-color: #9d705a;
+}
+.clash-mark {
+  font: 12px serif;
+  color: #8d7a53;
+  text-align: center;
+}
+.combatants > div > span:not(.fighter-seal) {
+  font-size: 12px;
+}
+.combatants strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 17px;
+}
+.vital-track {
+  height: 8px;
+  border-radius: 9px;
+  background: #284d4120;
+  overflow: hidden;
+}
+.vital-track i {
+  display: block;
+  height: 100%;
+  background: #52775b;
+  transition: width 0.6s ease-out;
+}
+.vital-track.enemy i {
+  background: #ab7860;
+}
+.combat-receipt {
+  padding: 12px;
+  background: #e1e8d9;
+  border-left: 3px solid #6c8464;
+  line-height: 1.8;
+  font-size: 14px;
+}
+.combat-intent {
+  padding: 12px;
+  border: 1px solid #c5c5ab;
+  background: #f6f2e7;
+  line-height: 1.7;
+  font-size: 14px;
+}
+.combat-intent strong {
+  display: block;
+  color: #495e46;
+  margin-bottom: 6px;
+}
+.combat-phase {
+  font-size: 12px;
+  color: #6a755b;
+}
+.combat-impact {
+  animation: combat-impact 0.6s ease-out;
+}
+.duel-resolving .fighter-seal {
+  animation: combat-lunge 0.6s ease-out;
+}
+.duel-resolving .fighter-seal.enemy {
+  animation-direction: reverse;
+}
+.duel-board .stance-options button {
+  min-height: 58px;
+}
+.duel-board .stance-options {
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.duel-board .stance-options button {
+  padding: 12px 6px;
+  min-height: 88px;
+  min-width: 0;
+  font-size: 15px;
+}
+.duel-board .stance-options small {
+  font-size: 12px;
+  line-height: 1.5;
+  display: block;
+  margin-top: 6px;
+}
+@keyframes combat-impact {
+  from {
+    box-shadow: 0 0 0 4px #c3ad7655;
+    opacity: 0.4;
+  }
+  to {
+    box-shadow: 0 0 0 0 transparent;
+    opacity: 1;
+  }
+}
+@keyframes combat-lunge {
+  35% {
+    transform: translateX(7px);
+  }
+  70% {
+    transform: translateX(-3px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .combat-impact,
+  .duel-resolving .fighter-seal {
+    animation: none;
+  }
+  .vital-track i {
+    transition: none;
+  }
+}
+</style>

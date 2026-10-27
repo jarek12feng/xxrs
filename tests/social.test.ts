@@ -146,6 +146,6 @@ describe("relationships and arena", () => {
     s.social.affection = 101;
     expect(validState(s)).toBe(false);
     expect(() => migrateSave(s)).toThrow();
-    expect(() => migrateSave({ ...adult(), version: 10 })).toThrow();
+    expect(() => migrateSave({ ...adult(), version: 99 })).toThrow();
   });
 });

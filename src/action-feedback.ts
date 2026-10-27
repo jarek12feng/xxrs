@@ -5,10 +5,27 @@ import {
   type Intent,
   type State,
 } from "./core";
+import { enrichReceipt } from "./journey-feedback";
 
 export interface ActionReceipt {
   title: string;
-  ritual: "break" | "refine" | "retreat" | "challenge" | "forge" | null;
+  ritual:
+    "break" | "refine" | "retreat" | "challenge" | "forge" | "duel" | null;
+  unlocks?: string[];
+  scene?: {
+    from: string;
+    to: string;
+    body: string;
+    unlocks: string[];
+    chapter: "adventure" | "road" | "mist" | "world";
+    place?: "valley" | "peak" | "sea";
+  };
+  person?: {
+    name: string;
+    portrait: string;
+    response: string;
+    relation: string;
+  };
   tone: "success" | "warning" | "neutral";
   months: number;
   changes: { label: string; before: number; after: number; good: boolean }[];
@@ -27,6 +44,11 @@ export function actionReceipt(
     before === after ||
     before.life !== after.life ||
     intent.type === "beginChapter"
+  )
+    return null;
+  if (
+    (intent.type === "arenaTurn" && after.social.arena.duel) ||
+    (intent.type === "arenaStart" && after.social.arena.duel)
   )
     return null;
   const effective: Intent =
@@ -147,7 +169,7 @@ export function actionReceipt(
         ? `投炉消耗：灵草 −${refineCost(before).herbs}，灵石 −${refineCost(before).stones}。下方为含月收入的实际净变化。`
         : "闭关消耗：灵石 −8。下方为含月收入的实际净变化。"
       : "下方为本次行动的实际净变化。";
-  return {
+  return enrichReceipt(before, after, intent, {
     title,
     ritual,
     tone: dead || failed ? "warning" : ritual ? "success" : "neutral",
@@ -168,5 +190,5 @@ export function actionReceipt(
             : ritual === "challenge" && failed
               ? "线索仍在。查看当前挑战提示，提升实力或寻求帮助后再来。"
               : "成果已自动保存，可以继续行动。",
-  };
+  });
 }

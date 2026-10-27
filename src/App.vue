@@ -42,13 +42,17 @@ import RoadPanel from "./RoadPanel.vue";
 import MistPanel from "./MistPanel.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 import ActionFeedback from "./ActionFeedback.vue";
+import SceneArrival from "./SceneArrival.vue";
 import { actionReceipt, type ActionReceipt } from "./action-feedback";
 const receipt = shallowRef<ActionReceipt | null>(null);
 const receiptExpanded = ref(false);
 const receiptSerial = ref(0);
+const arrivalFinished = ref(false);
 let receiptTimer: ReturnType<typeof setTimeout> | undefined;
 let actionOrigin: HTMLElement | null = null;
 async function closeReceipt() {
+  const returnToPerson =
+    !!receipt.value?.person || receipt.value?.ritual === "duel";
   receiptExpanded.value = false;
   receipt.value = null;
   clearTimeout(receiptTimer);
@@ -56,6 +60,21 @@ async function closeReceipt() {
   if (modal.value)
     document.querySelector<HTMLElement>("[role=dialog] h2")?.focus();
   else if (actionOrigin?.isConnected) actionOrigin.focus();
+  else if (returnToPerson) {
+    const heading =
+      document.querySelector<HTMLElement>(
+        ".social-content .controls-heading",
+      ) || document.querySelector<HTMLElement>(".journey .scene-controls h3");
+    heading?.setAttribute("tabindex", "-1");
+    heading?.focus({ preventScroll: true });
+    heading?.scrollIntoView({ block: "nearest", behavior: "instant" });
+  }
+}
+function inspectReceipt() {
+  clearTimeout(receiptTimer);
+  ui.running = false;
+  receiptExpanded.value = true;
+  receiptSerial.value++;
 }
 const view = ref<"story" | "cultivation">("story");
 const showRoad = ref(false);
@@ -176,14 +195,16 @@ async function act(intent: Intent) {
   if (ok) {
     clearTimeout(receiptTimer);
     receipt.value = actionReceipt(old, n, intent);
+    arrivalFinished.value = false;
     receiptSerial.value++;
-    receiptExpanded.value = !!receipt.value?.ritual && !automatic;
+    receiptExpanded.value =
+      (!!receipt.value?.ritual || !!receipt.value?.person) && !automatic;
     if (receiptExpanded.value) {
       ui.running = false;
       dialog.value = "";
     }
     // Ordinary actions stay non-blocking; the full details remain in the log.
-    else
+    else if (!receipt.value?.scene)
       receiptTimer = setTimeout(() => {
         receipt.value = null;
       }, 6500);
@@ -373,7 +394,7 @@ onUnmounted(() => {
         ><span>修仙人生<small>一卷山海 · 几世修行</small></span></a
       >
       <div class="header-right">
-        <span class="edition">雾海来信 · v0.9.1</span
+        <span class="edition">青嶂归路 · v0.10.0</span
         ><button class="quiet" @click="dialog = 'help'">玩法说明</button
         ><button class="quiet" @click="fileInput?.click()">导入存档</button
         ><button v-if="game" class="quiet" @click="download(game)">导出</button>
@@ -451,7 +472,9 @@ onUnmounted(() => {
     <main
       v-else-if="game"
       class="game-layout"
-      :class="{ 'story-mode': view === 'story' && !ui.history }"
+      :class="{
+        'story-mode': view === 'story' && !ui.history,
+      }"
     >
       <details v-if="view === 'story' && !ui.history" class="player-summary">
         <summary>
@@ -579,6 +602,7 @@ onUnmounted(() => {
             game.adventure.mist.stage !== 'dormant'
           "
           :game="game"
+          :receipt="receipt"
           :busy="ui.busy || ui.running"
           @act="worldAct"
           @cultivate="view = 'cultivation'"
@@ -589,6 +613,7 @@ onUnmounted(() => {
             !ui.history && view === 'story' && game.adventure.step === 'done'
           "
           :game="game"
+          :receipt="receipt"
           :busy="ui.busy || ui.running"
           @act="worldAct"
           @cultivate="view = 'cultivation'"
@@ -601,165 +626,176 @@ onUnmounted(() => {
         <AdventurePanel
           v-else-if="!ui.history && view === 'story'"
           :game="game"
+          :receipt="receipt"
           :busy="ui.busy || ui.running"
           @act="worldAct"
           @cultivate="view = 'cultivation'"
         />
         <template v-if="!ui.history && view === 'cultivation'"
-          ><SceneBackdrop
-            image="/scenes/moon-terrace.png"
-            title="听松山居"
-            eyebrow="一念长生 · 一诺千金"
-            :body="
-              game.realm
-                ? '云路已经向你展开。今夜在洞府整理行装，明日带着更稳的气息，再赴山外。'
-                : '山风穿过石台，灯火照着未读完的丹经。你知道山外有人在等，也知道每一次凝神，都是为了走得更远。'
-            "
-            compact
-          />
-          <fieldset
-            class="cultivation-panel scene-controls"
-            :disabled="!!game.social.arena.duel"
-            aria-label="洞府修行"
+          ><section
+            class="cultivation-room desktop-scene"
+            aria-label="洞府场景与修行"
           >
-            <h3 class="controls-heading">洞府修行 · 操作区</h3>
-            <div class="progress-label">
-              <h2>{{ game.realm ? "筑基已成 · 山外寻人" : "炼气 → 筑基" }}</h2>
-              <strong v-if="game.realm === 0"
-                >{{ game.qi }} / {{ MAX_QI }}</strong
-              >
-              <strong v-else
-                >探索
-                {{
-                  game.journey.maps.valley +
-                  game.journey.maps.peak +
-                  game.journey.maps.sea
-                }}
-                / 9</strong
-              >
-            </div>
-            <div v-if="game.realm === 0" class="qi-track">
-              <i :style="{ width: (game.qi / MAX_QI) * 100 + '%' }"></i>
-            </div>
-            <p class="next-goal">{{ nextGoal(game) }}</p>
-            <div class="activity-grid">
-              <button
-                v-for="a in activities"
-                :key="a.id"
-                :class="{ selected: activity === a.id }"
-                :disabled="!!actionError(game, a.id) || ui.busy || ui.running"
-                :title="actionError(game, a.id)"
-                @click="activity = a.id"
-              >
-                <strong>{{ a.name }}</strong
-                ><small>{{
-                  actionError(game, a.id) ||
-                  (a.id === "cultivate"
-                    ? `每月修为 +${cultivationGain(game)}（含根骨加成）`
-                    : a.hint)
-                }}</small>
-              </button>
-            </div>
-            <div class="cultivation-actions">
-              <button
-                class="primary"
-                :disabled="
-                  ui.busy || (!ui.running && !!actionError(game, activity))
-                "
-                @click="
-                  queueMode = false;
-                  ui.running = !ui.running;
-                "
-              >
-                {{ ui.running ? "暂停" : "自动行动" }}</button
-              ><button
-                class="secondary"
-                :disabled="
-                  ui.busy || ui.running || !!actionError(game, activity)
-                "
-                @click="advance(1)"
-              >
-                行动一月</button
-              ><button
-                class="secondary"
-                :disabled="
-                  ui.busy || ui.running || !!actionError(game, activity)
-                "
-                @click="advance(3)"
-              >
-                行动三月
-              </button>
-            </div>
-            <p class="fineprint">
-              每月收入 1 灵石。自动每 0.8
-              秒推进一月，遇关键剧情、修为满或切后台暂停。
-            </p>
-            <div class="preparations">
-              <button
-                class="secondary"
-                :disabled="ui.busy || !!preparationError(game, 'refine')"
-                @click="prepare('refine')"
-              >
-                炼筑基丹 · 三月<small>{{
-                  preparationError(game, "refine") ||
-                  `灵草 −${costs?.herbs} / 灵石 −${costs?.stones} / 筑基丹 +1`
-                }}</small></button
-              ><button
-                class="secondary"
-                :disabled="ui.busy || !!preparationError(game, 'retreat')"
-                @click="prepare('retreat')"
-              >
-                闭关固本 · 六月<small>{{
-                  preparationError(game, "retreat") ||
-                  "灵石 −8 / 根基 +6 / 修为 +30"
-                }}</small>
-              </button>
-            </div>
-            <button
-              class="break-button full"
-              :disabled="ui.busy || game.realm === 1 || game.qi < MAX_QI"
-              @click="
-                pill = game.pills > 0;
-                dialog = 'break';
+            <SceneBackdrop
+              image="/scenes/moon-terrace.png"
+              title="听松山居"
+              eyebrow="一念长生 · 一诺千金"
+              :body="
+                game.realm
+                  ? '云路已经向你展开。今夜在洞府整理行装，明日带着更稳的气息，再赴山外。'
+                  : '山风穿过石台，灯火照着未读完的丹经。你知道山外有人在等，也知道每一次凝神，都是为了走得更远。'
               "
+              compact
+            />
+            <fieldset
+              class="cultivation-panel scene-controls"
+              :disabled="!!game.social.arena.duel"
+              aria-label="洞府修行"
             >
-              叩问天关 · 尝试筑基 ↗
-            </button>
-            <p v-if="game.result" class="last-result">{{ game.result }}</p>
-          </fieldset>
+              <h3 class="controls-heading">洞府修行 · 操作区</h3>
+              <div class="progress-label">
+                <h2>
+                  {{ game.realm ? "筑基已成 · 山外寻人" : "炼气 → 筑基" }}
+                </h2>
+                <strong v-if="game.realm === 0"
+                  >{{ game.qi }} / {{ MAX_QI }}</strong
+                >
+                <strong v-else
+                  >探索
+                  {{
+                    game.journey.maps.valley +
+                    game.journey.maps.peak +
+                    game.journey.maps.sea
+                  }}
+                  / 9</strong
+                >
+              </div>
+              <div v-if="game.realm === 0" class="qi-track">
+                <i :style="{ width: (game.qi / MAX_QI) * 100 + '%' }"></i>
+              </div>
+              <p class="next-goal">{{ nextGoal(game) }}</p>
+              <div class="activity-grid">
+                <button
+                  v-for="a in activities"
+                  :key="a.id"
+                  :class="{ selected: activity === a.id }"
+                  :disabled="!!actionError(game, a.id) || ui.busy || ui.running"
+                  :title="actionError(game, a.id)"
+                  @click="activity = a.id"
+                >
+                  <strong>{{ a.name }}</strong
+                  ><small>{{
+                    actionError(game, a.id) ||
+                    (a.id === "cultivate"
+                      ? `每月修为 +${cultivationGain(game)}（含根骨加成）`
+                      : a.hint)
+                  }}</small>
+                </button>
+              </div>
+              <div class="cultivation-actions">
+                <button
+                  class="primary"
+                  :disabled="
+                    ui.busy || (!ui.running && !!actionError(game, activity))
+                  "
+                  @click="
+                    queueMode = false;
+                    ui.running = !ui.running;
+                  "
+                >
+                  {{ ui.running ? "暂停" : "自动行动" }}</button
+                ><button
+                  class="secondary"
+                  :disabled="
+                    ui.busy || ui.running || !!actionError(game, activity)
+                  "
+                  @click="advance(1)"
+                >
+                  行动一月</button
+                ><button
+                  class="secondary"
+                  :disabled="
+                    ui.busy || ui.running || !!actionError(game, activity)
+                  "
+                  @click="advance(3)"
+                >
+                  行动三月
+                </button>
+              </div>
+              <p class="fineprint">
+                每月收入 1 灵石。自动每 0.8
+                秒推进一月，遇关键剧情、修为满或切后台暂停。
+              </p>
+              <div class="preparations">
+                <button
+                  class="secondary"
+                  :disabled="ui.busy || !!preparationError(game, 'refine')"
+                  @click="prepare('refine')"
+                >
+                  炼筑基丹 · 三月<small>{{
+                    preparationError(game, "refine") ||
+                    `灵草 −${costs?.herbs} / 灵石 −${costs?.stones} / 筑基丹 +1`
+                  }}</small></button
+                ><button
+                  class="secondary"
+                  :disabled="ui.busy || !!preparationError(game, 'retreat')"
+                  @click="prepare('retreat')"
+                >
+                  闭关固本 · 六月<small>{{
+                    preparationError(game, "retreat") ||
+                    "灵石 −8 / 根基 +6 / 修为 +30"
+                  }}</small>
+                </button>
+              </div>
+              <button
+                class="break-button full"
+                :disabled="ui.busy || game.realm === 1 || game.qi < MAX_QI"
+                @click="
+                  pill = game.pills > 0;
+                  dialog = 'break';
+                "
+              >
+                叩问天关 · 尝试筑基 ↗
+              </button>
+              <p v-if="game.result" class="last-result">{{ game.result }}</p>
+            </fieldset>
+          </section>
           <WorldPanel
             :game="game"
+            :receipt="receipt"
             :busy="ui.busy"
             :running="ui.running"
             @act="worldAct"
             @run-queue="runQueue"
           />
         </template>
-        <SceneBackdrop
-          v-if="ui.history"
-          image="/scenes/moon-terrace.png"
-          title="这一世的卷宗"
-          eyebrow="灯下回望"
-          body="摊开旧卷，走过的山路、赴过的约定与没说完的话，都还留在这里。"
-          compact
-        />
-        <section class="timeline" :class="{ 'scene-controls': ui.history }">
-          <div class="panel-heading">
-            <h2>人生卷宗</h2>
-            <span class="muted">{{
-              ui.history ? "本世最近 180 条" : "近事三则"
-            }}</span>
-          </div>
-          <article
-            v-for="(entry, i) in game.log.slice(0, ui.history ? 180 : 3)"
-            :key="i"
-            :class="entry.kind"
-          >
-            <span class="timeline-dot"></span
-            ><time>第 {{ entry.month }} 月</time>
-            <p>{{ entry.text }}</p>
-          </article>
-        </section>
+        <div :class="{ 'desktop-scene history-room': ui.history }">
+          <SceneBackdrop
+            v-if="ui.history"
+            image="/scenes/moon-terrace.png"
+            title="这一世的卷宗"
+            eyebrow="灯下回望"
+            body="摊开旧卷，走过的山路、赴过的约定与没说完的话，都还留在这里。"
+            compact
+          />
+          <section class="timeline" :class="{ 'scene-controls': ui.history }">
+            <div class="panel-heading">
+              <h2>人生卷宗</h2>
+              <span class="muted">{{
+                ui.history ? "本世最近 180 条" : "近事三则"
+              }}</span>
+            </div>
+            <article
+              v-for="(entry, i) in game.log.slice(0, ui.history ? 180 : 3)"
+              :key="i"
+              :class="entry.kind"
+            >
+              <span class="timeline-dot"></span
+              ><time>第 {{ entry.month }} 月</time>
+              <p>{{ entry.text }}</p>
+            </article>
+          </section>
+        </div>
       </section>
       <aside class="right-column">
         <section class="guide-card">
@@ -842,11 +878,24 @@ onUnmounted(() => {
       @close="closeReceipt"
     />
   </div>
-  <div v-else-if="receipt && !modal" class="receipt-dock">
+  <SceneArrival
+    v-else-if="
+      receipt?.scene &&
+      receipt.scene.from !== receipt.scene.to &&
+      !modal &&
+      !arrivalFinished
+    "
+    :key="receiptSerial"
+    :from="receipt.scene.from"
+    :to="receipt.scene.to"
+    @finish="arrivalFinished = true"
+  />
+  <div v-else-if="receipt && !receipt.scene && !modal" class="receipt-dock">
     <ActionFeedback
       :key="receiptSerial"
       :receipt="receipt"
       @close="closeReceipt"
+      @inspect="inspectReceipt"
     />
   </div>
   <div

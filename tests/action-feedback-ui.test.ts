@@ -5,6 +5,7 @@ import { createPinia } from "pinia";
 import App from "../src/App.vue";
 import { createGame, dispatch, type State } from "../src/core";
 import { load, save } from "../src/save";
+import { mistCheckpoint } from "../tools/mist-checkpoint";
 vi.mock("../src/save", () => ({ load: vi.fn(), save: vi.fn() }));
 let app: VueApp;
 const text = () => document.body.textContent || "";
@@ -204,4 +205,92 @@ it("automatic queued alchemy does not require dismissing a modal every tick", as
   expect(document.querySelector(".receipt-dock")?.textContent).toContain(
     "丹成",
   );
+});
+it("keeps discoveries inside the scene and shows a named arrival without a blocking receipt", async () => {
+  await mount(createGame("行者", "wood"));
+  await click("当前冒险");
+  await click("检查药篓");
+  expect(document.querySelector(".scene-response")?.textContent).toContain(
+    "发现青瘴粉与归路红绳",
+  );
+  expect(document.querySelector(".receipt-dock")).toBeNull();
+  await click("带着线索前往药庐");
+  expect(document.querySelector(".scene-arrival")?.textContent).toContain(
+    "抵达 · 山门药庐",
+  );
+  expect(button("请温蘅").disabled).toBe(false);
+  await vi.advanceTimersByTimeAsync(1800);
+  expect(document.querySelector(".scene-arrival")).toBeNull();
+});
+it("NPC choices have a named response, affection and memory before returning to interactions", async () => {
+  await mount(mistCheckpoint());
+  await click("人物缘分");
+  await click("赴约 · 一月");
+  await click("用研读所得标出安全通路");
+  const dialog = document.querySelector("[role=dialog]");
+  expect(dialog?.textContent).toContain("沈听澜");
+  expect(dialog?.textContent).toContain("共同记忆 · 共勘旧路");
+  expect(dialog?.textContent).toContain("+16");
+  expect(dialog?.querySelector(".reply-person")).not.toBeNull();
+  expect(dialog?.textContent).not.toContain("山门暂掩");
+  await click("知晓结果");
+  expect(document.querySelector("[role=dialog]")).toBeNull();
+  expect(document.activeElement?.textContent).toBe("相识与相处");
+});
+it("NPC response is not fabricated on save failure", async () => {
+  await mount(mistCheckpoint());
+  await click("人物缘分");
+  await click("赴约 · 一月");
+  vi.mocked(save).mockRejectedValueOnce(new Error("保存失败"));
+  await click("用研读所得标出安全通路");
+  expect(document.querySelector(".reply-person")).toBeNull();
+  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
+    "同行 · 雨中的旧路",
+  );
+});
+it("combat shows damage at the controls, gates rapid follow-up and keeps the final result", async () => {
+  const s = dispatch(mistCheckpoint(), {
+    type: "arenaScout",
+    id: "scout-test",
+  });
+  await mount(s);
+  await click("听松擂台");
+  await click("登台挑战");
+  await vi.advanceTimersByTimeAsync(650);
+  await click("破势");
+  expect(document.querySelector(".combat-receipt")?.textContent).toContain(
+    "第1合破势",
+  );
+  expect(document.querySelector(".combat-intent")?.textContent).toContain(
+    "对手",
+  );
+  expect(document.querySelector(".receipt-dock")).toBeNull();
+  expect(button("破势").disabled).toBe(true);
+  await click("破势");
+  expect(save).toHaveBeenCalledTimes(2);
+  for (let i = 0; i < 2 && !document.querySelector("[role=dialog]"); i++) {
+    await vi.advanceTimersByTimeAsync(650);
+    await click(i === 0 ? "破势" : "守息");
+  }
+  expect(document.querySelector("[role=dialog]")).not.toBeNull();
+  await click("跳过演出");
+  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
+    "擂台获胜",
+  );
+  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
+    "归元息",
+  );
+  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
+    "赛后邀约",
+  );
+});
+it("an expanded ordinary receipt stays readable beyond the toast timeout", async () => {
+  await mount();
+  await click("行动一月");
+  await click("查看详情");
+  await vi.advanceTimersByTimeAsync(10000);
+  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
+    "吐纳完成",
+  );
+  expect(save).toHaveBeenCalledTimes(1);
 });

@@ -51,6 +51,7 @@ export const freshMist = (): Mist => ({
   result: "",
 });
 export type MistAction =
+  | "caravanBridge"
   | "receive"
   | "accept"
   | "camp"
@@ -199,15 +200,19 @@ export function mistGoal(s: State): string {
       ? m.passed
         ? "石角的证言补全了旧事。回坊市分享，或再看看其他旧路。"
         : "石角已交出引灯草的记忆；可以去阵门，或补探废驿。"
-      : m.lamp
-        ? "探灵灯能照出堵塞的根脉，不耗灵草也能救下药圃。"
-        : "可用灵草 4 救治引灯草，或用辨草知识 / 同行援助疏通根脉。";
+      : s.adventure.road.solution === "medicine"
+        ? "沿用青嶂关救草手法，不耗灵草也能疏通根脉。"
+        : m.lamp
+          ? "探灵灯能照出堵塞的根脉，不耗灵草也能救下药圃。"
+          : "可用灵草 4 救治引灯草，或用辨草知识 / 同行援助疏通根脉。";
   if (m.stage === "station")
     return m.station
       ? m.passed
         ? "旧阵的节拍已记下。回坊市整理发现，或补探药圃的往事。"
         : "你已掌握归阵节拍；可以去阵门，或问问药圃的往事。"
-      : `神识 8 + 心得 2 可辨认旧阵；${s.social.met && s.social.gender ? companions[s.social.gender].name : "相识的同行者"}也能协作辨阵。`;
+      : s.adventure.road.solution === "array"
+        ? "沿用与青嶂立约时记下的归阵手法，可独自辨读旧阵。"
+        : `神识 8 + 心得 2 可辨认旧阵；${s.social.met && s.social.gender ? companions[s.social.gender].name : "相识的同行者"}也能协作辨阵。`;
   if (m.stage === "gate")
     return m.passed
       ? "阵门已开，信阵中的旧记录正等你阅读。"
@@ -265,6 +270,7 @@ export function mistDetails(s: State) {
   };
 }
 const allowed: Record<MistAction, MistStage[]> = {
+  caravanBridge: ["camp"],
   receive: ["dormant"],
   accept: ["letter"],
   camp: ["garden", "station", "gate", "home", "shrine"],
@@ -318,13 +324,18 @@ export function mistError(s: State, action: MistAction): string {
   if (
     action === "attune" &&
     !m.lamp &&
+    s.adventure.road.solution !== "medicine" &&
     !(s.path === "wood" && s.study >= 2) &&
     m.partner !== "luchi"
   )
     return "需要医道心得 2、陆迟同行，或探灵灯";
   if (action === "decode") {
     if (m.station) return "已经读懂旧阵";
-    if (!(s.sense >= 8 && s.study >= 2) && m.partner !== "companion")
+    if (
+      !(s.sense >= 8 && s.study >= 2) &&
+      m.partner !== "companion" &&
+      s.adventure.road.solution !== "array"
+    )
       return "需要神识 8 / 心得 2，或已相识的异性同行者协作";
   }
   if (action === "gate" && !(m.garden || m.station))
@@ -339,6 +350,13 @@ export function mistError(s: State, action: MistAction): string {
     if (s.injury >= 3) return "伤势达到 3，先回营养伤";
     if (s.stones < mistDetails(s).cost)
       return `补给需要灵石 ${mistDetails(s).cost}`;
+  }
+  if (action === "caravanBridge") {
+    if (s.adventure.road.solution !== "sword")
+      return "需要青嶂关开出的货车商道";
+    if (m.passed || m.ward) return "归路已经备好，不重复领取援助";
+    if (m.partner === "none") return "先决定同行方式";
+    if (s.stones < 6) return "需要灵石 6 雇商队运来桥材";
   }
   if (action === "ward") {
     if (!m.insight) return "亲历一次受阻后，才有可研究的阵眼情报";
@@ -370,6 +388,12 @@ export function runMist(input: State, action: MistAction, id: string): State {
     m = s.adventure.mist;
   m.result = "";
   switch (action) {
+    case "caravanBridge":
+      s.stones -= 6;
+      m.ward = true;
+      m.result =
+        "郁青的货车沿你斩开的商道运来桥材。药工架好撤退便桥，你不必先闯阵受伤才找到归路。护归准备 +20，与研究护归法不叠加。青嶂托车带来一捆护栏木，却没有捎来问候。";
+      break;
     case "receive":
       m.stage = "letter";
       break;
@@ -400,11 +424,11 @@ export function runMist(input: State, action: MistAction, id: string): State {
     case "attune":
       if (action === "tend") s.herbs -= 4;
       m.garden = true;
-      m.result = `${action === "tend" ? "你用四株灵草救活引灯草。" : m.lamp ? "探灵灯照出堵塞的根脉，你沿着光纹疏通石渠。" : "你们沿根脉疏通石渠，没有耗费灵草。"}石角递来一片引灯叶：“陈渡不是逃走的。他和陆姓修士最后一次回来，是为了接还困在山里的人。”这片叶能稳住阵中的归绳。`;
+      m.result = `${action === "tend" ? "你用四株灵草救活引灯草。" : s.adventure.road.solution === "medicine" ? "你用青嶂关救活镇风草的手法疏通根脉。石角认出了药站的包扎结，主动为你引水。" : m.lamp ? "探灵灯照出堵塞的根脉，你沿着光纹疏通石渠。" : "你们沿根脉疏通石渠，没有耗费灵草。"}石角递来一片引灯叶：“陈渡不是逃走的。他和陆姓修士最后一次回来，是为了接还困在山里的人。”这片叶能稳住阵中的归绳。`;
       break;
     case "decode":
       m.station = true;
-      m.result = `${m.partner === "companion" ? `${mistPartner(s).name}扶住阵盘，你稳住灵气，两人让错位的阵纹重新咬合。` : "你闭目分辨灵脉，让自己的呼吸跟上旧阵。"}你发现信不是近日写的：它在等归路重新接通。抄下归阵节拍，可减轻回声阵的干扰。`;
+      m.result = `${s.adventure.road.solution === "array" ? "你沿用与青嶂修阵时记下的归阵手法，独自对上旧阵的节拍。" : m.partner === "companion" ? `${mistPartner(s).name}扶住阵盘，你稳住灵气，两人让错位的阵纹重新咬合。` : "你闭目分辨灵脉，让自己的呼吸跟上旧阵。"}你发现信不是近日写的：它在等归路重新接通。抄下归阵节拍，可减轻回声阵的干扰。`;
       break;
     case "gate":
       m.stage = m.passed ? "archive" : "gate";
@@ -524,7 +548,9 @@ export function validMist(s: State): boolean {
         m.vow !== "none" &&
         m.hazard !== "none" &&
         (m.passed ? m.roll <= m.chance : m.roll > m.chance && m.insight)) &&
-    (!m.ward || m.insight) &&
+    (!m.ward ||
+      (m.partner !== "none" &&
+        (m.insight || s.adventure.road.solution === "sword"))) &&
     (!m.passed || m.attempts > 0) &&
     (!m.lamp || m.passed) &&
     (!m.settled || m.lamp) &&

@@ -18,7 +18,14 @@ import {
 import ChallengeCard from "./ChallengeCard.vue";
 import SocialPanel from "./SocialPanel.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
-const props = defineProps<{ game: State; busy: boolean; running: boolean }>();
+import SceneResponse from "./SceneResponse.vue";
+import type { ActionReceipt } from "./action-feedback";
+const props = defineProps<{
+  game: State;
+  busy: boolean;
+  running: boolean;
+  receipt?: ActionReceipt | null;
+}>();
 const emit = defineEmits<{ act: [intent: Intent]; runQueue: [] }>();
 const tab = ref<
   "world" | "sect" | "skills" | "queue" | "gear" | "relationship" | "arena"
@@ -99,7 +106,7 @@ const mapImages = {
 </script>
 
 <template>
-  <section class="world-panel">
+  <section class="world-panel" :class="{ 'desktop-room': !!room }">
     <div class="panel-heading">
       <h2>山外有天地</h2>
       <span class="muted">修行，是为了赴一场约</span>
@@ -156,7 +163,7 @@ const mapImages = {
       <article
         v-for="(place, id) in places"
         :key="id"
-        class="map-card scene-map"
+        class="map-card scene-map desktop-scene"
         :class="{ finished: game.journey.maps[id] === 3 }"
       >
         <SceneBackdrop
@@ -173,7 +180,10 @@ const mapImages = {
                 : place.goal
           "
           compact
-        />
+          ><SceneResponse
+            text=""
+            :receipt="receipt?.scene?.place === id ? receipt : null"
+        /></SceneBackdrop>
         <section class="scene-controls" :aria-label="place.name + '探索操作区'">
           <div class="panel-heading">
             <h3 class="controls-heading">探索与应对</h3>
@@ -292,7 +302,7 @@ const mapImages = {
         v-show="
           game.journey.branch === 'none' || game.journey.branch === branch
         "
-        class="map-card scene-map"
+        class="map-card scene-map desktop-scene"
       >
         <SceneBackdrop
           :image="

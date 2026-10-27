@@ -13,6 +13,7 @@ export function mistCheckpoint(
   seed = 42,
   path: Path = "wood",
   gender: Gender = "male",
+  stopAtPass = false,
 ) {
   let s = createGame("雾海行者", path, seed, "insightful", gender),
     id = 0;
@@ -75,12 +76,9 @@ export function mistCheckpoint(
   while (s.stones < 100)
     send({ type: "advance", activity: "work", months: 12 });
   while (s.foundation < 24) send({ type: "prepare", kind: "retreat" });
-  for (const action of [
-    "pass",
-    "challenge",
-    "lookout",
-    "survey",
-  ] as RoadAction[])
+  send({ type: "road", action: "pass" });
+  if (stopAtPass) return s;
+  for (const action of ["challenge", "lookout", "survey"] as RoadAction[])
     send({ type: "road", action });
   send({ type: "visit" });
   if (!s.social.scene) throw new Error("Companion meeting missing");

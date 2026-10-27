@@ -351,7 +351,7 @@ it("migrates v6 without changing resources, scene, old story or RNG; rejects cor
   const upgraded = migrateSave(old);
   expect(upgraded).toEqual({
     ...s,
-    version: 9,
+    version: 10,
     adventure: { ...adventure, road: freshRoad() },
   });
   expect(() =>
