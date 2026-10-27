@@ -22,7 +22,6 @@ const details = computed(() => challengeDetails(props.game, props.place));
   <div v-if="encounter && details" class="challenge-card">
     <span class="eyebrow">前路遇阻 · 可退回准备</span>
     <h3>{{ opponents[encounter.kind].name }}</h3>
-    <p>{{ opponents[encounter.kind].description }}</p>
     <strong>当前闯关把握 {{ details.chance }}%</strong>
     <details>
       <summary>查看实力与准备如何影响把握</summary>

@@ -1,7 +1,9 @@
 import type { State } from "./world";
+import { freshRoad, type Road } from "./road";
 export type Step =
   "invitation" | "ferry" | "apothecary" | "forest" | "shrine" | "home" | "done";
 export interface Adventure {
+  road: Road;
   step: Step;
   clue: boolean;
   method: "none" | "medicine" | "guide" | "ward";
@@ -10,6 +12,7 @@ export interface Adventure {
   result: string;
 }
 export const freshAdventure = (old = false): Adventure => ({
+  road: freshRoad(),
   step: old ? "invitation" : "ferry",
   clue: false,
   method: "none",

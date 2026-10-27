@@ -38,6 +38,8 @@ import {
 import { luchiView } from "./characters";
 import WorldPanel from "./WorldPanel.vue";
 import AdventurePanel from "./AdventurePanel.vue";
+import RoadPanel from "./RoadPanel.vue";
+import SceneBackdrop from "./SceneBackdrop.vue";
 const view = ref<"story" | "cultivation">("story");
 import { load, save } from "./save";
 const useSession = defineStore("session", {
@@ -86,7 +88,7 @@ const eventScene = computed(() =>
       ? "/scenes/moon-terrace.png"
       : eventMood.value === "arena"
         ? "/scenes/sect-arena.png"
-        : "/mountains.svg"
+        : "/scenes/mist-path.jpg"
     : npc.value?.scene,
 );
 const costs = computed(() => (game.value ? refineCost(game.value) : null));
@@ -179,6 +181,10 @@ async function advance(months: number) {
 }
 async function worldAct(intent: Intent) {
   ui.running = false;
+  if (intent.type === "prepare") {
+    await prepare(intent.kind);
+    return;
+  }
   await act(intent);
 }
 function runQueue() {
@@ -317,7 +323,7 @@ onUnmounted(() => {
         ><span>修仙人生<small>一卷山海 · 几世修行</small></span></a
       >
       <div class="header-right">
-        <span class="edition">雨中归途 · v0.6.0</span
+        <span class="edition">航图之外 · v0.7.0</span
         ><button class="quiet" @click="dialog = 'help'">玩法说明</button
         ><button class="quiet" @click="fileInput?.click()">导入存档</button
         ><button v-if="game" class="quiet" @click="download(game)">导出</button>
@@ -515,27 +521,44 @@ onUnmounted(() => {
             人生卷宗
           </button>
         </nav>
+        <RoadPanel
+          v-if="
+            !ui.history && view === 'story' && game.adventure.step === 'done'
+          "
+          :game="game"
+          :busy="ui.busy || ui.running"
+          @act="worldAct"
+          @cultivate="view = 'cultivation'"
+          @breakthrough="
+            pill = game.pills > 0;
+            dialog = 'break';
+          "
+        />
         <AdventurePanel
-          v-if="!ui.history && view === 'story'"
+          v-else-if="!ui.history && view === 'story'"
           :game="game"
           :busy="ui.busy || ui.running"
           @act="worldAct"
           @cultivate="view = 'cultivation'"
         />
         <template v-if="!ui.history && view === 'cultivation'"
-          ><div class="landscape">
-            <img src="/mountains.svg" alt="听松山居" />
-            <div class="landscape-title">
-              <span class="eyebrow">一念长生 · 一诺千金</span>
-              <h2>听松山居</h2>
-              <p>{{ paths[game.path].label }}</p>
-            </div>
-          </div>
+          ><SceneBackdrop
+            image="/scenes/moon-terrace.png"
+            title="听松山居"
+            eyebrow="一念长生 · 一诺千金"
+            :body="
+              game.realm
+                ? '云路已经向你展开。今夜在洞府整理行装，明日带着更稳的气息，再赴山外。'
+                : '山风穿过石台，灯火照着未读完的丹经。你知道山外有人在等，也知道每一次凝神，都是为了走得更远。'
+            "
+            compact
+          />
           <fieldset
-            class="cultivation-panel"
+            class="cultivation-panel scene-controls"
             :disabled="!!game.social.arena.duel"
             aria-label="洞府修行"
           >
+            <h3 class="controls-heading">洞府修行 · 操作区</h3>
             <div class="progress-label">
               <h2>{{ game.realm ? "筑基已成 · 山外寻人" : "炼气 → 筑基" }}</h2>
               <strong v-if="game.realm === 0"
@@ -648,7 +671,15 @@ onUnmounted(() => {
             @run-queue="runQueue"
           />
         </template>
-        <section class="timeline">
+        <SceneBackdrop
+          v-if="ui.history"
+          image="/scenes/moon-terrace.png"
+          title="这一世的卷宗"
+          eyebrow="灯下回望"
+          body="摊开旧卷，走过的山路、赴过的约定与没说完的话，都还留在这里。"
+          compact
+        />
+        <section class="timeline" :class="{ 'scene-controls': ui.history }">
           <div class="panel-heading">
             <h2>人生卷宗</h2>
             <span class="muted">{{
@@ -743,48 +774,48 @@ onUnmounted(() => {
     <section
       :key="game ? activeEventId(game) || game.status : 'loading'"
       class="modal"
-      :class="{ 'story-dialog': !!event }"
+      :class="{
+        'story-dialog':
+          !!event ||
+          dialog === 'break' ||
+          (game && ['complete', 'dead'].includes(game.status)),
+      }"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <template v-if="event && game"
-        ><span class="eyebrow">前缘 · 时光暂驻</span>
-        <img
-          v-if="eventScene"
-          class="story-scene"
-          :src="eventScene"
-          :alt="event.title + '场景插画'"
+      <template v-if="event && game">
+        <SceneBackdrop
+          :image="eventScene || '/scenes/mist-path.jpg'"
+          :title="event.title"
+          eyebrow="前缘 · 时光暂驻"
+          :body="event.body"
+          :portrait="heart?.portrait ?? npc?.portrait"
+          :speaker="heart?.name ?? '陆迟'"
+          :quote="heart?.title ?? npc?.whereabouts"
+          heading-id="modal-title"
+          compact
         />
-        <div class="speaker">
-          <img
-            v-if="heart || npc"
-            :src="heart?.portrait ?? npc!.portrait"
-            :alt="heart ? heart.name + '此刻的神情' : '陆迟此刻的神情'"
-          /><span
-            >{{ heart?.name ?? "陆迟"
-            }}<small>{{ heart?.title ?? npc?.whereabouts }}</small></span
+        <section class="scene-controls" aria-label="剧情选择操作区">
+          <h3 class="controls-heading">此刻，如何回应</h3>
+          <button
+            v-for="o in event.options"
+            :key="o.id"
+            class="choice"
+            :disabled="ui.busy || !!o.disabled"
+            @click="
+              act({
+                type: 'choose',
+                instanceId: activeEventId(game),
+                option: o.id,
+              })
+            "
           >
-        </div>
-        <h2 id="modal-title" tabindex="-1">{{ event.title }}</h2>
-        <p class="event-body">{{ event.body }}</p>
-        <button
-          v-for="o in event.options"
-          :key="o.id"
-          class="choice"
-          :disabled="ui.busy || !!o.disabled"
-          @click="
-            act({
-              type: 'choose',
-              instanceId: activeEventId(game),
-              option: o.id,
-            })
-          "
-        >
-          <span
-            >{{ o.label }}<small>{{ o.disabled || o.hint }}</small></span
-          ><b>→</b>
-        </button></template
+            <span
+              >{{ o.label }}<small>{{ o.disabled || o.hint }}</small></span
+            ><b>→</b>
+          </button>
+        </section></template
       >
       <template v-else-if="game?.status === 'legacy'"
         ><h2 id="modal-title" tabindex="-1">旧卷珍藏，新篇启程</h2>
@@ -812,102 +843,122 @@ onUnmounted(() => {
           保留旧档，以十六岁重新开篇（明心善悟）
         </button></template
       >
-      <template v-else-if="game && ['complete', 'dead'].includes(game.status)"
-        ><span class="eyebrow">第 {{ game.life }} 世 · 此篇落笔</span>
-        <h2 id="modal-title" tabindex="-1">
-          {{ game.status === "complete" ? "筑基篇完成" : "灯尽，前缘未尽" }}
-        </h2>
-        <p class="event-body">{{ game.result }}</p>
-        <p class="muted">
-          {{
-            game.status === "complete"
-              ? "此篇已记入传承。可以继续此世探索山外，也可以选择另一种人生。"
-              : "寿元耗尽，已获得的传承仍可带走。"
-          }}
-        </p>
-        <button
-          v-if="game.status === 'complete' && game.age < game.limit"
-          class="primary full"
-          :disabled="ui.busy"
-          @click="act({ type: 'continue' })"
-        >
-          继续此世 · 追寻山外故事
-        </button>
-        <p>
-          本篇所得 {{ game.earned }} · 累计阅历
-          {{ game.legacy }}（纪念分，不消耗）
-        </p>
-        <details class="life-review">
-          <summary>回看此世卷宗</summary>
-          <p v-for="(entry, i) in game.log" :key="i">
-            第 {{ entry.month }} 月 · {{ entry.text }}
+      <template v-else-if="game && ['complete', 'dead'].includes(game.status)">
+        <SceneBackdrop
+          :image="
+            game.status === 'complete'
+              ? '/scenes/cloud-frontier.jpg'
+              : '/scenes/moon-terrace.png'
+          "
+          :title="game.status === 'complete' ? '筑基篇完成' : '灯尽，前缘未尽'"
+          :eyebrow="'第 ' + game.life + ' 世 · 此篇落笔'"
+          :body="game.result"
+          heading-id="modal-title"
+          compact
+        />
+        <section class="scene-controls" aria-label="传承与轮回操作区">
+          <h3 class="controls-heading">留下此世，选择来路</h3>
+          <p class="muted">
+            {{
+              game.status === "complete"
+                ? "此篇已记入传承。可以继续此世探索山外，也可以选择另一种人生。"
+                : "寿元耗尽，已获得的传承仍可带走。"
+            }}
           </p>
-        </details>
-        <label class="field-label"
-          >下一世路线<select v-model="path">
-            <option v-for="(p, id) in paths" :key="id" :value="id">
-              {{ p.name }}
-            </option>
-          </select></label
-        >
-        <label class="field-label"
-          >下一世资质<select v-model="aptitude">
-            <option v-for="(a, id) in aptitudes" :key="id" :value="id">
-              {{ a.name }} · 根骨 {{ a.root }} / 悟性 {{ a.wisdom }} / 神识
-              {{ a.sense }}
-            </option>
-          </select></label
-        >
-        <section class="next-life">
-          <h3>下一世，你可以试试</h3>
-          <p v-for="hint in replayHints(game)" :key="hint">{{ hint }}</p>
-        </section>
-        <div class="inheritance-list">
           <button
-            v-for="(item, id) in inheritances"
-            :key="id"
-            :class="{ selected: inheritance === id }"
-            :disabled="id !== 'none' && !game.unlocked.includes(id)"
-            @click="inheritance = id"
+            v-if="game.status === 'complete' && game.age < game.limit"
+            class="primary full"
+            :disabled="ui.busy"
+            @click="act({ type: 'continue' })"
           >
-            <strong>{{ item.name }}</strong
-            ><small>{{ item.description }}</small>
+            继续此世 · 追寻山外故事
           </button>
-        </div>
-        <button class="primary full" :disabled="ui.busy" @click="nextLife">
-          携一份传承，再入轮回 →</button
-        ><button class="quiet full" @click="download(game)">
-          导出本世存档
-        </button></template
-      >
-      <template v-else-if="dialog === 'break' && game"
-        ><h2 id="modal-title" tabindex="-1">炼气 → 筑基</h2>
-        <div class="probability">{{ details?.chance }}<small>%</small></div>
-        <p class="muted">本次成功率 · 下限 10%，上限 95%</p>
-        <div class="break-details">
-          <span v-for="p in details?.parts" :key="p.label"
-            >{{ p.label }} {{ p.value > 0 ? "+" : "" }}{{ p.value }}%　</span
+          <p>
+            本篇所得 {{ game.earned }} · 累计阅历
+            {{ game.legacy }}（纪念分，不消耗）
+          </p>
+          <details class="life-review">
+            <summary>回看此世卷宗</summary>
+            <p v-for="(entry, i) in game.log" :key="i">
+              第 {{ entry.month }} 月 · {{ entry.text }}
+            </p>
+          </details>
+          <label class="field-label"
+            >下一世路线<select v-model="path">
+              <option v-for="(p, id) in paths" :key="id" :value="id">
+                {{ p.name }}
+              </option>
+            </select></label
           >
-        </div>
-        <label class="pill-option"
-          ><input
-            v-model="pill"
-            type="checkbox"
-            :disabled="game.pills < 1"
-          />使用筑基丹（持有 {{ game.pills }} 枚）</label
-        >
-        <p class="warning-text">
-          成功延寿十八年。{{
-            game.ward
-              ? "护脉丹纹生效：首次失败保留九成修为、不减寿，随后消耗；伤势仍 +2。"
-              : "失败保留七成修为、伤势 +2、寿元上限 −1 年。"
-          }}可养伤、炼丹、固本后再试。
-        </p>
-        <button class="primary full" :disabled="ui.busy" @click="commitBreak">
-          凝神，突破</button
-        ><button class="quiet full" :disabled="ui.busy" @click="dialog = ''">
-          尚需准备
-        </button></template
+          <label class="field-label"
+            >下一世资质<select v-model="aptitude">
+              <option v-for="(a, id) in aptitudes" :key="id" :value="id">
+                {{ a.name }} · 根骨 {{ a.root }} / 悟性 {{ a.wisdom }} / 神识
+                {{ a.sense }}
+              </option>
+            </select></label
+          >
+          <section class="next-life">
+            <h3>下一世，你可以试试</h3>
+            <p v-for="hint in replayHints(game)" :key="hint">{{ hint }}</p>
+          </section>
+          <div class="inheritance-list">
+            <button
+              v-for="(item, id) in inheritances"
+              :key="id"
+              :class="{ selected: inheritance === id }"
+              :disabled="id !== 'none' && !game.unlocked.includes(id)"
+              @click="inheritance = id"
+            >
+              <strong>{{ item.name }}</strong
+              ><small>{{ item.description }}</small>
+            </button>
+          </div>
+          <button class="primary full" :disabled="ui.busy" @click="nextLife">
+            携一份传承，再入轮回 →</button
+          ><button class="quiet full" @click="download(game)">
+            导出本世存档
+          </button>
+        </section></template
+      >
+      <template v-else-if="dialog === 'break' && game">
+        <SceneBackdrop
+          image="/scenes/moon-terrace.png"
+          title="炼气 → 筑基"
+          eyebrow="屏息 · 叩问天关"
+          body="风声仿佛停在洞府之外。你将一路积累的灵气收束于丹田，这一步可以现在迈出，也可以再等准备周全。"
+          heading-id="modal-title"
+          compact
+        />
+        <section class="scene-controls" aria-label="突破操作区">
+          <h3 class="controls-heading">确认丹药与突破风险</h3>
+          <div class="probability">{{ details?.chance }}<small>%</small></div>
+          <p class="muted">本次成功率 · 下限 10%，上限 95%</p>
+          <div class="break-details">
+            <span v-for="p in details?.parts" :key="p.label"
+              >{{ p.label }} {{ p.value > 0 ? "+" : "" }}{{ p.value }}%　</span
+            >
+          </div>
+          <label class="pill-option"
+            ><input
+              v-model="pill"
+              type="checkbox"
+              :disabled="game.pills < 1"
+            />使用筑基丹（持有 {{ game.pills }} 枚）</label
+          >
+          <p class="warning-text">
+            成功延寿十八年。{{
+              game.ward
+                ? "护脉丹纹生效：首次失败保留九成修为、不减寿，随后消耗；伤势仍 +2。"
+                : "失败保留七成修为、伤势 +2、寿元上限 −1 年。"
+            }}可养伤、炼丹、固本后再试。
+          </p>
+          <button class="primary full" :disabled="ui.busy" @click="commitBreak">
+            凝神，突破</button
+          ><button class="quiet full" :disabled="ui.busy" @click="dialog = ''">
+            尚需准备
+          </button>
+        </section></template
       >
       <template v-else-if="dialog === 'retreat'"
         ><h2 id="modal-title" tabindex="-1">这次闭关将错过约期</h2>

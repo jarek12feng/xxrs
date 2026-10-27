@@ -22,11 +22,23 @@ it("keeps original-v5 intact on the first scene-aware save", async () => {
   await save(migrated);
   expect(await raw("original-v5")).toEqual(old);
 });
+it("keeps original-v6 intact before saving the new road chapter", async () => {
+  const current = createGame("旧旅人", "wood");
+  const { road: _, ...adventure } = current.adventure;
+  const old = { ...current, version: 6, adventure };
+  await raw("current", old);
+  const migrated = (await load()).state!;
+  expect(migrated.version).toBe(7);
+  expect(migrated.adventure.step).toBe(old.adventure.step);
+  expect(await raw("current")).toEqual(old);
+  await save(migrated);
+  expect(await raw("original-v6")).toEqual(old);
+});
 it("preserves the original v4 save while migrating social data", async () => {
   const old = v4Game("旧世", "wood", 3);
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(6);
+  expect(upgraded.version).toBe(7);
   expect(upgraded.social.gender).toBeNull();
   expect(await raw("current")).toEqual(old);
   await save(upgraded);
@@ -107,7 +119,7 @@ it("upgrades v2 without resetting progress and preserves its first original snap
   old.qi = 28;
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(6);
+  expect(upgraded.version).toBe(7);
   expect(upgraded.qi).toBe(28);
   expect(upgraded.seed).toBe(88);
   expect(await raw("current")).toEqual(old);

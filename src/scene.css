@@ -1,0 +1,231 @@
+/* Shared scene language: narrative over artwork, commands on a separate paper desk. */
+.scene-backdrop {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #213b33;
+  color: #fff9e9;
+  min-height: 360px;
+  display: flex;
+  align-items: end;
+  border-radius: 10px 10px 0 0;
+  animation: scene-arrive 0.35s ease-out;
+}
+.scene-art,
+.scene-ink {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+.scene-art {
+  object-fit: cover;
+  object-position: center;
+}
+.scene-ink {
+  background: linear-gradient(
+    180deg,
+    rgba(12, 29, 26, 0.08),
+    rgba(12, 29, 26, 0.68) 25%,
+    rgba(12, 29, 26, 0.96) 100%
+  );
+}
+.scene-narrative {
+  width: 100%;
+  padding: 72px 30px 26px;
+  text-shadow: 0 1px 4px #10241d;
+}
+.scene-narrative h2 {
+  color: #fff8df;
+  font-size: clamp(25px, 4vw, 36px);
+  line-height: 1.5;
+  letter-spacing: 3px;
+  margin: 10px 0 16px;
+  text-align: left;
+}
+.scene-narrative .eyebrow {
+  color: #eadbb0;
+}
+.scene-prose,
+.scene-narrative > p {
+  max-width: 720px;
+  color: #fff9e9;
+  line-height: 1.95;
+  font-size: 16px;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.scene-speaker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid #e3dcbb50;
+}
+.scene-speaker > img {
+  width: 68px;
+  height: 88px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 5px;
+  border: 1px solid #e3dcbb88;
+}
+.scene-speaker p {
+  color: #fff4d4;
+  font-size: 15px;
+  line-height: 1.85;
+  margin: 5px 0 0;
+}
+.scene-speaker strong {
+  color: #f4dfac;
+}
+.scene-seal {
+  flex: 0 0 48px;
+  display: grid;
+  place-items: center;
+  height: 60px;
+  border: 1px solid #e3dcbb80;
+  border-radius: 5px;
+  font: 26px serif;
+  background: #ffffff10;
+}
+.scene-narrative .scene-result {
+  padding: 12px 14px;
+  border-left: 2px solid #e0c47d;
+  background: #091e2180;
+  margin: 18px 0 0;
+  color: #fff4cf;
+}
+.scene-controls {
+  position: relative;
+  background: #f8f5eb;
+  border: 1px solid #c9ccb9;
+  border-top: 3px solid #a9ad8b;
+  padding: 20px;
+  border-radius: 0 0 10px 10px;
+  min-width: 0;
+}
+.scene-controls > .controls-heading {
+  margin: 0 0 16px;
+  color: #526448;
+  font:
+    600 13px/1.6 system-ui,
+    sans-serif;
+  letter-spacing: 2px;
+}
+.scene-controls button {
+  min-height: 44px;
+  white-space: normal;
+}
+.scene-controls .adventure-task,
+.scene-controls .adventure-actions,
+.scene-controls .adventure-footnote {
+  margin-left: 0;
+  margin-right: 0;
+}
+.scene-controls .chapter-track {
+  padding: 0 0 12px;
+  margin-bottom: 18px;
+}
+.scene-compact {
+  min-height: 230px;
+}
+.scene-compact .scene-narrative {
+  padding-top: 45px;
+}
+.modal.story-dialog {
+  width: 680px;
+  padding: 0;
+}
+.modal.story-dialog .scene-controls {
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+.map-card.scene-map {
+  padding: 0;
+  overflow: hidden;
+}
+.scene-map .scene-controls {
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+.world-content > .scene-backdrop {
+  margin: 16px 0 0;
+}
+.world-panel > .scene-backdrop {
+  margin-top: 16px;
+}
+.journey .world-panel > nav {
+  height: auto;
+  align-items: stretch;
+  position: relative;
+  padding-bottom: 10px;
+}
+.world-content.scene-controls {
+  margin-top: 0;
+}
+.social-content > .scene-controls {
+  margin-top: 0;
+}
+.scene-controls .challenge-card {
+  border: 0;
+  padding: 0;
+}
+@media (max-width: 600px) {
+  .journey .world-panel > nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .scene-backdrop {
+    min-height: 300px;
+  }
+  .scene-narrative {
+    padding: 55px 18px 22px;
+  }
+  .scene-narrative h2 {
+    font-size: 27px;
+    letter-spacing: 2px;
+  }
+  .scene-prose,
+  .scene-narrative > p {
+    font-size: 15px;
+    line-height: 1.9;
+  }
+  .scene-controls {
+    padding: 16px;
+  }
+  .scene-speaker > img {
+    width: 56px;
+    height: 74px;
+  }
+  .scene-compact {
+    min-height: 210px;
+  }
+  .scene-compact .scene-narrative {
+    padding-top: 35px;
+  }
+  .scene-controls .adventure-task h2 {
+    font-size: 19px;
+  }
+  .modal.story-dialog {
+    padding: 0;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .scene-backdrop {
+    min-height: 180px;
+  }
+  .scene-narrative {
+    padding-top: 30px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene-backdrop {
+    animation: none;
+  }
+}

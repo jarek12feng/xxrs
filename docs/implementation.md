@@ -1,6 +1,10 @@
 # 实施记录
 
-## 当前版本 v0.6.0：雨中归途
+## 当前版本 v0.7.0：航图之外
+
+状态版本 7，新增纯规则 road.ts、RoadPanel.vue；第二卷衔接原有营救与筑基规则。场景层统一为 SceneBackdrop.vue + 独立 scene-controls 操作区，包括原有地图、宗门、人物互动、擂台、突破和轮回。UI 不修改领域状态。存档迁移、玩法边界、素材和验证见 [v7-cloud-road.md](v7-cloud-road.md)。当前 104 项测试，下文为历史记录。
+
+## v0.6.0：雨中归途
 
 状态版本 6，新增 adventure.ts 纯规则与 AdventurePanel.vue 场景主界面。默认以探索和人物互动驱动开篇，旧档保留完整进度并自愿接取。移动端单列与触控区域适配，详见 [v6-scene-first.md](v6-scene-first.md)。下文为历史版本记录。
 

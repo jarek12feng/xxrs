@@ -2,6 +2,7 @@
 import { computed, ref, watch } from "vue";
 import {
   places,
+  opponents,
   techniques,
   relics,
   forgeError,
@@ -16,6 +17,7 @@ import {
 } from "./core";
 import ChallengeCard from "./ChallengeCard.vue";
 import SocialPanel from "./SocialPanel.vue";
+import SceneBackdrop from "./SceneBackdrop.vue";
 const props = defineProps<{ game: State; busy: boolean; running: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent]; runQueue: [] }>();
 const tab = ref<
@@ -67,6 +69,33 @@ const queueError = computed(() => {
       ? preparationError(props.game, "refine")
       : actionError(props.game, q.action);
 });
+const rooms = {
+  gear: {
+    title: "灯下炼器",
+    image: "/scenes/apothecary.jpg",
+    body: "炉火映着瓶身与剑纹。你把一路遇过的风瘴记在旁边，决定这一回要为哪一种险境准备。",
+  },
+  skills: {
+    title: "藏经小阁",
+    image: "/scenes/moon-terrace.png",
+    body: "灯下翻过一页丹经，又听见院外的练剑声。学过的法门很多，真正带上旅途的，却要由你选择。",
+  },
+  queue: {
+    title: "洞府长夜",
+    image: "/scenes/moon-terrace.png",
+    body: "你将接下来的修行写成笺札，放在灯旁。若有故人来访，便先停下手中的事，听他把话说完。",
+  },
+};
+const room = computed(() =>
+  tab.value === "gear" || tab.value === "skills" || tab.value === "queue"
+    ? rooms[tab.value]
+    : null,
+);
+const mapImages = {
+  valley: "/scenes/apothecary.jpg",
+  peak: "/scenes/mist-path.jpg",
+  sea: "/characters/luchi-relic.png",
+};
 </script>
 
 <template>
@@ -101,6 +130,15 @@ const queueError = computed(() => {
         修行安排
       </button>
     </nav>
+    <SceneBackdrop
+      v-if="room"
+      :key="tab"
+      :image="room.image"
+      :title="room.title"
+      :body="room.body"
+      eyebrow="听松山居 · 行前准备"
+      compact
+    />
     <SocialPanel
       v-if="tab === 'relationship' || tab === 'arena'"
       :key="tab"
@@ -118,54 +156,73 @@ const queueError = computed(() => {
       <article
         v-for="(place, id) in places"
         :key="id"
-        class="map-card"
+        class="map-card scene-map"
         :class="{ finished: game.journey.maps[id] === 3 }"
       >
-        <div class="panel-heading">
-          <h3>{{ place.name }}</h3>
-          <span
-            >{{ game.journey.maps[id] }} / 3 ·
-            {{ place.realm ? "筑基" : "炼气" }}</span
-          >
-        </div>
-        <p>{{ place.goal }}</p>
-        <small>{{ place.reward }}</small>
-        <p v-if="explorationError(game, id)" class="muted">
-          {{ explorationError(game, id) }}
-        </p>
-        <ChallengeCard
-          v-if="id !== 'valley' && game.journey.maps[id] === 1"
-          :game="game"
-          :place="id"
-          :locked="locked"
-          @act="emit('act', $event)"
+        <SceneBackdrop
+          :image="mapImages[id]"
+          :title="place.name"
+          eyebrow="山河见闻"
+          :body="
+            id === 'valley' && game.journey.maps.valley === 1
+              ? '崖边有人呼救，雨水正冲淡另一侧的足迹。你先做什么？'
+              : id !== 'valley' &&
+                  game.journey.maps[id] === 1 &&
+                  game.journey.encounters[id]
+                ? opponents[game.journey.encounters[id]!.kind].description
+                : place.goal
+          "
+          compact
         />
-        <template v-else-if="id === 'valley' && game.journey.maps.valley === 1">
-          <p>崖边有人呼救，雨水正冲淡另一侧的足迹。你先做什么？</p>
-          <button
-            :disabled="locked || !!explorationError(game, id) || game.herbs < 2"
-            @click="
-              emit('act', { type: 'explore', place: id, approach: 'rescue' })
-            "
+        <section class="scene-controls" :aria-label="place.name + '探索操作区'">
+          <div class="panel-heading">
+            <h3 class="controls-heading">探索与应对</h3>
+            <span
+              >{{ game.journey.maps[id] }} / 3 ·
+              {{ place.realm ? "筑基" : "炼气" }}</span
+            >
+          </div>
+          <small>{{ place.reward }}</small>
+          <p v-if="explorationError(game, id)" class="muted">
+            {{ explorationError(game, id) }}
+          </p>
+          <ChallengeCard
+            v-if="id !== 'valley' && game.journey.maps[id] === 1"
+            :game="game"
+            :place="id"
+            :locked="locked"
+            @act="emit('act', $event)"
+          />
+          <template
+            v-else-if="id === 'valley' && game.journey.maps.valley === 1"
           >
-            先救人 · 灵草 −2 / 陆迟信任 +1
-          </button>
+            <button
+              :disabled="
+                locked || !!explorationError(game, id) || game.herbs < 2
+              "
+              @click="
+                emit('act', { type: 'explore', place: id, approach: 'rescue' })
+              "
+            >
+              先救人 · 灵草 −2 / 陆迟信任 +1
+            </button>
+            <button
+              :disabled="locked || !!explorationError(game, id)"
+              @click="
+                emit('act', { type: 'explore', place: id, approach: 'trace' })
+              "
+            >
+              先追查笔记 · 灵石 +8 / 错过见闻
+            </button>
+          </template>
           <button
+            v-else
             :disabled="locked || !!explorationError(game, id)"
-            @click="
-              emit('act', { type: 'explore', place: id, approach: 'trace' })
-            "
+            @click="emit('act', { type: 'explore', place: id })"
           >
-            先追查笔记 · 灵石 +8 / 错过见闻
+            {{ game.journey.maps[id] === 0 ? "动身探访" : "继续追寻" }} · 一月
           </button>
-        </template>
-        <button
-          v-else
-          :disabled="locked || !!explorationError(game, id)"
-          @click="emit('act', { type: 'explore', place: id })"
-        >
-          {{ game.journey.maps[id] === 0 ? "动身探访" : "继续追寻" }} · 一月
-        </button>
+        </section>
       </article>
       <details v-if="game.journey.settled" class="retirement">
         <summary>另一种人生：主动轮回</summary>
@@ -177,7 +234,12 @@ const queueError = computed(() => {
         </button>
       </details>
     </div>
-    <div v-else-if="tab === 'gear'" class="world-content">
+    <div
+      v-else-if="tab === 'gear'"
+      class="world-content scene-controls"
+      aria-label="灵器操作区"
+    >
+      <h3 class="controls-heading">炼制与装配</h3>
       <p>
         当前灵器：{{
           game.journey.equipped ? relics[game.journey.equipped].name : "未装配"
@@ -230,18 +292,24 @@ const queueError = computed(() => {
         v-show="
           game.journey.branch === 'none' || game.journey.branch === branch
         "
-        class="mentor-card"
+        class="map-card scene-map"
       >
-        <img
-          :src="mentor.image"
-          :alt="`${mentor.hall}执事${mentor.name}`"
-          loading="lazy"
+        <SceneBackdrop
+          :image="
+            branch === 'dan'
+              ? '/scenes/apothecary.jpg'
+              : '/scenes/sect-arena.png'
+          "
+          :title="mentor.hall"
+          eyebrow="听松门 · 师承"
+          :body="mentor.story"
+          :portrait="mentor.image"
+          :speaker="mentor.name"
+          :quote="mentor.quote"
+          compact
         />
-        <div>
-          <span class="eyebrow">听松门 · {{ mentor.hall }}</span>
-          <h3>{{ mentor.name }}</h3>
-          <blockquote>“{{ mentor.quote }}”</blockquote>
-          <p>{{ mentor.story }}</p>
+        <div class="scene-controls" :aria-label="mentor.hall + '拜师操作区'">
+          <h3 class="controls-heading">师门机缘</h3>
           <small>师承功法：{{ mentor.gift }}</small>
           <button
             v-if="game.journey.branch === 'none'"
@@ -252,7 +320,12 @@ const queueError = computed(() => {
           </button>
         </div>
       </article>
-      <template v-if="game.journey.branch !== 'none'">
+      <section
+        v-if="game.journey.branch !== 'none'"
+        class="scene-controls"
+        aria-label="宗门事务操作区"
+      >
+        <h3 class="controls-heading">宗门事务与晋升</h3>
         <p>
           身份：{{ game.journey.rank ? "外门弟子" : "记名弟子" }} · 贡献
           {{ game.journey.contribution }} · 亲历事务
@@ -307,9 +380,14 @@ const queueError = computed(() => {
         >
           晋升外门 · 贡献 −6 / 主修功法 / 雾岭资格
         </button>
-      </template>
+      </section>
     </div>
-    <div v-else-if="tab === 'skills'" class="world-content">
+    <div
+      v-else-if="tab === 'skills'"
+      class="world-content scene-controls"
+      aria-label="功法操作区"
+    >
+      <h3 class="controls-heading">功法研习与装配</h3>
       <p>
         主修：{{
           game.journey.main ? techniques[game.journey.main].name : "未装配"
@@ -348,7 +426,12 @@ const queueError = computed(() => {
         </button>
       </article>
     </div>
-    <div v-else class="world-content">
+    <div
+      v-else
+      class="world-content scene-controls"
+      aria-label="修行安排操作区"
+    >
+      <h3 class="controls-heading">安排接下来的修行</h3>
       <p class="muted">
         仅在线执行，刷新或离开页面后暂停。遇剧情、修为满、材料不足时停下；不自动选择剧情或突破。养伤次数是上限，痊愈即完成。
       </p>

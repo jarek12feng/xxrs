@@ -2088,3 +2088,54 @@ button:disabled {
     flex-direction: column;
   }
 }
+.road-plan {
+  margin: 16px 0;
+  padding: 18px;
+  border: 1px solid #a9b5a2;
+  border-radius: 12px;
+  background: #faf7ef;
+}
+.road-plan h3 {
+  margin-top: 0;
+}
+.road-plan p {
+  line-height: 1.7;
+}
+.road-preparations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.road-preparations button {
+  text-align: left;
+  min-height: 56px;
+  white-space: normal;
+}
+.road-panel button small {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.6;
+  font-weight: normal;
+}
+.road-name-seal {
+  flex: 0 0 56px;
+  width: 56px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #86937f;
+  background: #e4e8db;
+  font-family: serif;
+  font-size: 28px;
+  border-radius: 8px;
+}
+@media (max-width: 600px) {
+  .road-preparations {
+    grid-template-columns: 1fr;
+  }
+  .road-plan {
+    padding: 13px;
+  }
+}

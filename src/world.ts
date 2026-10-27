@@ -1,4 +1,6 @@
 import * as chapter from "./chapter";
+import { freshRoad, validRoad, runRoad, type RoadAction } from "./road";
+export * from "./road";
 import { validState as validV4 } from "./legacy-v4";
 import {
   freshSocial,
@@ -115,7 +117,7 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 6;
+  version: 7;
   adventure: Adventure;
   journey: Journey;
   social: SocialState;
@@ -123,6 +125,7 @@ export interface State extends Omit<chapter.State, "version"> {
 export type Command =
   | chapter.Command
   | SocialCommand
+  | { id: string; type: "road"; action: RoadAction }
   | { id: string; type: "adventure"; action: AdventureAction }
   | { id: string; type: "join"; branch: Exclude<Branch, "none"> }
   | { id: string; type: "duty"; duty: "herbs" | "watch" | "copy" }
@@ -175,7 +178,7 @@ function lift(
   social = freshSocial(),
   adventure = freshAdventure(true),
 ): State {
-  return { ...s, version: 6, journey, social, adventure };
+  return { ...s, version: 7, journey, social, adventure };
 }
 export function createGame(
   name: string,
@@ -215,8 +218,12 @@ export const actionError = (s: State, a: chapter.Activity) =>
   a === "cultivate" && s.realm === 1
     ? "筑基后可凝神、固本、准备灵器并探索山外；金丹未开放"
     : chapter.actionError(base(s), a);
-export const preparationError = (s: State, k: "refine" | "retreat") =>
-  chapter.preparationError(base(s), k);
+export const preparationError = (s: State, k: "refine" | "retreat") => {
+  const error = chapter.preparationError(base(s), k);
+  return error === "先去渡口相识" && s.adventure.step === "done"
+    ? "先修行至第三月，与陆迟再叙旧约"
+    : error;
+};
 export const cultivationGain = (s: State) =>
   chapter.cultivationGain(base(s)) + (s.journey.main === "spring" ? 3 : 0);
 function log(s: State, text: string) {
@@ -361,6 +368,7 @@ function normalize(n: State, old: State) {
 }
 export function dispatch(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (c.type === "road") return runRoad(input, c.action, c.id);
   if (c.type === "adventure") return runAdventure(input, c.action, c.id);
   if (
     socialCommands.includes(c.type) ||
@@ -835,11 +843,12 @@ export function validState(x: unknown): x is State {
   const s = x as State,
     j = s.journey;
   if (
-    s.version !== 6 ||
+    s.version !== 7 ||
     !j ||
     !chapter.validState(base(s)) ||
     !validSocial(s) ||
-    !validAdventure(s.adventure)
+    !validAdventure(s.adventure) ||
+    !validRoad(s.adventure.road, s)
   )
     return false;
   const integer = (v: unknown, max = 1e9) =>
@@ -907,10 +916,22 @@ export function validState(x: unknown): x is State {
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 6) {
+    const old = x as State;
+    if (!validAdventure(old.adventure))
+      throw new Error("旧冒险存档损坏，原档未修改。");
+    const upgraded = {
+      ...structuredClone(old),
+      version: 7,
+      adventure: { ...structuredClone(old.adventure), road: freshRoad() },
+    };
+    if (validState(upgraded)) return upgraded;
+    throw new Error("旧存档损坏，原始数据未被修改。");
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 5) {
     const upgraded = {
       ...structuredClone(x),
-      version: 6,
+      version: 7,
       adventure: freshAdventure(true),
     };
     if (validState(upgraded)) return upgraded;
@@ -919,7 +940,7 @@ export function migrateSave(x: unknown): State {
   if (validV4(x))
     return {
       ...structuredClone(x),
-      version: 6,
+      version: 7,
       social: freshSocial(),
       adventure: freshAdventure(true),
     };
