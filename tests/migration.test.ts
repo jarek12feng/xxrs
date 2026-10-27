@@ -22,13 +22,30 @@ it("keeps original-v5 intact on the first scene-aware save", async () => {
   await save(migrated);
   expect(await raw("original-v5")).toEqual(old);
 });
+it("backs up original-v7 before persisting environmental discoveries", async () => {
+  const current = createGame("旧旅人", "wood");
+  const { discoveries: _, lastApproach: __, ...road } = current.adventure.road;
+  const old = {
+    ...current,
+    version: 7,
+    adventure: { ...current.adventure, road },
+  };
+  await raw("current", old);
+  const migrated = (await load()).state!;
+  expect(migrated.version).toBe(8);
+  expect(migrated.adventure.road.discoveries).toEqual([]);
+  expect(await raw("current")).toEqual(old);
+  await save(migrated);
+  expect(await raw("original-v7")).toEqual(old);
+  expect((await load()).state).toEqual(migrated);
+});
 it("keeps original-v6 intact before saving the new road chapter", async () => {
   const current = createGame("旧旅人", "wood");
   const { road: _, ...adventure } = current.adventure;
   const old = { ...current, version: 6, adventure };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(7);
+  expect(migrated.version).toBe(8);
   expect(migrated.adventure.step).toBe(old.adventure.step);
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -38,7 +55,7 @@ it("preserves the original v4 save while migrating social data", async () => {
   const old = v4Game("旧世", "wood", 3);
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(7);
+  expect(upgraded.version).toBe(8);
   expect(upgraded.social.gender).toBeNull();
   expect(await raw("current")).toEqual(old);
   await save(upgraded);
@@ -119,7 +136,7 @@ it("upgrades v2 without resetting progress and preserves its first original snap
   old.qi = 28;
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(7);
+  expect(upgraded.version).toBe(8);
   expect(upgraded.qi).toBe(28);
   expect(upgraded.seed).toBe(88);
   expect(await raw("current")).toEqual(old);

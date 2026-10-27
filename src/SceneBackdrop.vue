@@ -15,10 +15,18 @@ defineProps<{
   <div
     class="scene-backdrop"
     :class="{ 'scene-compact': compact }"
+    :data-atmosphere="
+      image.includes('mist') || image.includes('cloud')
+        ? 'mist'
+        : image.includes('moon')
+          ? 'moon'
+          : 'still'
+    "
     role="region"
     :aria-label="title + '场景'"
   >
     <img class="scene-art" :src="image" :alt="title + '场景背景'" />
+    <div class="scene-air" aria-hidden="true"></div>
     <div class="scene-ink" aria-hidden="true"></div>
     <div class="scene-narrative">
       <span v-if="eyebrow" class="eyebrow">{{ eyebrow }}</span>

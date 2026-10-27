@@ -12,12 +12,101 @@
   animation: scene-arrive 0.35s ease-out;
 }
 .scene-art,
+.scene-air,
 .scene-ink {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   z-index: -1;
+}
+.scene-air {
+  pointer-events: none;
+  opacity: 0;
+}
+[data-atmosphere="mist"] .scene-air {
+  inset: -10%;
+  width: 120%;
+  height: 120%;
+  opacity: 0.18;
+  background:
+    radial-gradient(ellipse at 15% 20%, #d3e2da99, transparent 48%),
+    radial-gradient(ellipse at 85% 50%, #cbd9df88, transparent 50%);
+  animation: scene-mist 22s ease-in-out infinite alternate;
+}
+[data-atmosphere="moon"] .scene-air {
+  opacity: 0.2;
+  background: radial-gradient(ellipse at 75% 0%, #ecdea780, transparent 60%);
+}
+@keyframes scene-mist {
+  from {
+    transform: translateX(-3%);
+  }
+  to {
+    transform: translateX(3%);
+  }
+}
+.scene-investigation {
+  margin: 18px 0;
+  padding: 15px;
+  background: #eee9d9;
+  border: 1px solid #c4bd9e;
+  border-radius: 9px;
+}
+.scene-investigation h3 {
+  margin: 0 0 8px;
+  font-size: 17px;
+}
+.scene-investigation p {
+  color: #62694f;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.scene-investigation button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: #f9f5e8;
+  padding: 14px;
+}
+.scene-investigation button > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.scene-investigation button small {
+  display: block;
+  line-height: 1.7;
+}
+.clue-symbol {
+  font-size: 22px;
+  color: #837040;
+}
+.road-journal {
+  padding: 14px;
+  border: 1px dashed #a7ac91;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+.road-journal summary {
+  cursor: pointer;
+  min-height: 28px;
+  line-height: 1.8;
+  color: #4c6045;
+}
+.road-journal p {
+  font-size: 14px;
+  line-height: 1.9;
+}
+.road-panel .scene-speaker > img {
+  width: 88px;
+  height: 112px;
+}
+.sheltered-hint {
+  padding: 12px;
+  background: #e7eddc;
+  border-left: 3px solid #6a8258;
 }
 .scene-art {
   object-fit: cover;
@@ -225,6 +314,9 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .scene-air {
+    animation: none !important;
+  }
   .scene-backdrop {
     animation: none;
   }

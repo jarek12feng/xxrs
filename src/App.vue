@@ -323,7 +323,7 @@ onUnmounted(() => {
         ><span>修仙人生<small>一卷山海 · 几世修行</small></span></a
       >
       <div class="header-right">
-        <span class="edition">航图之外 · v0.7.0</span
+        <span class="edition">行路有痕 · v0.8.0</span
         ><button class="quiet" @click="dialog = 'help'">玩法说明</button
         ><button class="quiet" @click="fileInput?.click()">导入存档</button
         ><button v-if="game" class="quiet" @click="download(game)">导出</button>

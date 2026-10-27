@@ -117,7 +117,7 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 7;
+  version: 8;
   adventure: Adventure;
   journey: Journey;
   social: SocialState;
@@ -178,7 +178,7 @@ function lift(
   social = freshSocial(),
   adventure = freshAdventure(true),
 ): State {
-  return { ...s, version: 7, journey, social, adventure };
+  return { ...s, version: 8, journey, social, adventure };
 }
 export function createGame(
   name: string,
@@ -843,7 +843,7 @@ export function validState(x: unknown): x is State {
   const s = x as State,
     j = s.journey;
   if (
-    s.version !== 7 ||
+    s.version !== 8 ||
     !j ||
     !chapter.validState(base(s)) ||
     !validSocial(s) ||
@@ -916,13 +916,36 @@ export function validState(x: unknown): x is State {
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 7) {
+    const old = x as State;
+    if (
+      !validAdventure(old.adventure) ||
+      !old.adventure.road ||
+      typeof old.adventure.road !== "object"
+    )
+      throw new Error("旧行路存档损坏，原档未修改。");
+    const upgraded = {
+      ...structuredClone(old),
+      version: 8,
+      adventure: {
+        ...structuredClone(old.adventure),
+        road: {
+          ...structuredClone(old.adventure.road),
+          discoveries: [],
+          lastApproach: "direct",
+        },
+      },
+    };
+    if (validState(upgraded)) return upgraded;
+    throw new Error("旧行路存档损坏，原档未修改。");
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 6) {
     const old = x as State;
     if (!validAdventure(old.adventure))
       throw new Error("旧冒险存档损坏，原档未修改。");
     const upgraded = {
       ...structuredClone(old),
-      version: 7,
+      version: 8,
       adventure: { ...structuredClone(old.adventure), road: freshRoad() },
     };
     if (validState(upgraded)) return upgraded;
@@ -931,7 +954,7 @@ export function migrateSave(x: unknown): State {
   if (x && typeof x === "object" && "version" in x && x.version === 5) {
     const upgraded = {
       ...structuredClone(x),
-      version: 7,
+      version: 8,
       adventure: freshAdventure(true),
     };
     if (validState(upgraded)) return upgraded;
@@ -940,7 +963,7 @@ export function migrateSave(x: unknown): State {
   if (validV4(x))
     return {
       ...structuredClone(x),
-      version: 7,
+      version: 8,
       social: freshSocial(),
       adventure: freshAdventure(true),
     };

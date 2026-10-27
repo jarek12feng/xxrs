@@ -6,11 +6,14 @@ import {
   roadGoal,
   roadDetails,
   roadError,
+  roadClues,
+  hasShelteredRoute,
   forgeError,
   actionError,
   preparationError,
   breakthroughDetails,
   type RoadAction,
+  type RoadClue,
   type State,
   type Intent,
 } from "./core";
@@ -27,6 +30,7 @@ const reveal = async () => {
 };
 onMounted(reveal);
 watch(() => props.game.adventure.road.stage, reveal);
+watch(() => props.game.adventure.road.discoveries.length, reveal);
 const road = computed(() => props.game.adventure.road);
 const scene = computed(() => {
   const r = road.value,
@@ -58,6 +62,11 @@ const locked = computed(
     !!props.game.social.scene ||
     !!props.game.social.arena.duel,
 );
+const observations = computed(() =>
+  (Object.keys(roadClues) as RoadClue[])
+    .filter((key) => roadClues[key].stage === road.value.stage)
+    .map((key) => ({ key, ...roadClues[key] })),
+);
 const choices = computed<{ action: RoadAction; label: string }[]>(
   () =>
     ({
@@ -80,7 +89,13 @@ const choices = computed<{ action: RoadAction; label: string }[]>(
         { action: "inspect", label: "观察山风，询问守境妖修" },
         {
           action: "challenge",
-          label: road.value.passed ? "已经过关" : "挑战青嶂关 · 补给灵石 4",
+          label: road.value.passed
+            ? "已经过关"
+            : `正面过关 · 把握 ${roadDetails(props.game).chance}% · 灵石 4 / 失败伤势 +1`,
+        },
+        {
+          action: "shelteredChallenge",
+          label: `循避风路过关 · 把握 ${roadDetails(props.game, "sheltered").chance}% · 灵石 6 / 失败安全撤回`,
         },
         { action: "camp", label: "退回行营，制定准备计划" },
         { action: "market", label: "回坊市找郁青" },
@@ -155,6 +170,7 @@ const visibleChoices = computed(() =>
       return r.commission && !r.map;
     if (action === "invite") return r.map && !r.ally;
     if (action === "inspect") return r.obstacle === "none";
+    if (action === "shelteredChallenge") return r.obstacle !== "none";
     if (action === "survey") return !r.surveyed;
     return true;
   }),
@@ -174,8 +190,10 @@ const person = computed(() =>
     : road.value.stage === "pass"
       ? {
           name: "青嶂",
-          image: null,
-          line: "守路不只是拦人。看清危险，再来找我。",
+          image: "/characters/qingzhang.jpg",
+          line: road.value.discoveries.includes("marks")
+            ? "你肯低头看那道刻痕，我便知道你不是来逞强的。"
+            : "守路不只是拦人。看清危险，再来找我。",
         }
       : {
           name:
@@ -183,15 +201,18 @@ const person = computed(() =>
             (road.value.stage === "camp" && road.value.ally)
               ? "郁青"
               : "郁青留下的话",
-          image: null,
+          image: "/characters/yuqing.jpg",
           line:
-            road.value.surveyed && road.value.stage === "market"
-              ? "你留下的路，已经有人在走。"
-              : ["beyond", "lookout"].includes(road.value.stage)
-                ? "旅亭看见的，也替我记下来。"
-                : road.value.ally
-                  ? "你护住气息，我替你辨路。遇到险处，先喊我。"
-                  : "画图不是为了把世界圈起来，是为了让人能走回来。",
+            road.value.discoveries.includes("names") &&
+            road.value.stage === "market"
+              ? "原来这些年，是他替我们守着回来的路。"
+              : road.value.surveyed && road.value.stage === "market"
+                ? "你留下的路，已经有人在走。"
+                : ["beyond", "lookout"].includes(road.value.stage)
+                  ? "旅亭看见的，也替我记下来。"
+                  : road.value.ally
+                    ? "你护住气息，我替你辨路。遇到险处，先喊我。"
+                    : "画图不是为了把世界圈起来，是为了让人能走回来。",
         },
 );
 </script>
@@ -233,6 +254,41 @@ const person = computed(() =>
           {{ game.herbs }} · 神识 {{ game.sense }} · 心得 {{ game.study }}
         </p>
       </div>
+      <section
+        v-if="observations.length"
+        class="scene-investigation"
+        aria-label="环顾四周调查区"
+      >
+        <h3>停下来，看看四周</h3>
+        <p>可选调查，不推进月份。发现会留在手记里，也可能改变你过关的办法。</p>
+        <button
+          v-for="object in observations"
+          :key="object.key"
+          :disabled="locked || !!roadError(game, object.action)"
+          @click="emit('act', { type: 'road', action: object.action })"
+        >
+          <span class="clue-symbol" aria-hidden="true">{{
+            road.discoveries.includes(object.key) ? "✓" : "◇"
+          }}</span>
+          <span
+            ><strong>{{ object.name }}</strong
+            ><small>{{
+              roadError(game, object.action) || object.hint
+            }}</small></span
+          ><span aria-hidden="true">→</span>
+        </button>
+      </section>
+      <details v-if="road.discoveries.length" class="road-journal">
+        <summary>
+          行路手记 · {{ road.discoveries.length }} 处发现{{
+            hasShelteredRoute(game) ? " · 已找到避风路" : ""
+          }}
+        </summary>
+        <article v-for="clue in road.discoveries" :key="clue">
+          <h4>{{ roadClues[clue].name }}</h4>
+          <p>{{ roadClues[clue].text }}</p>
+        </article>
+      </details>
       <div
         v-if="['pass', 'camp'].includes(road.stage) && road.obstacle !== 'none'"
         class="road-plan"
@@ -258,7 +314,13 @@ const person = computed(() =>
         <p>
           {{ game.realm ? "当前过关把握" : "筑基后按当前准备估计" }}：<strong
             >{{ roadDetails(game).chance }}%</strong
-          >；充分准备可达 100%。失败保留航图、装备与同行约定，增加 1 伤势。
+          >；充分准备可达 100%。正面过关失败增加 1
+          伤势；两种过关方式都保留航图、装备与同行约定。
+        </p>
+        <p v-if="hasShelteredRoute(game)" class="sheltered-hint">
+          你已串起两处线索：避风路把握
+          {{ roadDetails(game, "sheltered").chance }}%，多用灵石
+          2，失败不新增伤势。仍需筑基与实际准备。
         </p>
         <details>
           <summary>查看把握来自哪里</summary>
@@ -407,8 +469,8 @@ const person = computed(() =>
         </button>
       </div>
       <p class="adventure-footnote">
-        交谈、辨路与移动不计修行月份；修炼按真实月份推进，遇剧情暂停。青嶂关挑战消耗灵石
-        4，不推进月份；首次通过后归路常开。
+        交谈、调查与移动不计修行月份；修炼按真实月份推进，遇剧情暂停。青嶂关正面挑战消耗灵石
+        4，避风路消耗灵石 6，均不推进月份；首次通过后归路常开。
       </p>
     </section>
   </section>

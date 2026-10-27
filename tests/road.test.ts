@@ -7,6 +7,7 @@ import {
   freshRoad,
   roadDetails,
   roadError,
+  hasShelteredRoute,
   preparationError,
   type State,
   type Intent,
@@ -55,6 +56,145 @@ function atPass(seed = 1) {
   p.road("inspect");
   return p;
 }
+function shelteredState() {
+  const p = atPass(12345);
+  for (const action of [
+    "examineMarks",
+    "market",
+    "examineLedger",
+    "camp",
+    "friend",
+    "invite",
+    "pass",
+  ] as RoadAction[])
+    p.road(action);
+  const s = structuredClone(p.state);
+  s.realm = 1;
+  s.seed = 12345;
+  expect(validState(s)).toBe(true);
+  return s;
+}
+it("records optional clues once without time, resources or RNG costs", () => {
+  const p = atPass(42);
+  const before = structuredClone(p.state);
+  p.road("examineMarks");
+  expect(p.state.adventure.road.discoveries).toEqual(["marks"]);
+  for (const key of ["month", "age", "stones", "seed"] as const)
+    expect(p.state[key]).toBe(before[key]);
+  const once = p.state;
+  expect(p.road("examineMarks")).toBe(once);
+  expect(p.road("examineLedger")).toBe(once);
+  p.road("market");
+  p.road("examineLedger");
+  expect(hasShelteredRoute(p.state)).toBe(true);
+  expect(migrateSave(p.state)).toEqual(p.state);
+});
+it("requires meeting the ledger owner and inspecting danger before reading marks", () => {
+  const p = session();
+  p.road("thanks");
+  p.road("market");
+  expect(roadError(p.state, "examineLedger")).toContain("认识");
+  p.road("talk");
+  p.road("accept");
+  p.send({ type: "supplies" });
+  p.road("deliver");
+  p.road("pass");
+  expect(roadError(p.state, "examineMarks")).toContain("观察");
+});
+it("trades two extra stones for a stronger safer attempt, with identical deterministic rolls", () => {
+  const s = shelteredState();
+  const command = {
+    id: "safe",
+    type: "road",
+    action: "shelteredChallenge",
+  } as const;
+  const safe = dispatch(s, command);
+  const direct = dispatch(s, { ...command, action: "challenge" });
+  expect(roadDetails(s, "sheltered").chance).toBe(roadDetails(s).chance + 10);
+  expect(safe.adventure.road.passed).toBe(false);
+  expect(direct.adventure.road.passed).toBe(false);
+  expect(safe.adventure.road.roll).toBe(direct.adventure.road.roll);
+  expect(safe.stones).toBe(s.stones - 6);
+  expect(direct.stones).toBe(s.stones - 4);
+  expect(safe.injury).toBe(s.injury);
+  expect(direct.injury).toBe(s.injury + 1);
+  expect(safe.adventure.road.lastApproach).toBe("sheltered");
+  expect(dispatch(s, command)).toEqual(safe);
+  expect(dispatch(safe, command)).toBe(safe);
+  expect(migrateSave(safe)).toEqual(safe);
+});
+it("keeps preparation and resource gates on the sheltered approach", () => {
+  const s = shelteredState();
+  for (const patch of [{ stones: 5 }, { realm: 0 }, { injury: 3 }]) {
+    const blocked = { ...s, ...patch } as State;
+    expect(roadError(blocked, "shelteredChallenge")).not.toBe("");
+    expect(
+      dispatch(blocked, {
+        id: "gate",
+        type: "road",
+        action: "shelteredChallenge",
+      }),
+    ).toBe(blocked);
+  }
+  for (const discoveries of [
+    [],
+    ["ledger"],
+    ["marks"],
+  ] as State["adventure"]["road"]["discoveries"][]) {
+    const blocked = structuredClone(s);
+    blocked.adventure.road.discoveries = discoveries;
+    expect(roadError(blocked, "shelteredChallenge")).toContain("账册");
+  }
+});
+it("lets the pavilion names change the return conversation without farming rewards", () => {
+  let s = shelteredState();
+  Object.assign(s, { sense: 12, study: 4, foundation: 24 });
+  let id = 0;
+  const act = (action: RoadAction) => {
+    s = dispatch(s, { id: `names-${++id}`, type: "road", action });
+    expect(validState(s)).toBe(true);
+  };
+  act("shelteredChallenge");
+  expect(s.adventure.road.passed).toBe(true);
+  act("lookout");
+  const stones = s.stones;
+  act("examineNames");
+  expect(s.stones).toBe(stones);
+  expect(s.adventure.road.discoveries).toContain("names");
+  act("survey");
+  expect(s.stones).toBe(stones + 8);
+  act("survey");
+  expect(s.stones).toBe(stones + 8);
+  act("market");
+  expect(s.adventure.road.result).toContain("旧名字");
+  expect(migrateSave(s)).toEqual(s);
+});
+it("preserves v7 road progress and rejects invalid new clue histories", () => {
+  const s = shelteredState();
+  const { discoveries: _, lastApproach: __, ...road } = s.adventure.road;
+  const old = { ...s, version: 7, adventure: { ...s.adventure, road } };
+  expect(migrateSave(old)).toEqual({
+    ...s,
+    adventure: {
+      ...s.adventure,
+      road: { ...road, discoveries: [], lastApproach: "direct" },
+    },
+  });
+  for (const discoveries of [
+    ["ledger", "ledger"],
+    ["unknown"],
+    ["names"],
+    null,
+    "ledger",
+  ]) {
+    const bad = {
+      ...s,
+      adventure: { ...s.adventure, road: { ...s.adventure.road, discoveries } },
+    };
+    expect(validState(bad)).toBe(false);
+    expect(() => migrateSave(bad)).toThrow();
+  }
+});
 it("requires the rescue and lets the returned world remember it without extra rewards", () => {
   const start = createGame("客", "wood");
   expect(dispatch(start, { id: "bad", type: "road", action: "thanks" })).toBe(
@@ -211,7 +351,7 @@ it("migrates v6 without changing resources, scene, old story or RNG; rejects cor
   const upgraded = migrateSave(old);
   expect(upgraded).toEqual({
     ...s,
-    version: 7,
+    version: 8,
     adventure: { ...adventure, road: freshRoad() },
   });
   expect(() =>

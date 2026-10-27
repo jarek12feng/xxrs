@@ -1,6 +1,10 @@
 # 实施记录
 
-## 当前版本 v0.7.0：航图之外
+## 当前版本 v0.8.0：行路有痕
+
+状态版本 8，road.ts 新增可选调查与避风路线，RoadPanel 增加人物肖像、调查操作区及行路手记。调查通过命令记录，不推进时间、不消耗随机种子；过关仍共用种子判定。v7 迁移只补新字段，首次写入保留 original-v7。细节与验证见 [v8-investigations.md](v8-investigations.md)。下文为历史记录。
+
+## v0.7.0：航图之外
 
 状态版本 7，新增纯规则 road.ts、RoadPanel.vue；第二卷衔接原有营救与筑基规则。场景层统一为 SceneBackdrop.vue + 独立 scene-controls 操作区，包括原有地图、宗门、人物互动、擂台、突破和轮回。UI 不修改领域状态。存档迁移、玩法边界、素材和验证见 [v7-cloud-road.md](v7-cloud-road.md)。当前 104 项测试，下文为历史记录。
 
