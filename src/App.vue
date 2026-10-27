@@ -41,6 +41,22 @@ import AdventurePanel from "./AdventurePanel.vue";
 import RoadPanel from "./RoadPanel.vue";
 import MistPanel from "./MistPanel.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
+import ActionFeedback from "./ActionFeedback.vue";
+import { actionReceipt, type ActionReceipt } from "./action-feedback";
+const receipt = shallowRef<ActionReceipt | null>(null);
+const receiptExpanded = ref(false);
+const receiptSerial = ref(0);
+let receiptTimer: ReturnType<typeof setTimeout> | undefined;
+let actionOrigin: HTMLElement | null = null;
+async function closeReceipt() {
+  receiptExpanded.value = false;
+  receipt.value = null;
+  clearTimeout(receiptTimer);
+  await nextTick();
+  if (modal.value)
+    document.querySelector<HTMLElement>("[role=dialog] h2")?.focus();
+  else if (actionOrigin?.isConnected) actionOrigin.focus();
+}
 const view = ref<"story" | "cultivation">("story");
 const showRoad = ref(false);
 import { load, save } from "./save";
@@ -97,11 +113,13 @@ const costs = computed(() => (game.value ? refineCost(game.value) : null));
 const fileInput = ref<HTMLInputElement>();
 const event = computed(() => (game.value ? eventView(game.value) : null));
 const modal = computed(() =>
-  event.value
-    ? activeEventId(game.value!)
-    : game.value?.status !== "alive" && game.value
-      ? game.value.status
-      : dialog.value,
+  receiptExpanded.value
+    ? "action-feedback"
+    : event.value
+      ? activeEventId(game.value!)
+      : game.value?.status !== "alive" && game.value
+        ? game.value.status
+        : dialog.value,
 );
 const details = computed(() =>
   game.value ? breakthroughDetails(game.value, pill.value) : null,
@@ -140,17 +158,36 @@ async function persist(s: State) {
   }
 }
 async function act(intent: Intent) {
-  if (!game.value || ui.busy) return false;
+  if (!game.value || ui.busy || receiptExpanded.value) return false;
+  const automatic = ui.running;
+  actionOrigin = document.activeElement as HTMLElement | null;
   const old = game.value,
     n = dispatch(old, { ...intent, id: crypto.randomUUID() });
   if (n === old) {
     if (intent.type === "queueTick") {
       ui.running = false;
       notice.value = "修行安排已暂停：请检查行动条件或材料。";
-    }
+    } else
+      notice.value =
+        "本次行动未执行：请检查材料、修为或当前待处理剧情。没有新增消耗。";
     return false;
   }
   const ok = await persist(n);
+  if (ok) {
+    clearTimeout(receiptTimer);
+    receipt.value = actionReceipt(old, n, intent);
+    receiptSerial.value++;
+    receiptExpanded.value = !!receipt.value?.ritual && !automatic;
+    if (receiptExpanded.value) {
+      ui.running = false;
+      dialog.value = "";
+    }
+    // Ordinary actions stay non-blocking; the full details remain in the log.
+    else
+      receiptTimer = setTimeout(() => {
+        receipt.value = null;
+      }, 6500);
+  }
   if (
     ok &&
     (n.pending ||
@@ -241,15 +278,19 @@ async function importSave(e: Event) {
   const el = e.target as HTMLInputElement,
     file = el.files?.[0];
   try {
+    if (ui.busy || receiptExpanded.value) return;
     if (!file) return;
     if (file.size > 2e6) throw new Error("存档不得超过 2 MB");
     const s = migrateSave(JSON.parse(await file.text()));
+    if (ui.busy || receiptExpanded.value) return;
     if (
       confirm("以此存档替换当前进度？建议先导出备份。") &&
       (await persist(s))
     ) {
       loadError.value = false;
       dialog.value = "";
+      receipt.value = null;
+      clearTimeout(receiptTimer);
     }
   } catch (e) {
     notice.value = String(e);
@@ -316,12 +357,14 @@ onMounted(async () => {
   }, 800);
 });
 onUnmounted(() => {
+  clearTimeout(receiptTimer);
   clearInterval(timer);
   document.removeEventListener("visibilitychange", hidden);
   document.removeEventListener("keydown", keyboard);
 });
 </script>
 <template>
+  <div v-if="ui.busy" class="saving-pulse" role="status">正在结算并保存……</div>
   <div v-if="notice" class="notice" role="alert">{{ notice }}</div>
   <div class="shell" :inert="!!modal">
     <header>
@@ -330,7 +373,7 @@ onUnmounted(() => {
         ><span>修仙人生<small>一卷山海 · 几世修行</small></span></a
       >
       <div class="header-right">
-        <span class="edition">雾海来信 · v0.9.0</span
+        <span class="edition">雾海来信 · v0.9.1</span
         ><button class="quiet" @click="dialog = 'help'">玩法说明</button
         ><button class="quiet" @click="fileInput?.click()">导入存档</button
         ><button v-if="game" class="quiet" @click="download(game)">导出</button>
@@ -791,7 +834,26 @@ onUnmounted(() => {
       <span>修仙人生 · 筑基篇</span><span>本地单机 / 请只在一个标签页游玩</span>
     </footer>
   </div>
-  <div v-if="modal" class="overlay" :data-mood="heart ? eventMood : 'day'">
+  <div v-if="receipt && receiptExpanded" class="feedback-layer">
+    <ActionFeedback
+      :key="receiptSerial"
+      :receipt="receipt"
+      expanded
+      @close="closeReceipt"
+    />
+  </div>
+  <div v-else-if="receipt && !modal" class="receipt-dock">
+    <ActionFeedback
+      :key="receiptSerial"
+      :receipt="receipt"
+      @close="closeReceipt"
+    />
+  </div>
+  <div
+    v-if="modal && !receiptExpanded"
+    class="overlay"
+    :data-mood="heart ? eventMood : 'day'"
+  >
     <section
       :key="game ? activeEventId(game) || game.status : 'loading'"
       class="modal"

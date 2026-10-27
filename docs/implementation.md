@@ -1,6 +1,10 @@
 # 实施记录
 
-## 当前版本 v0.9.0：雾海来信
+## 当前版本 v0.9.1：行动有回响
+
+本次只增强表现层，不调整成功率、奖励或存档格式（仍为状态版本 9）。`action-feedback.ts` 从命令执行前后状态生成只读回执；`ActionFeedback.vue` 展示可跳过的 1.4 秒演出和结果。App 仍先成功保存，再更新状态并展示结果；动画不发命令、不掷骰。突破、炼丹、闭关、炼器和三卷闯关使用结果对话框，其余行动使用轻量即时回执；自动安排不逐次弹窗。详情见 [v9-action-feedback.md](v9-action-feedback.md)。
+
+## v0.9.0：雾海来信
 
 状态版本 9，纯规则 mist.ts 作为独立章节模块接入 core/world 命令分发，状态存入 adventure.mist；不引入浏览器 API 或 UI 依赖。MistPanel.vue 承载场景和独立操作区，RoadPanel 显式接取第三卷，SocialPanel 展示共同冒险记忆。v8 迁移只补 freshMist，保存时保留 original-v8；轮回重置本章能力与同行，不携带婚姻或探灵灯。两条支线、失败后的准备、探灵灯旧地新解及测试范围见 [v9-mist-letter.md](v9-mist-letter.md)。
 
