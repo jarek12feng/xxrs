@@ -4,15 +4,20 @@ import type { State, Intent } from "../core";
 import { encounters, moves, type Move } from "./content";
 import { expeditionError, readiness, type ExpeditionAction } from "./rules";
 import { preparationAdvice, battleMeters } from "./presentation";
+import { combatStyle, moveHint } from "./combat";
+import ExpeditionResolution from "./ExpeditionResolution.vue";
 import BattleStage from "./BattleStage.vue";
 const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent]; cultivate: [] }>();
+const style = computed(() => combatStyle(props.game));
 const advice = computed(() => preparationAdvice(props.game));
 const meters = computed(() => battleMeters(props.game));
 const q = computed(() => props.game.expedition);
 const encounter = computed(() => encounters[Math.min(q.value.cleared, 2)]!);
 const power = computed(() => readiness(props.game));
-const actions = computed<{ action: ExpeditionAction; label: string }[]>(() =>
+const actions = computed<
+  { action: ExpeditionAction; label: string; hint?: string }[]
+>(() =>
   !q.value.accepted
     ? [{ action: "accept", label: "接取护送与旧阵委托" }]
     : q.value.cleared === 3
@@ -22,6 +27,7 @@ const actions = computed<{ action: ExpeditionAction; label: string }[]>(() =>
             ...(Object.keys(moves) as Move[]).map((action) => ({
               action,
               label: moves[action],
+              hint: moveHint(props.game, action),
             })),
             { action: "withdraw", label: "主动撤回 · 不新增伤势" },
           ]
@@ -51,6 +57,11 @@ const actions = computed<{ action: ExpeditionAction; label: string }[]>(() =>
         本次耗时一月、灵石 {{ encounter.cost }}；首次完成奖励灵石
         {{ encounter.reward }}、灵草 2。失败保留已过小关，伤势 +1。
       </p>
+      <aside class="combat-style">
+        <strong>{{ style.name }}</strong>
+        <p>{{ style.description }}</p>
+        <small>当前灵草 {{ game.herbs }}；功法效果与正确应对叠加。</small>
+      </aside>
       <details class="combat-help">
         <summary>查看修行如何影响交锋</summary>
         <p>
@@ -93,7 +104,8 @@ const actions = computed<{ action: ExpeditionAction; label: string }[]>(() =>
         :disabled="busy || !!expeditionError(game, a.action)"
         @click="emit('act', { type: 'expedition', action: a.action })"
       >
-        {{ a.label }}<small>{{ expeditionError(game, a.action) }}</small>
+        {{ a.label
+        }}<small>{{ expeditionError(game, a.action) || a.hint }}</small>
       </button>
       <button
         v-for="tip in advice"
@@ -111,6 +123,7 @@ const actions = computed<{ action: ExpeditionAction; label: string }[]>(() =>
         回洞府准备 · 每月修行消耗寿元
       </button>
     </div>
+    <ExpeditionResolution :game="game" />
     <p v-if="q.cleared === 3">
       护身诀已入功法面板。现在可观察山口解法，决定救草、开山或修复旧阵；后续雾海剧情会记住这条归路。
     </p>

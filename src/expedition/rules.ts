@@ -1,5 +1,7 @@
 import type { State } from "../world";
 import { encounters, type Move } from "./content";
+import { readiness, exchangePreview } from "./combat";
+export { readiness } from "./combat";
 export interface Expedition {
   accepted: boolean;
   cleared: number;
@@ -18,18 +20,6 @@ export const freshExpedition = (): Expedition => ({
   last: "",
   effect: "none",
 });
-export function readiness(s: State) {
-  return {
-    hp: Math.max(16, 36 + s.foundation - s.injury * 5),
-    damage:
-      5 +
-      Math.floor((s.sense + s.study * 2 + s.mastery + s.foundation) / 4) +
-      (s.journey.equipped === "sword" ? s.journey.relics.sword * 2 : 0),
-    armor:
-      (s.journey.support === "guard" ? 2 : 0) +
-      (s.journey.equipped === "vial" ? s.journey.relics.vial : 0),
-  };
-}
 export function expeditionError(s: State, a: ExpeditionAction): string {
   const q = s.expedition;
   if (
@@ -118,20 +108,21 @@ export function runExpedition(
     }
   } else {
     const q = s.expedition,
-      d = q.duel!,
-      e = encounters[q.cleared]!,
-      power = readiness(s);
-    const correct = a === e.pattern[d.turn % e.pattern.length];
-    const damage = power.damage + (correct ? 6 : 0);
-    const incoming = Math.max(1, e.attack + (correct ? -5 : 3) - power.armor);
+      d = q.duel!;
+    const { correct, damage, incoming, healing, herbs, note } = exchangePreview(
+      s,
+      a as Move,
+    )!;
     d.enemy = Math.max(0, d.enemy - damage);
     d.turn++;
+    s.herbs -= herbs;
     q.effect = correct ? (a as Move) : "hurt";
-    q.last = `第 ${d.turn} 合：${correct ? "看破招式" : "未能化解来招"}，敌方气势 −${damage}。`;
+    q.last = `第 ${d.turn} 合：${correct ? "看破招式" : "未能化解来招"}，敌方气势 −${damage}。${note}`;
     if (d.enemy === 0) complete(s);
     else {
-      d.hp = Math.max(0, d.hp - incoming);
+      d.hp = Math.max(0, d.hp - incoming) + healing;
       q.last += `自身气势 −${incoming}。`;
+      if (healing) q.last += `消耗灵草 ${herbs}，恢复气势 ${healing}。`;
       if (!d.hp || d.turn >= 12) {
         q.duel = null;
         q.effect = "loss";
@@ -159,7 +150,7 @@ function complete(s: State) {
   if (q.cleared === 3) {
     if (!s.journey.known.includes("guard")) s.journey.known.push("guard");
     q.last +=
-      "获得护身诀（可在功法面板装配）。傀儡胸口藏着另一半名单，末行写着“雾海”。青嶂让出旧阵：救草、开山还是修阵，这次由你决定。";
+      "获得护身诀（可在功法面板装配）。你们在阵核里找到完整转运册，可在下方对簿查看名单真相。青嶂让出旧阵：救草、开山还是修阵，这次由你决定。";
   }
 }
 export function validExpedition(s: State): boolean {

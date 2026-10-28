@@ -28,9 +28,21 @@ export * from "./chapter";
 export * from "./social";
 
 export const techniques = {
-  spring: { name: "长春诀", slot: "main", hint: "吐纳每月额外 +3 修为" },
-  blade: { name: "听松剑经", slot: "main", hint: "历练每月额外 +4 修为" },
-  breath: { name: "归元息", slot: "main", hint: "劳作每月额外 +4 修为" },
+  spring: {
+    name: "长春诀",
+    slot: "main",
+    hint: "吐纳每月额外 +3 修为；青嶂交锋守势可耗灵草恢复气势",
+  },
+  blade: {
+    name: "听松剑经",
+    slot: "main",
+    hint: "历练每月额外 +4 修为；青嶂交锋反击伤害 +8、承伤 +2",
+  },
+  breath: {
+    name: "归元息",
+    slot: "main",
+    hint: "劳作每月额外 +4 修为；青嶂交锋辨影减伤，擅破傀儡阵核",
+  },
   herb: { name: "辨草录", slot: "support", hint: "采药每月额外 +1 灵草" },
   guard: { name: "护身诀", slot: "support", hint: "历练不新增伤势" },
   lantern: {

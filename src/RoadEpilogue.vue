@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExpeditionResolution from "./expedition/ExpeditionResolution.vue";
 import { computed } from "vue";
 import { passSolutions, type State } from "./core";
 const props = defineProps<{ game: State; locked: boolean }>();
@@ -67,6 +68,7 @@ const ending = computed(() => {
         <p>{{ ending.future }}</p>
       </article>
     </div>
+    <ExpeditionResolution :game="game" />
     <p class="epilogue-note">
       本篇完成不代表寿终，也不会开启下一世。归路与人物回应保留在本世存档中。
     </p>

@@ -1,3 +1,4 @@
+import { expeditionMistEcho } from "./expedition/resolution";
 import type { State } from "./world";
 import { companions } from "./social";
 
@@ -493,6 +494,8 @@ export function runMist(input: State, action: MistAction, id: string): State {
         "探灵灯亮起，石墙上的尘土没有消失，尘土下的阵纹却一寸寸浮现。墙后是药队留下的避难室，刻着陆迟父亲的字：若我未归，先带其他人下山。你把誓言拓下带回，又点亮避难室的归灯。以后路过的药工，多了一个能避雨的地方。你曾靠力量救出一个人，如今靠新本领让这条旧路发生了变化。第三卷·雾海来信完。";
       break;
   }
+  const expeditionEcho = expeditionMistEcho(s, action);
+  if (expeditionEcho) m.result += expeditionEcho;
   s.seen = [...s.seen, id].slice(-512);
   s.log.unshift({
     month: s.month,
