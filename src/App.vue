@@ -608,7 +608,7 @@ onUnmounted(() => {
         <img src="/mountains.svg" alt="云海中的听松山" />
         <div class="art-copy">
           <span class="eyebrow">筑基篇 / 三年之约</span>
-          <h1>一丹两途<br />几世回响</h1>
+          <h1>初入听松山</h1>
           <p>修行不只为了长生。<br />那个等你赴约的人，你会记得吗？</p>
         </div>
       </div>
