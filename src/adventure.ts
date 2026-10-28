@@ -1,9 +1,11 @@
+import { validAdventureV10 } from "./legacy-adventure-v10";
 import type { State } from "./world";
 import { freshRoad, type Road } from "./road";
 import { freshMist, type Mist } from "./mist";
 export type Step =
   "invitation" | "ferry" | "apothecary" | "forest" | "shrine" | "home" | "done";
 export interface Adventure {
+  rescueChoice: "none" | "roots" | "supplies" | "legacy";
   mist: Mist;
   road: Road;
   step: Step;
@@ -14,6 +16,7 @@ export interface Adventure {
   result: string;
 }
 export const freshAdventure = (old = false): Adventure => ({
+  rescueChoice: "none",
   mist: freshMist(),
   road: freshRoad(),
   step: old ? "invitation" : "ferry",
@@ -38,6 +41,7 @@ export type AdventureAction =
   | "challenge"
   | "retreat"
   | "return"
+  | "takeHerbs"
   | "finish";
 export const adventureScenes = {
   invitation: {
@@ -52,14 +56,14 @@ export const adventureScenes = {
     image: "/characters/luchi-ferry.png",
     mood: "rain",
     goal: "调查失踪药工最后留下的痕迹。",
-    body: "渡船靠岸，陆迟扶着受伤的船夫走来。药篓还在，人却没有回来。“先别往山里冲，”他递来一块湿透的布，“你看看这上面的东西。”",
+    body: "渡船撞上石阶，船夫攥着一只空药篓：失踪药工的东西竟从上游漂了回来，篓口还系着一个朝内的结。山里忽然响了三下铃，陆迟的手停在半空。“这铃……我父亲失踪前，也提过。”他把湿布递给你。青色痕迹正沿着布纹发亮。",
   },
   apothecary: {
     name: "山门药庐",
     image: "/scenes/apothecary.jpg",
     mood: "warm",
     goal: "选择一种穿过山瘴的方法，并完成准备。",
-    body: "温蘅把沾着青色粉末的布放在灯下。山瘴会扰乱感知，蛮力未必有用。你可以配药、寻找熟悉山路的人，也可以练习护体。",
+    body: "温蘅将布放近灯火，青痕竟逆着火光缩回去。“不是毒血，是旧阵的灵尘。有人在里面活着，还碰过阵门。”她拦住准备拔剑的陆迟：护路阵如今认不得来人，越强催灵力，反噬越重。药气可以缓阵，同伴可以分流，稳住护体也能穿过去。",
   },
   forest: {
     name: "雾林旧道",
@@ -73,14 +77,14 @@ export const adventureScenes = {
     image: "/characters/luchi-relic.png",
     mood: "mist",
     goal: "救出药工；若准备不足，带着情报撤回药庐。",
-    body: "药工被困在倒塌的阵门后。一只守祠妖修挡住去路，却没有追杀伤者。它的目光一直停留在药篓里的灵草上。",
+    body: "断裂的阵门里，药工胸前的红绳一明一灭。守祠妖修横在门口，肩上却也被阵光灼伤。它每退一步，阵里的铃便急一分。陆迟压低声音：“它是在拦我们，还是在替里面的人挡着？”阵纹又亮了，不能再等。",
   },
   home: {
-    name: "灯火归途",
+    name: "归途上的药篓",
     image: "/scenes/moon-terrace.png",
     mood: "moon",
-    goal: "将药工送回山门，听听这次营救改变了什么。",
-    body: "药工的女儿提着灯跑来。陆迟没有说你有多强，只说：“这次，是你把人带回来的。”药工交给你一张旧航图，图外仍有大片空白。",
+    goal: "药工已经安全。决定这篓成株留给谁，再一起回家。",
+    body: "山下还有等药的伤者，祠边的成株也正要留种。药工看着药篓：“带回去，今夜就能用；留下来，明年这片山还会有药。”妖修愿教留下成株的人护根，但不会阻止你带药救人。幼株不动，两种选择都会把药工送回家。",
   },
   done: {
     name: "听松山居",
@@ -92,20 +96,36 @@ export const adventureScenes = {
 } as const;
 export function validAdventure(a: Adventure) {
   return (
-    !!a &&
-    Object.hasOwn(adventureScenes, a.step) &&
-    typeof a.clue === "boolean" &&
-    ["none", "medicine", "guide", "ward"].includes(a.method) &&
-    typeof a.ready === "boolean" &&
-    Number.isSafeInteger(a.attempts) &&
-    a.attempts >= 0 &&
-    typeof a.result === "string" &&
-    a.result.length < 1000 &&
-    (!a.ready || a.method !== "none") &&
-    (!["apothecary", "forest", "shrine", "home", "done"].includes(a.step) ||
-      a.clue) &&
-    (!["home", "done"].includes(a.step) || (a.ready && a.attempts > 0))
+    validAdventureV10(a) &&
+    ["none", "roots", "supplies", "legacy"].includes(a.rescueChoice) &&
+    (a.step === "done" ? a.rescueChoice !== "none" : a.rescueChoice === "none")
   );
+}
+export const rescueChoices = {
+  roots: {
+    title: "留下成株，守住药圃",
+    hint: "不领取额外灵草；守祠妖修传授护根手法，日后可独自疏通雾海药圃。",
+    echo: "守祠妖修把护根的绳结教给了你。药工说，山下伤者还要等另一队送药，但这片药圃来年仍会长。",
+  },
+  supplies: {
+    title: "带回成株，先救眼前的人",
+    hint: "获得灵草 4，可用于炼丹或交付山口伤药；药圃暂歇一季，不获护根手法。",
+    echo: "温蘅收下带回的成株，先替渡口伤者敷药，再分出四株供你远行。药工答应来年回山补种，这一季药圃先空着。",
+  },
+} as const;
+export function rescueEcho(a: Adventure): string {
+  return a.rescueChoice === "roots" || a.rescueChoice === "supplies"
+    ? rescueChoices[a.rescueChoice].echo
+    : "";
+}
+export function adventureGoal(a: Adventure): string {
+  if (a.step === "ferry" && a.clue)
+    return "带着会随铃声发亮的青痕，去药庐请温蘅辨认。";
+  if (a.step === "apothecary" && a.ready)
+    return "方法已练熟。进入雾林，循药工的红绳找路。";
+  if (a.step === "shrine" && !a.ready)
+    return "已找到伤者；先回药庐练好方法，再来救人。";
+  return adventureScenes[a.step].goal;
 }
 export function adventureOptions(
   a: Adventure,
@@ -134,7 +154,7 @@ export function adventureOptions(
                   ? "准备已妥"
                   : {
                       medicine: "文火温养，先试一缕药气",
-                      guide: "约定撤退信号，我救人，你引开守卫",
+                      guide: "约定撤退信号，我救人，你稳住灵流",
                       ward: "听着铃声稳住呼吸，再运转灵气",
                     }[a.method],
               },
@@ -165,7 +185,7 @@ export function adventureOptions(
           label: a.ready
             ? {
                 medicine: "以药草安抚妖修，救出伤者",
-                guide: "与陆迟分工，一人引开一人救援",
+                guide: "与陆迟分工，一人稳阵一人救援",
                 ward: "稳住护体气息，穿过阵门救人",
               }[a.method as "medicine" | "guide" | "ward"]
             : "尝试闯入 · 尚未做好准备",
@@ -173,7 +193,10 @@ export function adventureOptions(
         { action: "retreat", label: "带着情报回药庐准备" },
       ];
     case "home":
-      return [{ action: "return", label: "护送药工回家 · 看见营救的结果" }];
+      return [
+        { action: "return", label: rescueChoices.roots.title },
+        { action: "takeHerbs", label: rescueChoices.supplies.title },
+      ];
     case "done":
       return [{ action: "finish", label: "展开修行与山河 · 追寻航图上的远方" }];
   }
@@ -201,11 +224,11 @@ export function runAdventure(
     case "inspect":
       a.clue = true;
       a.result =
-        "布片上是青瘴粉，不是血。药篓里夹着红绳：药工沿途系绳，防止在雾中迷路。";
+        "布片上是青瘴粉，不是血；粉末在第三声铃响时亮了一下。药篓里夹着红绳：药工沿途系绳，防止在雾中迷路。可篓口的结朝里收紧——放它下水的，似乎不是药工自己。";
       break;
     case "ask":
       a.result =
-        "陆迟：脚印多的地方未必安全，有人专门踩出假路。先去找温蘅辨认瘴气，我会在山口等你。";
+        "陆迟把一枚缺角旧印攥回掌心：“父亲说过，听见三声铃，要看绳，别追声音。可他那次没有回来。”他指向湿地：“脚印多的地方未必安全，旧阵会把人引回原地。先找温蘅辨认瘴气，我会在山口等你。”";
       break;
     case "depart":
       a.step = a.step === "ferry" ? "apothecary" : "forest";
@@ -224,7 +247,13 @@ export function runAdventure(
     case "prepare":
       if (a.ready) return input;
       a.ready = true;
-      a.result = "准备完成。你已经掌握这一种应对山瘴的方法，可以回雾林再试。";
+      a.result = {
+        medicine:
+          "文火下，药气由刺鼻变得清凉。温蘅让你封好药包：遇到守卫，先试着让它闻到这股气息。",
+        guide:
+          "你试着扯了两下绳，陆迟立刻退到你身旁。信号练熟了：到阵门时，他稳住灵流，你扶伤者。",
+        ward: "铃声忽急忽缓，你的呼吸却稳了下来。护体已成：入阵后专注背出伤者，不追击守卫。",
+      }[a.method as "medicine" | "guide" | "ward"];
       break;
     case "rush":
       a.ready = false;
@@ -234,7 +263,7 @@ export function runAdventure(
     case "trail":
       a.step = "shrine";
       a.result =
-        "红绳通向山祠。你听见药工的呼救，也发现妖修是在守护阵门，并非无差别伤人。";
+        "红绳通向山祠，尽头系着一枚旧护路印，缺口竟与陆迟掌中的半印相合。阵里传来药工的呼救。守祠妖修没有追来，它正用受伤的肩膀抵住落下的阵门。";
       break;
     case "shortcut":
       a.step = "shrine";
@@ -251,10 +280,10 @@ export function runAdventure(
         a.step = "home";
         a.result = {
           medicine:
-            "妖修嗅到避瘴药的气息，放下戒备。你救起药工，并答应不再采走祠边的幼株。",
+            "药气顺着阵纹散开，急促的铃声终于放缓。妖修撤肩让路，你扶出药工，答应不动祠边幼株。它把另一截篓绳放在你脚下：原来药篓是它送下山求救的。",
           guide:
-            "陆迟在门外引开妖修，你沿着事先商量的路线救出药工。两人都平安退回。",
-          ward: "你稳住呼吸，顶住阵门散出的瘴气，将伤者背出。妖修见你没有夺宝，也没有追来。",
+            "陆迟按约定牵绳分流，你沿事先商量的路线扶出药工。妖修顶住最后一道阵光，三人一同退回。它放下另一截篓绳：陆迟这才明白，药篓是它送下山求救的。",
+          ward: "你稳住呼吸，护体灵气撑住断门，将伤者背出。妖修替你挡住身后阵光，随后放下另一截篓绳。原来它没有抢走药工，是把他的药篓送下山求救。",
         }[a.method as "medicine" | "guide" | "ward"];
       }
       break;
@@ -264,12 +293,17 @@ export function runAdventure(
         "带回情报不是白走一趟。你知道了危险来自山瘴，也知道药工还活着。";
       break;
     case "return":
+    case "takeHerbs":
+      a.rescueChoice = action === "return" ? "roots" : "supplies";
+      if (a.rescueChoice === "supplies") s.herbs += 4;
       a.step = "done";
       s.stones += 12;
       if (a.method === "medicine") s.study = Math.min(4, s.study + 1);
       if (a.method === "guide") s.sense = Math.min(12, s.sense + 1);
       if (a.method === "ward") s.foundation = Math.min(24, s.foundation + 2);
       a.result =
+        rescueEcho(a) +
+        (a.rescueChoice === "supplies" ? "获得灵草 4。" : "已学会护根手法。") +
         "获得灵石 12。" +
         {
           medicine: "从配药中学到辨药心得 +1（上限 4）。",
@@ -277,7 +311,7 @@ export function runAdventure(
           ward: "护体实践使根基 +2（上限 24）。",
           none: "",
         }[a.method] +
-        "药工留下旧航图：筑基后可循山河见闻，深入回春谷、雾岭与雾海。";
+        "药工留下旧航图，背面盖着同样的护路半印。“有人早年教妖修守这座阵，我只听过一个名字：陈渡。”陆迟把半印按在图上，没有追问。雾岭灵流非炼气之身能承受；要查这位修士的去向，得先筑基。";
       break;
     case "finish":
       return input;

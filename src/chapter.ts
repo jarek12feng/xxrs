@@ -513,6 +513,18 @@ function hooks(s: State) {
   }
   if (s.month >= 24 && !s.memories.visit) decision(s, "visit");
 }
+// Shared adventure clock: consumes lifespan and processes appointments, without work income.
+export function travelMonth(input: State): State {
+  if (input.status !== "alive" || input.pending) return input;
+  const s = structuredClone(input);
+  const stones = s.stones;
+  if (month(s)) {
+    s.stones = stones;
+    record(s, "行路准备耗时一月，寿元随之流逝。");
+    hooks(s);
+  }
+  return s;
+}
 export function actionError(s: State, activity: Activity) {
   if (activity === "meditate" && s.sense >= 12) return "神识已达本篇上限";
   if (activity === "study" && s.study >= 4) return "研读心得已满";

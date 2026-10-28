@@ -43,6 +43,7 @@ export function actionReceipt(
   intent: Intent,
 ): ActionReceipt | null {
   if (
+    intent.type === "expedition" ||
     before === after ||
     before.life !== after.life ||
     intent.type === "beginChapter"

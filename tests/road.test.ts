@@ -177,6 +177,7 @@ it("preserves v7 road progress and rejects invalid new clue histories", () => {
     ...s,
     adventure: {
       ...s.adventure,
+      rescueChoice: "legacy",
       road: { ...road, discoveries: [], lastApproach: "direct" },
     },
   });
@@ -351,8 +352,8 @@ it("migrates v6 without changing resources, scene, old story or RNG; rejects cor
   const upgraded = migrateSave(old);
   expect(upgraded).toEqual({
     ...s,
-    version: 10,
-    adventure: { ...adventure, road: freshRoad() },
+    version: 12,
+    adventure: { ...adventure, rescueChoice: "legacy", road: freshRoad() },
   });
   expect(() =>
     migrateSave({

@@ -14,6 +14,7 @@ export function mistCheckpoint(
   path: Path = "wood",
   gender: Gender = "male",
   stopAtPass = false,
+  rescueChoice: "roots" | "supplies" = "supplies",
 ) {
   let s = createGame("雾海行者", path, seed, "insightful", gender),
     id = 0;
@@ -31,7 +32,7 @@ export function mistCheckpoint(
     "depart",
     "trail",
     "challenge",
-    "return",
+    rescueChoice === "roots" ? "return" : "takeHerbs",
   ] as AdventureAction[])
     send({ type: "adventure", action });
   for (const action of ["thanks", "market", "talk", "accept"] as RoadAction[])

@@ -384,3 +384,17 @@
     animation: none;
   }
 }
+
+/* Quiet foreground weather; no flashes and no input interception. */
+[data-atmosphere="rain"] .scene-air {
+  opacity: .12;
+  background: repeating-linear-gradient(105deg,transparent 0 22px,#c4d9df88 23px,transparent 24px 44px);
+  background-size: 70px 160px;
+  animation: scene-rain 1.6s linear infinite;
+}
+[data-atmosphere="warm"] .scene-air {
+  opacity: .15;
+  background: radial-gradient(ellipse at 10% 70%,#e4af5480,transparent 65%);
+}
+@keyframes scene-rain { to {background-position:-30px 160px;} }
+@media(prefers-reduced-motion:reduce) { [data-atmosphere="rain"] .scene-air {animation:none;} }

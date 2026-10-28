@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, nextTick, onMounted } from "vue";
+import ExpeditionPanel from "./expedition/ExpeditionPanel.vue";
 import RoadEpilogue from "./RoadEpilogue.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 import SceneResponse from "./SceneResponse.vue";
@@ -38,8 +39,9 @@ const emit = defineEmits<{
 const panel = ref<HTMLElement>();
 const reveal = async () => {
   await nextTick();
-  if (!panel.value?.closest(".immersive-shell"))
-    panel.value?.scrollIntoView({ block: "start", behavior: "instant" });
+  const stage = panel.value?.closest<HTMLElement>(".game-layout");
+  if (stage) stage.scrollTop = 0;
+  else panel.value?.scrollIntoView({ block: "start", behavior: "instant" });
 };
 onMounted(reveal);
 watch(() => props.game.adventure.road.stage, reveal);
@@ -114,6 +116,7 @@ const scene = computed(() => {
 const locked = computed(
   () =>
     props.busy ||
+    !!props.game.expedition.duel ||
     props.game.status !== "alive" ||
     !!props.game.pending ||
     !!props.game.social.scene ||
@@ -349,6 +352,32 @@ const person = computed(() =>
             {{ game.herbs }} · 神识 {{ game.sense }} · 心得 {{ game.study }}
           </p>
         </div>
+        <ExpeditionPanel
+          v-if="
+            ['pass', 'camp'].includes(road.stage) &&
+            road.map &&
+            (!road.passed || game.expedition.accepted)
+          "
+          :game="game"
+          :busy="busy"
+          @act="emit('act', $event)"
+          @cultivate="emit('cultivate')"
+        />
+        <div class="adventure-actions">
+          <button
+            v-for="choice in visibleChoices"
+            :key="choice.action"
+            :disabled="locked || !!roadError(game, choice.action)"
+            @click="emit('act', { type: 'road', action: choice.action })"
+          >
+            <span
+              >{{ choice.label
+              }}<small v-if="roadError(game, choice.action)">{{
+                roadError(game, choice.action)
+              }}</small></span
+            ><span>→</span>
+          </button>
+        </div>
         <button
           v-if="road.surveyed && road.stage === 'lookout'"
           class="full"
@@ -449,12 +478,12 @@ const person = computed(() =>
             </template>
           </article>
         </section>
-        <section
+        <details
           v-if="observations.length"
           class="scene-investigation"
           aria-label="环顾四周调查区"
         >
-          <h3>停下来，看看四周</h3>
+          <summary>环顾四周 · 可选调查</summary>
           <p>
             可选调查，不推进月份。发现会留在手记里，也可能改变你过关的办法。
           </p>
@@ -474,7 +503,7 @@ const person = computed(() =>
               }}</small></span
             ><span aria-hidden="true">→</span>
           </button>
-        </section>
+        </details>
         <details v-if="road.discoveries.length" class="road-journal">
           <summary>
             行路手记 · {{ road.discoveries.length }} 处发现{{
@@ -551,21 +580,7 @@ const person = computed(() =>
             </p>
           </details>
         </div>
-        <div class="adventure-actions">
-          <button
-            v-for="choice in visibleChoices"
-            :key="choice.action"
-            :disabled="locked || !!roadError(game, choice.action)"
-            @click="emit('act', { type: 'road', action: choice.action })"
-          >
-            <span
-              >{{ choice.label
-              }}<small v-if="roadError(game, choice.action)">{{
-                roadError(game, choice.action)
-              }}</small></span
-            ><span>→</span>
-          </button>
-        </div>
+
         <section
           v-if="road.stage === 'market' || road.stage === 'camp'"
           class="road-plan"

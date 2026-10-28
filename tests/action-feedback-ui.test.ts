@@ -220,7 +220,7 @@ it("keeps discoveries inside the scene and shows a named arrival without a block
     "抵达 · 山门药庐",
   );
   expect(button("请温蘅").disabled).toBe(false);
-  await vi.advanceTimersByTimeAsync(1800);
+  await vi.advanceTimersByTimeAsync(4200);
   expect(document.querySelector(".scene-arrival")).toBeNull();
 });
 it("NPC choices have a named response, affection and memory before returning to interactions", async () => {

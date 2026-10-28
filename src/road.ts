@@ -1,3 +1,5 @@
+import { expeditionBlocksPass } from "./expedition/rules";
+import { rescueEcho } from "./adventure";
 import type { State } from "./world";
 import {
   passActionError,
@@ -142,7 +144,19 @@ export const roadScenes = {
 } as const;
 export function roadGoal(s: State): string {
   const r = s.adventure.road;
-  if (r.stage === "home") return "回访药工与温蘅，问清航图缺角的去向。";
+  if (s.expedition?.accepted && s.expedition.cleared < 3) {
+    if (s.expedition.duel)
+      return "留意来招，选择守势、反击或凝神；也可主动撤回准备。";
+    return [
+      "护送药车通过山道；准备好补给后开始交锋。",
+      "调查古阵：凝神研读辨阵，或备齐灵草温养草根。",
+      "筑基后挑战蚀阵傀儡，再决定山口的归路。",
+    ][s.expedition.cleared]!;
+  }
+  if (r.stage === "home")
+    return r.thanked
+      ? "带上缺角航图，去山下坊市寻找郁青。"
+      : "回访药工与温蘅，问清航图缺角的去向。";
   if (r.passed && r.stage === "market")
     return r.surveyed
       ? "听听郁青的回应；归路已通，可重访旅亭，或展开山河见闻。"
@@ -221,6 +235,18 @@ export function hasShelteredRoute(s: State): boolean {
 }
 export function roadError(s: State, action: RoadAction): string {
   const r = s.adventure.road;
+  if (s.expedition?.duel) return "先结束当前交锋";
+  if (
+    [
+      "healPass",
+      "cutPass",
+      "restorePass",
+      "challenge",
+      "shelteredChallenge",
+    ].includes(action) &&
+    expeditionBlocksPass(s)
+  )
+    return expeditionBlocksPass(s);
   if (s.adventure.step !== "done") return "先完成药工营救";
   if (
     s.status !== "alive" ||
@@ -342,7 +368,9 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
             "药工记得你和陆迟的分工。他说：“陆迟在前面牵绳，你在后面托着我。那段滑坡，我一辈子忘不了。”",
           ward: "药工摸着补好的药篓：“背我出来时，你的手在发抖，却没有松。”",
           none: "药工记得那盏归家的灯。",
-        }[s.adventure.method] + " 他指向航图的印记：山下坊市，去找行脚人郁青。";
+        }[s.adventure.method] +
+        rescueEcho(s.adventure) +
+        " 他指向航图的印记：山下坊市，去找行脚人郁青。";
       break;
     case "market":
       r.stage = "market";

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
+import { presences } from "./landmarks";
 defineProps<{ from: string; to: string }>();
 const emit = defineEmits<{ finish: [] }>();
 const visible = ref(true);
@@ -8,13 +9,14 @@ onMounted(() => {
   timer = setTimeout(() => {
     visible.value = false;
     emit("finish");
-  }, 1800);
+  }, 4200);
 });
 onUnmounted(() => clearTimeout(timer));
 </script>
 <template>
   <div v-if="visible" class="scene-arrival" role="status">
     <small>{{ from }} →</small><strong>抵达 · {{ to }}</strong>
+    <p v-if="presences[to]">{{ presences[to].detail }}</p>
   </div>
 </template>
 <style>
@@ -62,5 +64,15 @@ onUnmounted(() => clearTimeout(timer));
   .scene-arrival {
     animation: none;
   }
+}
+</style>
+
+<style>
+.scene-arrival p {
+  max-width: 42ch;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 8px 0 0;
+  color: #dfdbc9;
 }
 </style>

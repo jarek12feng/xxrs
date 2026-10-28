@@ -215,8 +215,8 @@
   border: 1px solid #aa966955;
   border-radius: 8px;
   padding: 20px 24px;
-  max-height: 38dvh;
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
 }
 .immersive-shell .scene-controls h2,
 .immersive-shell .scene-controls h3,
@@ -491,7 +491,7 @@
     max-width: none;
   }
   .immersive-shell .journey .scene-controls {
-    max-height: 46dvh;
+    max-height: none;
   }
   .inventory-layout {
     grid-template-columns: 1fr;
@@ -677,3 +677,66 @@
     transition: none !important;
   }
 }
+
+.opening-guide {
+  margin: 10px 0;
+  padding: 12px 18px;
+  background: #142b24ed;
+  color: #e9dfc6;
+  border: 1px solid #a4916266;
+  border-radius: 8px;
+}
+.opening-guide summary {
+  cursor: pointer;
+  font-weight: bold;
+}
+.opening-guide p {
+  line-height: 1.7;
+  max-width: 65ch;
+}
+.sound-volume {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+}
+.sound-volume input {
+  width: 100%;
+}
+.game-hud .sound-toggle {
+  font-size: 13px;
+  padding: 8px 12px;
+  margin-left: auto;
+}
+
+/* Primary actions stay before optional investigation; the stage owns scrolling. */
+.immersive-shell .scene-investigation {
+  background:#20382f;
+  border-color:#7c7457;
+  color:#eee7d7;
+}
+.immersive-shell .scene-investigation summary {
+  cursor:pointer;
+  padding:8px 0;
+  color:#dbc797;
+}
+.immersive-shell .scene-controls button:hover:not(:disabled),
+.immersive-shell .scene-controls button:focus-visible {
+  background: #365448;
+  color: #fff2cd;
+  border-color: #d4ba7c;
+}
+
+.immersive-shell .creation button.primary.start {
+  color:#fff0c2;
+  background:#214b3e;
+  border:1px solid #bda472;
+  font-weight:700;
+  text-shadow:0 1px 1px #102a20;
+}
+.immersive-shell .creation button.primary.start:hover:not(:disabled),
+.immersive-shell .creation button.primary.start:focus-visible {
+  color:#fff7dc;
+  background:#315f4d;
+  border-color:#dfc58b;
+}
+.immersive-shell .creation button.primary.start:active:not(:disabled) {background:#183d30;color:#fff0c2;}

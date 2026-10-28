@@ -5,6 +5,8 @@ import SceneResponse from "./SceneResponse.vue";
 import type { ActionReceipt } from "./action-feedback";
 import {
   adventureScenes,
+  adventureGoal,
+  rescueChoices,
   adventureOptions,
   type State,
   type Intent,
@@ -57,7 +59,10 @@ const person = computed(() =>
       ? {
           name: "陆迟",
           image: "/characters/luchi-base.png",
-          line: "我带了绳和火折子。你辨路，我看着后头。",
+          line:
+            props.game.adventure.step === "home"
+              ? "人救出来了。这篓药怎么用，我听你的。那枚半印的事……回去再说。"
+              : "我带了绳和火折子。你辨路，我看着后头。",
         }
       : null,
 );
@@ -80,7 +85,7 @@ const person = computed(() =>
       :quote="person?.line"
     >
       <SceneResponse
-        v-if="receipt"
+        v-if="game.adventure.result"
         :text="game.adventure.result"
         :receipt="receipt?.scene?.chapter === 'adventure' ? receipt : null"
       />
@@ -98,7 +103,7 @@ const person = computed(() =>
       </ol>
       <div class="adventure-task">
         <span class="eyebrow">眼下要做的事</span>
-        <h2>{{ scene.goal }}</h2>
+        <h2>{{ adventureGoal(game.adventure) }}</h2>
         <p v-if="game.adventure.step !== 'invitation'">
           线索：{{ game.adventure.clue ? "青瘴粉、归路红绳" : "尚未调查" }} ·
           准备：{{ game.adventure.ready ? "已掌握应对方法" : "尚未就绪"
@@ -107,6 +112,15 @@ const person = computed(() =>
           >
         </p>
       </div>
+      <p v-if="game.adventure.step === 'ferry'" class="opening-note">
+        先找线索，再救人。不必先练满修为；这段路会教你调查、准备和做决定。
+      </p>
+      <p v-if="game.adventure.step === 'apothecary'" class="opening-note">
+        三种方法都能救人，也都可以改选。配药会练出心得，同行会练出神识，护体会练出根基。先选一种，读完练习提示再动手。
+      </p>
+      <p v-if="game.adventure.step === 'home'" class="opening-note">
+        这一选择会留在本世。你可以先读清两种后果，决定后才结算归家奖励。
+      </p>
       <div class="adventure-actions">
         <button
           v-for="option in adventureOptions(game.adventure)"
@@ -120,7 +134,14 @@ const person = computed(() =>
               : emit('act', { type: 'adventure', action: option.action })
           "
         >
-          {{ option.label }}<span>→</span>
+          <span
+            >{{ option.label
+            }}<small v-if="game.adventure.step === 'home'">{{
+              option.action === "return"
+                ? rescueChoices.roots.hint
+                : rescueChoices.supplies.hint
+            }}</small></span
+          ><span>→</span>
         </button>
       </div>
       <p class="adventure-footnote">
@@ -129,3 +150,20 @@ const person = computed(() =>
     </section>
   </section>
 </template>
+
+<style scoped>
+.opening-note {
+  padding: 12px 16px;
+  border-left: 2px solid #b5a174;
+  line-height: 1.75;
+  color: #e1d6bd;
+  background: #152d25e8;
+}
+.adventure-actions button small {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.85em;
+  line-height: 1.6;
+  font-weight: normal;
+}
+</style>

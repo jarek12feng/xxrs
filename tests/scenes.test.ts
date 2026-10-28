@@ -110,7 +110,7 @@ it.each(["opening", "road", "relationship", "arena"] as const)(
     expect(html.slice(index)).toContain("<button");
   },
 );
-it("gives every legacy exploration map its own scene and separate actions", async () => {
+it("opens the main route atlas with a current location and a separate exploration entry", async () => {
   const html = await renderToString(
     createSSRApp({
       render: () =>
@@ -121,7 +121,21 @@ it("gives every legacy exploration map its own scene and separate actions", asyn
         }),
     }),
   );
-  expect(html.match(/class="scene-art"/g)).toHaveLength(3);
-  for (const place of ["回春谷", "雾岭古道", "雾海孤灯"])
-    expect(html).toContain(place + "探索操作区");
+  expect(html).toContain("雨夜渡口");
+  expect(html).toContain("你在此处");
+  expect(html).toContain("主线地标详情");
+  expect(html).toContain("山河探索");
+});
+it("puts the required market conversation before optional locked investigation", async () => {
+  const game = createGame("旅人", "wood", 42);
+  game.adventure.step = "done";
+  game.adventure.road.stage = "market";
+  game.adventure.road.thanked = true;
+  const html = await renderToString(
+    createSSRApp({ render: () => h(RoadPanel, { game, busy: false }) }),
+  );
+  expect(html.indexOf("与行脚人郁青交谈")).toBeGreaterThan(0);
+  expect(html.indexOf("与行脚人郁青交谈")).toBeLessThan(
+    html.indexOf('aria-label="环顾四周调查区"'),
+  );
 });

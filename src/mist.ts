@@ -200,11 +200,13 @@ export function mistGoal(s: State): string {
       ? m.passed
         ? "石角的证言补全了旧事。回坊市分享，或再看看其他旧路。"
         : "石角已交出引灯草的记忆；可以去阵门，或补探废驿。"
-      : s.adventure.road.solution === "medicine"
-        ? "沿用青嶂关救草手法，不耗灵草也能疏通根脉。"
-        : m.lamp
-          ? "探灵灯能照出堵塞的根脉，不耗灵草也能救下药圃。"
-          : "可用灵草 4 救治引灯草，或用辨草知识 / 同行援助疏通根脉。";
+      : s.adventure.rescueChoice === "roots"
+        ? "山祠留下的护根手法在这里也能使用：独自疏通，不耗灵草。"
+        : s.adventure.road.solution === "medicine"
+          ? "沿用青嶂关救草手法，不耗灵草也能疏通根脉。"
+          : m.lamp
+            ? "探灵灯能照出堵塞的根脉，不耗灵草也能救下药圃。"
+            : "可用灵草 4 救治引灯草，或用辨草知识 / 同行援助疏通根脉。";
   if (m.stage === "station")
     return m.station
       ? m.passed
@@ -324,11 +326,12 @@ export function mistError(s: State, action: MistAction): string {
   if (
     action === "attune" &&
     !m.lamp &&
+    s.adventure.rescueChoice !== "roots" &&
     s.adventure.road.solution !== "medicine" &&
     !(s.path === "wood" && s.study >= 2) &&
     m.partner !== "luchi"
   )
-    return "需要医道心得 2、陆迟同行，或探灵灯";
+    return "需要护根手法、医道心得 2、陆迟同行，或探灵灯";
   if (action === "decode") {
     if (m.station) return "已经读懂旧阵";
     if (
@@ -424,7 +427,7 @@ export function runMist(input: State, action: MistAction, id: string): State {
     case "attune":
       if (action === "tend") s.herbs -= 4;
       m.garden = true;
-      m.result = `${action === "tend" ? "你用四株灵草救活引灯草。" : s.adventure.road.solution === "medicine" ? "你用青嶂关救活镇风草的手法疏通根脉。石角认出了药站的包扎结，主动为你引水。" : m.lamp ? "探灵灯照出堵塞的根脉，你沿着光纹疏通石渠。" : "你们沿根脉疏通石渠，没有耗费灵草。"}石角递来一片引灯叶：“陈渡不是逃走的。他和陆姓修士最后一次回来，是为了接还困在山里的人。”这片叶能稳住阵中的归绳。`;
+      m.result = `${action === "tend" ? "你用四株灵草救活引灯草。" : s.adventure.rescueChoice === "roots" ? "石角认出你腕上的护根结：山祠的守卫曾提过留下成株的旅人。他让你独自循着旧手法疏通水渠，不耗灵草。" : s.adventure.road.solution === "medicine" ? "你用青嶂关救活镇风草的手法疏通根脉。石角认出了药站的包扎结，主动为你引水。" : m.lamp ? "探灵灯照出堵塞的根脉，你沿着光纹疏通石渠。" : "你们沿根脉疏通石渠，没有耗费灵草。"}石角递来一片引灯叶：“陈渡不是逃走的。他和陆姓修士最后一次回来，是为了接还困在山里的人。”这片叶能稳住阵中的归绳。`;
       break;
     case "decode":
       m.station = true;
@@ -469,7 +472,7 @@ export function runMist(input: State, action: MistAction, id: string): State {
       m.lamp = true;
       m.stage = "home";
       m.result =
-        "陈渡的旧记录止于最后一次护送，末页留下了药队名单和一盏探灵灯。灯火不灼人，映过旧阵时，却能照见肉眼看不见的灵痕。你想起救过药工的山祠，那堵墙，也许从来不是尽头。";
+        "陈渡的旧记录止于最后一次护送。你翻到早年的阵图：三声铃是撤离信号，阵门应当向外打开；如今断裂的灵路，却把护人的门变成了牢笼。旁边记着他教守祠妖修用药篓求援的办法。山祠那夜的异象终于有了来处，陆迟父亲最后一次入山，也在这份护送名单上。记录没有写他的归期，只有一盏探灵灯留在末页旁。灯火不灼人，映过旧阵时，却能照见肉眼看不见的灵痕。你想起救过药工的山祠，那堵墙，也许从来不是尽头。";
       break;
     case "home":
       m.stage = "home";

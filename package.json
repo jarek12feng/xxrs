@@ -1,6 +1,6 @@
 {
   "name": "cultivation-life",
-  "version": "0.11.0",
+  "version": "0.13.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,8 @@
     "typecheck": "vue-tsc --noEmit",
     "desktop": "npm run build && electron .",
     "package:win": "npm run build && electron-builder --win --x64 --publish never",
-    "test:desktop": "npm run build && node tools/test-desktop.cjs"
+    "test:desktop": "npm run build && node tools/test-desktop.cjs",
+    "dev:music": "vite --host 127.0.0.1 --port 5191 --strictPort --mode local-music"
   },
   "dependencies": {
     "pinia": "^3.0.3",

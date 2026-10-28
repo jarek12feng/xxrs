@@ -114,13 +114,20 @@ const choices = computed<Choice[]>(() => {
             },
             {
               action: "attune",
-              label: r.lamp ? "用探灵灯照见根脉" : "沿根脉疏通石渠",
-              hint:
-                props.game.adventure.road.solution === "medicine"
-                  ? "沿用青嶂关救草手法；可独自完成，不耗灵草"
+              label:
+                props.game.adventure.rescueChoice === "roots"
+                  ? "用山祠学来的护根手法"
                   : r.lamp
-                    ? "新能力让旧问题有了新解法，不耗灵草"
-                    : "医道心得 2，或请同行陆迟协作；不耗灵草",
+                    ? "用探灵灯照见根脉"
+                    : "沿根脉疏通石渠",
+              hint:
+                props.game.adventure.rescueChoice === "roots"
+                  ? "第一卷留下成株的回响；独自完成，不耗灵草"
+                  : props.game.adventure.road.solution === "medicine"
+                    ? "沿用青嶂关救草手法；可独自完成，不耗灵草"
+                    : r.lamp
+                      ? "新能力让旧问题有了新解法，不耗灵草"
+                      : "医道心得 2，或请同行陆迟协作；不耗灵草",
             },
           ];
     case "station":

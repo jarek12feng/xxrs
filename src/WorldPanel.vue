@@ -12,9 +12,18 @@ import {
   actionError,
   preparationError,
   type State,
+  type Place,
   type Intent,
   type QueueAction,
 } from "./core";
+import {
+  currentLandmark,
+  routeNodes,
+  presences,
+  landmarkLabel,
+} from "./landmarks";
+import WorldAtlas from "./WorldAtlas.vue";
+const selectedPlace = ref<Place>("valley");
 import ChallengeCard from "./ChallengeCard.vue";
 import SocialPanel from "./SocialPanel.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
@@ -29,7 +38,26 @@ const props = defineProps<{
     "world" | "sect" | "skills" | "queue" | "gear" | "relationship" | "arena";
   embedded?: boolean;
 }>();
-const emit = defineEmits<{ act: [intent: Intent]; runQueue: [] }>();
+const emit = defineEmits<{
+  act: [intent: Intent];
+  runQueue: [];
+  travel: [intent: Intent];
+  resumeStory: [];
+}>();
+const atlasMode = ref<"story" | "explore">("story");
+const current = computed(() => currentLandmark(props.game));
+const selectedRoute = ref(current.value.key);
+watch(
+  () => current.value.key,
+  (key) => {
+    selectedRoute.value = key;
+  },
+);
+const route = computed(
+  () =>
+    routeNodes(props.game).find((n) => n.key === selectedRoute.value) ??
+    routeNodes(props.game).find((n) => n.current)!,
+);
 const tab = ref<
   "world" | "sect" | "skills" | "queue" | "gear" | "relationship" | "arena"
 >(props.initialTab || "world");
@@ -159,84 +187,164 @@ const mapImages = {
       @act="emit('act', $event)"
     />
     <div v-else-if="tab === 'world'" class="world-content">
-      <p class="muted">
-        回春谷 → 筑基后的雾岭 →
-        雾海孤灯。每次探索用时一月；先处理待决事件，伤势不超过 2。
+      <nav aria-label="地图路线">
+        <button
+          :aria-pressed="atlasMode === 'story'"
+          @click="atlasMode = 'story'"
+        >
+          主线归路</button
+        ><button
+          :aria-pressed="atlasMode === 'explore'"
+          @click="atlasMode = 'explore'"
+        >
+          山河探索
+        </button>
+      </nav>
+      <p class="atlas-objective">
+        你在 · {{ landmarkLabel(current.title) }}<br /><small>{{
+          current.goal
+        }}</small>
       </p>
-      <article
-        v-for="(place, id) in places"
-        :key="id"
-        class="map-card scene-map desktop-scene"
-        :class="{ finished: game.journey.maps[id] === 3 }"
+      <WorldAtlas
+        :game="game"
+        :selected="selectedPlace"
+        :story="atlasMode === 'story'"
+        :selected-story="selectedRoute"
+        @select="selectedPlace = $event"
+        @select-story="selectedRoute = $event"
+      />
+      <section
+        v-if="atlasMode === 'story'"
+        class="route-preview"
+        aria-label="主线地标详情"
       >
-        <SceneBackdrop
-          :image="mapImages[id]"
-          :title="place.name"
-          eyebrow="山河见闻"
-          :body="
-            id === 'valley' && game.journey.maps.valley === 1
-              ? '崖边有人呼救，雨水正冲淡另一侧的足迹。你先做什么？'
-              : id !== 'valley' &&
-                  game.journey.maps[id] === 1 &&
-                  game.journey.encounters[id]
-                ? opponents[game.journey.encounters[id]!.kind].description
-                : place.goal
-          "
-          compact
-          ><SceneResponse
-            text=""
-            :receipt="receipt?.scene?.place === id ? receipt : null"
-        /></SceneBackdrop>
-        <section class="scene-controls" :aria-label="place.name + '探索操作区'">
-          <div class="panel-heading">
-            <h3 class="controls-heading">探索与应对</h3>
-            <span
-              >{{ game.journey.maps[id] }} / 3 ·
-              {{ place.realm ? "筑基" : "炼气" }}</span
-            >
-          </div>
-          <small>{{ place.reward }}</small>
-          <p v-if="explorationError(game, id)" class="muted">
-            {{ explorationError(game, id) }}
+        <img :src="route.image" :alt="route.title + '远景'" />
+        <div>
+          <span class="eyebrow">{{
+            route.current ? "你在此处" : "地图上的远景"
+          }}</span>
+          <h3>{{ landmarkLabel(route.title) }}</h3>
+          <p>
+            {{
+              route.current
+                ? presences[route.title]?.detail
+                : "山河并不只在纸上。沿线索走到这里，才会听见当地人的故事。"
+            }}
           </p>
-          <ChallengeCard
-            v-if="id !== 'valley' && game.journey.maps[id] === 1"
-            :game="game"
-            :place="id"
-            :locked="locked"
-            @act="emit('act', $event)"
-          />
-          <template
-            v-else-if="id === 'valley' && game.journey.maps.valley === 1"
-          >
-            <button
-              :disabled="
-                locked || !!explorationError(game, id) || game.herbs < 2
-              "
-              @click="
-                emit('act', { type: 'explore', place: id, approach: 'rescue' })
-              "
-            >
-              先救人 · 灵草 −2 / 陆迟信任 +1
-            </button>
-            <button
-              :disabled="locked || !!explorationError(game, id)"
-              @click="
-                emit('act', { type: 'explore', place: id, approach: 'trace' })
-              "
-            >
-              先追查笔记 · 灵石 +8 / 错过见闻
-            </button>
-          </template>
+          <p>
+            {{
+              route.condition === "不在对应地点"
+                ? "需沿当前主线抵达相邻地点，不能跨越剧情直接传送。"
+                : route.condition
+            }}
+          </p>
           <button
-            v-else
-            :disabled="locked || !!explorationError(game, id)"
-            @click="emit('act', { type: 'explore', place: id })"
+            v-if="route.current"
+            :disabled="locked"
+            @click="emit('resumeStory')"
           >
-            {{ game.journey.maps[id] === 0 ? "动身探访" : "继续追寻" }} · 一月
+            收起地图，回到此处
           </button>
-        </section>
-      </article>
+          <button
+            v-else-if="route.intent"
+            :disabled="locked"
+            @click="emit('travel', route.intent)"
+          >
+            沿路前往 · {{ landmarkLabel(route.title) }}
+          </button>
+          <button v-else :disabled="locked" @click="emit('resumeStory')">
+            回到现场，继续追寻线索
+          </button>
+        </div>
+      </section>
+      <template v-else>
+        <p class="muted">
+          回春谷 → 筑基后的雾岭 →
+          雾海孤灯。每次探索用时一月；先处理待决事件，伤势不超过 2。
+        </p>
+        <article
+          v-for="(place, id) in places"
+          v-show="selectedPlace === id"
+          :key="id"
+          class="map-card scene-map desktop-scene"
+          :class="{ finished: game.journey.maps[id] === 3 }"
+        >
+          <SceneBackdrop
+            :image="mapImages[id]"
+            :title="place.name"
+            eyebrow="山河见闻"
+            :body="
+              id === 'valley' && game.journey.maps.valley === 1
+                ? '崖边有人呼救，雨水正冲淡另一侧的足迹。你先做什么？'
+                : id !== 'valley' &&
+                    game.journey.maps[id] === 1 &&
+                    game.journey.encounters[id]
+                  ? opponents[game.journey.encounters[id]!.kind].description
+                  : place.goal
+            "
+            compact
+            ><SceneResponse
+              text=""
+              :receipt="receipt?.scene?.place === id ? receipt : null"
+          /></SceneBackdrop>
+          <section
+            class="scene-controls"
+            :aria-label="place.name + '探索操作区'"
+          >
+            <div class="panel-heading">
+              <h3 class="controls-heading">探索与应对</h3>
+              <span
+                >{{ game.journey.maps[id] }} / 3 ·
+                {{ place.realm ? "筑基" : "炼气" }}</span
+              >
+            </div>
+            <small>{{ place.reward }}</small>
+            <p v-if="explorationError(game, id)" class="muted">
+              {{ explorationError(game, id) }}
+            </p>
+            <ChallengeCard
+              v-if="id !== 'valley' && game.journey.maps[id] === 1"
+              :game="game"
+              :place="id"
+              :locked="locked"
+              @act="emit('act', $event)"
+            />
+            <template
+              v-else-if="id === 'valley' && game.journey.maps.valley === 1"
+            >
+              <button
+                :disabled="
+                  locked || !!explorationError(game, id) || game.herbs < 2
+                "
+                @click="
+                  emit('act', {
+                    type: 'explore',
+                    place: id,
+                    approach: 'rescue',
+                  })
+                "
+              >
+                先救人 · 灵草 −2 / 陆迟信任 +1
+              </button>
+              <button
+                :disabled="locked || !!explorationError(game, id)"
+                @click="
+                  emit('act', { type: 'explore', place: id, approach: 'trace' })
+                "
+              >
+                先追查笔记 · 灵石 +8 / 错过见闻
+              </button>
+            </template>
+            <button
+              v-else
+              :disabled="locked || !!explorationError(game, id)"
+              @click="emit('act', { type: 'explore', place: id })"
+            >
+              {{ game.journey.maps[id] === 0 ? "动身探访" : "继续追寻" }} · 一月
+            </button>
+          </section>
+        </article>
+      </template>
       <details v-if="game.journey.settled" class="retirement">
         <summary>另一种人生：主动轮回</summary>
         <p>
@@ -495,3 +603,30 @@ const mapImages = {
     </div>
   </section>
 </template>
+
+<style>
+.atlas-objective {
+  padding: 10px 14px;
+  border-left: 2px solid #c3a365;
+}
+.route-preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+}
+.route-preview > img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+@media (max-width: 650px) {
+  .route-preview {
+    grid-template-columns: 1fr;
+  }
+  .route-preview > img {
+    max-height: 180px;
+  }
+}
+</style>

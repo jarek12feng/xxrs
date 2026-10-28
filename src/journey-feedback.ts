@@ -1,6 +1,7 @@
 import { actionProcess } from "./action-process";
 import {
   adventureScenes,
+  rescueChoices,
   roadScenes,
   passSolutions,
   passEcho,
@@ -44,8 +45,8 @@ const replies: Record<string, Record<string, string>> = {
     stay: "最后那位腿脚慢，我陪着。你帮忙把前头的灯挑高些。",
   },
   night: {
-    promise: "那我可当真了。到了出山那天，你别又闭关忘了时辰。",
-    honest: "你也这样？我还以为只有我……这茶凉了，我去换一壶。",
+    promise: "好。我会闭好这次关。等你来时，那段旧路应该也修好了。",
+    honest: "那便不定日子。路上若有信使，托他带一句平安给我。",
   },
   watch: {
     thanks: "说定了。下回你站前排，我一抬头就能看见。",
@@ -64,6 +65,42 @@ export function enrichReceipt(
   r: ActionReceipt,
 ): ActionReceipt {
   r.process = actionProcess(intent);
+  if (
+    intent.type === "adventure" &&
+    intent.action === "challenge" &&
+    before.adventure.ready
+  ) {
+    r.process =
+      before.adventure.method === "medicine"
+        ? {
+            kind: "medicine",
+            title: "药气缓阵",
+            beats: [
+              "你松开药包，让一缕药气先触到阵纹。",
+              "妖修的肩头不再颤动，铃声慢了下来。",
+              "你伸手扶住药工，沿渐暗的阵纹退回。",
+            ],
+          }
+        : before.adventure.method === "guide"
+          ? {
+              kind: "investigate",
+              title: "系绳共渡",
+              beats: [
+                "你扯了两下红绳，陆迟点头回应。",
+                "他牵住阵门的灵流，你俯身扶起伤者。",
+                "绳索重新绷紧，你们一起退出阵光。",
+              ],
+            }
+          : {
+              kind: "array",
+              title: "护体入阵",
+              beats: [
+                "你循铃声稳住呼吸，将灵气护在肩背。",
+                "断门的压力沉下来，你背起伤者。",
+                "妖修撑住身后的阵光，你一步步走出山祠。",
+              ],
+            };
+  }
   r.unlocks = after.journey.known
     .filter((k) => !before.journey.known.includes(k))
     .map((k) => `习得功法 · ${techniques[k].name}`);
@@ -109,6 +146,21 @@ export function enrichReceipt(
     const unlocked = (old: boolean, now: boolean, label: string) => {
       if (!old && now) unlocks.push(label);
     };
+    if (
+      a.rescueChoice !== b.rescueChoice &&
+      (b.rescueChoice === "roots" || b.rescueChoice === "supplies")
+    ) {
+      unlocks.push(rescueChoices[b.rescueChoice].title + " · 本世选择已记下");
+      r.person = {
+        name: "陆迟",
+        portrait: "/characters/luchi-base.png",
+        response:
+          b.rescueChoice === "roots"
+            ? "护根的绳结收好。下回进山，说不定还用得上。山下缺的药，我再去问问。"
+            : "伤者今晚用得上了。等春天，我陪药工回来补种。",
+        relation: "陆迟记得归途上的药篓",
+      };
+    }
     unlocked(a.clue, b.clue, "发现青瘴粉与归路红绳");
     unlocked(a.ready, b.ready, "应对方法已备妥");
     if (a.ready && !b.ready) unlocks.push("准备已失效 · 回药庐重新准备");

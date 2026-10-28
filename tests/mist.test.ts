@@ -260,7 +260,10 @@ it("migrates real v8 progress without touching existing story, RNG or discoverie
   const { mist: _, ...adventure } = s.adventure;
   const old = { ...s, version: 8, adventure },
     before = structuredClone(old);
-  expect(migrateSave(old)).toEqual(s);
+  expect(migrateSave(old)).toEqual({
+    ...s,
+    adventure: { ...s.adventure, rescueChoice: "legacy" },
+  });
   expect(old).toEqual(before);
   expect(() => migrateSave({ ...old, stones: -1 })).toThrow();
   for (const patch of [

@@ -6,6 +6,7 @@ import {
   migrateSave,
   activeEventId,
   companion,
+  eventView,
   duelIntent,
   type State,
   type Intent,
@@ -149,3 +150,25 @@ describe("relationships and arena", () => {
     expect(() => migrateSave({ ...adult(), version: 99 })).toThrow();
   });
 });
+
+it.each(["male", "female"] as const)(
+  "keeps cultivation ambitions and prior answers in the %s romance after reload",
+  (gender) => {
+    for (const night of ["promise", "honest"] as const) {
+      let s = choose(act(adult(gender), { type: "visit" }), "listen");
+      s = choose(act(s, { type: "outing", outing: "walk" }), "care");
+      s = act(migrateSave(s), { type: "outing", outing: "night" });
+      expect(eventView(s)?.body).toContain("照料伤者");
+      expect(eventView(s)?.body).toContain("闭关");
+      s = choose(s, night);
+      s.social.arena.losses = 2;
+      s = choose(act(s, { type: "outing", outing: "watch" }), "thanks");
+      s = act(migrateSave(s), { type: "confess" });
+      expect(eventView(s)?.body).toContain(
+        night === "promise" ? "愿意与我再走" : "心里的不安",
+      );
+      expect(eventView(s)?.body).toContain("不想你放弃自己的");
+      expect(migrateSave(s)).toEqual(s);
+    }
+  },
+);

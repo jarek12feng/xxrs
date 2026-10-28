@@ -9,6 +9,59 @@ import {
   nextTick,
 } from "vue";
 import { defineStore } from "pinia";
+import { presences } from "./landmarks";
+import { actionSound } from "./action-sound";
+import { openingGuide } from "./opening-guide";
+import { createSoundscape, soundSettings, type SoundMood } from "./audio";
+const localMusicEnabled =
+  import.meta.env.DEV && import.meta.env.MODE === "local-music";
+let music:
+  ReturnType<typeof import("./local-music").createMusicPlayer> | undefined;
+const musicVolume = ref(0.45);
+const musicNotice = ref("");
+const musicTitle = ref("");
+const musicPlaying = ref("");
+const sound = createSoundscape();
+const soundPrefs = ref(soundSettings(null));
+const soundNotice = ref("");
+function blurSound() {
+  sound.hidden(true);
+  music?.hidden(true);
+}
+function syncSoundPreference(event: StorageEvent) {
+  if (event.key !== "xxrs-sound-v1") return;
+  soundPrefs.value = soundSettings(event.newValue);
+  sound.settings(soundPrefs.value);
+  music?.settings(soundPrefs.value.enabled, musicVolume.value);
+}
+if (import.meta.hot)
+  import.meta.hot.dispose(() => {
+    music?.dispose();
+    sound.dispose();
+  });
+function storeSound() {
+  sound.settings(soundPrefs.value);
+  music?.settings(soundPrefs.value.enabled, musicVolume.value);
+  try {
+    localStorage.setItem("xxrs-sound-v1", JSON.stringify(soundPrefs.value));
+    localStorage.setItem("xxrs-local-music-volume", String(musicVolume.value));
+  } catch {
+    /* Preferences are optional. */
+  }
+}
+async function unlockSound() {
+  if (soundPrefs.value.enabled) music?.unlock();
+  if (soundPrefs.value.enabled)
+    soundNotice.value = (await sound.unlock())
+      ? ""
+      : "此设备暂不能播放声音，游戏仍可正常进行。";
+}
+async function toggleSound() {
+  soundPrefs.value.enabled = !soundPrefs.value.enabled;
+  storeSound();
+  if (soundPrefs.value.enabled) await unlockSound();
+}
+
 import {
   aptitudes,
   activeEventId,
@@ -40,13 +93,14 @@ import WorldPanel from "./WorldPanel.vue";
 import SavePanel from "./SavePanel.vue";
 import InventoryPanel from "./InventoryPanel.vue";
 import { writeSlot } from "./save-slots";
-import { adventureScenes } from "./adventure";
+import { adventureScenes, adventureGoal } from "./adventure";
 import { roadScenes, roadGoal } from "./road";
 import { mistScenes, mistGoal } from "./mist";
 import AdventurePanel from "./AdventurePanel.vue";
 import RoadPanel from "./RoadPanel.vue";
 import MistPanel from "./MistPanel.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
+import PracticeStage from "./PracticeStage.vue";
 import ActionFeedback from "./ActionFeedback.vue";
 import SceneArrival from "./SceneArrival.vue";
 import { actionReceipt, type ActionReceipt } from "./action-feedback";
@@ -54,6 +108,9 @@ const receipt = shallowRef<ActionReceipt | null>(null);
 const receiptExpanded = ref(false);
 const receiptSerial = ref(0);
 const arrivalFinished = ref(false);
+const practice = ref<Activity | null>(null);
+const practiceSerial = ref(0);
+let practiceTimer: ReturnType<typeof setTimeout> | undefined;
 let receiptTimer: ReturnType<typeof setTimeout> | undefined;
 let actionOrigin: HTMLElement | null = null;
 async function closeReceipt() {
@@ -101,7 +158,7 @@ const panelTitles: Record<string, string> = {
   system: "系统菜单",
   saves: "保存与读取",
   backup: "备份与迁移",
-  settings: "显示设置",
+  settings: "显示与声音",
   new: "开始新的旅程",
 };
 const worldTabs = [
@@ -132,8 +189,34 @@ const currentGoal = computed(() => {
   if (!showRoad.value && g.adventure.mist.stage !== "dormant")
     return mistGoal(g);
   if (g.adventure.step === "done") return roadGoal(g);
-  return adventureScenes[g.adventure.step].goal;
+  return adventureGoal(g.adventure);
 });
+const opening = computed(() => (game.value ? openingGuide(game.value) : null));
+async function followOpening() {
+  if (!opening.value || ui.busy || receiptExpanded.value) return;
+  switch (opening.value.action) {
+    case "road":
+      view.value = "story";
+      showRoad.value = true;
+      if (game.value?.adventure.road.stage === "home")
+        await worldAct({
+          type: "road",
+          action: game.value.adventure.road.thanked ? "market" : "thanks",
+        });
+      break;
+    case "cultivate":
+      view.value = "cultivation";
+      activity.value = "cultivate";
+      break;
+    case "sect":
+      openPanel("sect");
+      break;
+    case "break":
+      pill.value = !!game.value?.pills;
+      openPanel("break");
+      break;
+  }
+}
 function openPanel(id: string) {
   if (ui.busy || receiptExpanded.value) return;
   ui.running = false;
@@ -298,6 +381,32 @@ async function act(intent: Intent) {
   }
   const ok = await persist(n);
   if (ok) {
+    const performed =
+      intent.type === "advance"
+        ? intent.activity
+        : intent.type === "queueTick"
+          ? old.journey.queue[0]?.action
+          : undefined;
+    if (
+      performed &&
+      [
+        "cultivate",
+        "meditate",
+        "study",
+        "work",
+        "gather",
+        "train",
+        "rest",
+      ].includes(performed)
+    ) {
+      clearTimeout(practiceTimer);
+      practice.value = performed as Activity;
+      practiceSerial.value++;
+      practiceTimer = setTimeout(() => {
+        practice.value = null;
+      }, 3600);
+    }
+    if (!automatic) sound.cue(actionSound(old, n, intent));
     clearTimeout(receiptTimer);
     receipt.value = actionReceipt(old, n, intent);
     arrivalFinished.value = false;
@@ -351,6 +460,16 @@ async function start() {
 async function advance(months: number) {
   queueMode.value = false;
   await act({ type: "advance", activity: activity.value, months });
+}
+function resumeStory() {
+  dialog.value = "";
+  view.value = "story";
+  ui.history = false;
+  showRoad.value = false;
+}
+async function travelFromMap(intent: Intent) {
+  ui.running = false;
+  if (await act(intent)) resumeStory();
 }
 async function worldAct(intent: Intent) {
   ui.running = false;
@@ -508,10 +627,85 @@ watch(modal, async (value) => {
   }
 });
 function hidden() {
+  sound.hidden(document.hidden);
+  music?.hidden(document.hidden);
   if (document.hidden) ui.running = false;
 }
 let timer: ReturnType<typeof setInterval>;
+let unmounted = false;
+const stopAudioWatches: (() => void)[] = [];
 onMounted(async () => {
+  if (localMusicEnabled) {
+    const { createMusicPlayer, sceneMusic, musicNames } =
+      await import("./local-music");
+    if (unmounted) return;
+    music = createMusicPlayer(
+      undefined,
+      (message) => {
+        musicNotice.value = message;
+      },
+      (cue) => {
+        musicPlaying.value = cue ? musicNames[cue] : "";
+      },
+    );
+    stopAudioWatches.push(
+      watch(
+        currentScene,
+        (scene) => {
+          const cue = sceneMusic(scene.name);
+          musicTitle.value = musicNames[cue];
+          music?.scene(cue);
+        },
+        { immediate: true },
+      ),
+    );
+    stopAudioWatches.push(
+      watch(
+        () =>
+          Boolean(
+            !titleScreen.value &&
+            (event.value ||
+              heart.value ||
+              dialog.value === "npc" ||
+              (receiptExpanded.value && receipt.value?.person)),
+          ),
+        (value) => music?.duck(value),
+        { immediate: true },
+      ),
+    );
+    try {
+      const raw = localStorage.getItem("xxrs-local-music-volume");
+      const value = raw === null ? 0.45 : Number(raw);
+      musicVolume.value = Number.isFinite(value)
+        ? Math.max(0, Math.min(1, value))
+        : 0.45;
+    } catch {
+      /* Optional local preference. */
+    }
+  }
+  stopAudioWatches.push(
+    watch(currentScene, (scene) => {
+      const mood =
+        presences[scene.name]?.weather ??
+        ("mood" in scene ? scene.mood : "moon");
+      sound.scene(mood as SoundMood);
+    }),
+  );
+
+  try {
+    soundPrefs.value = soundSettings(localStorage.getItem("xxrs-sound-v1"));
+  } catch {
+    /* Optional settings. */
+  }
+  sound.settings(soundPrefs.value);
+  music?.settings(soundPrefs.value.enabled, musicVolume.value);
+  sound.hidden(document.hidden);
+  music?.hidden(document.hidden);
+  window.addEventListener("storage", syncSoundPreference);
+  window.addEventListener("blur", blurSound);
+  window.addEventListener("focus", hidden);
+  document.addEventListener("pointerdown", unlockSound);
+  document.addEventListener("keydown", unlockSound);
   document.addEventListener("visibilitychange", hidden);
   document.addEventListener("keydown", keyboard);
   try {
@@ -529,6 +723,16 @@ onMounted(async () => {
   }, 800);
 });
 onUnmounted(() => {
+  unmounted = true;
+  stopAudioWatches.forEach((stop) => stop());
+  sound.dispose();
+  music?.dispose();
+  clearTimeout(practiceTimer);
+  window.removeEventListener("storage", syncSoundPreference);
+  window.removeEventListener("blur", blurSound);
+  window.removeEventListener("focus", hidden);
+  document.removeEventListener("pointerdown", unlockSound);
+  document.removeEventListener("keydown", unlockSound);
   clearTimeout(receiptTimer);
   clearInterval(timer);
   document.removeEventListener("visibilitychange", hidden);
@@ -565,6 +769,13 @@ onUnmounted(() => {
         >
       </button>
       <span v-else class="brand">修仙人生</span>
+      <button
+        class="sound-toggle"
+        :aria-pressed="soundPrefs.enabled"
+        @click="toggleSound"
+      >
+        {{ soundPrefs.enabled ? "声音已开" : "开启声音" }}
+      </button>
       <div class="location-entry" v-if="game && !titleScreen">
         <button @click="openPanel('world')">{{ currentScene.name }}</button
         ><small>第 {{ game.life }} 世 · 第 {{ game.month }} 月</small>
@@ -674,6 +885,22 @@ onUnmounted(() => {
       }"
     >
       <section class="journey">
+        <aside
+          v-if="opening && !ui.history"
+          class="opening-guide"
+          aria-label="初入仙途指引"
+        >
+          <details :open="!game.adventure.road.thanked">
+            <summary>{{ opening.title }}</summary>
+            <p>{{ opening.body }}</p>
+            <button
+              :disabled="ui.busy || receiptExpanded"
+              @click="followOpening"
+            >
+              {{ opening.label }}
+            </button>
+          </details>
+        </aside>
         <nav>
           <button
             :class="{ active: !ui.history && view === 'story' }"
@@ -749,6 +976,11 @@ onUnmounted(() => {
                   : '山风穿过石台，灯火照着未读完的丹经。你知道山外有人在等，也知道每一次凝神，都是为了走得更远。'
               "
               compact
+            />
+            <PracticeStage
+              :key="practiceSerial"
+              :activity="practice ?? activity"
+              :playing="!!practice && !modal"
             />
             <fieldset
               class="cultivation-panel scene-controls"
@@ -1085,6 +1317,8 @@ onUnmounted(() => {
           :running="ui.running"
           @act="worldAct"
           @run-queue="runQueue"
+          @travel="travelFromMap"
+          @resume-story="resumeStory"
         />
         <template v-else-if="dialog === 'journal' && game"
           ><h3>当前目标</h3>
@@ -1132,7 +1366,60 @@ onUnmounted(() => {
           ><p>阅读字号</p>
           <button @click="setTextSize(false)">标准</button
           ><button @click="setTextSize(true)">大字</button>
-          <p>演出可按 Esc 跳过；尊重系统的减少动态效果设置。</p></template
+          <p>演出可按 Esc 跳过；尊重系统的减少动态效果设置。</p>
+          <h3>山间声音</h3>
+          <template v-if="localMusicEnabled">
+            <p>场景配乐 · {{ musicTitle }}</p>
+            <p role="status">
+              {{
+                musicPlaying
+                  ? "正在播放 · " + musicPlaying
+                  : "音乐尚未播放，开启声音后随场景进入"
+              }}
+            </p>
+            <label class="sound-volume"
+              >剧情配乐 {{ Math.round(musicVolume * 100) }}%
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                v-model.number="musicVolume"
+                @input="storeSound"
+              />
+            </label>
+            <p>仅供本地试玩；对话时自动压低，离开对话后恢复。</p>
+            <p v-if="musicNotice" role="status">{{ musicNotice }}</p>
+          </template>
+          <button :aria-pressed="soundPrefs.enabled" @click="toggleSound">
+            {{ soundPrefs.enabled ? "静音" : "开启声音" }}
+          </button>
+          <label class="sound-volume"
+            >环境声 {{ Math.round(soundPrefs.ambience * 100) }}%
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              v-model.number="soundPrefs.ambience"
+              @input="storeSound"
+            />
+          </label>
+          <label class="sound-volume"
+            >行动音效 {{ Math.round(soundPrefs.effects * 100) }}%
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              v-model.number="soundPrefs.effects"
+              @input="storeSound"
+            />
+          </label>
+          <p>
+            声音默认关闭，开启后记住偏好。切到后台时暂停；所有线索都有文字提示。
+          </p>
+          <p v-if="soundNotice" role="status">{{ soundNotice }}</p></template
         >
         <div v-else class="system-options">
           <button v-if="game" @click="dialog = 'saves'">
@@ -1140,7 +1427,7 @@ onUnmounted(() => {
           ><button v-else @click="dialog = 'saves'">读取进度</button
           ><button v-if="desktopRuntime" :disabled="ui.busy" @click="quitGame">
             退出游戏</button
-          ><button @click="dialog = 'settings'">显示设置</button
+          ><button @click="dialog = 'settings'">显示与声音</button
           ><button @click="dialog = 'help'">玩法说明</button
           ><button @click="dialog = 'backup'">备份与迁移</button
           ><button

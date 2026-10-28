@@ -199,7 +199,7 @@ export function heartEvent(s: State): EventView | null {
   if (kind === "walk")
     return {
       title: "同行 · 雨中的旧路",
-      body: `${who.name}与你来到一段被雨冲坏的山路。${who.pronoun}想救护崖边的受伤药工，也想留下能让后来人绕开险处的标记。“我一个人做不完，你愿意帮我哪一边？”`,
+      body: `${who.name}与你勘察旧路，崖边的引路符忽然熄了。${who.pronoun}先把你推回石阶，自己攀住摇晃的绳索。崖下还有受伤药工，雨正在抹去回程记号。“别只顾拉我，”${who.pronoun}喘着气说，“我还能撑。你去救人，或者替我把归路标出来。”你第一次发现，同行不是替对方决定该冒什么险。`,
       options: [
         {
           id: "care",
@@ -223,16 +223,16 @@ export function heartEvent(s: State): EventView | null {
   if (kind === "night")
     return {
       title: "灯下 · 各自的远方",
-      body: `${who.name}把热茶推到你面前：“${who.goal}可有时候，我也怕自己修为不够，等不到那一天。”茶面浮着半片叶梗，${who.pronoun}拨了几次，也没有拨开。`,
+      body: `${who.name}把${who.gender === "女" ? "一张被雨泡皱的路图" : "那枚裂开的引路阵盘"}推到灯下。${s.social.answers.walk === "care" ? "你那日留下照料伤者，让对方腾出手稳住归路。" : s.social.answers.walk === "mark" ? "你那日补下的标记还在，最后一个药工顺着它走出了雨幕。" : "你那日没催谁快走，一直陪到最后一个人回山。"}“我想${who.goal}可师门给了我一次闭关的机会，错过这轮灵潮，就要再等数年。”${who.pronoun}把手缩回袖里，袖口还留着那天替你挡石的裂痕。“你若也要去求自己的道，不必为了我留下。”说完这句，${who.pronoun}却没有收走你面前的茶。`,
       options: [
         {
           id: "promise",
-          label: "到时候叫上我，我陪你走一趟",
+          label: "我们各自修行，出关那天，我来找你",
           hint: "记住彼此的心愿 · 好感 +15",
         },
         {
           id: "honest",
-          label: "我上回进山也怕得很，一夜没睡着",
+          label: "我不能许下归期，但不想与你就此走散",
           hint: "坦诚自己的不足 · 好感 +15",
         },
       ],
@@ -256,7 +256,7 @@ export function heartEvent(s: State): EventView | null {
     };
   return {
     title: "月下 · 两心相许",
-    body: `${who.name}将${who.keepsake}放在桌上。“这个做了好几晚，总觉得还差一点。今日还是想给你。往后出山、归来……都告诉我一声，好不好？”`,
+    body: `${who.name}将${who.keepsake}放在桌上。${s.social.answers.night === "promise" ? "“你愿意与我再走一段路。我便把回来的路，一笔一笔留好了。”" : "“你肯把心里的不安告诉我。我想了很久，也不愿让一个期限困住你。”"}${who.pronoun}按住信物，没有立即松手。“我要走的道还没有走完，也不想你放弃自己的。可下一次听见山门的铃，我会希望回来的是你。你愿意让我等这个消息吗？”`,
     options: [
       {
         id: "yes",

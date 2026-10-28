@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { presences } from "./landmarks";
+import LandmarkPresence from "./LandmarkPresence.vue";
 defineProps<{
   image: string;
   title: string;
@@ -16,11 +18,12 @@ defineProps<{
     class="scene-backdrop"
     :class="{ 'scene-compact': compact }"
     :data-atmosphere="
-      image.includes('mist') || image.includes('cloud')
+      presences[title]?.weather ||
+      (image.includes('mist') || image.includes('cloud')
         ? 'mist'
         : image.includes('moon')
           ? 'moon'
-          : 'still'
+          : 'still')
     "
     role="region"
     :aria-label="title + '场景'"
@@ -33,6 +36,7 @@ defineProps<{
       <h2 :id="headingId" :tabindex="headingId ? -1 : undefined">
         {{ title }}
       </h2>
+      <LandmarkPresence v-if="!compact" :key="title" :title="title" />
       <p v-if="body" class="scene-prose">{{ body }}</p>
       <div v-if="speaker" class="scene-speaker">
         <img v-if="portrait" :src="portrait" :alt="speaker + '肖像'" />

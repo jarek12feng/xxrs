@@ -1,3 +1,11 @@
+import {
+  freshExpedition,
+  validExpedition,
+  runExpedition,
+  type Expedition,
+  type ExpeditionAction,
+} from "./expedition/rules";
+import { validAdventureV10 } from "./legacy-adventure-v10";
 import { validRoadV9 } from "./legacy-road-v9";
 import * as chapter from "./chapter";
 import { freshMist, validMist, runMist, type MistAction } from "./mist";
@@ -120,12 +128,14 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 10;
+  version: 12;
+  expedition: Expedition;
   adventure: Adventure;
   journey: Journey;
   social: SocialState;
 }
 export type Command =
+  | { id: string; type: "expedition"; action: ExpeditionAction }
   | chapter.Command
   | SocialCommand
   | { id: string; type: "mist"; action: MistAction }
@@ -173,7 +183,13 @@ const fresh = (): Journey => ({
   encounters: { peak: null, sea: null },
 });
 function base(s: State): chapter.State {
-  const { journey: _, social: __, adventure: ___, ...rest } = s;
+  const {
+    journey: _,
+    social: __,
+    adventure: ___,
+    expedition: ____,
+    ...rest
+  } = s;
   return { ...rest, version: 3 };
 }
 function lift(
@@ -182,7 +198,14 @@ function lift(
   social = freshSocial(),
   adventure = freshAdventure(true),
 ): State {
-  return { ...s, version: 10, journey, social, adventure };
+  return {
+    ...s,
+    version: 12,
+    journey,
+    social,
+    adventure,
+    expedition: freshExpedition(),
+  };
 }
 export function createGame(
   name: string,
@@ -343,6 +366,9 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.expedition =
+    n.life === old.life ? structuredClone(old.expedition) : freshExpedition();
+  if (n.status !== "alive") n.expedition.duel = null;
   if (n.status === "dead") {
     n.social.scene = null;
     n.social.arena.duel = null;
@@ -372,6 +398,19 @@ function normalize(n: State, old: State) {
 }
 export function dispatch(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (c.type === "expedition")
+    return runExpedition(input, c.action, c.id, (s) =>
+      normalize(
+        lift(
+          chapter.travelMonth(base(s)),
+          structuredClone(s.journey),
+          structuredClone(s.social),
+          structuredClone(s.adventure),
+        ),
+        s,
+      ),
+    );
+  if (input.expedition.duel) return input;
   if (c.type === "mist") return runMist(input, c.action, c.id);
   if (c.type === "road") return runRoad(input, c.action, c.id);
   if (c.type === "adventure") return runAdventure(input, c.action, c.id);
@@ -844,17 +883,23 @@ export function dispatch(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
+  return validWorldState(x, 12);
+}
+function validWorldState(x: unknown, version: 10 | 11 | 12): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
-    s.version !== 10 ||
+    (x as { version: unknown }).version !== version ||
     !j ||
     !chapter.validState(base(s)) ||
     !validSocial(s) ||
-    !validAdventure(s.adventure) ||
+    !(version === 10
+      ? validAdventureV10(s.adventure)
+      : validAdventure(s.adventure)) ||
     !validRoad(s.adventure.road, s) ||
-    !validMist(s)
+    !validMist(s) ||
+    (version === 12 && !validExpedition(s))
   )
     return false;
   const integer = (v: unknown, max = 1e9) =>
@@ -922,9 +967,36 @@ export function validState(x: unknown): x is State {
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 11) {
+    if (!validWorldState(x, 11)) throw new Error("旧存档损坏，原档未修改。");
+    const upgraded = {
+      ...structuredClone(x),
+      version: 12,
+      expedition: freshExpedition(),
+    };
+    if (validState(upgraded)) return upgraded;
+    throw new Error("旧存档损坏，原档未修改。");
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 10) {
+    if (!validWorldState(x, 10)) throw new Error("旧存档损坏，原档未修改。");
+    const old = structuredClone(x) as State;
+    const upgraded = {
+      ...old,
+      version: 11,
+      adventure: {
+        ...old.adventure,
+        rescueChoice: old.adventure.step === "done" ? "legacy" : "none",
+      },
+    };
+    if (validWorldState(upgraded, 11)) return migrateSave(upgraded);
+    throw new Error("旧存档损坏，原档未修改。");
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 9) {
     const old = x as State;
-    if (!validAdventure(old.adventure) || !validRoadV9(old.adventure.road, old))
+    if (
+      !validAdventureV10(old.adventure) ||
+      !validRoadV9(old.adventure.road, old)
+    )
       throw new Error("旧行路存档损坏，原档未修改。");
     const upgraded = {
       ...structuredClone(old),
@@ -938,12 +1010,12 @@ export function migrateSave(x: unknown): State {
         },
       },
     };
-    if (validState(upgraded)) return upgraded;
+    if (validWorldState(upgraded, 10)) return migrateSave(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 8) {
     const old = x as State;
-    if (!validAdventure(old.adventure))
+    if (!validAdventureV10(old.adventure))
       throw new Error("旧冒险存档损坏，原档未修改。");
     const upgraded = {
       ...structuredClone(old),
@@ -955,7 +1027,7 @@ export function migrateSave(x: unknown): State {
   if (x && typeof x === "object" && "version" in x && x.version === 7) {
     const old = x as State;
     if (
-      !validAdventure(old.adventure) ||
+      !validAdventureV10(old.adventure) ||
       !old.adventure.road ||
       typeof old.adventure.road !== "object"
     )
@@ -977,7 +1049,7 @@ export function migrateSave(x: unknown): State {
   }
   if (x && typeof x === "object" && "version" in x && x.version === 6) {
     const old = x as State;
-    if (!validAdventure(old.adventure))
+    if (!validAdventureV10(old.adventure))
       throw new Error("旧冒险存档损坏，原档未修改。");
     const upgraded = {
       ...structuredClone(old),
@@ -988,7 +1060,7 @@ export function migrateSave(x: unknown): State {
         mist: freshMist(),
       },
     };
-    if (validState(upgraded)) return upgraded;
+    if (validWorldState(upgraded, 10)) return migrateSave(upgraded);
     throw new Error("旧存档损坏，原始数据未被修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 5) {
@@ -997,16 +1069,16 @@ export function migrateSave(x: unknown): State {
       version: 10,
       adventure: freshAdventure(true),
     };
-    if (validState(upgraded)) return upgraded;
+    if (validWorldState(upgraded, 10)) return migrateSave(upgraded);
     throw new Error("旧存档损坏，原始数据未被修改。");
   }
   if (validV4(x))
-    return {
+    return migrateSave({
       ...structuredClone(x),
       version: 10,
       social: freshSocial(),
       adventure: freshAdventure(true),
-    };
+    });
   if (
     x &&
     typeof x === "object" &&
