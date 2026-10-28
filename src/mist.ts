@@ -105,7 +105,7 @@ export const mistScenes: Record<
   gate: {
     title: "雾海回声阵",
     image: "/scenes/mist-courier-station.jpg",
-    body: "阵门里传来熟悉的呼唤，断桥旁却还系着药队留下的归绳。要赶在回声消失前追信，还是多备补给，先稳住大家的退路？这不是谁更勇敢，而是你愿意承担怎样的风险。",
+    body: "阵门里传来熟悉的呼唤，断桥旁却还系着药队留下的归绳。要赶在回声消失前追信，还是多备补给，先稳住大家的退路？雾里又响了一声，归绳绷得笔直。",
   },
   archive: {
     title: "灯还在等人",
@@ -115,7 +115,7 @@ export const mistScenes: Record<
   home: {
     title: "有人等你归来",
     image: "/scenes/mountain-market.jpg",
-    body: "郁青收起空白的路簿。你带回的不是一句“过关了”，而是失踪药队留下的选择，还有一盏能照见旧阵灵痕的灯。陆迟也在茶摊等你。",
+    body: "郁青收起空白的路簿。探灵灯搁在摊前，灯光映出路簿上早已褪色的几行字。陆迟也在茶摊等你。",
   },
   shrine: {
     title: "再见那座山祠",

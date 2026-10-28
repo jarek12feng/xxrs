@@ -37,6 +37,12 @@ import {
 } from "./core";
 import { luchiView } from "./characters";
 import WorldPanel from "./WorldPanel.vue";
+import SavePanel from "./SavePanel.vue";
+import InventoryPanel from "./InventoryPanel.vue";
+import { writeSlot } from "./save-slots";
+import { adventureScenes } from "./adventure";
+import { roadScenes, roadGoal } from "./road";
+import { mistScenes, mistGoal } from "./mist";
 import AdventurePanel from "./AdventurePanel.vue";
 import RoadPanel from "./RoadPanel.vue";
 import MistPanel from "./MistPanel.vue";
@@ -78,6 +84,96 @@ function inspectReceipt() {
 }
 const view = ref<"story" | "cultivation">("story");
 const showRoad = ref(false);
+const titleScreen = ref(true);
+const creating = ref(false);
+const targetVisible = ref(true);
+const panelTitles: Record<string, string> = {
+  character: "人物",
+  inventory: "储物袋",
+  skills: "功法",
+  world: "山河地图",
+  relationship: "人物关系",
+  sect: "宗门师承",
+  arena: "听松擂台",
+  gear: "炼器与购药",
+  queue: "修行安排",
+  journal: "任务与见闻",
+  system: "系统菜单",
+  saves: "保存与读取",
+  backup: "备份与迁移",
+  settings: "显示设置",
+  new: "开始新的旅程",
+};
+const worldTabs = [
+  "skills",
+  "world",
+  "relationship",
+  "sect",
+  "arena",
+  "gear",
+  "queue",
+] as const;
+const worldTab = computed(() => worldTabs.find((t) => t === dialog.value));
+const currentScene = computed(() => {
+  const g = game.value;
+  if (!g || titleScreen.value || view.value === "cultivation")
+    return { image: "/scenes/moon-terrace.png", name: "听松山居" };
+  if (!showRoad.value && g.adventure.mist.stage !== "dormant") {
+    const x = mistScenes[g.adventure.mist.stage];
+    return { image: x.image, name: x.title };
+  }
+  if (g.adventure.step === "done") return roadScenes[g.adventure.road.stage];
+  return adventureScenes[g.adventure.step];
+});
+const currentGoal = computed(() => {
+  const g = game.value;
+  if (!g) return "";
+  if (view.value === "cultivation") return nextGoal(g);
+  if (!showRoad.value && g.adventure.mist.stage !== "dormant")
+    return mistGoal(g);
+  if (g.adventure.step === "done") return roadGoal(g);
+  return adventureScenes[g.adventure.step].goal;
+});
+function openPanel(id: string) {
+  if (ui.busy || receiptExpanded.value) return;
+  ui.running = false;
+  dialog.value = id;
+}
+async function restoreGame(state: State) {
+  if (await persist(state)) {
+    titleScreen.value = false;
+    creating.value = false;
+    dialog.value = "";
+    receipt.value = null;
+    receiptExpanded.value = false;
+    showRoad.value = false;
+    view.value = "story";
+    ui.history = false;
+  }
+}
+async function beginNew() {
+  if (ui.busy) return;
+  ui.busy = true;
+  try {
+    if (game.value)
+      await writeSlot("archive-" + crypto.randomUUID(), game.value);
+    creating.value = true;
+    titleScreen.value = true;
+    dialog.value = "";
+  } catch (e) {
+    notice.value = "未能备份原旅程，已取消新建：" + String(e);
+  } finally {
+    ui.busy = false;
+  }
+}
+function setTextSize(large: boolean) {
+  document.documentElement.classList.toggle("large-reading", large);
+}
+function resumeGame() {
+  titleScreen.value = false;
+  creating.value = false;
+}
+
 import { load, save } from "./save";
 const useSession = defineStore("session", {
   state: () => ({ running: false, busy: false, history: false }),
@@ -131,14 +227,23 @@ const eventScene = computed(() =>
 const costs = computed(() => (game.value ? refineCost(game.value) : null));
 const fileInput = ref<HTMLInputElement>();
 const event = computed(() => (game.value ? eventView(game.value) : null));
+const systemOverlay = computed(() =>
+  ["system", "saves", "settings", "backup"].includes(dialog.value),
+);
+const desktopRuntime = window.location.protocol === "xxrs:";
+function quitGame() {
+  if (!ui.busy && desktopRuntime) window.close();
+}
 const modal = computed(() =>
-  receiptExpanded.value
-    ? "action-feedback"
-    : event.value
-      ? activeEventId(game.value!)
-      : game.value?.status !== "alive" && game.value
-        ? game.value.status
-        : dialog.value,
+  titleScreen.value || systemOverlay.value
+    ? dialog.value
+    : receiptExpanded.value
+      ? "action-feedback"
+      : event.value
+        ? activeEventId(game.value!)
+        : game.value?.status !== "alive" && game.value
+          ? game.value.status
+          : dialog.value,
 );
 const details = computed(() =>
   game.value ? breakthroughDetails(game.value, pill.value) : null,
@@ -198,7 +303,10 @@ async function act(intent: Intent) {
     arrivalFinished.value = false;
     receiptSerial.value++;
     receiptExpanded.value =
-      (!!receipt.value?.ritual || !!receipt.value?.person) && !automatic;
+      (!!receipt.value?.ritual ||
+        !!receipt.value?.person ||
+        !!receipt.value?.process) &&
+      !automatic;
     if (receiptExpanded.value) {
       ui.running = false;
       dialog.value = "";
@@ -225,15 +333,20 @@ async function act(intent: Intent) {
 }
 async function start() {
   if (!ui.busy && !loadError.value)
-    await persist(
-      createGame(
-        name.value,
-        path.value,
-        crypto.getRandomValues(new Uint32Array(1))[0],
-        aptitude.value,
-        gender.value,
-      ),
-    );
+    if (
+      await persist(
+        createGame(
+          name.value,
+          path.value,
+          crypto.getRandomValues(new Uint32Array(1))[0],
+          aptitude.value,
+          gender.value,
+        ),
+      )
+    ) {
+      titleScreen.value = false;
+      creating.value = false;
+    }
 }
 async function advance(months: number) {
   queueMode.value = false;
@@ -253,6 +366,8 @@ async function openMist() {
   showRoad.value = false;
 }
 function runQueue() {
+  dialog.value = "";
+  view.value = "cultivation";
   queueMode.value = true;
   ui.running = true;
 }
@@ -320,8 +435,44 @@ async function importSave(e: Event) {
   }
 }
 function keyboard(e: KeyboardEvent) {
-  if (!modal.value) return;
-  if (e.key === "Escape" && !event.value && game.value?.status === "alive")
+  const target = e.target as HTMLElement | null;
+  if (
+    e.key === "Escape" &&
+    !receiptExpanded.value &&
+    (event.value || (game.value && game.value.status !== "alive"))
+  ) {
+    e.preventDefault();
+    dialog.value = systemOverlay.value ? "" : "system";
+    return;
+  }
+  if (!modal.value) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      openPanel("system");
+    } else if (
+      !titleScreen.value &&
+      !target?.closest("input, textarea, select, [contenteditable=true]")
+    ) {
+      const id = (
+        {
+          c: "character",
+          b: "inventory",
+          m: "world",
+          j: "journal",
+          k: "skills",
+        } as Record<string, string>
+      )[e.key.toLowerCase()];
+      if (id) {
+        e.preventDefault();
+        openPanel(id);
+      }
+    }
+    return;
+  }
+  if (
+    e.key === "Escape" &&
+    (titleScreen.value || (!event.value && game.value?.status === "alive"))
+  )
     dialog.value = "";
   if (e.key === "Tab") {
     const nodes = Array.from(
@@ -387,18 +538,44 @@ onUnmounted(() => {
 <template>
   <div v-if="ui.busy" class="saving-pulse" role="status">正在结算并保存……</div>
   <div v-if="notice" class="notice" role="alert">{{ notice }}</div>
-  <div class="shell" :inert="!!modal">
-    <header>
-      <a class="brand" href="#"
-        ><span class="seal">仙</span
-        ><span>修仙人生<small>一卷山海 · 几世修行</small></span></a
+  <div
+    class="shell immersive-shell"
+    :class="{ playing: game && !titleScreen }"
+    :inert="!!modal"
+  >
+    <div
+      class="world-wallpaper"
+      :style="{ backgroundImage: `url(${currentScene.image})` }"
+      aria-hidden="true"
+    ></div>
+    <header class="game-hud">
+      <button
+        v-if="game && !titleScreen"
+        class="avatar-entry"
+        aria-label="人物属性 C"
+        @click="openPanel('character')"
       >
-      <div class="header-right">
-        <span class="edition">青嶂归路 · v0.10.0</span
-        ><button class="quiet" @click="dialog = 'help'">玩法说明</button
-        ><button class="quiet" @click="fileInput?.click()">导入存档</button
-        ><button v-if="game" class="quiet" @click="download(game)">导出</button>
+        <span class="avatar-seal">{{ game.name.slice(0, 1) }}</span
+        ><span
+          >{{ game.name
+          }}<small
+            >{{ game.realm ? "筑基" : "炼气" }} · {{ paths[game.path].name }} ·
+            伤势 {{ game.injury }}</small
+          ></span
+        >
+      </button>
+      <span v-else class="brand">修仙人生</span>
+      <div class="location-entry" v-if="game && !titleScreen">
+        <button @click="openPanel('world')">{{ currentScene.name }}</button
+        ><small>第 {{ game.life }} 世 · 第 {{ game.month }} 月</small>
       </div>
+      <button
+        class="system-entry"
+        aria-label="系统菜单 Esc"
+        @click="openPanel('system')"
+      >
+        ☰ 菜单
+      </button>
       <input
         ref="fileInput"
         type="file"
@@ -407,7 +584,26 @@ onUnmounted(() => {
         @change="importSave"
       />
     </header>
-    <main v-if="ready && !game" class="creation">
+    <main v-if="ready && titleScreen && !creating" class="title-screen">
+      <p class="eyebrow">一卷山海 · 几世修行</p>
+      <h1>修仙人生</h1>
+      <p>山关风起，故人待归。</p>
+      <button v-if="game" class="primary" @click="resumeGame">
+        继续游戏<small
+          >{{ game.name }} · {{ game.realm ? "筑基" : "炼气" }} · 第
+          {{ game.month }} 月</small
+        >
+      </button>
+      <button
+        :disabled="loadError"
+        @click="game ? openPanel('new') : (creating = true)"
+      >
+        新的旅程
+      </button>
+      <button @click="openPanel('saves')">读取进度</button
+      ><button @click="openPanel('system')">设置与帮助</button>
+    </main>
+    <main v-else-if="ready && (creating || !game)" class="creation">
       <div class="creation-art">
         <img src="/mountains.svg" alt="云海中的听松山" />
         <div class="art-copy">
@@ -417,6 +613,7 @@ onUnmounted(() => {
         </div>
       </div>
       <section class="creation-form">
+        <button class="quiet" @click="creating = false">返回标题</button>
         <span class="eyebrow">十六岁 · 初入仙途</span>
         <h2>写下这一世的名字</h2>
         <label for="name">道号</label
@@ -470,107 +667,12 @@ onUnmounted(() => {
       </section>
     </main>
     <main
-      v-else-if="game"
+      v-else-if="game && !titleScreen"
       class="game-layout"
       :class="{
         'story-mode': view === 'story' && !ui.history,
       }"
     >
-      <details v-if="view === 'story' && !ui.history" class="player-summary">
-        <summary>
-          {{ game.name }} · {{ game.realm ? "筑基" : "炼气" }}
-          <span>灵石 {{ game.stones }} · 查看行囊与属性</span>
-        </summary>
-        <div>
-          <p>
-            根骨 {{ game.root }} · 悟性 {{ game.wisdom }} · 神识
-            {{ game.sense }}
-          </p>
-          <p>
-            根基 {{ game.foundation }} · 剑意 {{ game.mastery }} · 伤势
-            {{ game.injury }}
-          </p>
-          <p>
-            灵草 {{ game.herbs }} · 筑基丹 {{ game.pills }} · 年岁
-            {{ Math.floor(game.age / 12) }} 岁
-          </p>
-          <p>{{ saved }}</p>
-          <button @click="view = 'cultivation'">
-            查看功法、装备与完整修行面板
-          </button>
-        </div>
-      </details>
-      <aside class="character">
-        <div class="life-label">
-          第 {{ game.life }} 世 · 修行第 {{ game.month }} 月
-        </div>
-        <div class="portrait">
-          <span>{{ game.name.slice(0, 1) }}</span
-          ><i>道</i>
-        </div>
-        <h1>{{ game.name }}</h1>
-        <p class="realm-label">
-          {{ game.realm ? "筑基" : "炼气" }}
-          <span>{{ paths[game.path].name }}</span>
-        </p>
-        <div class="character-line"></div>
-        <div class="stat">
-          <span>年岁 / 寿元</span
-          ><strong
-            >{{ Math.floor(game.age / 12) }} 岁 {{ game.age % 12 }} 月 /
-            {{ Math.floor(game.limit / 12) }} 载</strong
-          >
-        </div>
-        <div
-          v-for="(value, label) in {
-            灵石: game.stones,
-            灵草: game.herbs,
-            筑基丹: game.pills,
-            根基: game.foundation,
-            剑意: game.mastery,
-            伤势: game.injury,
-          }"
-          :key="label"
-          class="stat"
-        >
-          <span>{{ label }}</span
-          ><strong>{{ value }}</strong>
-        </div>
-        <div class="character-line"></div>
-        <span class="eyebrow">资质 · {{ aptitudes[game.aptitude].name }}</span>
-        <div class="aptitude-stats">
-          <div>
-            <strong>{{ game.root }}</strong
-            ><span>根骨</span
-            ><small>吐纳 +{{ cultivationGain(game) }} / 月</small>
-          </div>
-          <div>
-            <strong>{{ game.wisdom }}</strong
-            ><span>悟性</span
-            ><small>研读 +{{ game.wisdom >= 8 ? 2 : 1 }} 心得</small>
-          </div>
-          <div>
-            <strong>{{ game.sense }}</strong
-            ><span>神识</span><small>可修炼至 12</small>
-          </div>
-        </div>
-        <p class="fineprint">
-          研读心得 {{ game.study }} / 4 · 根基是后天积累，不是根骨。{{
-            game.ward ? "护脉丹纹：可抵消一次失败的减寿，保留九成修为。" : ""
-          }}
-        </p>
-        <span class="eyebrow">今世传承</span>
-        <h3>{{ inheritances[game.inherited].name }}</h3>
-        <p class="muted">{{ inheritances[game.inherited].description }}</p>
-        <p class="save-status">{{ saved }}</p>
-        <button
-          v-if="game.archive"
-          class="quiet"
-          @click="download(game.archive, '-旧版原档')"
-        >
-          导出旧版原档
-        </button>
-      </aside>
       <section class="journey">
         <nav>
           <button
@@ -618,6 +720,7 @@ onUnmounted(() => {
           @act="worldAct"
           @cultivate="view = 'cultivation'"
           @mist="openMist"
+          @map="openPanel('world')"
           @breakthrough="
             pill = game.pills > 0;
             dialog = 'break';
@@ -760,16 +863,17 @@ onUnmounted(() => {
               <p v-if="game.result" class="last-result">{{ game.result }}</p>
             </fieldset>
           </section>
-          <WorldPanel
-            :game="game"
-            :receipt="receipt"
-            :busy="ui.busy"
-            :running="ui.running"
-            @act="worldAct"
-            @run-queue="runQueue"
-          />
+          <nav class="facility-actions" aria-label="山居设施">
+            <button @click="openPanel('sect')">拜访师门</button
+            ><button @click="openPanel('gear')">炼器与购药</button
+            ><button @click="openPanel('arena')">听松擂台</button
+            ><button @click="openPanel('queue')">修行安排</button>
+          </nav>
         </template>
-        <div :class="{ 'desktop-scene history-room': ui.history }">
+        <div
+          v-if="ui.history"
+          :class="{ 'desktop-scene history-room': ui.history }"
+        >
           <SceneBackdrop
             v-if="ui.history"
             image="/scenes/moon-terrace.png"
@@ -797,78 +901,30 @@ onUnmounted(() => {
           </section>
         </div>
       </section>
-      <aside class="right-column">
-        <section class="guide-card">
-          <img
-            v-if="npc"
-            class="npc-card-art"
-            :src="npc.portrait"
-            alt="散修陆迟，青灰旧衣与刻痕旧剑"
-            loading="lazy"
-          />
-          <span class="eyebrow">同行之人</span>
-          <h2>陆迟 <small class="npc-subtitle">旧剑 · 守诺</small></h2>
-          <p class="npc-quote">{{ npc?.quote }}</p>
-          <button class="secondary full" @click="dialog = 'npc'">
-            人物档案 · 查看往事
-          </button>
-          <p>
-            {{
-              {
-                stranger: "尚未相识",
-                companion:
-                  game.story.choice === "self"
-                    ? "炼气散修 · 已归乡探亲"
-                    : "炼气散修 · 与你有约",
-                foundation: "筑基修士 · 愿为你护法",
-                distant: "错过约期 · 已各赴前程",
-              }[game.story.luchi]
-            }}
-          </p>
-          <p>
-            信任 {{ game.story.trust }} / 6<br />{{
-              game.story.luchi === "foundation"
-                ? "护法加成 +" + (game.story.trust >= 4 ? 15 : 10) + "%"
-                : game.story.stage === "resolved"
-                  ? "本世没有陆迟护法，可自行炼丹、固本准备突破。"
-                  : "信任达到 4，赠丹后的护法由 +10% 提升为 +15%。"
-            }}
-          </p>
-          <ol>
-            <li :class="{ done: game.story.stage !== 'unmet' }">
-              第三月 · 渡口相逢
-            </li>
-            <li :class="{ done: game.memories.letter }">第十二月 · 未寄家书</li>
-            <li :class="{ done: game.memories.visit }">
-              第二十四月 · 风雪回访
-            </li>
-            <li :class="{ done: game.story.stage === 'resolved' }">
-              第三十六月 · 三年之约
-            </li>
-            <li
-              :class="{
-                done:
-                  game.story.choice === 'self' || game.story.choice === 'gift',
-              }"
-            >
-              遗府孤丹 · 留己或赠友
-            </li>
-            <li :class="{ done: game.realm === 1 }">跨过天关 · 山外寻人</li>
-          </ol>
-        </section>
-        <section class="guide-card">
-          <span class="eyebrow">轮回不是数值叠加</span>
-          <h3>带一件前世之物</h3>
-          <p>
-            丹札可让剑修炼丹，剑谱可让医修练剑，旧约让第二世认出故人，孤灯丹诀为独行者抵挡一次突破失败的减寿。每世只带一项。
-          </p>
-        </section>
-      </aside>
     </main>
     <p v-else class="loading">正在展开绘卷……</p>
-    <footer>
-      <span>修仙人生 · 筑基篇</span><span>本地单机 / 请只在一个标签页游玩</span>
-    </footer>
+    <template v-if="game && !titleScreen">
+      <aside class="quest-tracker">
+        <button
+          :aria-expanded="targetVisible"
+          @click="targetVisible = !targetVisible"
+        >
+          当前目标 {{ targetVisible ? "−" : "+" }}
+        </button>
+        <p v-if="targetVisible">{{ currentGoal }}</p>
+        <button v-if="targetVisible" @click="openPanel('journal')">
+          任务与见闻
+        </button>
+      </aside>
+      <nav class="quick-dock" aria-label="随身功能">
+        <button @click="openPanel('inventory')">储物袋 <kbd>B</kbd></button
+        ><button @click="openPanel('skills')">功法 <kbd>K</kbd></button
+        ><button @click="openPanel('world')">地图 <kbd>M</kbd></button
+        ><button @click="openPanel('journal')">见闻 <kbd>J</kbd></button
+        ><button @click="openPanel('relationship')">人物关系</button>
+      </nav>
+      <span class="hud-save" role="status">{{ saved }}</span>
+    </template>
   </div>
   <div v-if="receipt && receiptExpanded" class="feedback-layer">
     <ActionFeedback
@@ -906,6 +962,7 @@ onUnmounted(() => {
     <section
       :key="game ? activeEventId(game) || game.status : 'loading'"
       class="modal"
+      :data-panel="dialog"
       :class="{
         'story-dialog':
           !!event ||
@@ -916,7 +973,197 @@ onUnmounted(() => {
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <template v-if="event && game">
+      <template
+        v-if="
+          dialog &&
+          (titleScreen ||
+            systemOverlay ||
+            (!event && game?.status === 'alive') ||
+            !game) &&
+          panelTitles[dialog]
+        "
+      >
+        <div class="panel-heading">
+          <h2 id="modal-title" tabindex="-1">{{ panelTitles[dialog] }}</h2>
+          <button aria-label="关闭面板" @click="dialog = ''">✕</button>
+        </div>
+        <template v-if="dialog === 'character' && game">
+          <div class="character-sheet">
+            <div class="life-label">
+              第 {{ game.life }} 世 · 修行第 {{ game.month }} 月
+            </div>
+            <div class="portrait">
+              <span>{{ game.name.slice(0, 1) }}</span
+              ><i>道</i>
+            </div>
+            <h1>{{ game.name }}</h1>
+            <p class="realm-label">
+              {{ game.realm ? "筑基" : "炼气" }}
+              <span>{{ paths[game.path].name }}</span>
+            </p>
+            <div class="character-line"></div>
+            <div class="stat">
+              <span>年岁 / 寿元</span
+              ><strong
+                >{{ Math.floor(game.age / 12) }} 岁 {{ game.age % 12 }} 月 /
+                {{ Math.floor(game.limit / 12) }} 载</strong
+              >
+            </div>
+            <div
+              v-for="(value, label) in {
+                灵石: game.stones,
+                灵草: game.herbs,
+                筑基丹: game.pills,
+                根基: game.foundation,
+                剑意: game.mastery,
+                伤势: game.injury,
+              }"
+              :key="label"
+              class="stat"
+            >
+              <span>{{ label }}</span
+              ><strong>{{ value }}</strong>
+            </div>
+            <div class="character-line"></div>
+            <span class="eyebrow"
+              >资质 · {{ aptitudes[game.aptitude].name }}</span
+            >
+            <div class="aptitude-stats">
+              <div>
+                <strong>{{ game.root }}</strong
+                ><span>根骨</span
+                ><small>吐纳 +{{ cultivationGain(game) }} / 月</small>
+              </div>
+              <div>
+                <strong>{{ game.wisdom }}</strong
+                ><span>悟性</span
+                ><small>研读 +{{ game.wisdom >= 8 ? 2 : 1 }} 心得</small>
+              </div>
+              <div>
+                <strong>{{ game.sense }}</strong
+                ><span>神识</span><small>可修炼至 12</small>
+              </div>
+            </div>
+            <p class="fineprint">
+              研读心得 {{ game.study }} / 4 · 根基是后天积累，不是根骨。{{
+                game.ward
+                  ? "护脉丹纹：可抵消一次失败的减寿，保留九成修为。"
+                  : ""
+              }}
+            </p>
+            <span class="eyebrow">今世传承</span>
+            <h3>{{ inheritances[game.inherited].name }}</h3>
+            <p class="muted">{{ inheritances[game.inherited].description }}</p>
+            <p class="save-status">{{ saved }}</p>
+            <button
+              v-if="game.archive"
+              class="quiet"
+              @click="download(game.archive, '-旧版原档')"
+            >
+              导出旧版原档
+            </button>
+          </div>
+          <button @click="dialog = 'inventory'">查看储物袋与装备</button
+          ><button @click="dialog = 'skills'">查看功法</button></template
+        >
+        <InventoryPanel
+          v-else-if="dialog === 'inventory' && game"
+          :game="game"
+          :busy="ui.busy"
+          @act="worldAct"
+          @forge="dialog = 'gear'"
+          @breakthrough="dialog = 'break'"
+        />
+        <WorldPanel
+          v-else-if="worldTab && game"
+          :key="worldTab"
+          :initial-tab="worldTab"
+          embedded
+          :game="game"
+          :receipt="receipt"
+          :busy="ui.busy"
+          :running="ui.running"
+          @act="worldAct"
+          @run-queue="runQueue"
+        />
+        <template v-else-if="dialog === 'journal' && game"
+          ><h3>当前目标</h3>
+          <p>{{ currentGoal }}</p>
+          <h3>与陆迟的约定</h3>
+          <p>
+            {{
+              game.story.stage === "resolved"
+                ? "这场三年之约已有结局。"
+                : "第三十六个月，回渡口见陆迟。"
+            }}
+          </p>
+          <button @click="dialog = 'npc'">查看陆迟往事</button>
+          <h3>行路记录</h3>
+          <article
+            v-for="(entry, i) in game.log"
+            :key="i"
+            class="journal-entry"
+          >
+            <small>第 {{ entry.month }} 月</small>
+            <p>{{ entry.text }}</p>
+          </article></template
+        >
+        <SavePanel
+          v-else-if="dialog === 'saves'"
+          :game="game"
+          :busy="ui.busy"
+          @restore="restoreGame"
+        />
+        <template v-else-if="dialog === 'new'"
+          ><p>
+            当前旅程将先保存为独立备份，可从“读取进度”找回。新旅程从新角色开始。
+          </p>
+          <button :disabled="ui.busy" @click="beginNew">
+            保留旧旅程，创建角色</button
+          ><button @click="dialog = ''">取消</button></template
+        >
+        <template v-else-if="dialog === 'backup'"
+          ><p>用于迁移设备或保留额外备份。日常进度由游戏自动保存。</p>
+          <button :disabled="!game" @click="game && download(game)">
+            导出备份</button
+          ><button @click="fileInput?.click()">导入备份</button></template
+        >
+        <template v-else-if="dialog === 'settings'"
+          ><p>阅读字号</p>
+          <button @click="setTextSize(false)">标准</button
+          ><button @click="setTextSize(true)">大字</button>
+          <p>演出可按 Esc 跳过；尊重系统的减少动态效果设置。</p></template
+        >
+        <div v-else class="system-options">
+          <button v-if="game" @click="dialog = 'saves'">
+            保存游戏 / 读取进度</button
+          ><button v-else @click="dialog = 'saves'">读取进度</button
+          ><button v-if="desktopRuntime" :disabled="ui.busy" @click="quitGame">
+            退出游戏</button
+          ><button @click="dialog = 'settings'">显示设置</button
+          ><button @click="dialog = 'help'">玩法说明</button
+          ><button @click="dialog = 'backup'">备份与迁移</button
+          ><button
+            v-if="!titleScreen"
+            @click="
+              ui.running = false;
+              titleScreen = true;
+              creating = false;
+              dialog = '';
+            "
+          >
+            返回标题</button
+          ><button
+            @click="
+              dialog = '';
+              game && resumeGame();
+            "
+          >
+            返回游戏
+          </button>
+        </div>
+      </template>
+      <template v-else-if="event && game && !titleScreen">
         <SceneBackdrop
           :image="eventScene || '/scenes/mist-path.jpg'"
           :title="event.title"

@@ -25,11 +25,14 @@ const props = defineProps<{
   busy: boolean;
   running: boolean;
   receipt?: ActionReceipt | null;
+  initialTab?:
+    "world" | "sect" | "skills" | "queue" | "gear" | "relationship" | "arena";
+  embedded?: boolean;
 }>();
 const emit = defineEmits<{ act: [intent: Intent]; runQueue: [] }>();
 const tab = ref<
   "world" | "sect" | "skills" | "queue" | "gear" | "relationship" | "arena"
->("world");
+>(props.initialTab || "world");
 watch(
   () => !!props.game.social.arena.duel,
   (active) => {
@@ -107,11 +110,11 @@ const mapImages = {
 
 <template>
   <section class="world-panel" :class="{ 'desktop-room': !!room }">
-    <div class="panel-heading">
+    <div v-if="!embedded" class="panel-heading">
       <h2>山外有天地</h2>
       <span class="muted">修行，是为了赴一场约</span>
     </div>
-    <nav aria-label="山外功能">
+    <nav v-if="!embedded" aria-label="山外功能">
       <button :class="{ active: tab === 'world' }" @click="tab = 'world'">
         山河见闻
       </button>
@@ -138,7 +141,7 @@ const mapImages = {
       </button>
     </nav>
     <SceneBackdrop
-      v-if="room"
+      v-if="room && !embedded"
       :key="tab"
       :image="room.image"
       :title="room.title"

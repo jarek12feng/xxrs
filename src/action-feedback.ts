@@ -7,7 +7,9 @@ import {
 } from "./core";
 import { enrichReceipt } from "./journey-feedback";
 
+import type { ActionProcess } from "./action-process";
 export interface ActionReceipt {
+  process?: ActionProcess;
   title: string;
   ritual:
     "break" | "refine" | "retreat" | "challenge" | "forge" | "duel" | null;

@@ -1,3 +1,4 @@
+import { actionProcess } from "./action-process";
 import {
   adventureScenes,
   roadScenes,
@@ -33,26 +34,26 @@ export function sceneLocation(
 // Presentation-only replies: consequences and relationships still come from the rule state.
 const replies: Record<string, Record<string, string>> = {
   meet: {
-    help: "你连路边的药草都记得这样清楚。下次改图，也来帮我看看，好吗？",
-    share: "这段药径，我正缺一个走过的人来核对。你的心得，我会认真记下。",
-    listen: "谢谢你愿意听完。这条路很长，有人坐下来听，就不算白走。",
+    help: "这几株正用得上。你认药这么准，下回进山还找你。",
+    share: "原来岔路在老槐树后面，我记错了。借你的册子抄两笔。",
+    listen: "说着说着茶都凉了。掌柜，再添些热水！",
   },
   walk: {
-    care: "有你照料他们，我才能安心把归路画完。这一路，多亏我们分着做。",
-    mark: "这几个标记能让后来的人少冒一次险。下次勘路，还一起走吧。",
-    stay: "你没有催大家赶路。有人愿意等，回去的路也就没那么难走。",
+    care: "那边的标记补好了。伤者能走了吗？我来扶这一位。",
+    mark: "这里也标上了？好，下雨时就怕人看不清这个岔口。",
+    stay: "最后那位腿脚慢，我陪着。你帮忙把前头的灯挑高些。",
   },
   night: {
-    promise: "那就各自认真修行，也把想去的地方告诉彼此。方向，我们一起商量。",
-    honest: "原来你也会怕。那就不必在彼此面前逞强，准备好了再往前走。",
+    promise: "那我可当真了。到了出山那天，你别又闭关忘了时辰。",
+    honest: "你也这样？我还以为只有我……这茶凉了，我去换一壶。",
   },
   watch: {
-    thanks: "好。下次换你来看看我的修行，不只是我在台下等你。",
-    learn: "那我们慢慢复盘。你愿意把失误说出来，我也会认真告诉你看见了什么。",
+    thanks: "说定了。下回你站前排，我一抬头就能看见。",
+    learn: "你最后那步有点急。来，借这两只茶碗比一比站位。",
   },
   pledge: {
-    yes: "这份心意，我收下了。归途小物不是束缚，是想让你知道，远行之后有人等你。",
-    later: "不必现在给答案。我们先把眼前的路走好，你的心意由你自己决定。",
+    yes: "嗯。收好，别跟灵石混放，磨坏了我可不替你重做。",
+    later: "好，我留着。茶还热，要不要再坐一会儿？",
   },
 };
 
@@ -62,6 +63,7 @@ export function enrichReceipt(
   intent: Intent,
   r: ActionReceipt,
 ): ActionReceipt {
+  r.process = actionProcess(intent);
   r.unlocks = after.journey.known
     .filter((k) => !before.journey.known.includes(k))
     .map((k) => `习得功法 · ${techniques[k].name}`);
@@ -118,10 +120,19 @@ export function enrichReceipt(
     unlocked(a.road.map, b.road.map, "航图补全 · 青嶂关已开放");
     unlocked(a.road.ally, b.road.ally, "郁青已答应同行");
     unlocked(a.road.passed, b.road.passed, "青嶂关归路已通");
-    if (a.road.solution !== b.road.solution && b.road.solution !== "none" && b.road.solution !== "legacy") {
+    if (
+      a.road.solution !== b.road.solution &&
+      b.road.solution !== "none" &&
+      b.road.solution !== "legacy"
+    ) {
       unlocks.push(passSolutions[b.road.solution].name + " · 本世选择已留下");
       const echo = passEcho(after)!;
-      r.person = { name: echo.name, portrait: echo.image!, response: echo.quote, relation: "青嶂记住了你留下的归路" };
+      r.person = {
+        name: echo.name,
+        portrait: echo.image!,
+        response: echo.quote,
+        relation: "青嶂记住了你留下的归路",
+      };
     }
     unlocked(
       a.road.surveyed,
@@ -160,7 +171,11 @@ export function enrichReceipt(
         : from !== to
           ? `抵达 · ${to}`
           : "此刻的回应";
-    if (a.road.solution !== b.road.solution && b.road.solution !== "none" && b.road.solution !== "legacy")
+    if (
+      a.road.solution !== b.road.solution &&
+      b.road.solution !== "none" &&
+      b.road.solution !== "legacy"
+    )
       r.title = passSolutions[b.road.solution].name + " · 归路已成";
     if (a.ready && !b.ready) r.tone = "warning";
     if (intent.type === "mist" && ["steady", "pursue"].includes(intent.action))
@@ -173,10 +188,10 @@ export function enrichReceipt(
         ? "这封信，拜托你了。第三十六个月，我在渡口等你。"
         : kind === "letter"
           ? intent.option === "leave"
-            ? "好，先不说这些。愿意陪我坐一会儿，我已经记在心里了。"
-            : "我想入山找父亲，也想让母亲不必再等。谢谢你听懂了。"
+            ? "好，不提了。渡口的风大，坐里边些。"
+            : "娘每年都留着父亲那副碗筷。我总得去找一找。"
           : kind === "visit"
-            ? "上回你替我奔走，这回也让我帮你一点。往后的路，别总一个人扛。"
+            ? "药带来了，搁你桌上。我多买了一份，别跟我推来推去。"
             : kind === "departure"
               ? intent.option === "stay"
                 ? "那就各自保重。这一趟，我自己走。"
@@ -185,7 +200,7 @@ export function enrichReceipt(
                 ? "多亏你没有把我留在阵外。前面的路，我们继续一起看。"
                 : intent.option === "gift"
                   ? "这枚丹药的分量，我记住了。等你叩关，我会在一旁护法。"
-                  : "这一路是你自己走来的。拿好丹药，往后也别忘了照顾自己。";
+                  : "丹药收好，别受潮。你闭关那日，给我留个信。";
     r.person = {
       name: "陆迟",
       portrait: luchiView(after).portrait,
@@ -250,5 +265,15 @@ export function enrichReceipt(
             : "功法与奖励已入囊。可以先装配新功法，再观摩下一位对手。"
           : "先养伤，再根据对手意图选择应对；凝神、固本和装备也会改变胜算。";
   }
+  if (r.person && !r.process && !r.ritual)
+    r.process = {
+      kind: "talk",
+      title: r.person.name,
+      beats: [
+        `你说完，${r.person.name}停下了手里的动作。`,
+        `${r.person.name}抬眼望向你。`,
+        "风声从两人之间掠过，话音接了下去。",
+      ],
+    };
   return r;
 }

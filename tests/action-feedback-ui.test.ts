@@ -42,6 +42,7 @@ async function mount(s = state()) {
   app = createApp(App).use(createPinia());
   app.mount(document.body.appendChild(document.createElement("div")));
   await flush();
+  await click("继续游戏");
   await click("洞府修行");
 }
 beforeEach(() => {
@@ -224,9 +225,13 @@ it("keeps discoveries inside the scene and shows a named arrival without a block
 });
 it("NPC choices have a named response, affection and memory before returning to interactions", async () => {
   await mount(mistCheckpoint());
-  await click("人物缘分");
+  await click("人物关系");
   await click("赴约 · 一月");
   await click("用研读所得标出安全通路");
+  expect(document.querySelector(".action-feedback")?.textContent).not.toContain(
+    "共同记忆 · 共勘旧路",
+  );
+  await click("跳过演出");
   const dialog = document.querySelector("[role=dialog]");
   expect(dialog?.textContent).toContain("沈听澜");
   expect(dialog?.textContent).toContain("共同记忆 · 共勘旧路");
@@ -235,11 +240,11 @@ it("NPC choices have a named response, affection and memory before returning to 
   expect(dialog?.textContent).not.toContain("山门暂掩");
   await click("知晓结果");
   expect(document.querySelector("[role=dialog]")).toBeNull();
-  expect(document.activeElement?.textContent).toBe("相识与相处");
+  expect(document.activeElement?.textContent).toBe("洞府修行 · 操作区");
 });
 it("NPC response is not fabricated on save failure", async () => {
   await mount(mistCheckpoint());
-  await click("人物缘分");
+  await click("人物关系");
   await click("赴约 · 一月");
   vi.mocked(save).mockRejectedValueOnce(new Error("保存失败"));
   await click("用研读所得标出安全通路");
@@ -268,7 +273,7 @@ it("combat shows damage at the controls, gates rapid follow-up and keeps the fin
   expect(button("破势").disabled).toBe(true);
   await click("破势");
   expect(save).toHaveBeenCalledTimes(2);
-  for (let i = 0; i < 2 && !document.querySelector("[role=dialog]"); i++) {
+  for (let i = 0; i < 2 && !document.querySelector(".action-feedback"); i++) {
     await vi.advanceTimersByTimeAsync(650);
     await click(i === 0 ? "破势" : "守息");
   }
@@ -325,5 +330,23 @@ it("cancels an appointment-crossing retreat without advancing time and explains 
   await click("暂不闭关 · 保留约定");
   expect(document.querySelector('[role="dialog"]')).toBeNull();
   expect(save).not.toHaveBeenCalled();
-  expect(text()).toContain("修行第 30 月");
+  expect(text()).toContain("第 30 月");
+});
+it("opens character and inventory overlays without advancing the world", async () => {
+  await mount();
+  const before = vi.mocked(save).mock.calls.length;
+  document
+    .querySelector<HTMLButtonElement>('[aria-label="人物属性 C"]')!
+    .click();
+  await flush();
+  expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
+    "年岁 / 寿元",
+  );
+  document.querySelector<HTMLButtonElement>('[aria-label="关闭面板"]')!.click();
+  await flush();
+  await click("储物袋");
+  expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
+    "当前灵器",
+  );
+  expect(vi.mocked(save).mock.calls.length).toBe(before);
 });

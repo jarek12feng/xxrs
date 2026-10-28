@@ -89,6 +89,8 @@ it.each(keys)(
         action: plan.finish,
       })!;
       expect(receipt.person?.name).toBe("青嶂");
+      expect(receipt.process?.kind).toBe(key);
+      expect(receipt.process?.beats).toHaveLength(3);
       expect(receipt.scene?.unlocks.join()).toContain(plan.name);
       const completed = p.state;
       for (const other of keys) {
@@ -107,7 +109,7 @@ it.each(keys)(
       p.road("pass");
       expect(passEcho(p.state)?.name).toBe("青嶂");
       expect(passEcho(p.state)?.quote).toContain(
-        { medicine: "喝碗茶", sword: "回不来了", array: "喝完" }[key],
+        { medicine: "喝碗茶", sword: "今日没烧", array: "喝完" }[key],
       );
       expect(migrateSave(p.state)).toEqual(p.state);
       return p.state;

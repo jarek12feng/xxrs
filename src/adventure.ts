@@ -217,9 +217,8 @@ export function runAdventure(
       a.ready = false;
       a.result = {
         medicine: "温蘅拿出练习药材。你负责辨认三味药，她负责纠正火候。",
-        guide:
-          "陆迟答应同行，但要你先记住撤退信号。求助不是跳过危险，而是共同准备。",
-        ward: "你开始练习在杂乱铃声中保持呼吸。目的不是追求更高数字，而是不被山瘴打断护体。",
+        guide: "陆迟把红绳系在你腕上：“扯两下就是退，别在雾里喊，声音传不远。”",
+        ward: "温蘅摇响一串铜铃。你闭目调息，铃声一乱，护体灵气便跟着晃动。",
       }[action];
       break;
     case "prepare":
@@ -230,7 +229,7 @@ export function runAdventure(
     case "rush":
       a.ready = false;
       a.result =
-        "方法不对。温蘅提醒你：“瘴气扰乱的是感知，越急越容易失去控制。配药要稳火，同行要分工，护体要稳息。”可以重新尝试，不消耗你的资源。";
+        "方法不对。温蘅提醒你：“停，气息乱了。把手放下，跟着我的铃声重新来。”可以重新尝试，不消耗你的资源。";
       break;
     case "trail":
       a.step = "shrine";

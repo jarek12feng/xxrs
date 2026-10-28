@@ -666,7 +666,7 @@ export function dispatch(input: State, c: Command): State {
         s,
         c.branch === "dan"
           ? "丹堂执事温蘅收你为记名弟子：“学会救人，才算读懂丹方。”"
-          : "剑院执事季衡收你为记名弟子：“守得住身后的人，再谈剑锋。”",
+          : "剑院执事季衡收你为记名弟子：“握剑的手抬稳。门中弟子出山要护送药队，明日卯时来演武场。”",
       );
       if (s.story.luchi !== "distant")
         log(

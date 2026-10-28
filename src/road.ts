@@ -24,14 +24,14 @@ export const roadClues = {
     action: "examineMarks",
     name: "石阶上的刻痕",
     hint: "风声骤紧时，石缝里的草为何没有动？",
-    text: "你蹲下查看，发现刻痕一直朝向背风石阶。青嶂终于放下横着的木杖：“那是我替上一支药队刻的。认得路，还得肯等风。”结合药队账册的歇脚时刻，可循避风路谨慎过关。",
+    text: "你蹲下查看，发现刻痕一直朝向背风石阶。青嶂终于放下横着的木杖：“那是我替上一支药队刻的。风歇的时候，沿这几级石阶走。”结合药队账册的歇脚时刻，可循避风路谨慎过关。",
   },
   names: {
     stage: "lookout",
     action: "examineNames",
     name: "路簿里的旧名字",
     hint: "有人在第一页旁，留了一盏从未撤去的灯。",
-    text: "路簿最旧的一页记着当年失散的药队，旁边是青嶂的刻印。他守着山口，不是为了拦住所有人，而是不愿再添一个没能归来的名字。你可以把这页故事带回坊市。",
+    text: "路簿最旧的一页记着当年失散的药队，旁边是青嶂的刻印。几个人名旁没有归期，纸边已被翻得起毛。你可以把这页故事带回坊市。",
   },
 } as const;
 export type PassSolution = "medicine" | "sword" | "array";
@@ -107,7 +107,7 @@ export const roadScenes = {
     name: "有人记得你",
     image: "/scenes/apothecary.jpg",
     mood: "warm",
-    body: "药工把门前的灯挑亮了些。他见你进门，先给你添了一碗热汤，才从柜底取出那张缺角航图。原来，归来并不是故事的终点。",
+    body: "药工把门前的灯挑亮了些。他见你进门，先给你添了一碗热汤，才从柜底取出那张缺角航图。图角上还沾着柜底的药末。",
   },
   market: {
     name: "山下坊市",
@@ -119,19 +119,19 @@ export const roadScenes = {
     name: "青嶂关",
     image: "/scenes/mist-path.jpg",
     mood: "mist",
-    body: "青角妖修青嶂横杖拦路：“不是不让你过去。前面山风会剥去护体灵气，筑基未稳，走进去就是送命。先看清这片山，再决定怎么走。”",
+    body: "青角妖修青嶂横杖拦路：“退到石阶里来！这风能剥掉护体灵气。你看那块岩壁——昨日还没裂。”",
   },
   camp: {
     name: "山口行营",
     image: "/scenes/moon-terrace.png",
     mood: "moon",
-    body: "你把补全的航图压在石桌上。这一次，凝神、固本和准备灵器都有了明确用途。山口一直在那里，不会因为你暂时退回来就消失。",
+    body: "你用石块压住航图，山风仍把图角吹得哗哗作响。营地留有一座旧丹炉，石台上的蒲团已经磨薄了。",
   },
   beyond: {
     name: "云外长路",
     image: "/scenes/cloud-frontier.jpg",
     mood: "warm",
-    body: "你终于站到了云层之上。曾经只在航图上见过的瀑布就在脚下，远处旅亭亮起了灯。青嶂收起木杖：“记住，你走过的路，也可以给后来的人留着。”",
+    body: "你终于站到了云层之上。曾经只在航图上见过的瀑布就在脚下，远处旅亭亮起了灯。青嶂收起木杖：“上头有座旅亭。到了，在路簿上留个信，省得下面的人惦记。”",
   },
   lookout: {
     name: "云栈旅亭",
@@ -337,9 +337,9 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
       r.result =
         {
           medicine:
-            "温蘅认出了你配药的手法：“那株幼草后来活了。你救的不只一个人。”",
+            "温蘅认出了你配药的手法：“那株幼草后来活了，今早才冒出新叶。药工还问起你呢。”",
           guide:
-            "药工记得你和陆迟的分工。他说：“路上有人照应，和独自走，是不一样的。”",
+            "药工记得你和陆迟的分工。他说：“陆迟在前面牵绳，你在后面托着我。那段滑坡，我一辈子忘不了。”",
           ward: "药工摸着补好的药篓：“背我出来时，你的手在发抖，却没有松。”",
           none: "药工记得那盏归家的灯。",
         }[s.adventure.method] + " 他指向航图的印记：山下坊市，去找行脚人郁青。";
@@ -353,7 +353,7 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
           : "你循着药工的介绍来到坊市。";
       if (r.discoveries.includes("names"))
         r.result =
-          "你把路簿中的旧名字告诉郁青。他沉默许久，收起了往日的笑：“下回送药，我要去山口好好谢他。”这一次，航图连起的不只是两个地方。";
+          "你把路簿中的旧名字告诉郁青。他沉默许久，收起了往日的笑：“下回送药，我要去山口好好谢他。”他将那几个名字抄进了账册封底。";
       break;
     case "talk":
       r.met = true;
@@ -374,7 +374,7 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
     case "verify":
       r.map = true;
       r.result =
-        "你挑出混在灵草里的毒叶，保住了这批伤药。郁青郑重交出图角：“以后看见这枚印记，就知道有人替你探过路。”";
+        "你挑出混在灵草里的毒叶，保住了这批伤药。郁青郑重交出图角：“这枚印记是我们药队用的。路上找不到落脚处，拿给驿亭的人看。”";
       break;
     case "pass":
       r.stage = r.passed ? "beyond" : "pass";
@@ -428,7 +428,7 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
           }[r.route] + " 青嶂让出道路，你第一次看见云层那边的世界。";
         if (sheltered)
           r.result =
-            "你依照药队歇脚的时刻，在刻痕旁等风回落，再沿背风石阶前行。青嶂点头：“知道什么时候不逞强，也算看懂了山。” " +
+            "你依照药队歇脚的时刻，在刻痕旁等风回落，再沿背风石阶前行。青嶂点头：“风回落了。就是现在，贴着石壁走。” " +
             r.result;
       } else {
         if (!sheltered) s.injury = Math.min(6, s.injury + 1);
@@ -448,7 +448,7 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
         "你将背风石阶和假雾的位置画进路簿。旅亭给你灵石 8 作为谢礼。郁青的旧友托人捎话：下次运药，会走你留下的这条路。";
       if (r.discoveries.includes("names"))
         r.result +=
-          " 你还替那些没能归来的人留了一页空白：不是等他们回来，是不让后来的人忘记。";
+          " 你在末页记下失散药工的姓名。几处看不清的字留着空，等知情的人补上。";
       break;
     case "back":
       r.stage = "camp";

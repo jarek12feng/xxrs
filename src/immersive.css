@@ -1,0 +1,679 @@
+/* The world is the canvas; management surfaces open over it. */
+.immersive-shell {
+  position: relative;
+  isolation: isolate;
+  max-width: none;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0 32px 88px;
+  color: #f5eedb;
+}
+.world-wallpaper {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-position: center;
+  background-size: cover;
+  transition: background-image 0.45s;
+}
+.world-wallpaper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #071510aa,
+    transparent 35%,
+    #071510dd 100%
+  );
+}
+.immersive-shell .game-hud {
+  height: 88px;
+  margin: 0;
+  padding: 12px 0;
+  border: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.immersive-shell button {
+  color: inherit;
+}
+.game-hud button,
+.quick-dock button,
+.quest-tracker button,
+.journey > nav button,
+.facility-actions button {
+  background: #10251edc;
+  border: 1px solid #ae9a6b88;
+  border-radius: 6px;
+  padding: 10px 15px;
+  color: #f5eedb;
+}
+.avatar-entry {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  gap: 12px;
+}
+.avatar-entry small,
+.location-entry small {
+  display: block;
+  color: #d8ceb2;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.avatar-seal,
+.save-seal {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #c2a66f;
+  border-radius: 50%;
+  color: #efddae;
+  font:
+    24px "Songti SC",
+    serif;
+  background: #213b31;
+}
+.location-entry {
+  text-align: center;
+}
+.location-entry button {
+  border: 0;
+  background: transparent;
+}
+.title-screen {
+  max-width: 440px;
+  margin: 10vh 0 0 8vw;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.title-screen h1 {
+  font-size: clamp(46px, 7vw, 86px);
+  letter-spacing: 0.14em;
+  text-shadow: 0 4px 24px #000;
+}
+.title-screen > p {
+  color: #e4d5af;
+  line-height: 1.8;
+}
+.title-screen button {
+  background: #132b24e8;
+  border: 1px solid #9a865e;
+  padding: 15px 24px;
+  text-align: left;
+  border-radius: 5px;
+}
+.title-screen button small {
+  display: block;
+  margin-top: 8px;
+  color: #d4c5a3;
+}
+.immersive-shell .creation {
+  color: #283f38;
+  background: #f1ebdcf2;
+  border-radius: 12px;
+  max-width: 1200px;
+  margin: 20px auto;
+}
+.immersive-shell .creation button {
+  color: #283f38;
+}
+.immersive-shell .game-layout,
+.immersive-shell .game-layout.story-mode {
+  display: block;
+  max-width: none;
+  margin: 0;
+}
+.immersive-shell .journey {
+  background: none;
+  border: 0;
+  min-width: 0;
+}
+.immersive-shell .journey > nav {
+  display: flex;
+  gap: 8px;
+  background: none;
+  border: 0;
+  padding: 0;
+  max-width: 620px;
+}
+.immersive-shell .journey > nav button {
+  flex: none;
+  font-size: 13px;
+}
+.immersive-shell .journey > nav button.active {
+  background: #9c8450;
+  color: #fff;
+}
+.immersive-shell .journey > nav button:last-child {
+  display: none;
+}
+.immersive-shell .journey > .desktop-scene,
+.immersive-shell .cultivation-room.desktop-scene {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  border: 0;
+  background: none;
+  border-radius: 0;
+  min-height: calc(100dvh - 220px);
+}
+.immersive-shell .journey > .desktop-scene > .scene-backdrop,
+.immersive-shell .cultivation-room > .scene-backdrop {
+  position: relative;
+  min-height: 260px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  flex: 1;
+  padding-top: 60px;
+}
+.immersive-shell .journey > .desktop-scene > .scene-backdrop > .scene-art,
+.immersive-shell .cultivation-room > .scene-backdrop > .scene-art,
+.immersive-shell .journey > .desktop-scene > .scene-backdrop > .scene-ink,
+.immersive-shell .cultivation-room > .scene-backdrop > .scene-ink {
+  display: none;
+}
+.immersive-shell .scene-narrative {
+  max-width: 720px;
+  padding: 24px 28px;
+  background: linear-gradient(90deg, #0c201fe8, #0c201f90);
+  border-left: 2px solid #bfa16e;
+  border-radius: 3px;
+  margin: 0 0 16px;
+}
+.immersive-shell .scene-narrative h2 {
+  font-size: 30px;
+}
+.immersive-shell .scene-prose {
+  color: #f0e9d7;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.immersive-shell .scene-speaker {
+  margin-top: 12px;
+  padding-top: 12px;
+}
+.immersive-shell .scene-speaker > img {
+  width: 56px;
+  height: 72px;
+  object-fit: cover;
+}
+.immersive-shell .scene-speaker p {
+  color: #e5d5ac;
+  font-size: 16px;
+}
+.immersive-shell .journey .scene-controls {
+  background: #10241eed;
+  color: #eee7d7;
+  border: 1px solid #aa966955;
+  border-radius: 8px;
+  padding: 20px 24px;
+  max-height: 38dvh;
+  overflow: auto;
+}
+.immersive-shell .scene-controls h2,
+.immersive-shell .scene-controls h3,
+.immersive-shell .scene-controls .eyebrow,
+.immersive-shell .scene-controls p {
+  color: inherit;
+}
+.immersive-shell .scene-controls button {
+  background: #233b31;
+  color: #f2ead5;
+  border: 1px solid #8f805d;
+  border-radius: 5px;
+}
+.immersive-shell .scene-controls button small,
+.immersive-shell .scene-controls .fineprint {
+  color: #c8bea7;
+}
+.immersive-shell .scene-controls .chapter-track,
+.immersive-shell .scene-controls > .controls-heading,
+.immersive-shell .scene-controls > .adventure-task {
+  display: none;
+}
+.immersive-shell .scene-controls .adventure-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.immersive-shell .scene-controls .adventure-actions button {
+  flex: 1 1 190px;
+  margin: 0;
+  padding: 16px;
+}
+.immersive-shell .scene-controls .adventure-footnote {
+  font-size: 12px;
+  margin-top: 12px;
+  color: #c3b79b;
+}
+.immersive-shell
+  .scene-controls
+  :is(.road-plan, .mist-invitation, .adventure-task, .mist-routes button) {
+  background: #20382f;
+  color: #f0e6cf;
+}
+.immersive-shell .road-toolbar {
+  align-self: flex-end;
+  margin: 6px 0;
+  background: #14291fe0;
+  color: #d9caa9;
+  border: 0;
+}
+.immersive-shell .cultivation-panel {
+  margin: 0;
+}
+.quest-tracker {
+  position: absolute;
+  top: 114px;
+  right: 32px;
+  width: 250px;
+  background: #10241ec9;
+  border-left: 2px solid #ba9d63;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+.quest-tracker button {
+  background: none;
+  padding: 4px 0;
+  border: 0;
+  color: #e4c88d;
+}
+.quest-tracker p {
+  line-height: 1.8;
+  margin: 7px 0;
+}
+.quick-dock {
+  position: fixed;
+  z-index: 10;
+  bottom: 16px;
+  right: 32px;
+  display: flex;
+  gap: 8px;
+}
+.quick-dock kbd {
+  opacity: 0.55;
+  font-size: 10px;
+}
+.hud-save {
+  position: fixed;
+  bottom: 26px;
+  left: 32px;
+  color: #ddd4be;
+  font-size: 12px;
+}
+.facility-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.modal[data-panel] {
+  color: #eae2ce;
+  background: #13251ff5;
+  border: 1px solid #b59b69;
+  border-radius: 12px;
+  width: min(920px, calc(100vw - 40px));
+  max-height: 86dvh;
+  overflow: auto;
+  padding: 24px 30px;
+}
+.modal[data-panel="system"],
+.modal[data-panel="new"],
+.modal[data-panel="settings"],
+.modal[data-panel="backup"] {
+  width: min(500px, calc(100vw - 40px));
+}
+.modal[data-panel] > .panel-heading {
+  position: sticky;
+  top: -24px;
+  background: #13251f;
+  z-index: 3;
+  padding: 14px 0;
+  margin-bottom: 18px;
+}
+.modal[data-panel] :is(p, small, .muted) {
+  color: #d3c9b1;
+  line-height: 1.8;
+}
+.modal[data-panel] button {
+  background: #294236;
+  color: #f4e6c1;
+  border: 1px solid #8c7953;
+  padding: 10px 16px;
+  border-radius: 5px;
+  margin: 4px;
+}
+.modal[data-panel] button:disabled {
+  opacity: 0.4;
+}
+.modal[data-panel] h3 {
+  color: #e9d1a1;
+  margin: 16px 0 8px;
+}
+.modal[data-panel]
+  :is(
+    .world-panel,
+    .world-content,
+    .scene-controls,
+    .technique-card,
+    .map-card,
+    .queue-form
+  ) {
+  background: transparent;
+  color: inherit;
+  border-color: #7f765b55;
+}
+.modal[data-panel] .world-panel {
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+.modal[data-panel] .scene-controls {
+  max-height: none;
+}
+.system-options {
+  display: grid;
+  gap: 10px;
+}
+.character-sheet {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 32px;
+}
+.character-sheet .portrait,
+.character-sheet .character-line {
+  display: none;
+}
+.character-sheet .stat {
+  color: inherit;
+  border-color: #5e665355;
+}
+.character-sheet .aptitude-stats {
+  grid-column: 1/-1;
+}
+.save-card {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid #a8956355;
+}
+.save-card > div:nth-child(2) {
+  flex: 1;
+  min-width: 180px;
+}
+.save-confirm {
+  background: #54462c;
+  padding: 16px;
+  border: 1px solid #c4a76a;
+  margin: 14px 0;
+}
+.panel-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+}
+.panel-tabs [aria-pressed="true"],
+.item-grid [aria-pressed="true"] {
+  outline: 2px solid #d8b873;
+}
+.inventory-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  min-height: 240px;
+}
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  align-content: start;
+  gap: 12px;
+}
+.item-grid button {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  min-height: 120px;
+}
+.item-seal {
+  font:
+    32px "Songti SC",
+    serif;
+  color: #d4b776;
+}
+.item-detail {
+  border-left: 1px solid #9b8b6455;
+  padding-left: 24px;
+}
+.journal-entry {
+  padding: 12px 0;
+  border-bottom: 1px solid #8e7f5444;
+}
+.large-reading .scene-prose,
+.large-reading .scene-speaker p,
+.large-reading .modal p {
+  font-size: 19px;
+}
+@media (max-width: 900px) {
+  .immersive-shell {
+    padding: 0 16px 92px;
+  }
+  .quest-tracker {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: auto;
+    margin-top: 14px;
+  }
+  .quick-dock {
+    right: 12px;
+    left: 12px;
+    justify-content: center;
+    gap: 4px;
+  }
+  .quick-dock button {
+    padding: 10px 9px;
+    font-size: 12px;
+  }
+  .hud-save {
+    display: none;
+  }
+  .immersive-shell .scene-narrative {
+    max-width: none;
+  }
+  .immersive-shell .journey .scene-controls {
+    max-height: 46dvh;
+  }
+  .inventory-layout {
+    grid-template-columns: 1fr;
+  }
+  .item-detail {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-wallpaper {
+    transition: none;
+  }
+}
+.immersive-shell .road-panel {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.immersive-shell .road-epilogue {
+  background: #15291fed;
+  color: #f0e5c9;
+  border: 1px solid #8c7b55;
+  border-radius: 8px;
+  margin-top: 14px;
+}
+.immersive-shell .road-epilogue :is(h2, h3, p, strong, .eyebrow) {
+  color: inherit;
+}
+.immersive-shell .epilogue-records article {
+  background: #253d32;
+  border-color: #7d7554;
+}
+.immersive-shell .road-epilogue button {
+  color: #f0e5c9;
+  background: #315346;
+}
+
+/* Keep the HUD in place while long scene text scrolls inside the stage. */
+.immersive-shell.playing {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.immersive-shell .game-hud {
+  flex: 0 0 88px;
+}
+.immersive-shell.playing .game-layout {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.immersive-shell .road-toolbar {
+  display: none;
+}
+.character-sheet
+  > :is(
+    h1,
+    .life-label,
+    .realm-label,
+    .eyebrow,
+    h3,
+    .muted,
+    .fineprint,
+    .save-status
+  ) {
+  grid-column: 1/-1;
+  margin: 0;
+}
+.character-sheet h1 {
+  font-size: 30px;
+}
+.character-sheet .stat {
+  padding: 12px;
+  background: #20382f;
+  border-radius: 5px;
+}
+.character-sheet .stat strong,
+.character-sheet .aptitude-stats strong {
+  color: #f0d7a4;
+}
+.character-sheet .aptitude-stats > div {
+  background: #20382f;
+  color: #e7dec7;
+}
+.character-sheet .aptitude-stats small {
+  color: #c6baa0;
+}
+@media (min-width: 1000px) {
+  .immersive-shell .scene-narrative {
+    max-width: min(720px, calc(100vw - 380px));
+  }
+}
+
+.character-sheet .stat {
+  margin: 0;
+}
+.character-sheet .realm-label {
+  text-align: left;
+}
+.immersive-shell.playing .journey > .desktop-scene > .scene-backdrop {
+  padding-top: 24px;
+  min-height: 220px;
+}
+.immersive-shell.playing .scene-narrative {
+  padding: 18px 24px;
+}
+/* Process silhouettes use separate motion vocabularies, not one shared spinner. */
+[data-process="medicine"] .ritual-sky {
+  background:
+    radial-gradient(ellipse at 50% 100%, #55925688, transparent 65%), #10251c;
+}
+[data-process="medicine"] .ritual-orbit {
+  border-radius: 80% 0;
+  transform: rotate(-35deg);
+  animation-name: leaf-pulse;
+}
+[data-process="sword"] .ritual-sky {
+  background: linear-gradient(145deg, #263a44, #0d1820);
+}
+[data-process="sword"] .ritual-orbit {
+  border-radius: 0;
+  width: 260px;
+  height: 1px;
+  transform: rotate(-30deg);
+  animation: none;
+  opacity: 0.35;
+}
+.process-stroke {
+  display: none;
+}
+[data-process="sword"] .process-stroke {
+  display: block;
+  position: absolute;
+  width: 6px;
+  height: 160px;
+  background: #e8faff;
+  box-shadow: 0 0 24px #aeefff;
+  transform: rotate(35deg) scaleY(0.1);
+  transition:
+    transform 0.45s ease-in,
+    opacity 0.5s;
+}
+[data-process="sword"][data-phase="1"] .process-stroke {
+  transform: rotate(35deg) scaleY(0.8);
+}
+[data-process="sword"][data-phase="2"] .process-stroke {
+  transform: rotate(65deg) scaleY(2);
+  opacity: 0.3;
+}
+[data-process="array"] .ritual-orbit {
+  border-radius: 0;
+  border-width: 2px;
+}
+[data-process="array"] .ritual-sky {
+  background: radial-gradient(ellipse, #b9a74b44, transparent 70%), #152823;
+}
+[data-process="investigate"] .ritual-orbit {
+  border-style: dotted;
+}
+.process-portrait {
+  height: 160px;
+  width: 120px;
+  object-fit: cover;
+  object-position: top;
+  mask-image: linear-gradient(#000 75%, transparent);
+  animation: receipt-enter 0.5s ease-out;
+}
+[data-process="talk"] :is(.ritual-orbit, .ritual-seal, .ritual-spark) {
+  display: none;
+}
+@keyframes leaf-pulse {
+  50% {
+    transform: rotate(-35deg) scale(0.8);
+    opacity: 0.4;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .process-stroke {
+    transition: none !important;
+  }
+}

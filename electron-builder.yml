@@ -1,0 +1,27 @@
+appId: com.xxrs.cultivationlife
+productName: 修仙人生试玩版
+asar: true
+artifactName: XiuXianRenSheng-Demo-${version}-Windows-${arch}.${ext}
+directories:
+  output: release
+files:
+  - dist/**/*
+  - desktop/**/*
+  - package.json
+win:
+  executableName: cultivation-life
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: zip
+      arch: [x64]
+  signAndEditExecutable: false
+nsis:
+  artifactName: XiuXianRenSheng-Demo-${version}-Windows-${arch}-Setup.${ext}
+  oneClick: true
+  perMachine: false
+  deleteAppDataOnUninstall: false
+  createDesktopShortcut: true
+  shortcutName: 修仙人生试玩版
+  runAfterFinish: false
+  packElevateHelper: false

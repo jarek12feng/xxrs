@@ -3,11 +3,21 @@ import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import type { ActionReceipt } from "./action-feedback";
 const props = defineProps<{ receipt: ActionReceipt; expanded?: boolean }>();
 const emit = defineEmits<{ close: []; inspect: [] }>();
-const playing = ref(!!props.expanded && !!props.receipt.ritual);
+const playing = ref(
+  !!props.expanded && !!(props.receipt.ritual || props.receipt.process),
+);
+const phase = ref(0);
+const duration = props.receipt.process
+  ? props.receipt.process.kind === "talk"
+    ? 1200
+    : 2700
+  : 1400;
+const beatTimers: ReturnType<typeof setTimeout>[] = [];
 const heading = ref<HTMLElement>();
 let timer: ReturnType<typeof setTimeout> | undefined;
 function reveal() {
   clearTimeout(timer);
+  beatTimers.forEach(clearTimeout);
   playing.value = false;
   void nextTick(() => heading.value?.focus());
 }
@@ -23,19 +33,46 @@ onMounted(() => {
   heading.value?.focus();
   document.addEventListener("keydown", escape, true);
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) reveal();
-  else if (playing.value) timer = setTimeout(reveal, 1400);
+  else if (playing.value) {
+    beatTimers.push(
+      setTimeout(() => (phase.value = 1), duration / 3),
+      setTimeout(() => (phase.value = 2), (duration * 2) / 3),
+    );
+    timer = setTimeout(reveal, duration);
+  }
 });
 onUnmounted(() => {
   clearTimeout(timer);
+  beatTimers.forEach(clearTimeout);
   document.removeEventListener("keydown", escape, true);
 });
 const ritualText = {
-  break: ["气聚丹田", "周天合一 · 叩问天关", "境"],
-  refine: ["丹火初燃", "投药 · 控火 · 凝丹", "丹"],
-  retreat: ["山门暂掩", "静息凝神 · 温养根基", "静"],
-  forge: ["灵纹初现", "淬炼 · 铭纹 · 成器", "器"],
-  challenge: ["屏息迎敌", "审势 · 破阵 · 应战", "战"],
-  duel: ["交锋落定", "收势 · 行礼 · 胜负已分", "决"],
+  break: [
+    "气聚丹田",
+    "灵息汇向丹田 · 周天运转，衣袍无风自起 · 你守住心神，叩向境界关隘",
+    "境",
+  ],
+  refine: ["丹火初燃", "药材逐味入炉 · 炉火沿丹壁收拢 · 药香从炉缝透出", "丹"],
+  retreat: [
+    "山门暂掩",
+    "你掩上山门，拂去蒲团浮尘 · 灵息沿经脉一遍遍流转 · 檐下光影渐移，你缓缓睁眼",
+    "静",
+  ],
+  forge: [
+    "灵纹初现",
+    "器胚没入炉火 · 刻刀循着灵纹游走 · 你撤去炉火，静待器身冷却",
+    "器",
+  ],
+  challenge: [
+    "屏息迎敌",
+    "你压低重心，守住身前空隙 · 灵气撞上护势，衣袖猎猎作响 · 你收拢散乱的气息，定睛望去",
+    "战",
+  ],
+  duel: [
+    "交锋落定",
+    "你收剑退到台边 · 台上余尘落定 · 执事抬手示意，众人安静下来",
+    "决",
+  ],
 };
 </script>
 
@@ -44,20 +81,38 @@ const ritualText = {
     :class="['action-feedback', { expanded, playing }]"
     :data-tone="playing ? 'neutral' : receipt.tone"
     :data-ritual="receipt.ritual"
+    :data-process="receipt.process?.kind"
+    :data-phase="phase"
+    :style="{ '--process-duration': duration + 'ms' }"
     :role="expanded ? 'dialog' : 'status'"
     :aria-modal="expanded ? true : undefined"
     :aria-labelledby="expanded ? 'feedback-title' : undefined"
     aria-live="polite"
   >
     <div
-      v-if="expanded && receipt.ritual"
+      v-if="expanded && (receipt.ritual || receipt.process)"
       class="ritual-sky"
       aria-hidden="true"
     >
+      <img
+        v-if="receipt.process?.kind === 'talk' && receipt.person"
+        class="process-portrait"
+        :src="receipt.person.portrait"
+        :alt="receipt.person.name"
+      />
+      <div class="process-stroke"></div>
       <div class="ritual-orbit"></div>
       <div class="ritual-orbit inner"></div>
       <span class="ritual-seal">{{
-        ritualText[receipt.ritual || "retreat"][2]
+        receipt.process
+          ? {
+              medicine: "药",
+              sword: "剑",
+              array: "阵",
+              investigate: "察",
+              talk: "言",
+            }[receipt.process.kind]
+          : ritualText[receipt.ritual || "retreat"][2]
       }}</span
       ><i class="ritual-spark one"></i><i class="ritual-spark two"></i
       ><i class="ritual-spark three"></i>
@@ -72,18 +127,24 @@ const ritualText = {
         :tabindex="expanded ? -1 : undefined"
       >
         {{
-          playing ? ritualText[receipt.ritual || "retreat"][0] : receipt.title
+          playing
+            ? receipt.process?.title ||
+              ritualText[receipt.ritual || "retreat"][0]
+            : receipt.title
         }}
       </h2>
       <template v-if="playing">
-        <p class="ritual-caption">
-          {{ ritualText[receipt.ritual || "retreat"][1] }}
+        <p :key="phase" class="ritual-caption">
+          {{
+            receipt.process?.beats[phase] ||
+            ritualText[receipt.ritual || "retreat"][1].split(" · ")[phase]
+          }}
         </p>
         <div class="ritual-track"><i></i></div>
         <button class="secondary full" @click="reveal">
           跳过演出 · 查看结果
         </button>
-        <small class="muted">结果已保存，演出不会再次消耗材料。</small>
+        <small class="muted">Esc 跳过</small>
       </template>
       <template v-else>
         <div v-if="receipt.person" class="reply-person">
@@ -368,6 +429,9 @@ const ritualText = {
   line-height: 1.7;
 }
 .ritual-caption {
+  min-height: 3.6em;
+  line-height: 1.8;
+  animation: receipt-enter 0.25s ease-out;
   color: #c2d4c9;
   letter-spacing: 3px;
 }
@@ -380,7 +444,7 @@ const ritualText = {
   display: block;
   height: 100%;
   background: #dec181;
-  animation: ritual-progress 1.4s ease-out forwards;
+  animation: ritual-progress var(--process-duration, 1400ms) linear forwards;
 }
 .playing .receipt-body > small {
   display: block;

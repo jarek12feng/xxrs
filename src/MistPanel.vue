@@ -26,7 +26,8 @@ const panel = ref<HTMLElement>();
 const m = computed(() => props.game.adventure.mist);
 const reveal = async () => {
   await nextTick();
-  panel.value?.scrollIntoView({ block: "start", behavior: "instant" });
+  if (!panel.value?.closest(".immersive-shell"))
+    panel.value?.scrollIntoView({ block: "start", behavior: "instant" });
 };
 onMounted(reveal);
 watch(() => m.value.stage, reveal);
@@ -320,6 +321,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
       :quote="mistQuote(game)"
     >
       <SceneResponse
+        v-if="receipt"
         :text="m.result"
         :receipt="receipt?.scene?.chapter === 'mist' ? receipt : null"
       />

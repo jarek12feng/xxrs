@@ -17,7 +17,8 @@ const props = defineProps<{
 const panel = ref<HTMLElement>();
 const reveal = async () => {
   await nextTick();
-  panel.value?.scrollIntoView({ block: "start", behavior: "instant" });
+  if (!panel.value?.closest(".immersive-shell"))
+    panel.value?.scrollIntoView({ block: "start", behavior: "instant" });
 };
 onMounted(reveal);
 watch(() => props.game.adventure.step, reveal);
@@ -49,14 +50,14 @@ const person = computed(() =>
     ? {
         name: "温蘅",
         image: "/characters/wenheng.png",
-        line: "先学会把人平安带回来，再谈修为高低。",
+        line: "药篓放这儿。瘴气沾过的布别碰脸，我给你配一包驱瘴散。",
       }
     : ["ferry", "home"].includes(props.game.adventure.step) ||
         props.game.adventure.method === "guide"
       ? {
           name: "陆迟",
           image: "/characters/luchi-base.png",
-          line: "你来决定往哪走。需要我时，我就在这里。",
+          line: "我带了绳和火折子。你辨路，我看着后头。",
         }
       : null,
 );
@@ -79,6 +80,7 @@ const person = computed(() =>
       :quote="person?.line"
     >
       <SceneResponse
+        v-if="receipt"
         :text="game.adventure.result"
         :receipt="receipt?.scene?.chapter === 'adventure' ? receipt : null"
       />

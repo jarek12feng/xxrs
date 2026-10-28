@@ -31,13 +31,15 @@ const props = defineProps<{
 const emit = defineEmits<{
   act: [intent: Intent];
   cultivate: [];
+  map: [];
   breakthrough: [];
   mist: [];
 }>();
 const panel = ref<HTMLElement>();
 const reveal = async () => {
   await nextTick();
-  panel.value?.scrollIntoView({ block: "start", behavior: "instant" });
+  if (!panel.value?.closest(".immersive-shell"))
+    panel.value?.scrollIntoView({ block: "start", behavior: "instant" });
 };
 onMounted(reveal);
 watch(() => props.game.adventure.road.stage, reveal);
@@ -99,7 +101,7 @@ const scene = computed(() => {
     return {
       ...base,
       body: r.surveyed
-        ? "药队顺着你画下的归路回来了。郁青在茶摊替你留了位子，摊上的航图多出一段熟悉的线。这个坊市开始有了与你有关的故事。"
+        ? "药队顺着你画下的归路回来了。郁青在茶摊替你留了位子，摊上的航图多出一段熟悉的线。茶碗底下压着药队捎回来的字条。"
         : "送往山口的伤药已经装车。郁青收好图夹，在茶摊替你留着热茶。你手中的航图不再残缺，青嶂关的道路就在眼前。",
     };
   if (r.stage === "lookout" && r.surveyed)
@@ -246,18 +248,18 @@ const person = computed(() =>
           image: "/characters/wenheng.png",
           line:
             props.game.adventure.method === "medicine"
-              ? "你肯先试药气，再救人。这样的稳重，我记得。"
+              ? "药气没走岔，伤口也收住了。那几味药的分量，你还记得吧？"
               : props.game.adventure.method === "guide"
-                ? "肯与人分工，也是一种本事。"
-                : "你把伤者背回来了，也别忘了照顾自己。",
+                ? "陆迟来过了，说你们一路照应，没走散。锅里还有汤，自己盛。"
+                : "肩上磨破了吧？袖子挽起来，我给你敷点药。",
         }
       : road.value.stage === "pass"
         ? {
             name: "青嶂",
             image: "/characters/qingzhang.jpg",
             line: road.value.discoveries.includes("marks")
-              ? "你肯低头看那道刻痕，我便知道你不是来逞强的。"
-              : "守路不只是拦人。看清危险，再来找我。",
+              ? "那道刻痕通到背风处。脚踩石阶，别碰旁边的草根。"
+              : "站住。听见石缝里那声响没有？下一阵风就要到了。",
           }
         : {
             name:
@@ -276,14 +278,14 @@ const person = computed(() =>
                     ? "旅亭看见的，也替我记下来。"
                     : road.value.ally
                       ? "你护住气息，我替你辨路。遇到险处，先喊我。"
-                      : "画图不是为了把世界圈起来，是为了让人能走回来。",
+                      : "这张图沾过水，东边那条线花了。你若走到旅亭，替我核一核。",
           },
 );
 </script>
 <template>
   <section
     ref="panel"
-    class="adventure-panel road-panel"
+    class="adventure-panel road-panel desktop-scene"
     :data-weather="scene.mood"
     :data-reading-size="readingSize"
     @keydown="keyboard"
@@ -319,6 +321,7 @@ const person = computed(() =>
         :quote="person.line"
       >
         <SceneResponse
+          v-if="receipt"
           :text="road.result"
           :receipt="
             receipt?.scene?.chapter === 'road' ||
@@ -720,7 +723,7 @@ const person = computed(() =>
           </button>
         </section>
         <div class="adventure-actions">
-          <button @click="emit('cultivate')">
+          <button @click="road.surveyed ? emit('map') : emit('cultivate')">
             {{
               road.surveyed
                 ? "展开山河见闻，寻访回春谷与雾海"
