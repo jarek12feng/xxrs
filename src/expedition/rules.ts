@@ -160,13 +160,15 @@ function complete(s: State) {
   }
   if (q.cleared === 2) q.last += e.story + expeditionIntermission(s);
   if (q.cleared === 3) {
-    if (!s.journey.known.includes("guard")) s.journey.known.push("guard");
-    else {
+    if (!s.journey.known.includes("guard")) {
+      s.journey.known.push("guard");
+      q.last += "获得护身诀（可在功法面板装配）。";
+    } else {
       s.stones += 12;
       q.last += "已掌握护身诀，折为研修资材：灵石 +12。";
     }
     q.last +=
-      "获得护身诀（可在功法面板装配）。你们在阵核里找到完整转运册，可在下方对簿查看名单真相。青嶂让出旧阵：救草、开山还是修阵，这次由你决定。";
+      "你们在阵核里找到完整转运册，可在下方对簿查看名单真相。青嶂让出旧阵：救草、开山还是修阵，这次由你决定。";
   }
 }
 export function validExpedition(s: State): boolean {

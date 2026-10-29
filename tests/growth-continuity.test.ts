@@ -70,7 +70,7 @@ it("training is bounded, affects actual combat and cultivation, and preserves se
     dispatch(s, { id: "train", type: "trainTechnique", technique: "blade" }),
   ).toEqual(n);
 });
-it("medicine shares cooldown, cannot waste capped effects, and rejects invalid commands", () => {
+it("clarity has cooldown but healing does not block it, cannot waste capped effects, and rejects invalid commands", () => {
   const s = learner();
   s.injury = 1;
   let n = dispatch(s, { id: "brew", type: "brew", medicine: "healing" });
@@ -79,17 +79,17 @@ it("medicine shares cooldown, cannot waste capped effects, and rejects invalid c
   expect(n.injury).toBe(0);
   expect(n.growth.medicines.healing).toBe(0);
   n = dispatch(n, { id: "brew2", type: "brew", medicine: "clarity" });
+  const sense = n.sense;
+  n = dispatch(n, { id: "use2", type: "consume", medicine: "clarity" });
+  expect(n.sense).toBe(sense + 2);
+  n = dispatch(n, { id: "brew3", type: "brew", medicine: "clarity" });
   expect(
-    dispatch(n, { id: "use2", type: "consume", medicine: "clarity" }),
+    dispatch(n, { id: "early", type: "consume", medicine: "clarity" }),
   ).toBe(n);
   n.month += 3;
-  const sense = n.sense;
-  const healed = dispatch(n, {
-    id: "use3",
-    type: "consume",
-    medicine: "clarity",
-  });
-  expect(healed.sense).toBe(sense + 1);
+  expect(
+    dispatch(n, { id: "use3", type: "consume", medicine: "clarity" }).sense,
+  ).toBe(sense + 4);
   expect(
     dispatch(n, { id: "bad", type: "brew", medicine: "bogus" as "clarity" }),
   ).toBe(n);
@@ -126,7 +126,7 @@ it("migrates v12 conservatively, rejects corrupt growth, and retains it across m
   const old = { ...rest, version: 12 };
   const copy = structuredClone(old);
   const n = migrateSave(old);
-  expect(n.version).toBe(13);
+  expect(n.version).toBe(14);
   expect(old).toEqual(copy);
   expect(n.seed).toBe(old.seed);
   expect(

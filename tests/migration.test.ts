@@ -28,7 +28,7 @@ it("preserves original-v8 before writing the new letter chapter", async () => {
   const old = { ...current, version: 8, adventure };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(13);
+  expect(migrated.version).toBe(14);
   expect(migrated.adventure.mist.stage).toBe("dormant");
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -45,7 +45,7 @@ it("backs up original-v7 before persisting environmental discoveries", async () 
   };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(13);
+  expect(migrated.version).toBe(14);
   expect(migrated.adventure.road.discoveries).toEqual([]);
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -58,7 +58,7 @@ it("keeps original-v6 intact before saving the new road chapter", async () => {
   const old = { ...current, version: 6, adventure };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(13);
+  expect(migrated.version).toBe(14);
   expect(migrated.adventure.step).toBe(old.adventure.step);
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -68,7 +68,7 @@ it("preserves the original v4 save while migrating social data", async () => {
   const old = v4Game("旧世", "wood", 3);
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(13);
+  expect(upgraded.version).toBe(14);
   expect(upgraded.social.gender).toBeNull();
   expect(await raw("current")).toEqual(old);
   await save(upgraded);
@@ -149,7 +149,7 @@ it("upgrades v2 without resetting progress and preserves its first original snap
   old.qi = 28;
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(13);
+  expect(upgraded.version).toBe(14);
   expect(upgraded.qi).toBe(28);
   expect(upgraded.seed).toBe(88);
   expect(await raw("current")).toEqual(old);
@@ -195,7 +195,7 @@ it("preserves original-v9 before recording a different road solution", async () 
   };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(13);
+  expect(migrated.version).toBe(14);
   expect(migrated.adventure.road.solution).toBe("none");
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -240,7 +240,7 @@ it("backs up v11 before adding adventure checkpoints", async () => {
   const old = { ...rest, version: 11 };
   await raw("current", old);
   const state = (await load()).state!;
-  expect(state.version).toBe(13);
+  expect(state.version).toBe(14);
   expect(state.expedition.accepted).toBe(false);
   expect(await raw("current")).toEqual(old);
   await save(state);
@@ -270,4 +270,14 @@ it("preserves original-v12 before writing growth inventory", async () => {
   await save(migrated);
   expect(await raw("original-v12")).toEqual(old);
   expect((await load()).state).toEqual(migrated);
+});
+it("backs up v13 before persisting six-round combat without changing the original", async () => {
+  const old = { ...createGame("旧旅人", "wood", 42), version: 13 };
+  await raw("current", old);
+  const state = (await load()).state!;
+  expect(state.version).toBe(14);
+  expect(await raw("current")).toEqual(old);
+  await save(state);
+  expect(await raw("original-v13")).toEqual(old);
+  expect(await raw("previous")).toEqual(old);
 });

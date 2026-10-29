@@ -22,13 +22,13 @@ export const medicines = {
     name: "回春散",
     herbs: 2,
     stones: 4,
-    hint: "伤势降低 2；适合战后休整",
+    hint: "伤势降低 2；即时疗伤，不推进月份，不受清心丹药性影响。气势只属于单场交锋，不能用本药恢复",
   },
   clarity: {
     name: "清心丹",
-    herbs: 3,
-    stones: 6,
-    hint: "神识 +1（上限 12）；帮助识阵与突破准备",
+    herbs: 2,
+    stones: 4,
+    hint: "神识 +2（上限 12）；不推进月份，以材料换取最多两个月凝神时间；三个月内不能再服清心丹",
   },
 } as const;
 export type Medicine = keyof typeof medicines;
@@ -46,10 +46,19 @@ export function trainingError(s: State, t: Technique) {
   return "";
 }
 export function medicineError(s: State, m: Medicine, use = false) {
+  if (
+    s.status !== "alive" ||
+    s.pending ||
+    s.social.scene ||
+    s.social.arena.duel ||
+    s.expedition.duel
+  )
+    return "先处理眼前事件或结束交锋";
   if (!Object.hasOwn(medicines, m)) return "未知丹方";
   if (use) {
     if (!s.growth.medicines[m]) return "储物袋中没有此药";
     if (
+      m === "clarity" &&
       s.growth.lastMedicineMonth !== null &&
       s.month - s.growth.lastMedicineMonth < 3
     )
@@ -90,13 +99,19 @@ export function runGrowth(input: State, c: GrowthCommand): State {
     s.herbs -= r.herbs;
     s.stones -= r.stones;
     s.growth.medicines[c.medicine]++;
-    text = `炼成${r.name}，已收入储物袋；服药后需三个月散去药性。`;
+    text = `炼成${r.name}，已收入储物袋；${r.hint}。`;
   } else {
     s.growth.medicines[c.medicine]--;
-    s.growth.lastMedicineMonth = s.month;
-    if (c.medicine === "healing") s.injury = Math.max(0, s.injury - 2);
-    else s.sense++;
-    text = `服用${medicines[c.medicine].name}：${medicines[c.medicine].hint}。下次可服药：第 ${s.month + 3} 月。`;
+    if (c.medicine === "healing") {
+      const healed = Math.min(2, s.injury);
+      s.injury -= healed;
+      text = `服用回春散：伤势 −${healed}，不推进月份；单场气势不受影响。`;
+    } else {
+      s.growth.lastMedicineMonth = s.month;
+      const gained = Math.min(2, 12 - s.sense);
+      s.sense += gained;
+      text = `服用清心丹：神识 +${gained}（上限 12），不推进月份。下次可服清心丹：第 ${s.month + 3} 月。`;
+    }
   }
   s.log.unshift({ month: s.month, kind: "story", text });
   s.log = s.log.slice(0, 180);
@@ -142,9 +157,16 @@ export function growthGoals(s: State): string[] {
   if (s.injury) goals.push("丹药：回春散可恢复伤势；无材料时可免费静养。");
   if (!s.realm)
     goals.push(`境界：修为 ${s.qi}/360；固本、心得、筑基丹都能改善突破准备。`);
-  else
+  else {
+    const remaining = [
+      s.expedition.accepted && s.expedition.cleared < 3 ? "守阵交锋" : "",
+      s.social.arena.wins < 3 ? "听松擂台" : "",
+    ].filter(Boolean);
     goals.push(
-      "境界：筑基已成。用完整构筑完成守阵交锋与听松擂台；金丹尚未开放。",
+      remaining.length
+        ? `境界：筑基已成，可准备${remaining.join("、")}；金丹尚未开放。`
+        : "境界：筑基篇交锋目标已完成。可补探已有支线、回看人物结局或封存本世；金丹尚未开放。",
     );
+  }
   return goals;
 }

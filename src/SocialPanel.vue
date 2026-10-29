@@ -22,6 +22,13 @@ const props = defineProps<{
   mode: "relationship" | "arena";
 }>();
 const emit = defineEmits<{ act: [intent: Intent] }>();
+const stanceChoices = computed(() =>
+  (Object.entries(stances) as [Stance, string][]).map(([stance, label]) => ({
+    stance,
+    label,
+    preview: turnPreview(props.game, stance),
+  })),
+);
 const who = computed(() => companion(props.game));
 const patternLabel = (pattern: Stance[]) =>
   pattern.map((p) => stances[p]).join(" → ");
@@ -271,7 +278,8 @@ const intentText: Record<Stance, string> = {
         <p class="muted">
           三位具名 NPC
           的单机擂台，不是真实玩家排行榜。不入宗门、不发展恋情也能参赛。每场一月、灵石
-          4，最多交锋三合；先将对手气势归零且自身仍站稳才获胜，同归或三合未破均判负。
+          4，最多交锋六合；第四合起对手承接上一轮招式、伤害
+          +2。先将对手气势归零且自身仍站稳才获胜，同归或六合未破均判负。
         </p>
         <p>
           胜场 {{ game.social.arena.wins }} / 3 · 败场
@@ -285,7 +293,7 @@ const intentText: Record<Stance, string> = {
           :class="{ 'duel-resolving': resolving }"
           aria-live="polite"
         >
-          <span class="eyebrow">交锋中 · 时间暂停 / 装配锁定</span>
+          <span class="eyebrow">交锋中 · 时间暂停 · 灵草 {{ game.herbs }}</span>
           <h3>{{ rivals[duel.opponent].name }} · 第 {{ duel.turn + 1 }} 合</h3>
           <div class="combatants">
             <div>
@@ -334,8 +342,7 @@ const intentText: Record<Stance, string> = {
             </div>
           </div>
           <p v-if="!duel.turn" class="combat-receipt">
-            你已登台，本场费用灵石 4（当月收入
-            1）。每合不再扣费，修行月份暂时停止。
+            已付灵石 4 · 当月收入 1。 本场不再扣费，不推进月份。
           </p>
           <p
             v-else
@@ -354,22 +361,27 @@ const intentText: Record<Stance, string> = {
           </p>
           <div class="stance-options">
             <button
-              v-for="(label, stance) in stances"
+              v-for="{ stance, label, preview } in stanceChoices"
               :key="stance"
               :disabled="locked || resolving"
               @click="emit('act', { type: 'arenaTurn', stance })"
             >
-              <strong>{{ label }}</strong
-              ><small
-                >造成 {{ turnPreview(game, stance)!.damage }}–{{
-                  turnPreview(game, stance)!.damage + 2
-                }}
-                / 承受 {{ turnPreview(game, stance)!.incoming }}–{{
-                  turnPreview(game, stance)!.incoming + 2
-                }}<template v-if="turnPreview(game, stance)!.heal">
-                  / 调息 +{{ turnPreview(game, stance)!.heal }}</template
-                ></small
-              >
+              <strong>{{ label }}</strong>
+              <small v-if="preview" class="combat-numbers">
+                <span>伤敌 {{ preview.damage }}–{{ preview.damage + 2 }}</span>
+                <span
+                  >承伤 {{ preview.incomingMin }}–{{
+                    preview.incomingMax
+                  }}</span
+                >
+                <span v-if="preview.firstStrike"
+                  >抢先收势：击倒则免反击，未击倒承伤 +2</span
+                >
+                <span v-if="preview.heal" class="combat-heal"
+                  >存活后回气 ≤{{ preview.heal
+                  }}<template v-if="preview.herbs"> · 耗草 1</template></span
+                >
+              </small>
             </button>
           </div>
           <details v-if="duel.log.length">
@@ -400,6 +412,7 @@ const intentText: Record<Stance, string> = {
                     : "后续对手"
               }}</span>
             </div>
+
             <p>{{ rival.style }} · {{ rival.story }}</p>
             <small>首次胜利：{{ rival.prize }}</small
             ><template v-if="game.social.arena.wins === index"
@@ -417,7 +430,7 @@ const intentText: Record<Stance, string> = {
                 v-if="game.social.arena.scouted.includes(index)"
                 class="intent-hint"
               >
-                三合应对：{{
+                来招循环：{{
                   patternLabel(rival.pattern)
                 }}。胜负还取决于气势与装配，开战前准备好。
               </p>
@@ -439,7 +452,9 @@ const intentText: Record<Stance, string> = {
         <details class="arena-builds">
           <summary>怎样调整功法与灵器？</summary>
           <p>
-            听松剑经：破势伤害 +4；长春诀：守息回复气势 2；归元息：识阵伤害 +3。
+            听松剑经：破势伤害 +4；若本合击倒对手，不受反击，否则承伤
+            +2；长春诀：守息存活后耗灵草 1、恢复最多 6 气势；归元息：识阵伤害
+            +3、承伤 −2。
           </p>
           <p>
             护身诀：每合承伤 −2；辨草录：每合存活后回复 1；照夜篇：识阵伤害 +3。

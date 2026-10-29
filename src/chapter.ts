@@ -691,7 +691,9 @@ export function dispatch(input: State, c: Command): State {
         s.story.trust = Math.min(6, s.story.trust + 2);
         record(
           s,
-          "你将唯一的筑基丹交给陆迟。他筑基后承诺为你护法，突破概率随信任增加 10–15%。",
+          s.pills > 0
+            ? `你将遗府所得的筑基丹交给陆迟，行囊中自备的 ${s.pills} 枚丹药仍留给自己。他筑基后承诺为你护法，突破概率随信任增加 10–15%。`
+            : "你将遗府中唯一的筑基丹交给陆迟。他筑基后承诺为你护法，突破概率随信任增加 10–15%。",
           "major",
         );
       } else {

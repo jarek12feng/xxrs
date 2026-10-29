@@ -301,7 +301,9 @@ export function arenaError(s: State) {
 }
 export function duelIntent(s: State): Stance | null {
   const d = s.social.arena.duel;
-  return d ? rivals[d.opponent].pattern[d.turn] : null;
+  return d
+    ? rivals[d.opponent].pattern[d.turn % rivals[d.opponent].pattern.length]
+    : null;
 }
 export function turnPreview(s: State, stance: Stance) {
   const d = s.social.arena.duel;
@@ -321,17 +323,35 @@ export function turnPreview(s: State, stance: Stance) {
     (stance === "discern" && support === "lantern" ? 3 : 0);
   const incoming = Math.max(
     1,
-    rivals[d.opponent].attack -
+    rivals[d.opponent].attack +
+      Math.floor(d.turn / 3) * 2 +
+      (stance === "break" && skill === "blade" ? 2 : 0) -
+      (stance === "discern" && skill === "breath" ? 2 : 0) -
       supportTraining(s) -
-      (stance === "endure" ? 4 : 0) +
+      (stance === "endure" ? 6 : 0) +
       (correct ? 0 : 5) -
       (support === "guard" ? 2 : 0) -
       (gear === "vial" ? s.journey.relics.vial : 0),
   );
   const heal =
-    (stance === "endure" && skill === "spring" ? 2 : 0) +
+    (stance === "endure" && skill === "spring" && s.herbs > 0 ? 6 : 0) +
     (support === "herb" ? 1 : 0);
-  return { correct, damage, incoming, heal };
+  const firstStrike = stance === "break" && skill === "blade";
+  const incomingRange = [0, 1, 2].map((variation) =>
+    firstStrike && Math.max(1, damage) + variation >= d.enemyHp
+      ? 0
+      : incoming + 2 - variation,
+  );
+  return {
+    correct,
+    incomingMin: Math.min(...incomingRange),
+    incomingMax: Math.max(...incomingRange),
+    damage: Math.max(1, damage),
+    incoming,
+    heal,
+    herbs: stance === "endure" && skill === "spring" && s.herbs > 0 ? 1 : 0,
+    firstStrike,
+  };
 }
 function random(s: State) {
   let x = s.seed;
@@ -346,10 +366,12 @@ function finishDuel(s: State, win: boolean, withdrawal = false) {
     d = a.duel!;
   if (win) {
     const reward = (["breath", "guard", "lantern"] as const)[d.opponent];
-    if (!s.journey.known.includes(reward)) s.journey.known.push(reward);
+    const duplicate = s.journey.known.includes(reward);
+    if (!duplicate) s.journey.known.push(reward);
+    else s.stones += 12;
     s.stones += [8, 12, 20][d.opponent];
     a.wins++;
-    a.last = `击败${rivals[d.opponent].name}：${rivals[d.opponent].prize}。`;
+    a.last = `击败${rivals[d.opponent].name}：${duplicate ? `功法已掌握，折为灵石 12；另得胜场灵石 ${[8, 12, 20][d.opponent]}${d.opponent === 2 ? "、听松试剑魁首" : ""}` : rivals[d.opponent].prize}。`;
     if (s.social.met && !a.invited) {
       a.invited = true;
       note(
@@ -366,6 +388,19 @@ function finishDuel(s: State, win: boolean, withdrawal = false) {
         s,
         `${companion(s)!.name}递来热茶：“手还抖呢，茶碗给我。哪一招没接住？你慢慢说。”`,
       );
+  }
+  if (!win && !withdrawal) {
+    a.last +=
+      d.enemyHp === 0
+        ? "双方气势同时耗尽，按擂台规则仍判负；收尾前也要留出承伤余量。"
+        : `对手尚余气势 ${d.enemyHp}，需兼顾伤害与存活。`;
+    if (s.journey.main === "spring" && s.herbs === 0)
+      a.last +=
+        "长春守息已无灵草可用；先采药或在坊市买草，再比较换招后的承伤与恢复。";
+    a.last +=
+      s.growth.medicines.healing > 0
+        ? "储物袋有回春散，可立即恢复伤势；也可免费静养一月。"
+        : "免费静养可恢复伤势，劳作可筹措下次修缮费。";
   }
   a.last += `本场交锋：${d.log.join(" ")}`;
   note(s, a.last);
@@ -499,15 +534,22 @@ export function dispatchSocial(
       const p = turnPreview(s, c.stance)!;
       const variation = Math.floor(random(s) * 3),
         damage = p.damage + variation,
-        incoming = p.incoming + (2 - variation);
+        incoming =
+          p.firstStrike && damage >= d.enemyHp
+            ? 0
+            : p.incoming + (2 - variation);
       d.enemyHp = Math.max(0, d.enemyHp - damage);
       d.hp = Math.max(0, d.hp - incoming);
-      if (d.hp > 0) d.hp = Math.min(d.maxHp, d.hp + p.heal);
+      const healing = d.hp > 0 ? Math.min(d.maxHp - d.hp, p.heal) : 0;
+      if (healing > 0) {
+        d.hp += healing;
+        s.herbs -= p.herbs;
+      }
       d.turn++;
       d.log.push(
-        `第${d.turn}合${stances[c.stance]}${p.correct ? "应对得当" : "未破招"}：对手气势 −${damage}，自身气势 −${incoming}${p.heal ? `，调息 +${p.heal}` : ""}。`,
+        `第${d.turn}合${stances[c.stance]}${p.correct ? "应对得当" : "未破招"}${p.firstStrike && incoming === 0 ? "，剑经抢先收势，对手未及反击" : ""}：对手气势 −${damage}，自身气势 −${incoming}${healing ? `，调息 +${healing}${p.herbs ? "、灵草 −1" : ""}` : ""}。`,
       );
-      if (d.hp === 0 || d.enemyHp === 0 || d.turn === 3)
+      if (d.hp === 0 || d.enemyHp === 0 || d.turn === 6)
         finishDuel(s, d.enemyHp === 0 && d.hp > 0);
       return accept();
     }
@@ -593,7 +635,7 @@ export function validSocial(s: State): boolean {
       s.status !== "alive" ||
       d.opponent !== a.wins ||
       !int(d.opponent, 2) ||
-      !int(d.turn, 2) ||
+      !int(d.turn, Number(s.version) >= 14 ? 5 : 2) ||
       !int(d.hp, d.maxHp) ||
       d.hp === 0 ||
       d.maxHp !== 24 + s.root + Math.floor(s.foundation / 2) ||

@@ -105,11 +105,21 @@ const actions = computed<
       </p>
       <template v-else-if="q.cleared < 3">
         <h4>{{ encounter.name }}</h4>
-        <p>{{ expeditionIntermission(game) || encounter.story }}</p>
+        <p>
+          {{
+            q.cleared === 1
+              ? "药签上的印记通往旧阵。阵眼被乱流和草根缠住，先辨清阵纹或温养草根，再取出压在下面的东西。"
+              : expeditionIntermission(game) || encounter.story
+          }}
+        </p>
         <p v-if="!q.duel">
           行前回山下休整、筹备一月（若遇旧约先赴约），灵石
           {{ encounter.cost }}；首次完成奖励灵石 {{ encounter.reward }}、灵草
           2。失败保留已过小关，伤势 +1。
+        </p>
+        <p v-if="game.realm === 1" class="muted">
+          筑基护体已生效：交锋气势上限 +8、基础伤害
+          +2，已计入当前能力；无需精炼灵器即可受益。
         </p>
         <aside class="combat-style">
           <strong>{{ style.name }}</strong>
@@ -289,6 +299,19 @@ small {
   }
   .active-battle :deep(.battle-stage svg) {
     max-height: 220px;
+  }
+}
+@media (max-width: 480px) {
+  .battle-moves {
+    grid-template-columns: 1fr;
+  }
+  .battle-moves button {
+    min-height: 0;
+    text-align: left;
+    padding: 8px 10px;
+  }
+  .battle-moves small {
+    display: block;
   }
 }
 </style>

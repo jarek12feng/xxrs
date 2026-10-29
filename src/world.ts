@@ -7,7 +7,7 @@ import {
   type GrowthCommand,
 } from "./growth";
 export * from "./growth";
-import { expeditionGoal } from "./expedition/progression";
+import { expeditionGoal, familyQuestGoal } from "./expedition/progression";
 import {
   freshExpedition,
   validExpedition,
@@ -41,7 +41,6 @@ import {
   dispatchSocial,
   socialCommands,
   heartEvent,
-  relationshipGoal,
   type SocialState,
   type SocialCommand,
   type Gender,
@@ -70,7 +69,7 @@ export const techniques = {
   lantern: {
     name: "照夜篇",
     slot: "support",
-    hint: "凝神同时获得 1 研读心得，上限 4",
+    hint: "雾海识阵把握 +8，每阶研修再 +2；交锋辨影伤害 +3；凝神同时得心得 1（上限 4）",
   },
 } as const;
 export type Technique = keyof typeof techniques;
@@ -81,11 +80,11 @@ export type Relic = "vial" | "sword";
 export const relics = {
   vial: {
     name: "归元灵瓶",
-    hint: "回合交锋每品阶减伤 1；山外应对妖修额外 +8%，失败少受 1 层伤势",
+    hint: "回合交锋每品阶减伤 1；雾海回声阵每阶 +6、风阵 +3 把握；道友寻亲应对妖修额外 +8%，失败少受 1 层伤势",
   },
   sword: {
     name: "听松灵剑",
-    hint: "回合交锋每品阶伤害 +2；山外应对邪修额外 +8%",
+    hint: "回合交锋每品阶伤害 +2；雾海风阵每阶 +6、回声阵 +3 把握；道友寻亲应对邪修额外 +8%",
   },
 };
 export const opponents = {
@@ -168,7 +167,7 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 13;
+  version: 14;
   growth: Growth;
   expedition: Expedition;
   adventure: Adventure;
@@ -243,7 +242,7 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 13,
+    version: 14,
     growth: freshGrowth(),
     journey,
     social,
@@ -307,6 +306,9 @@ function learn(s: State, t: Technique) {
   if (!s.journey.known.includes(t)) {
     s.journey.known.push(t);
     log(s, `领悟「${techniques[t].name}」。可在功法栏装配。`);
+  } else {
+    s.stones += 12;
+    log(s, `已掌握「${techniques[t].name}」，本次谢礼改为研修灵石 +12。`);
   }
 }
 function roll(s: State) {
@@ -393,13 +395,8 @@ export function nextGoal(s: State) {
     return "药工已平安归家。先修炼与休整，第三个月赴渡口，再听陆迟未说完的心事。";
   if (s.realm === 0 || s.story.stage !== "resolved")
     return chapter.nextGoal(base(s));
-  if (s.journey.maps.valley < 3)
-    return "筑基已成：研修功法、精炼装备，挑战听松擂台。也可在道友寻亲中前往回春谷追查旧营地。";
-  if (s.journey.maps.peak < 3)
-    return "道友寻亲：进入雾岭古道，凭宗门外门资格，或神识 8 与心得 2 自行识路。";
-  if (s.journey.maps.sea < 3)
-    return "道友寻亲的航图已得：可前往雾海孤灯带回家书，也可继续自己的构筑与历练。";
-  return `雾海来信已送达。可参加听松擂台、补齐功法或主动轮回。${relationshipGoal(s)}`;
+  if (s.journey.maps.sea < 3) return familyQuestGoal(s);
+  return `家书已送达。${s.social.arena.wins < 3 ? "可前往听松擂台完成剩余对手；" : "听松擂台已完成；"}${!s.adventure.mist.garden || !s.adventure.mist.station ? "可补探药圃或废驿；" : ""}也可回看人物档案、封存本世。`;
 }
 export function explorationError(s: State, p: Place) {
   if (!Object.hasOwn(places, p)) return "未知区域";
@@ -980,7 +977,7 @@ export function dispatch(input: State, c: Command): State {
           learn(s, "lantern");
           log(
             s,
-            "雾岭尽头，你得到航图与照夜篇。纸背写着：灯不灭，归人便有路。雾海孤灯已开放。",
+            "雾岭尽头，你收下航图与功法谢礼。纸背写着：灯不灭，归人便有路。雾海孤灯已开放。",
           );
         }
       }
@@ -996,7 +993,7 @@ export function dispatch(input: State, c: Command): State {
           s.stones += 20;
           log(
             s,
-            "你带回父亲的亲笔信。陆迟的母亲读了又读，终于放下窗边的灯。“下次，带他一起回来。”本版探索终章完成，灵石 +20。北海与更高境界的故事，尚待开启。",
+            "你把守灯人的亲笔信交到陆迟母亲手里。她先摸了摸落款，才将信展开：“这个收笔，还是老样子。”陆迟没有催她。读到父亲仍须留守，她把窗边的灯挪到桌上：“既然信能送来，就替我回一句，家里的门没换。”陆迟接过空白信纸，终于不再望着山路等一个影子。父亲尚未归家，近况已经核实，亲笔信已送达。寻亲支线完成；灵石 +20，已取得的功法与航图保留，可在人物档案回看。",
           );
         }
       }
@@ -1018,9 +1015,9 @@ export function dispatch(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 13);
+  return validWorldState(x, 14);
 }
-function validWorldState(x: unknown, version: 10 | 11 | 12 | 13): boolean {
+function validWorldState(x: unknown, version: 10 | 11 | 12 | 13 | 14): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
@@ -1035,7 +1032,7 @@ function validWorldState(x: unknown, version: 10 | 11 | 12 | 13): boolean {
     !validRoad(s.adventure.road, s) ||
     !validMist(s) ||
     (version >= 12 && !validExpedition(s)) ||
-    (version === 13 && !validGrowth(s))
+    (version >= 13 && !validGrowth(s))
   )
     return false;
   const integer = (v: unknown, max = 1e9) =>
@@ -1103,11 +1100,15 @@ function validWorldState(x: unknown, version: 10 | 11 | 12 | 13): boolean {
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 13) {
+    if (!validWorldState(x, 13)) throw new Error("旧存档损坏，原档未修改。");
+    return { ...(structuredClone(x) as State), version: 14 };
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 12) {
     if (!validWorldState(x, 12)) throw new Error("旧存档损坏，原档未修改。");
     const upgraded = {
       ...structuredClone(x),
-      version: 13,
+      version: 14,
       growth: freshGrowth(),
     };
     if (validState(upgraded)) return upgraded;

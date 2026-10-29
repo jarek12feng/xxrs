@@ -209,7 +209,9 @@ export function mistGoal(s: State): string {
   if (m.stage === "archive")
     return "读完陈渡的记录，带走探灵灯；它能照见旧地点的隐藏阵迹。";
   if (m.stage === "home" && m.revisited)
-    return "归灯已经点亮，本章已完成。可补探支线；陆迟家书的后续见山河探索·道友寻亲。";
+    return s.journey.maps.sea === 3
+      ? "归灯与家书都已完成。可补探尚未走过的支线，或回看人物档案。"
+      : "归灯已经点亮，本章已完成。可补探支线；陆迟家书的后续见山河探索·道友寻亲。";
   if (m.stage === "home")
     return m.settled
       ? "带着探灵灯重访救过药工的山祠，看看旧墙后藏着什么。"
@@ -277,6 +279,24 @@ export function mistDetails(s: State) {
         (m.hazard === "wind" && s.foundation >= 12)
           ? 10
           : 0,
+    },
+    {
+      name: "装配灵器",
+      value: s.journey.equipped
+        ? s.journey.relics[s.journey.equipped] *
+          (s.journey.equipped === (m.hazard === "wind" ? "sword" : "vial")
+            ? 6
+            : 3)
+        : 0,
+    },
+    {
+      name: "照夜辨阵",
+      value:
+        s.journey.support === "lantern" ? 8 + s.growth.training.lantern * 2 : 0,
+    },
+    {
+      name: "主修研修",
+      value: s.journey.main ? s.growth.training[s.journey.main] * 2 : 0,
     },
     { name: "伤势", value: -s.injury * 5 },
   ];

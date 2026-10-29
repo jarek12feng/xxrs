@@ -50,6 +50,9 @@ watch(
         {{ item }}
       </li>
     </ul>
+    <p v-for="line in receipt?.payoff || []" :key="line" class="route-payoff">
+      {{ line }}
+    </p>
     <div v-if="receipt?.changes.length" class="scene-deltas">
       <span v-for="c in receipt.changes" :key="c.label"
         >{{ c.label }} {{ c.after > c.before ? "+" : "−"

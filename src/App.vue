@@ -11,7 +11,11 @@ import {
 import { defineStore } from "pinia";
 import { presences } from "./landmarks";
 import { actionSound } from "./action-sound";
+import PreparationValues from "./PreparationValues.vue";
+import LifeReview from "./LifeReview.vue";
+import { automaticPause, type PauseReason } from "./cultivation-feedback";
 import { openingGuide } from "./opening-guide";
+import { expeditionGoal } from "./expedition/progression";
 import { createSoundscape, soundSettings, type SoundMood } from "./audio";
 const localMusicEnabled =
   import.meta.env.DEV && import.meta.env.MODE === "local-music";
@@ -205,6 +209,7 @@ const currentGoal = computed(() => {
 const opening = computed(() => (game.value ? openingGuide(game.value) : null));
 async function followOpening() {
   if (!opening.value || ui.busy || receiptExpanded.value) return;
+  ui.running = false;
   switch (opening.value.action) {
     case "road":
       view.value = "story";
@@ -245,6 +250,7 @@ async function restoreGame(state: State) {
   if (await persist(state)) {
     titleScreen.value = false;
     creating.value = false;
+    pauseReason.value = null;
     dialog.value = "";
     receipt.value = null;
     receiptExpanded.value = false;
@@ -304,6 +310,25 @@ watch(view, () => {
   ui.running = false;
 });
 const queueMode = ref(false);
+const pauseReason = ref<PauseReason | null>(null);
+function startAutomatic() {
+  queueMode.value = false;
+  pauseReason.value = null;
+  ui.running = !ui.running;
+}
+function followPause() {
+  const target = pauseReason.value?.target;
+  if (!target || ui.busy || receiptExpanded.value) return;
+  pauseReason.value = null;
+  if (target === "story") {
+    view.value = "story";
+    ui.history = false;
+  } else if (target === "cultivate") view.value = "cultivation";
+  else {
+    if (target === "break") pill.value = !!game.value?.pills;
+    openPanel(target);
+  }
+}
 const npc = computed(() => (game.value ? luchiView(game.value) : null));
 const heart = computed(() =>
   game.value && !game.value.pending && game.value.social.scene
@@ -390,9 +415,17 @@ async function act(intent: Intent) {
   const old = game.value,
     n = dispatch(old, { ...intent, id: crypto.randomUUID() });
   if (n === old) {
-    if (intent.type === "queueTick") {
+    if (automatic) {
       ui.running = false;
-      notice.value = "修行安排已暂停：请检查行动条件或材料。";
+      pauseReason.value = automaticPause(
+        old,
+        activity.value,
+        queueMode.value,
+        old,
+      );
+      notice.value = pauseReason.value
+        ? ""
+        : "本次行动未执行，自动修行已暂停，没有新增消耗。";
     } else
       notice.value =
         "本次行动未执行：请检查材料、修为或当前待处理剧情。没有新增消耗。";
@@ -400,6 +433,7 @@ async function act(intent: Intent) {
   }
   const ok = await persist(n);
   if (ok) {
+    if (!automatic) pauseReason.value = null;
     const changedScene =
       old.adventure.step !== n.adventure.step ||
       old.adventure.road.stage !== n.adventure.road.stage ||
@@ -450,18 +484,13 @@ async function act(intent: Intent) {
         receipt.value = null;
       }, 6500);
   }
-  if (
-    ok &&
-    (n.pending ||
-      n.social.scene ||
-      n.social.arena.duel ||
-      n.status !== "alive" ||
-      (n.realm === 0 && old.qi < MAX_QI && n.qi === MAX_QI) ||
-      (queueMode.value
-        ? n.journey.queue.length === 0
-        : actionError(n, activity.value)))
-  )
-    ui.running = false;
+  if (ok && automatic) {
+    const reason = automaticPause(n, activity.value, queueMode.value, old);
+    if (reason) {
+      ui.running = false;
+      pauseReason.value = reason;
+    }
+  }
   return ok;
 }
 async function start() {
@@ -512,6 +541,7 @@ function runQueue() {
   dialog.value = "";
   view.value = "cultivation";
   queueMode.value = true;
+  pauseReason.value = null;
   ui.running = true;
 }
 async function prepare(kind: "refine" | "retreat") {
@@ -539,6 +569,7 @@ async function nextLife() {
     })
   ) {
     activity.value = "cultivate";
+    pauseReason.value = null;
     inheritance.value = "none";
   }
 }
@@ -653,7 +684,14 @@ watch(modal, async (value) => {
 function hidden() {
   sound.hidden(document.hidden);
   music?.hidden(document.hidden);
-  if (document.hidden) ui.running = false;
+  if (document.hidden && ui.running) {
+    ui.running = false;
+    pauseReason.value = {
+      text: "离开页面后自动修行已暂停，没有离线收益。回来后可自行继续。",
+      target: queueMode.value ? "queue" : "cultivate",
+      label: "查看修行",
+    };
+  }
 }
 let timer: ReturnType<typeof setInterval>;
 let unmounted = false;
@@ -927,6 +965,18 @@ onUnmounted(() => {
             </button>
           </details>
         </aside>
+        <aside
+          v-if="pauseReason && !ui.running"
+          class="opening-guide"
+          role="status"
+          aria-label="修行暂停原因"
+        >
+          <p>{{ pauseReason.text }}</p>
+          <button :disabled="ui.busy || receiptExpanded" @click="followPause">
+            {{ pauseReason.label }}
+          </button>
+          <button class="quiet" @click="pauseReason = null">收起</button>
+        </aside>
         <nav>
           <button
             :class="{ active: !ui.history && view === 'story' }"
@@ -1035,6 +1085,21 @@ onUnmounted(() => {
                 <i :style="{ width: (game.qi / MAX_QI) * 100 + '%' }"></i>
               </div>
               <p class="next-goal">{{ nextGoal(game) }}</p>
+              <button
+                v-if="game.realm === 1 && opening?.action === 'road'"
+                :disabled="ui.busy || receiptExpanded"
+                @click="followOpening"
+              >
+                {{ opening.label }}
+              </button>
+              <p v-if="game.realm === 0" class="fineprint">
+                {{
+                  game.qi < MAX_QI
+                    ? `还差 ${MAX_QI - game.qi} 修为可尝试筑基。`
+                    : "修为已满，可查看把握后决定是否突破。"
+                }}
+                炼丹、固本和护法可提高把握，不要求全部完成。伤势会降低成功率，可先静养。
+              </p>
               <div class="activity-grid">
                 <button
                   v-for="a in activities"
@@ -1055,7 +1120,9 @@ onUnmounted(() => {
                           ? `每月灵石 +5${!game.realm && game.journey.main ? " · 修为 +" + ((game.journey.main === "breath" ? 4 : 0) + mainTraining(game) * 2) : ""}`
                           : a.id === "gather"
                             ? `灵草 +${2 + (game.journey.support === "herb" ? 1 + game.growth.training.herb : 0)} · 修为 +${game.realm ? 0 : 3}`
-                            : a.hint)
+                            : a.id === "meditate"
+                              ? `神识 +1${game.realm ? "" : " · 修为 +2"}；神识 8 可识阵、省炼丹灵石`
+                              : a.hint)
                   }}</small>
                 </button>
               </div>
@@ -1065,10 +1132,7 @@ onUnmounted(() => {
                   :disabled="
                     ui.busy || (!ui.running && !!actionError(game, activity))
                   "
-                  @click="
-                    queueMode = false;
-                    ui.running = !ui.running;
-                  "
+                  @click="startAutomatic"
                 >
                   {{ ui.running ? "暂停" : "自动行动" }}</button
                 ><button
@@ -1110,7 +1174,7 @@ onUnmounted(() => {
                 >
                   闭关固本 · 六月<small>{{
                     preparationError(game, "retreat") ||
-                    "灵石 −8 / 根基 +6 / 修为 +30"
+                    `灵石 −8 / 根基 +${Math.min(6, 24 - game.foundation)}${game.realm ? "" : " / 修为 +" + Math.min(30, 360 - game.qi)}`
                   }}</small>
                 </button>
               </div>
@@ -1583,6 +1647,7 @@ onUnmounted(() => {
         />
         <section class="scene-controls" aria-label="传承与轮回操作区">
           <h3 class="controls-heading">留下此世，选择来路</h3>
+          <LifeReview :game="game" />
           <p class="muted">
             {{
               game.status === "complete"
@@ -1657,6 +1722,12 @@ onUnmounted(() => {
         />
         <section class="scene-controls" aria-label="突破操作区">
           <h3 class="controls-heading">确认丹药与突破风险</h3>
+          <p v-if="game.expedition.accepted && game.expedition.cleared === 2">
+            {{ expeditionGoal(game) }}
+          </p>
+          <p v-else class="muted">
+            筑基后开放功法通达与灵器精炼，可继续已有的行路与探索。
+          </p>
           <div class="probability">{{ details?.chance }}<small>%</small></div>
           <p class="muted">本次成功率 · 下限 10%，上限 95%</p>
           <div class="break-details">
@@ -1671,6 +1742,7 @@ onUnmounted(() => {
               :disabled="game.pills < 1"
             />使用筑基丹（持有 {{ game.pills }} 枚）</label
           >
+          <PreparationValues :game="game" :pill="pill" />
           <p class="warning-text">
             成功延寿十八年。{{
               game.ward

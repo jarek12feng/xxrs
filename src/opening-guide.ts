@@ -2,10 +2,18 @@ import { rescueEcho, type State } from "./core";
 import { expeditionGoal } from "./expedition/progression";
 // Read-only coaching. No timers, rewards, randomness or extra save fields.
 export function openingGuide(s: State) {
-  if (s.status !== "alive" || s.realm !== 0 || s.adventure.step !== "done")
-    return null;
+  if (s.status !== "alive" || s.adventure.step !== "done") return null;
   if (s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel)
     return null;
+  if (s.realm === 1) {
+    if (!s.expedition.accepted || s.expedition.cleared !== 2) return null;
+    return {
+      title: "筑基已成，再赴旧阵",
+      body: expeditionGoal(s)!,
+      action: "road" as const,
+      label: "回到行路，重返旧阵",
+    };
+  }
   const echo = rescueEcho(s.adventure);
   if (!s.adventure.road.thanked)
     return {

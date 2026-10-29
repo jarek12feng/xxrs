@@ -5,6 +5,10 @@ import {
   type Intent,
   type State,
 } from "./core";
+import { expeditionGoal } from "./expedition/progression";
+import { readiness } from "./expedition/combat";
+import { routePayoff } from "./route-payoff";
+import { growthComparison } from "./growth-feedback";
 import { enrichReceipt } from "./journey-feedback";
 
 import type { ActionProcess } from "./action-process";
@@ -34,6 +38,7 @@ export interface ActionReceipt {
   months: number;
   changes: { label: string; before: number; after: number; good: boolean }[];
   notes: string[];
+  payoff?: string[];
   cost: string;
   next: string;
 }
@@ -178,7 +183,7 @@ export function actionReceipt(
   };
   if (!ritual && !dead && labels[effective.type])
     title = labels[effective.type]!;
-  if (effective.type === "promote") title = "晋升外门 · 新功法入手";
+  if (effective.type === "promote") title = "晋升外门 · 师门谢礼";
   if (after.realm > before.realm) {
     const qi = changes.find((c) => c.label === "修为");
     if (qi) {
@@ -186,12 +191,22 @@ export function actionReceipt(
       qi.good = true;
     }
   }
+  if (effective.type === "trainTechnique") title = "功法研修完成";
+  const growthNotes = [
+    "equip",
+    "equipRelic",
+    "trainTechnique",
+    "forge",
+  ].includes(effective.type)
+    ? growthComparison(before, after)
+    : [];
   const cost =
     effective.type === "prepare"
       ? effective.kind === "refine"
         ? `投炉消耗：灵草 −${refineCost(before).herbs}，灵石 −${refineCost(before).stones}。下方为含月收入的实际净变化。`
         : "闭关消耗：灵石 −8。下方为含月收入的实际净变化。"
       : "下方为本次行动的实际净变化。";
+  const payoff = routePayoff(before, after, intent);
   return enrichReceipt(before, after, intent, {
     title,
     spotlight:
@@ -207,14 +222,24 @@ export function actionReceipt(
     months: Math.max(0, after.month - before.month),
     changes,
     cost,
-    notes: entries.slice(0, 4).map((entry) => entry.text),
+    payoff,
+    notes: [
+      ...(before.realm === 0 && after.realm === 1
+        ? [
+            `筑基护体：青嶂交锋减伤 ${readiness(before).armor} → ${readiness(after).armor}，基础伤害 ${readiness(before).damage} → ${readiness(after).damage}（招式另计）。`,
+          ]
+        : []),
+      ...payoff,
+      ...growthNotes,
+      ...entries.slice(0, 4).map((entry) => entry.text),
+    ],
     next: dead
       ? "确认后回看此世，选择轮回传承。"
       : after.pending || after.social.scene
         ? "有新的剧情在等你，确认后继续回应。"
         : ritual === "break"
           ? after.realm
-            ? "境界已从炼气晋升筑基，炼气修为已转化为新境界（归零并非损失）。回到当前冒险，查看山外的新路。"
+            ? `境界已从炼气晋升筑基，炼气修为已转化为新境界（归零并非损失）。${expeditionGoal(after) || "功法通达与灵器精炼已开放，回到当前行路查看后续目标。"}`
             : "先养伤、补回修为，再炼丹或闭关固本；准备好后可以再次突破。"
           : ritual === "refine"
             ? "丹药已收入行囊。修为满 360 后，可在突破时选择服用。"

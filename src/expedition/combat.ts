@@ -6,10 +6,12 @@ export function readiness(s: State) {
     hp: Math.max(16, 36 + s.foundation - s.injury * 5),
     damage:
       5 +
+      (s.realm === 1 ? 2 : 0) +
       mainTraining(s) * 2 +
       Math.floor((s.sense + s.study * 2 + s.mastery + s.foundation) / 4) +
       (s.journey.equipped === "sword" ? s.journey.relics.sword * 2 : 0),
     armor:
+      (s.realm === 1 ? 2 : 0) +
       (s.journey.support === "guard" ? 2 : 0) +
       supportTraining(s) +
       (s.journey.equipped === "vial" ? s.journey.relics.vial : 0),
@@ -48,7 +50,10 @@ export function exchangePreview(s: State, move: Move) {
   const e = encounters[q.cleared]!,
     power = readiness(s);
   const correct = move === e.pattern[d.turn % e.pattern.length];
-  let damage = power.damage + (correct ? 6 : 0),
+  let damage =
+      power.damage +
+      (correct ? 6 : 0) +
+      (s.journey.support === "lantern" && move === "discern" ? 3 : 0),
     incoming = Math.max(1, e.attack + (correct ? -5 : 3) - power.armor),
     note = "";
   if (s.journey.main === "blade" && move === "strike") {

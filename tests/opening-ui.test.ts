@@ -246,3 +246,26 @@ it("plays the corresponding cultivation figure only after persistence succeeds, 
     document.querySelector(".practice-stage")?.getAttribute("data-playing"),
   ).toBe("false");
 });
+
+it("returns from the cave to the unfinished expedition after breakthrough without spending resources", async () => {
+  const { expeditionSession } = await import("../tools/expedition-simulation");
+  const p = expeditionSession();
+  p.prepare();
+  p.send({ type: "expedition", action: "accept" });
+  p.send({ type: "expedition", action: "enter" });
+  p.fight();
+  p.send({ type: "expedition", action: "studyArray" });
+  expect(p.state.expedition.cleared).toBe(2);
+  await mount(p.state);
+  button("洞府修行").click();
+  await flush();
+  const savesBefore = vi.mocked(save).mock.calls.length;
+  const links = [...document.querySelectorAll("button")].filter((b) =>
+    b.textContent?.includes("回到行路，重返旧阵"),
+  );
+  expect(links.length).toBe(2);
+  links[1]!.click();
+  await flush();
+  expect(document.body.textContent).toContain("蚀阵傀儡");
+  expect(vi.mocked(save).mock.calls.length).toBe(savesBefore);
+});

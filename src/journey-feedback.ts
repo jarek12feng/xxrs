@@ -119,7 +119,19 @@ export function enrichReceipt(
     .map((k) => `习得功法 · ${techniques[k].name}`);
   if (intent.type === "promote") {
     r.tone = "success";
-    r.next = "新功法已收入功法面板，现在即可装配。" + nextGoal(after);
+    const learned = after.journey.known.some(
+      (k) => !before.journey.known.includes(k),
+    );
+    const trained = after.journey.known.some(
+      (k) => after.growth.training[k] > before.growth.training[k],
+    );
+    r.next =
+      (learned
+        ? "新功法已收入功法面板，现在即可装配。"
+        : trained
+          ? "已有主修提升至熟练；装配后生效。"
+          : "已有主修熟练，师门改赠灵石 12，可用于研修或补给。") +
+      nextGoal(after);
     r.unlocks.push(
       ...after.journey.known
         .filter((k) => !before.journey.known.includes(k))
@@ -128,10 +140,12 @@ export function enrichReceipt(
   }
   if (intent.type === "equip")
     r.notes = [
+      ...r.notes,
       `已装配「${techniques[intent.technique].name}」。${techniques[intent.technique].slot === "main" ? "主修" : "辅修"}槽位已更新，原槽位功法仍保留在已学列表。`,
     ];
   if (intent.type === "equipRelic")
     r.notes = [
+      ...r.notes,
       `已装配${relics[intent.relic].name}，当前品阶 ${after.journey.relics[intent.relic]}。下一次挑战按这件灵器结算。`,
     ];
   if (
