@@ -180,19 +180,19 @@ export function heartEvent(s: State): EventView | null {
         {
           id: "help",
           label: "拿出灵草，一起辨认沿途药径",
-          hint: "灵草 −2 · 好感 +12",
+          hint: "灵草 −2",
           disabled: s.herbs < 2 ? "需灵草 2" : undefined,
         },
         {
           id: "share",
           label: "翻开旧卷，分享自己的识路心得",
-          hint: "需心得 2，不消耗 · 好感 +12",
+          hint: "需心得 2，不消耗",
           disabled: s.study < 2 ? "需心得 2" : undefined,
         },
         {
           id: "listen",
           label: "先坐下来，听对方讲这条路",
-          hint: "无需资源 · 好感 +8",
+          hint: "无需资源",
         },
       ],
     };
@@ -204,19 +204,19 @@ export function heartEvent(s: State): EventView | null {
         {
           id: "care",
           label: "用灵草照料伤者，让对方安心记路",
-          hint: "灵草 −4 · 好感 +20",
+          hint: "灵草 −4",
           disabled: s.herbs < 4 ? "需灵草 4" : undefined,
         },
         {
           id: "mark",
           label: "用研读所得标出安全通路",
-          hint: "需心得 2，不消耗 · 好感 +16",
+          hint: "需心得 2，不消耗",
           disabled: s.study < 2 ? "需心得 2" : undefined,
         },
         {
           id: "stay",
           label: "留下来搭把手，陪大家慢慢走回去",
-          hint: "无需资源 · 好感 +10",
+          hint: "无需资源",
         },
       ],
     };
@@ -228,12 +228,12 @@ export function heartEvent(s: State): EventView | null {
         {
           id: "promise",
           label: "我们各自修行，出关那天，我来找你",
-          hint: "记住彼此的心愿 · 好感 +15",
+          hint: "记住彼此的心愿",
         },
         {
           id: "honest",
           label: "我不能许下归期，但不想与你就此走散",
-          hint: "坦诚自己的不足 · 好感 +15",
+          hint: "坦诚自己的不足",
         },
       ],
     };
@@ -245,12 +245,12 @@ export function heartEvent(s: State): EventView | null {
         {
           id: "thanks",
           label: "谢谢你来，下次也让我看看你的修行",
-          hint: "约好下次观摩 · 好感 +20",
+          hint: "约好下次观摩",
         },
         {
           id: "learn",
           label: "说说我的失误吧，我想听你的看法",
-          hint: "一同复盘 · 好感 +20",
+          hint: "一同复盘",
         },
       ],
     };

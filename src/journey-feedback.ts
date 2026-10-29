@@ -12,6 +12,7 @@ import {
   relationshipGoal,
   rivals,
   techniques,
+  nextGoal,
   places,
   relics,
   type State,
@@ -104,6 +105,15 @@ export function enrichReceipt(
   r.unlocks = after.journey.known
     .filter((k) => !before.journey.known.includes(k))
     .map((k) => `习得功法 · ${techniques[k].name}`);
+  if (intent.type === "promote") {
+    r.tone = "success";
+    r.next = "新功法已收入功法面板，现在即可装配。" + nextGoal(after);
+    r.unlocks.push(
+      ...after.journey.known
+        .filter((k) => !before.journey.known.includes(k))
+        .map((k) => techniques[k].hint),
+    );
+  }
   if (intent.type === "equip")
     r.notes = [
       `已装配「${techniques[intent.technique].name}」。${techniques[intent.technique].slot === "main" ? "主修" : "辅修"}槽位已更新，原槽位功法仍保留在已学列表。`,
@@ -267,6 +277,7 @@ export function enrichReceipt(
       r.unlocks.push("陆迟已筑基 · 突破护法已生效");
   }
   if (intent.type === "choose" && before.social.scene) {
+    r.returnTo = "relationship";
     const who = companion(after)!;
     r.person = {
       name: who.name,
@@ -317,15 +328,5 @@ export function enrichReceipt(
             : "功法与奖励已入囊。可以先装配新功法，再观摩下一位对手。"
           : "先养伤，再根据对手意图选择应对；凝神、固本和装备也会改变胜算。";
   }
-  if (r.person && !r.process && !r.ritual)
-    r.process = {
-      kind: "talk",
-      title: r.person.name,
-      beats: [
-        `你说完，${r.person.name}停下了手里的动作。`,
-        `${r.person.name}抬眼望向你。`,
-        "风声从两人之间掠过，话音接了下去。",
-      ],
-    };
   return r;
 }

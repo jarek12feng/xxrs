@@ -283,17 +283,16 @@ export function replayHints(s: State) {
 }
 export function nextGoal(s: State) {
   if (s.status !== "alive") return "此篇已落笔，选择传承与下一世路线。";
-  if (s.story.stage === "unmet") return "第三个月，去渡口认识同行之人。";
   if (s.pending) return "完成眼前的选择，时间已暂停。";
+  if (s.story.stage === "unmet") return "第三个月，去渡口认识同行之人。";
   if (s.story.stage === "waiting" && !s.memories.letter && s.month < 12)
     return `第十二月，陆迟邀你煮茶叙旧；还有 ${12 - s.month} 个月。第三十六月仍须赴约。`;
   if (s.story.stage === "waiting" && !s.memories.visit && s.month < 24)
     return `第二十四月，陆迟将带回山外消息；还有 ${24 - s.month} 个月。第三十六月仍须赴约。`;
   if (s.story.stage === "waiting")
     return `第三十六个月与陆迟会合，还剩 ${Math.max(0, 36 - s.month)} 个月。闭关六个月若跨过约期，将失约。`;
-  if (s.pending) return "完成眼前的选择，时间已暂停。";
   if (s.realm === 0)
-    return "陆迟的故事已有答案。积满修为、准备突破，写下本篇结局。";
+    return "青石遗府的约定已了结，寻父仍待新线索。积满修为、准备突破，再走山外的路。";
   return "筑基篇即将结算。";
 }
 export function eventView(s: State): EventView | null {
@@ -429,21 +428,28 @@ export function eventView(s: State): EventView | null {
       };
     case "relic":
       return {
-        title: "一丹，两条仙途",
+        title:
+          s.realm === 1
+            ? "故人的天关"
+            : s.pills > 0
+              ? "丹药有余，归途同行"
+              : "一丹，两条仙途",
         body:
           s.realm === 1
             ? "石匣里只有一枚筑基丹。你已筑基，陆迟却仍困在天关之前。将丹药赠他，可以让故人与你并肩；也可以留下丹药，各赴前程。"
-            : "石匣里只有一枚筑基丹。陆迟把石匣推到你面前：“一路承蒙照顾，你来决定。”丹药给你，可以帮助自己的突破；给他，他将先一步筑基，并为你护法。",
+            : s.pills > 0
+              ? `你摸到行囊里已有的 ${s.pills} 枚筑基丹。这枚遗府丹不再是你唯一的机会。陆迟看见你的丹瓶，松开了紧握石匣的手：“若你愿意，我想先过天关，再护你一程。”你可以把它交给他，或留作自己再试的储备。`
+              : "石匣里只有一枚筑基丹。陆迟把石匣推到你面前：“一路承蒙照顾，你来决定。”丹药给你，可以帮助自己的突破；给他，他将先一步筑基，并为你护法。",
         options: [
           o(
             "self",
             "留下筑基丹，自寻长生",
-            "筑基丹 +1 · 一次护脉丹纹（失败保留九成、不减寿） · 结算解锁「孤灯丹诀」 · 无陆迟护法",
+            "筑基丹 +1 · 一次护脉丹纹（失败保留九成、不减寿） · 无陆迟护法",
           ),
           o(
             "gift",
             "将丹药交给陆迟",
-            "不获得丹药 · 陆迟筑基后护法 +10%（信任达 4 则 +15%） · 结算解锁「渡口旧约」",
+            "不获得丹药 · 陆迟筑基后护法 +10%（信任达 4 则 +15%）",
           ),
         ],
       };

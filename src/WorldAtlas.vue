@@ -34,6 +34,36 @@ const distant = [
       </div>
       <p>循一盏灯，见山外天地</p>
     </header>
+    <nav class="atlas-list" aria-label="窄屏地标列表">
+      <template v-if="story">
+        <button
+          v-for="node in routes"
+          :key="node.key"
+          :aria-pressed="selectedStory === node.key"
+          @click="emit('selectStory', node.key)"
+        >
+          {{ landmarkLabel(node.title)
+          }}<small>{{
+            node.current ? "你在此处" : node.intent ? "可前往" : "循线索开启"
+          }}</small>
+        </button>
+      </template>
+      <template v-else>
+        <button
+          v-for="(_, id) in points"
+          :key="id"
+          :aria-pressed="selected === id"
+          @click="emit('select', id)"
+        >
+          {{ places[id].name
+          }}<small>{{
+            game.journey.maps[id] === 3
+              ? "见闻已全"
+              : explorationError(game, id) || "可探索"
+          }}</small>
+        </button>
+      </template>
+    </nav>
     <div
       class="atlas-scroll"
       tabindex="0"
@@ -318,31 +348,46 @@ const distant = [
 
 <style>
 @media (max-width: 650px) {
+  .atlas-scroll {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
   .atlas-canvas {
-    min-width: 0;
+    min-width: 760px;
   }
-  .modal[data-panel] .atlas-pin {
-    min-width: 0;
-    padding: 4px 5px;
-    gap: 1px;
-    border-radius: 3px;
+}
+</style>
+
+<style>
+.atlas-list {
+  display: none;
+}
+@media (max-width: 650px) {
+  .atlas-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 8px;
   }
-  .atlas-pin strong {
+  .modal[data-panel] .atlas-list button {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 5px;
+    font-size: 12px;
+    background: #1b392e;
+    color: #f3e4be;
+    border: 1px solid #ad9869;
+  }
+  .atlas-list button[aria-pressed="true"] {
+    outline: 2px solid #e2c57e;
+  }
+  .atlas-list small {
+    display: block;
     font-size: 10px;
-    letter-spacing: 0;
+    margin-top: 4px;
   }
-  .atlas-pin-dot,
-  .modal[data-panel] button.atlas-pin small,
-  .atlas-home small,
-  .atlas-inscription {
-    display: none;
-  }
-  .modal[data-panel] .atlas-pin.distant small {
-    font-size: 7px;
-    line-height: 1.2;
-  }
-  .atlas-home {
-    font-size: 9px;
+  .atlas-scroll {
+    max-height: 200px;
   }
 }
 </style>

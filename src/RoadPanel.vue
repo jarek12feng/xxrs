@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { expeditionIntermission } from "./expedition/progression";
 import { computed, ref, watch, nextTick, onMounted } from "vue";
 import ExpeditionPanel from "./expedition/ExpeditionPanel.vue";
 import RoadEpilogue from "./RoadEpilogue.vue";
@@ -93,6 +94,9 @@ const road = computed(() => props.game.adventure.road);
 const scene = computed(() => {
   const r = road.value,
     base = roadScenes[r.stage];
+  const intermission = expeditionIntermission(props.game);
+  if (intermission && ["pass", "camp", "market"].includes(r.stage))
+    return { ...base, body: intermission };
   if (echo.value) return { ...base, body: echo.value.body };
   if (r.stage === "beyond" && r.surveyed)
     return {
@@ -260,9 +264,14 @@ const person = computed(() =>
         ? {
             name: "青嶂",
             image: "/characters/qingzhang.jpg",
-            line: road.value.discoveries.includes("marks")
-              ? "那道刻痕通到背风处。脚踩石阶，别碰旁边的草根。"
-              : "站住。听见石缝里那声响没有？下一阵风就要到了。",
+            line:
+              props.game.expedition.cleared === 2
+                ? props.game.realm === 0
+                  ? "阵口由我守着。先回山下安顿药队，待你筑基，我们再取阵核中的证据。"
+                  : "你们都到了。封阵一开，先稳住退路，再动阵核。"
+                : road.value.discoveries.includes("marks")
+                  ? "那道刻痕通到背风处。脚踩石阶，别碰旁边的草根。"
+                  : "站住。听见石缝里那声响没有？下一阵风就要到了。",
           }
         : {
             name:

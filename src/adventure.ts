@@ -104,7 +104,7 @@ export function validAdventure(a: Adventure) {
 export const rescueChoices = {
   roots: {
     title: "留下成株，守住药圃",
-    hint: "不领取额外灵草；守祠妖修传授护根手法，日后可独自疏通雾海药圃。",
+    hint: "不领取额外灵草；留下成株养根留种，守祠妖修愿传授护根手法。山下伤者需等下一队送药。",
     echo: "守祠妖修把护根的绳结教给了你。药工说，山下伤者还要等另一队送药，但这片药圃来年仍会长。",
   },
   supplies: {

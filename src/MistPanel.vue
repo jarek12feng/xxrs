@@ -5,6 +5,7 @@ import SceneResponse from "./SceneResponse.vue";
 import type { ActionReceipt } from "./action-feedback";
 import {
   mistScenes,
+  mistHomeBody,
   mistPartner,
   mistQuote,
   mistGoal,
@@ -33,6 +34,8 @@ onMounted(reveal);
 watch(() => m.value.stage, reveal);
 const scene = computed(() => {
   const base = mistScenes[m.value.stage];
+  if (m.value.stage === "home")
+    return { ...base, body: mistHomeBody(props.game) };
   if (m.value.stage === "garden" && m.value.garden)
     return {
       ...base,
@@ -563,7 +566,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
         ><button @click="emit('road')">回看第二卷 · 坊市与云路 →</button>
       </div>
       <p class="adventure-footnote">
-        移动、调查和本章入阵不推进月份；修行按真实月份结算，遇事件暂停。线索、能力与关系自动存档，不因刷新丢失。探灵灯属于本世，轮回不会自动携带。
+        本章入阵是根据证据与准备进行的一次探索判定，不是回合交锋。移动、调查和本章入阵不推进月份；修行按真实月份结算，遇事件暂停。线索、能力与关系自动存档，不因刷新丢失。探灵灯属于本世，轮回不会自动携带。
       </p>
     </section>
   </section>

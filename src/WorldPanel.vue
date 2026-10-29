@@ -177,6 +177,11 @@ const mapImages = {
       eyebrow="听松山居 · 行前准备"
       compact
     />
+    <SceneResponse
+      v-if="receipt && !receipt.scene && !receipt.spotlight"
+      :text="receipt.notes[0] || receipt.next"
+      :receipt="receipt"
+    />
     <SocialPanel
       v-if="tab === 'relationship' || tab === 'arena'"
       :key="tab"
@@ -536,7 +541,7 @@ const mapImages = {
           :disabled="locked || game.journey[t.slot] === id"
           @click="emit('act', { type: 'equip', technique: id })"
         >
-          {{ game.journey[t.slot] === id ? "已装配" : "装配" }}
+          {{ game.journey[t.slot] === id ? "已装配" : "装配" }}{{ t.name }}
         </button>
         <button
           v-else

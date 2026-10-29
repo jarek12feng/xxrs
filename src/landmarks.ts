@@ -114,7 +114,7 @@ export const presences: Record<string, Presence> = {
     weather: "moon",
   },
   有人等你归来: {
-    detail: "茶摊替你留着靠里的位置。陆迟看见灯光，起身时碰响了桌边的空杯。",
+    detail: "茶摊留着靠里的位置。探灵灯与旧记录摆在桌上，热茶的白汽漫过灯沿。",
     sound: "茶摊 · 风铃 · 杯沿轻响",
     weather: "warm",
   },

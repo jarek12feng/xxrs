@@ -710,14 +710,14 @@
 
 /* Primary actions stay before optional investigation; the stage owns scrolling. */
 .immersive-shell .scene-investigation {
-  background:#20382f;
-  border-color:#7c7457;
-  color:#eee7d7;
+  background: #20382f;
+  border-color: #7c7457;
+  color: #eee7d7;
 }
 .immersive-shell .scene-investigation summary {
-  cursor:pointer;
-  padding:8px 0;
-  color:#dbc797;
+  cursor: pointer;
+  padding: 8px 0;
+  color: #dbc797;
 }
 .immersive-shell .scene-controls button:hover:not(:disabled),
 .immersive-shell .scene-controls button:focus-visible {
@@ -727,16 +727,130 @@
 }
 
 .immersive-shell .creation button.primary.start {
-  color:#fff0c2;
-  background:#214b3e;
-  border:1px solid #bda472;
-  font-weight:700;
-  text-shadow:0 1px 1px #102a20;
+  color: #fff0c2;
+  background: #214b3e;
+  border: 1px solid #bda472;
+  font-weight: 700;
+  text-shadow: 0 1px 1px #102a20;
 }
 .immersive-shell .creation button.primary.start:hover:not(:disabled),
 .immersive-shell .creation button.primary.start:focus-visible {
-  color:#fff7dc;
-  background:#315f4d;
-  border-color:#dfc58b;
+  color: #fff7dc;
+  background: #315f4d;
+  border-color: #dfc58b;
 }
-.immersive-shell .creation button.primary.start:active:not(:disabled) {background:#183d30;color:#fff0c2;}
+.immersive-shell .creation button.primary.start:active:not(:disabled) {
+  background: #183d30;
+  color: #fff0c2;
+}
+
+@media (max-width: 600px) {
+  .immersive-shell.playing {
+    padding: 0 10px 58px;
+  }
+  .immersive-shell .game-hud {
+    height: 56px;
+    flex-basis: 56px;
+    padding: 5px 0;
+    gap: 6px;
+  }
+  .game-hud .avatar-entry {
+    padding: 5px;
+    gap: 4px;
+    font-size: 12px;
+  }
+  .game-hud .avatar-seal,
+  .game-hud .sound-toggle,
+  .game-hud .avatar-entry small {
+    display: none;
+  }
+  .game-hud .location-entry {
+    font-size: 11px;
+    min-width: 0;
+  }
+  .game-hud .location-entry button {
+    padding: 4px;
+    font-size: 12px;
+  }
+  .game-hud > button {
+    padding: 6px;
+    font-size: 11px;
+  }
+  .immersive-shell .journey > nav {
+    margin: 4px 0;
+    padding: 0;
+  }
+  .immersive-shell .journey > nav button {
+    padding: 7px 10px;
+  }
+  .quest-tracker {
+    padding: 4px 10px;
+    margin-top: 4px;
+    font-size: 12px;
+  }
+  .quest-tracker p {
+    max-height: 4.5em;
+    overflow: auto;
+  }
+  .quick-dock {
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+  }
+  .quick-dock button {
+    padding: 9px 6px;
+    font-size: 11px;
+    min-height: 36px;
+  }
+  .quick-dock kbd {
+    display: none;
+  }
+  .immersive-shell .scene-backdrop {
+    min-height: 0;
+  }
+  .immersive-shell .scene-narrative {
+    padding: 14px 10px;
+  }
+  .immersive-shell .landmark-presence {
+    display: none;
+  }
+  .immersive-shell .scene-prose {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .immersive-shell .scene-speaker {
+    margin-top: 10px;
+  }
+  .immersive-shell .scene-controls {
+    padding: 12px 10px;
+  }
+}
+@media (max-width: 600px) {
+  .modal[data-panel] {
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 20px);
+    padding: 10px;
+  }
+  .modal[data-panel] > .panel-heading {
+    top: -10px;
+    padding: 4px 0;
+    margin: 0 0 10px;
+  }
+  .modal[data-panel] > .panel-heading h2 {
+    font-size: 22px;
+    margin: 0;
+  }
+  .modal[data-panel] > .panel-heading button {
+    padding: 8px 12px;
+  }
+  .modal[data-panel] .world-panel nav.atlas-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0;
+  }
+  .modal[data-panel] .world-panel nav.atlas-list button {
+    margin: 0;
+    min-width: 0;
+  }
+}

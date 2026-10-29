@@ -10,7 +10,7 @@ it("shows the real telegraph, costs and three response commands", async () => {
   let html = await renderToString(
     createSSRApp(ExpeditionPanel, { game: p.state, busy: false }),
   );
-  expect(html).toContain("本次耗时一月、灵石 2");
+  expect(html).toContain("行前回山下休整、筹备一月（若遇旧约先赴约），灵石 2");
   p.send({ type: "expedition", action: "enter" });
   html = await renderToString(
     createSSRApp(ExpeditionPanel, { game: p.state, busy: false }),

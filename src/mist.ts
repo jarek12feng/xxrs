@@ -1,3 +1,4 @@
+import { expeditionMistEcho } from "./expedition/resolution";
 import type { State } from "./world";
 import { companions } from "./social";
 
@@ -123,6 +124,14 @@ export const mistScenes: Record<
     body: "你曾在这里救出药工。如今再看，倒塌的阵门背后还有一道浅浅的刻痕。过去你只看见一堵墙，这一次，也许能看见墙后的人留下了什么。",
   },
 };
+export function mistHomeBody(s: State): string {
+  return (
+    "郁青收起空白的路簿。探灵灯搁在摊前，灯光映出路簿上早已褪色的几行字。" +
+    (s.adventure.mist.partner === "luchi"
+      ? "陆迟与你一起放下行囊，把共同带回的记录铺在茶桌上。"
+      : "陆迟在茶摊等你，想听听你带回的消息。")
+  );
+}
 export function mistPartner(s: State) {
   const m = s.adventure.mist;
   if (m.partner === "companion" && s.social.gender)
@@ -161,7 +170,9 @@ export function mistQuote(s: State): string {
   if (m.stage === "home")
     return m.settled
       ? "原来他也曾在往前走和等别人之间，做过这样的选择。下一次，我们带着答案回来。"
-      : "先坐一会儿。你愿意把这一路的事，从头讲给我听吗？";
+      : m.partner === "luchi"
+        ? "一路都顾着赶路，现在终于能坐下来，一起把父亲留下的记录再读一遍了。"
+        : "先坐一会儿。你愿意把这一路的事，从头讲给我听吗？";
   if (m.passed)
     return m.partner === "luchi"
       ? "以前走过这里，我只顾着赶路。这次想再听听他们说当年的事。"
@@ -194,7 +205,9 @@ export function mistGoal(s: State): string {
   if (m.stage === "home")
     return m.settled
       ? "带着探灵灯重访救过药工的山祠，看看旧墙后藏着什么。"
-      : "把来信真相告诉陆迟，与同行者谈谈这一路。";
+      : m.partner === "luchi"
+        ? "与陆迟一起整理带回的记录，谈谈这一路。"
+        : "把来信真相告诉陆迟，与同行者谈谈这一路。";
   if (m.stage === "garden")
     return m.garden
       ? m.passed
@@ -482,7 +495,7 @@ export function runMist(input: State, action: MistAction, id: string): State {
       if (m.partner === "companion")
         s.social.affection = Math.min(100, s.social.affection + 8);
       if (m.partner === "luchi") s.story.trust = Math.min(6, s.story.trust + 1);
-      m.result = `你把${m.firstRoute === "garden" ? "从石角的记忆开始" : "从废驿的阵纹开始"}的这段路讲给陆迟听。他把父亲的护路印放在探灵灯旁，终于肯慢慢喝完一杯茶。${m.partner === "companion" ? `${mistPartner(s).name}还记得你${m.vow === "steady" ? "宁可多备补给也先留退路" : "追信前仍约好撤退信号"}的约定：“下一段路，也一起商量。”共同经历：好感 +8（上限 100），不替代定情所需的相处。` : m.partner === "luchi" ? "陆迟把归绳收进自己的行囊。共同经历：道友信任 +1（上限 6）。" : "你独自走过的路，如今也有人愿意听。陆迟约你下次一起查剩下的线索。"}现在可以带灯重访旧山祠。`;
+      m.result = `${m.partner === "luchi" ? "你与陆迟并肩坐下，把一路共同查到的记录逐页核对。" : `你把${m.firstRoute === "garden" ? "从石角的记忆开始" : "从废驿的阵纹开始"}的这段路讲给陆迟听。`}他把父亲的护路印放在探灵灯旁，终于肯慢慢喝完一杯茶。${m.partner === "companion" ? `${mistPartner(s).name}还记得你${m.vow === "steady" ? "宁可多备补给也先留退路" : "追信前仍约好撤退信号"}的约定：“下一段路，也一起商量。”共同经历：好感 +8（上限 100），不替代定情所需的相处。` : m.partner === "luchi" ? "陆迟把归绳收进自己的行囊。共同经历：道友信任 +1（上限 6）。" : "你独自走过的路，如今也有人愿意听。陆迟约你下次一起查剩下的线索。"}现在可以带灯重访旧山祠。`;
       break;
     case "shrine":
       m.stage = "shrine";
@@ -493,6 +506,8 @@ export function runMist(input: State, action: MistAction, id: string): State {
         "探灵灯亮起，石墙上的尘土没有消失，尘土下的阵纹却一寸寸浮现。墙后是药队留下的避难室，刻着陆迟父亲的字：若我未归，先带其他人下山。你把誓言拓下带回，又点亮避难室的归灯。以后路过的药工，多了一个能避雨的地方。你曾靠力量救出一个人，如今靠新本领让这条旧路发生了变化。第三卷·雾海来信完。";
       break;
   }
+  const expeditionEcho = expeditionMistEcho(s, action);
+  if (expeditionEcho) m.result += expeditionEcho;
   s.seen = [...s.seen, id].slice(-512);
   s.log.unshift({
     month: s.month,
