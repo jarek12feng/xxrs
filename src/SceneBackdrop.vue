@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CharacterSprite from "./presentation/CharacterSprite.vue";
+import { speakerArt } from "./presentation/art";
 import { presences } from "./landmarks";
 import LandmarkPresence from "./LandmarkPresence.vue";
 defineProps<{
@@ -38,6 +40,7 @@ defineProps<{
       </h2>
       <LandmarkPresence v-if="!compact" :key="title" :title="title" />
       <p v-if="body" class="scene-prose">{{ body }}</p>
+      <div v-if="speaker && speakerArt[speaker] && !compact" class="scene-standing"><CharacterSprite :character="speakerArt[speaker]!" :label="speaker" /></div>
       <div v-if="speaker" class="scene-speaker">
         <img v-if="portrait" :src="portrait" :alt="speaker + '肖像'" />
         <span v-else class="scene-seal" aria-hidden="true">{{
@@ -52,3 +55,8 @@ defineProps<{
     </div>
   </div>
 </template>
+
+<style scoped>
+.scene-standing { float: right; width: 110px; height: 160px; margin: 0 0 12px 12px; }
+.scene-narrative { display: flow-root; }
+</style>

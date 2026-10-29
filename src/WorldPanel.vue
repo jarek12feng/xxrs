@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ItemArt from "./presentation/ItemArt.vue";
 import { computed, ref, watch } from "vue";
 import {
   places,
@@ -389,6 +390,7 @@ const mapImages = {
       </p>
       <article v-for="(r, id) in relics" :key="id" class="map-card">
         <h3>
+          <ItemArt :id="id" :tier="game.journey.relics[id]" />
           {{ r.name }} ·
           {{ ["未炼制", "灵器", "精炼灵器"][game.journey.relics[id]] }}
         </h3>
@@ -543,6 +545,7 @@ const mapImages = {
       <article v-for="(t, id) in techniques" :key="id" class="technique-card">
         <div>
           <h3>
+            <ItemArt :id="id" />
             {{ t.name }}
             <small>{{ t.slot === "main" ? "主修" : "辅修" }}</small>
           </h3>

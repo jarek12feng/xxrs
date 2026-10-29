@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ItemArt from "./presentation/ItemArt.vue";
 import { expeditionIntermission } from "./expedition/progression";
 import { computed, ref, watch, nextTick, onMounted } from "vue";
 import ExpeditionPanel from "./expedition/ExpeditionPanel.vue";
@@ -332,6 +333,7 @@ const person = computed(() =>
         :portrait="person.image"
         :quote="person.line"
       >
+        <div aria-hidden="true"><ItemArt v-if="road.thanked" id="map" /><ItemArt v-if="road.commission" id="tag" /></div>
         <SceneResponse
           v-if="receipt"
           :text="road.result"

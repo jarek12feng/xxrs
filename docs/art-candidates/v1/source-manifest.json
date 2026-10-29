@@ -1,0 +1,1028 @@
+{
+  "generator": "image_gen",
+  "date": "2026-10-29",
+  "status": "candidate-not-runtime",
+  "assets": [
+    {
+      "id": "hero-male",
+      "name": "男主角·待机",
+      "kind": "characters",
+      "prompt": "Use case: stylized-concept. Production-ready standalone full-body character cutout for Chinese cultivation RPG. Refined Chinese ink and mineral watercolor, semi-realistic elegant natural anatomy, clear readable silhouette and face, restrained jade teal warm grey ivory, opaque subject with crisp clean painted edges, TRUE transparent background, no scenery no ground no shadow no typography no frame no glow spilling outside. Portrait canvas, entire head hair hands feet and weapons visible with 8% safe margin, feet on same baseline near 90% height. Single figure only. Calm three-quarter view, near frontal. Do not imitate a chibi or geometric cartoon. Original youthful male protagonist, calm determined rounder face and straight tidy brows, no beard. Distinct from Lu Chi: neatly tied high hair knot with jade ring, no loose ragged fringe. Intact sage jade outer robe with ivory cuffs, dark green narrow trousers and boots, simple brown belt. Small sheathed straight sword at left hip, empty relaxed hands. Modest practical cultivation traveler, not an emperor. Use attached board only for overall painting style, not identical face.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-32cc4aab-c0de-4d31-b6af-8c9093167fae.png",
+      "file": "characters/hero-male.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2619830,
+      "sha256": "3c95e645b136b8195056aabde0e1fb76988530bc56f34a8e0fd9bc17ac02c298",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.5034,
+      "opaqueBodyBounds": [
+        142,
+        39,
+        1000,
+        1501
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "hero-female",
+      "name": "女主角·待机",
+      "kind": "characters",
+      "prompt": "Use case: stylized-concept. Production-ready standalone full-body character cutout for Chinese cultivation RPG. Refined Chinese ink and mineral watercolor, semi-realistic elegant natural anatomy, clear readable silhouette and face, restrained jade teal warm grey ivory, opaque subject with crisp clean painted edges, TRUE transparent background, no scenery no ground no shadow no typography no frame no glow spilling outside. Portrait canvas, entire head hair hands feet and weapons visible with 8% safe margin, feet on same baseline near 90% height. Single figure only. Calm three-quarter view, near frontal. Do not imitate a chibi or geometric cartoon. Original youthful female protagonist with calm determined face, black hair tied in a practical high ponytail with a small jade ring. Intact sage jade traveling robe, ivory cuffs, dark green trousers and boots, simple belt and sheathed straight sword at left hip. Practical modest outfit, no exposed midriff, no heels. Empty relaxed hands. Same practical costume family as the male protagonist. Use attached board only for painting style.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-1b51e1ed-3374-42bf-b7c0-cefefd38d01c.png",
+      "file": "characters/hero-female.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2441875,
+      "sha256": "baf893c39c9af910a33151db2133b3479bcdae6b5df1670cad833972e5e85eb5",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.5262,
+      "opaqueBodyBounds": [
+        128,
+        26,
+        978,
+        1521
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "luchi",
+      "name": "陆迟·待机",
+      "kind": "characters",
+      "prompt": "Use case: stylized-concept. Production-ready standalone full-body character cutout for Chinese cultivation RPG. Refined Chinese ink and mineral watercolor, semi-realistic elegant natural anatomy, clear readable silhouette and face, restrained jade teal warm grey ivory, opaque subject with crisp clean painted edges, TRUE transparent background, no scenery no ground no shadow no typography no frame no glow spilling outside. Portrait canvas, entire head hair hands feet and weapons visible with 8% safe margin, feet on same baseline near 90% height. Single figure only. Calm three-quarter view, near frontal. Do not imitate a chibi or geometric cartoon. Identity-preserve expansion of attached Lu Chi reference portrait into a FULL BODY standing cutout. Preserve exact recognizable adult face, half tied black hair, blue grey cloth ribbon, patched blue grey robes, ivory collar, weathered scabbard with three notches. Age 21, reserved expression. Worn boots, relaxed hands, sword sheathed. Remove all original scenery and paper background.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/luchi-base.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-325ff5df-55a0-4046-bcf7-44f5ca5ff12d.png",
+      "file": "characters/luchi.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2454076,
+      "sha256": "4fa05605443ddf742a92671d170ef4b183621dc5265120ba655e7daae70d9861",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.5704,
+      "opaqueBodyBounds": [
+        66,
+        9,
+        991,
+        1527
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "yuqing",
+      "name": "郁青·待机",
+      "kind": "characters",
+      "prompt": "Use case: stylized-concept. Production-ready standalone full-body character cutout for Chinese cultivation RPG. Refined Chinese ink and mineral watercolor, semi-realistic elegant natural anatomy, clear readable silhouette and face, restrained jade teal warm grey ivory, opaque subject with crisp clean painted edges, TRUE transparent background, no scenery no ground no shadow no typography no frame no glow spilling outside. Portrait canvas, entire head hair hands feet and weapons visible with 8% safe margin, feet on same baseline near 90% height. Single figure only. Calm three-quarter view, near frontal. Do not imitate a chibi or geometric cartoon. Identity-preserve expansion of attached Yu Qing portrait to full body. Preserve same young adult male face, hair knot with olive tie, olive traveling robe, ochre scarf, satchel and rolled map held naturally. Friendly perceptive expression, travel boots, grounded standing pose. Remove original background completely.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yuqing.jpg"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-ef9a62a1-2f3e-4252-9f3f-86b0c9edef1f.png",
+      "file": "characters/yuqing.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2424089,
+      "sha256": "3f7dbb9ee510c2b4fa53a13f01a5b2629d7ca48a14d32352097f6a46bf8a5d39",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.5734,
+      "opaqueBodyBounds": [
+        112,
+        14,
+        951,
+        1512
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "qingzhang",
+      "name": "青嶂·待机",
+      "kind": "characters",
+      "prompt": "Use case: stylized-concept. Production-ready standalone full-body character cutout for Chinese cultivation RPG. Refined Chinese ink and mineral watercolor, semi-realistic elegant natural anatomy, clear readable silhouette and face, restrained jade teal warm grey ivory, opaque subject with crisp clean painted edges, TRUE transparent background, no scenery no ground no shadow no typography no frame no glow spilling outside. Portrait canvas, entire head hair hands feet and weapons visible with 8% safe margin, feet on same baseline near 90% height. Single figure only. Calm three-quarter view, near frontal. Do not imitate a chibi or geometric cartoon. Identity-preserve expansion of attached Qing Zhang portrait to full body. Preserve mature male stern face, mustache and short beard, dark long hair, small horn-like green adornments, layered dark pine-green weathered robe, thick rope belt. Mountain guardian with sturdy boots, arms relaxed. Remove original scenery completely.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/qingzhang.jpg"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-f67d5dac-d41b-4fa2-8628-ffc515fd1774.png",
+      "file": "characters/qingzhang.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2766531,
+      "sha256": "a1415b7e33b89c00c055090eb4ccd2092ec8a37b824fc44f07e772b1b17f6321",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.4454,
+      "opaqueBodyBounds": [
+        16,
+        8,
+        1005,
+        1504
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "raider",
+      "name": "劫药客·待机",
+      "kind": "characters",
+      "prompt": "Use case: stylized-concept. Production-ready standalone full-body character cutout for Chinese cultivation RPG. Refined Chinese ink and mineral watercolor, semi-realistic elegant natural anatomy, clear readable silhouette and face, restrained jade teal warm grey ivory, opaque subject with crisp clean painted edges, TRUE transparent background, no scenery no ground no shadow no typography no frame no glow spilling outside. Portrait canvas, entire head hair hands feet and weapons visible with 8% safe margin, feet on same baseline near 90% height. Single figure only. Calm three-quarter view, near frontal. Do not imitate a chibi or geometric cartoon. One adult masked medicine-caravan raider, charcoal blue hooded travel clothes, leather forearm wraps, narrow dark face cloth below eyes, weathered ochre sash, slightly crouched alert silhouette, curved single-edged saber held lowered in right hand. Dangerous but grounded, readable face eyes, no gore. Three-quarter facing slightly to viewer left as battle opponent.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-01d92048-c422-4bc2-8c9c-4b6864a88c04.png",
+      "file": "characters/raider.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2673315,
+      "sha256": "63d665da4b425b1ebbdbc318ecb1f140eddb149c1caed18137a3f42945961907",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.5144,
+      "opaqueBodyBounds": [
+        81,
+        18,
+        1001,
+        1516
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "golem",
+      "name": "蚀阵傀儡·待机",
+      "kind": "characters",
+      "prompt": "Use case: stylized-concept. Production-ready standalone full-body character cutout for Chinese cultivation RPG. Refined Chinese ink and mineral watercolor, semi-realistic elegant natural anatomy, clear readable silhouette and face, restrained jade teal warm grey ivory, opaque subject with crisp clean painted edges, TRUE transparent background, no scenery no ground no shadow no typography no frame no glow spilling outside. Portrait canvas, entire head hair hands feet and weapons visible with 8% safe margin, feet on same baseline near 90% height. Single figure only. Calm three-quarter view, near frontal. Do not imitate a chibi or geometric cartoon. One towering ancient stone formation golem, broad articulated moss-grey stone limbs, amber DIAMOND-shaped chest core, small angular head and glowing amber eyes. Simplify tiny surface detail from board to bold readable slabs and a few carved spirals, no trees or scenery. Arms slightly away from torso, heavy intact feet. Three-quarter facing slightly left. Natural stone not robotic metal.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-555d87fb-99aa-4eec-80d5-d6db01706232.png",
+      "file": "characters/golem.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 3312729,
+      "sha256": "7cb52703ca06665e83faa5ad82044ffeff32f57e4570dc052a97e67c457dc352",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.3614,
+      "opaqueBodyBounds": [
+        23,
+        12,
+        1018,
+        1522
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "spirit-stone",
+      "name": "灵石",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one chunky translucent pale cyan mineral crystal with two broad facets and muted internal light. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-0de218d4-cdb6-4cf9-a63e-d098e03441b7.png",
+      "file": "items/spirit-stone.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1731681,
+      "sha256": "4f0965445cecc58d0289f16872f8f7a596e854089441b4a07265f27a6650a596",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.5897,
+      "opaqueBodyBounds": [
+        230,
+        100,
+        1076,
+        1183
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "herbs",
+      "name": "灵草",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one tied small bundle of broad jade medicinal leaves with two short ochre roots, simple recognizable silhouette. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-d997a19c-2fc2-446f-bb2b-2cc5ea0017ae.png",
+      "file": "items/herbs.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 2246992,
+      "sha256": "5e9583f4eda4bd4db7abac6db6597c5d3d175f49d1f2bc45e541e228da2372d5",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.5076,
+      "opaqueBodyBounds": [
+        53,
+        46,
+        1212,
+        1216
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "foundation-pill",
+      "name": "筑基丹",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one warm golden round medicinal pill resting in a small open dark bronze hinged case, pill prominent. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-37ca9ee7-6e9a-411c-b231-686a4a35bb22.png",
+      "file": "items/foundation-pill.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1817262,
+      "sha256": "3c8f9a78b80de2c114b46e3c38e66b624e0ddd7c2ab6800b097d27d27a94d704",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.5767,
+      "opaqueBodyBounds": [
+        173,
+        73,
+        1086,
+        1168
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "healing-powder",
+      "name": "回春散",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one squat folded ivory cloth pouch filled with pale ochre medicinal powder, tied with green cord, tiny powder mound at mouth. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-4f6bac21-97ce-4266-a027-c078c23b3ec6.png",
+      "file": "items/healing-powder.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 2284844,
+      "sha256": "38bf9c49637b80bac9de3645d263db0081dabbb03836f71fb4d022cddc6c0532",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.4914,
+      "opaqueBodyBounds": [
+        76,
+        99,
+        1213,
+        1188
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "clarity-pill",
+      "name": "清心丹",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one pale jade-green round medicinal pill on a small shallow blue-white porcelain saucer, exactly ONE pill, round silhouette. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-de1bb4a7-2329-4735-8f5e-ef9548c05966.png",
+      "file": "items/clarity-pill.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1469729,
+      "sha256": "bf337ed779ed00fa689dfb0d9a5d48296b6dfd14fa1e68457abaad025da20b6a",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.6086,
+      "opaqueBodyBounds": [
+        66,
+        344,
+        1186,
+        1087
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "sword",
+      "name": "听松灵剑·一阶",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one elegant straight steel jian sword, full blade visible diagonal from bottom-left to top-right, dark pine green wrapped handle and restrained jade guard, no scabbard. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-1fc91179-ebbb-4b0f-b7ec-2cff451eb1e9.png",
+      "file": "items/sword.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 636107,
+      "sha256": "b4312379b3e16ab4f4584ff3bfba8917af877c4a07d9f8863dff6df6e1977108",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.8763,
+      "opaqueBodyBounds": [
+        90,
+        35,
+        1211,
+        1223
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "vial",
+      "name": "归元灵瓶·一阶",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one small celadon jade spirit flask, rounded body slender neck and plain bronze stopper, restrained leaf-shaped relief, no writing. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-88838923-7edb-423d-8241-a287ad613cb8.png",
+      "file": "items/vial.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1530428,
+      "sha256": "60ed6d88beb7a748311fa813b3b9c036a367073d6a7a5d12bd9048d3cc0801ae",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.6375,
+      "opaqueBodyBounds": [
+        268,
+        57,
+        1190,
+        1190
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "manual-spring",
+      "name": "长春诀",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one green cloth-bound cultivation manual closed at slight three-quarter angle, cover symbol a simple sprouting branch, ivory corner wear, no writing. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-8a4bc125-3d4f-4b90-87f5-6049070c58da.png",
+      "file": "items/manual-spring.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 2476264,
+      "sha256": "fdad04c84d90c0faa2ae536b4d848cf51df9634c77654a3870d91ad96f713d00",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.4356,
+      "opaqueBodyBounds": [
+        61,
+        62,
+        1224,
+        1197
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "manual-blade",
+      "name": "听松剑经",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one dark blue cloth-bound cultivation manual closed at slight three-quarter angle, cover symbol a slim silver sword crossing a pine twig, no writing. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-f38c5a22-19c2-458c-a3e9-c361966bcbb3.png",
+      "file": "items/manual-blade.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 2366154,
+      "sha256": "a3f0ae78121961985135210166342709ce54877341a727e11231a98e381dfe94",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.4744,
+      "opaqueBodyBounds": [
+        133,
+        85,
+        1197,
+        1218
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "manual-breath",
+      "name": "归元息",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one ivory grey cloth-bound cultivation manual closed at slight three-quarter angle, cover symbol three teal concentric breath circles, no writing. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-ead09817-2928-4b60-8a8a-2f78de0f7335.png",
+      "file": "items/manual-breath.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 2268366,
+      "sha256": "51b2425827d5888b6e84582413d4f0d0dae5361ec5041ed6732269673095a219",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.4736,
+      "opaqueBodyBounds": [
+        89,
+        91,
+        1204,
+        1169
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "manual-herb",
+      "name": "辨草录",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one ochre cloth-bound botanical manual closed at slight three-quarter angle, cover symbol a pressed three-leaf herb, no writing. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2caef7cf-89ee-4eb5-a32b-81a795e6964c.png",
+      "file": "items/manual-herb.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 2242178,
+      "sha256": "079126c9c6f876bdf5fe3404e12bdd4541de8e18d4f4a73c7756fa73fdca0094",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.5183,
+      "opaqueBodyBounds": [
+        124,
+        110,
+        1204,
+        1199
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "manual-guard",
+      "name": "护身诀·玉简",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one thick upright dark jade cultivation tablet with rounded corners and beveled edges, a deeply engraved bronze SHIELD motif on the face, short brown cord through a top hole. Clearly a jade slip not a book or scroll, opaque dark green mineral with restrained gold inlay. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-092c0abe-fe49-490f-971f-a3b7194b758c.png",
+      "file": "items/manual-guard.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1744114,
+      "sha256": "bd7fb2f72c38bcaaa743029a624ba728821837c008fff9d070b7703f19f372dd",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.6108,
+      "opaqueBodyBounds": [
+        261,
+        35,
+        1213,
+        1224
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "manual-lantern",
+      "name": "照夜篇·玉简",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one slender pale icy-jade cultivation slip with a quiet amber LANTERN motif engraved into its surface, two small indigo cords through its top, luminous translucent edges but opaque readable body. Clearly an elongated jade slip not a book or scroll. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-d18c85f8-968e-4c4b-b992-28191cad5efa.png",
+      "file": "items/manual-lantern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1317305,
+      "sha256": "367c145066b3d7c180d92d92a80fcef97ba5f42aab2f5b6c312b06d31652a888",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.7136,
+      "opaqueBodyBounds": [
+        251,
+        32,
+        1159,
+        1234
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "route-map",
+      "name": "航图",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one partly unrolled old ivory paper route map showing simple ink mountains and a dotted teal route, green wooden scroll ends, no readable writing. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-73c3c3c7-1df0-4560-a911-e5c48a2e84e1.png",
+      "file": "items/route-map.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1927089,
+      "sha256": "94e59790d1896ea755ebf450af9e43b62b2434d20b8a6b449eced596b555155b",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.5535,
+      "opaqueBodyBounds": [
+        45,
+        87,
+        1220,
+        1146
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "medicine-tag",
+      "name": "药签",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one narrow worn bamboo medicine tag with an olive cord and a small pressed leaf tied onto it, no readable writing. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2a2b2027-3a5d-47d1-ae72-d48292ee4a59.png",
+      "file": "items/medicine-tag.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1350778,
+      "sha256": "cb8818cda830396fbf9b584ae29c39131b7c1418790418980d0871061d83ea6b",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.7195,
+      "opaqueBodyBounds": [
+        218,
+        65,
+        1199,
+        1197
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "family-letter",
+      "name": "家书",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one folded ivory letter in a slightly open worn envelope, small red sealing mark, no readable writing. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-fc5f8f15-6813-42be-9f83-29072cdd46d4.png",
+      "file": "items/family-letter.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 2054176,
+      "sha256": "db5abde0b4f0fdfa6b48aa9e584634e58ca05adddc982eadc868720b34efe886",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.4852,
+      "opaqueBodyBounds": [
+        122,
+        86,
+        1217,
+        1167
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "spirit-lantern",
+      "name": "探灵灯",
+      "kind": "items",
+      "prompt": "Use case: stylized-concept. One standalone inventory icon and reward illustration for Chinese cultivation RPG. Refined hand-painted Chinese ink and mineral watercolor with clear high-contrast silhouette at 64px, restrained jade teal grey ivory warm gold, isolated opaque object on TRUE transparent background. Square canvas, object fills 75% of canvas with safe margins, no scenery no ground no cast shadow, no frame no UI no labels no typography no letters no watermark. One coherent item only. Avoid excessive wispy detail and distracting halos. Subject: one small handheld ancient lantern, dark bronze hexagonal frame and simple curved handle, jade translucent panels with quiet warm light, no background. Reference board is STYLE only; create a clean independent icon, not a board crop.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/style-board-v1.png"
+      ],
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-e562289b-e1ba-4178-9c13-cdd9a5e67cc1.png",
+      "file": "items/spirit-lantern.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1502190,
+      "sha256": "d74608a70483eb244c31c0ca62ce5e9763c8383b50d97dfb4b474d7c51903eca",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.6665,
+      "opaqueBodyBounds": [
+        265,
+        6,
+        1183,
+        1247
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "hero-male-meditate",
+      "name": "男主角·吐纳",
+      "kind": "characters",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-32cc4aab-c0de-4d31-b6af-8c9093167fae.png"
+      ],
+      "prompt": "Use case: identity-preserve. Create ONE standalone alternate pose of the exact character in the reference. Preserve exact recognizable face, gender, hairstyle, jade hair ornament, jade/ivory costume pattern, sword fittings and natural body proportions. Change only posture to: sitting cross-legged in composed meditation, straight back, hands resting naturally on knees, eyes gently closed, no floating effects, sword remains sheathed beside left hip. Same refined ink mineral watercolor. Full body with all limbs weapon and hair entirely inside canvas, 8 percent margins. TRUE transparent background, no scenery, no ground shadow, no text, no UI. This is an individual game animation pose, not a contact sheet. Opaque character, clean edges, no aura around silhouette.",
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-ffd6aebe-1fef-4387-8159-d368f7ae790a.png",
+      "file": "characters/hero-male-meditate.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2859133,
+      "sha256": "aca823611743a59a23f307f91c33aeb9a0d906a34aca966b4cdfbbbcf5363e88",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.4402,
+      "opaqueBodyBounds": [
+        7,
+        138,
+        1016,
+        1440
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "hero-male-attack",
+      "name": "男主角·出剑",
+      "kind": "characters",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-32cc4aab-c0de-4d31-b6af-8c9093167fae.png"
+      ],
+      "prompt": "Use case: identity-preserve. Create ONE standalone alternate pose of the exact character in the reference. Preserve exact recognizable face, gender, hairstyle, jade hair ornament, jade/ivory costume pattern, sword fittings and natural body proportions. Change only posture to: dynamic grounded sword attack pose, right hand holding the same drawn straight jian extended diagonally forward toward viewer right, empty scabbard still at left hip, left hand balanced back, both feet visible and grounded, robe movement restrained, no sword streaks or particles. Same refined ink mineral watercolor. Full body with all limbs weapon and hair entirely inside canvas, 8 percent margins. TRUE transparent background, no scenery, no ground shadow, no text, no UI. This is an individual game animation pose, not a contact sheet. Opaque character, clean edges, no aura around silhouette.",
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-8d6b397d-e837-449c-9313-a642e611ea4c.png",
+      "file": "characters/hero-male-attack.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2787638,
+      "sha256": "7a366b6e4b125c8631ec3c304d751ea681c1f0f75560293774fdf1f9f7a5d3f9",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.4677,
+      "opaqueBodyBounds": [
+        16,
+        36,
+        1005,
+        1483
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "hero-female-meditate",
+      "name": "女主角·吐纳",
+      "kind": "characters",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-1b51e1ed-3374-42bf-b7c0-cefefd38d01c.png"
+      ],
+      "prompt": "Use case: identity-preserve. Create ONE standalone alternate pose of the exact character in the reference. Preserve exact recognizable face, gender, hairstyle, jade hair ornament, jade/ivory costume pattern, sword fittings and natural body proportions. Change only posture to: sitting cross-legged in composed meditation, straight back, hands resting naturally on knees, eyes gently closed, no floating effects, sword remains sheathed beside left hip. Same refined ink mineral watercolor. Full body with all limbs weapon and hair entirely inside canvas, 8 percent margins. TRUE transparent background, no scenery, no ground shadow, no text, no UI. This is an individual game animation pose, not a contact sheet. Opaque character, clean edges, no aura around silhouette.",
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-7c6fdcdb-ff3d-4dde-b8be-ef9097cd405b.png",
+      "file": "characters/hero-female-meditate.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2702089,
+      "sha256": "30fe39db2e506c58b9b5e1ec4208e8035b6b27870f723d982727a0f359d82dc7",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.4618,
+      "opaqueBodyBounds": [
+        7,
+        108,
+        1019,
+        1441
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "hero-female-attack",
+      "name": "女主角·出剑",
+      "kind": "characters",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-1b51e1ed-3374-42bf-b7c0-cefefd38d01c.png"
+      ],
+      "prompt": "Use case: identity-preserve. Create ONE standalone alternate pose of the exact character in the reference. Preserve exact recognizable face, gender, hairstyle, jade hair ornament, jade/ivory costume pattern, sword fittings and natural body proportions. Change only posture to: dynamic grounded sword attack pose, right hand holding the same drawn straight jian extended diagonally forward toward viewer right, empty scabbard still at left hip, left hand balanced back, both feet visible and grounded, robe movement restrained, no sword streaks or particles. Same refined ink mineral watercolor. Full body with all limbs weapon and hair entirely inside canvas, 8 percent margins. TRUE transparent background, no scenery, no ground shadow, no text, no UI. This is an individual game animation pose, not a contact sheet. Opaque character, clean edges, no aura around silhouette.",
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-156ee842-2f5f-47b6-a00d-e23be47d1c5c.png",
+      "file": "characters/hero-female-attack.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2761634,
+      "sha256": "3159237e2ee86cbc93c06d87778d38c227b144c3b8a327e77b3cabcf09ec98ab",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.4631,
+      "opaqueBodyBounds": [
+        17,
+        26,
+        1007,
+        1514
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "raider-attack",
+      "name": "劫药客·蓄力攻击",
+      "kind": "characters",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-01d92048-c422-4bc2-8c9c-4b6864a88c04.png"
+      ],
+      "prompt": "Use case: identity-preserve. ONE standalone alternate full-body animation pose of the exact reference enemy. Keep same face/head, costume or stone plate design, proportions, weapon and colors. Change only pose to curved saber raised above right shoulder ready to slash, left arm balancing, both feet grounded. Refined ink and mineral watercolor. Entire feet, weapon and raised hands within frame with 8 percent safe margins. True transparent background, no ground, no shadow, no aura, no text, no extra figures, no contact sheet, no detached body parts.",
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-b55c59d8-9a59-45ac-abfd-aacef6e6ffe4.png",
+      "file": "characters/raider-attack.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2941508,
+      "sha256": "f0192063d141cf0250dd8a906de9f7502178f0a9f27b194a107157550b43079a",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.4723,
+      "opaqueBodyBounds": [
+        44,
+        27,
+        993,
+        1494
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "raider-hurt",
+      "name": "劫药客·受击",
+      "kind": "characters",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-01d92048-c422-4bc2-8c9c-4b6864a88c04.png"
+      ],
+      "prompt": "Use case: identity-preserve. ONE standalone alternate full-body animation pose of the exact reference enemy. Keep same face/head, costume or stone plate design, proportions, weapon and colors. Change only pose to recoiling one small step, saber lowered in right hand and free hand protecting torso, no blood. Refined ink and mineral watercolor. Entire feet, weapon and raised hands within frame with 8 percent safe margins. True transparent background, no ground, no shadow, no aura, no text, no extra figures, no contact sheet, no detached body parts.",
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-986b1068-86fa-48c2-ae9d-489d6e96d81f.png",
+      "file": "characters/raider-hurt.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2876002,
+      "sha256": "46ad7c9754469584b1799803ffdf72e1e927f2ce3e40812581033b21820e629c",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.4763,
+      "opaqueBodyBounds": [
+        46,
+        14,
+        1013,
+        1517
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "golem-attack",
+      "name": "蚀阵傀儡·蓄力攻击",
+      "kind": "characters",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-555d87fb-99aa-4eec-80d5-d6db01706232.png"
+      ],
+      "prompt": "Use case: identity-preserve. ONE standalone alternate full-body animation pose of the exact reference enemy. Keep same face/head, costume or stone plate design, proportions, weapon and colors. Change only pose to heavy two-arm overhead stone smash wind-up, clearly readable raised arms and chest amber diamond core, feet grounded. Refined ink and mineral watercolor. Entire feet, weapon and raised hands within frame with 8 percent safe margins. True transparent background, no ground, no shadow, no aura, no text, no extra figures, no contact sheet, no detached body parts.",
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9f7d1615-e0c4-47a1-89f0-b83645ab4256.png",
+      "file": "characters/golem-attack.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 3005716,
+      "sha256": "33e9b9ac71b271a56d915b4c126baae853d48f7566db6a0428a52277b242e96a",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.4574,
+      "opaqueBodyBounds": [
+        20,
+        9,
+        1018,
+        1531
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "golem-hurt",
+      "name": "蚀阵傀儡·受击",
+      "kind": "characters",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-555d87fb-99aa-4eec-80d5-d6db01706232.png"
+      ],
+      "prompt": "Use case: identity-preserve. ONE standalone alternate full-body animation pose of the exact reference enemy. Keep same face/head, costume or stone plate design, proportions, weapon and colors. Change only pose to recoiling with one shoulder turned back, knees bent and one stone hand bracing at chest, amber core intact. Refined ink and mineral watercolor. Entire feet, weapon and raised hands within frame with 8 percent safe margins. True transparent background, no ground, no shadow, no aura, no text, no extra figures, no contact sheet, no detached body parts.",
+      "status": "generated",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-34f4330a-9051-490b-8887-fa583243e573.png",
+      "file": "characters/golem-hurt.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 3226283,
+      "sha256": "41e262c59ce954a207ecc01f9c155e165465b0e1279c68074c267191a558f6ed",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentFraction": 0.4021,
+      "opaqueBodyBounds": [
+        22,
+        12,
+        1013,
+        1528
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "sword-refined",
+      "name": "听松灵剑·精炼",
+      "kind": "items",
+      "status": "generated",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-1fc91179-ebbb-4b0f-b7ec-2cff451eb1e9.png"
+      ],
+      "prompt": "Use case: precise-object-edit. A nonviolent fantasy RPG inventory object illustration. Edit only the decorative craftsmanship of the isolated ceremonial jian in the reference: add two small jade inlays beside the existing guard and a fine jade line along the central flat of the metal. Preserve the original outline, angle, tassel, handle and watercolor materials. This is a museum-style object display with no person, no combat, no injury. Entire object visible on genuine transparent background, no text, square composition.",
+      "previousError": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID c83da490-adac-4078-90e1-66c757a5011c. safety_violations=[violence].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"input\\\",\\n      \\\"categories\\\": [\\n        \\\"violence\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2a37cc87-ba91-497e-a07e-91fb7ca08c82.png",
+      "file": "items/sword-refined.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 640172,
+      "sha256": "be72173eef045769acb4597f7d66a3c2f43c9afa81e7f35fcead6e6dd86c28cc",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.8745,
+      "opaqueBodyBounds": [
+        88,
+        35,
+        1213,
+        1224
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    },
+    {
+      "id": "vial-refined",
+      "name": "归元灵瓶·精炼",
+      "kind": "items",
+      "status": "generated",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-88838923-7edb-423d-8241-a287ad613cb8.png"
+      ],
+      "prompt": "Use case: precise-object-edit. Create one refined-stage version of the exact cultivation item in the reference. Preserve silhouette, camera angle, material, recognizable fittings and painterly ink-watercolor style. Add a narrow two-band bronze collar and a distinct simple spiral relief around the rounded flask body; retain the same jade bottle and stopper. Refinement must be visible as craftsmanship details, not just a different hue or a giant glow. Exactly one complete item, true transparent background, no typography, no UI, no scenery, square framing with full object and 8 percent margin.",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2ccfc788-26d7-4931-b572-324feb09a06f.png",
+      "file": "items/vial-refined.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1562462,
+      "sha256": "2cbf8d88f41a66ad1a6d465f80377fa35d8364176151381fbb5b11f6520ed11a",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.6317,
+      "opaqueBodyBounds": [
+        266,
+        56,
+        1197,
+        1191
+      ],
+      "reviewStatus": "candidate-needs-integration-review"
+    }
+  ]
+}

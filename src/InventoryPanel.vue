@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ItemArt from "./presentation/ItemArt.vue";
 import SceneResponse from "./SceneResponse.vue";
 import type { ActionReceipt } from "./action-feedback";
 import { computed, ref } from "vue";
@@ -77,7 +78,7 @@ const item = computed(
     药性未散：第 {{ game.growth.lastMedicineMonth + 3 }} 月可再次服药。
   </p>
   <p>
-    灵石 {{ game.stones }} · 当前灵器：{{
+    <ItemArt id="stones" :size="32" /> 灵石 {{ game.stones }} · 当前灵器：{{
       game.journey.equipped ? relics[game.journey.equipped].name : "未装备"
     }}
   </p>
@@ -98,13 +99,13 @@ const item = computed(
         :aria-pressed="item?.id === entry.id"
         @click="selected = entry.id"
       >
-        <span class="item-seal">{{ entry.name.slice(0, 1) }}</span
-        ><strong>{{ entry.name }}</strong
+        <ItemArt :id="entry.id" :tier="entry.id === 'sword' || entry.id === 'vial' ? game.journey.relics[entry.id] : 0" /><strong>{{ entry.name }}</strong
         ><small>× {{ entry.count }}</small>
       </button>
       <p v-if="!visible.length">尚未获得此类物品。</p>
     </div>
     <section v-if="item" class="item-detail">
+      <ItemArt :id="item.id" :size="128" :tier="item.id === 'sword' || item.id === 'vial' ? game.journey.relics[item.id] : 0" />
       <small>{{ item.category }}</small>
       <h3>{{ item.name }}</h3>
       <p>{{ item.description }}</p>

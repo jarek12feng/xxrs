@@ -1,17 +1,38 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { usePageVisible } from "../presentation/usePageVisible";
+const pageVisible = usePageVisible();
+import { characterArt, heroArt } from "../presentation/art";
 import type { Expedition } from "./rules";
-defineProps<{
+const props = defineProps<{
+  gender?: string | null;
   quest: Expedition;
   foe: string;
   playerMax?: number;
   enemyMax?: number;
   telegraph?: string;
 }>();
+const hero = computed(() =>
+  characterArt(
+    heroArt(props.gender),
+    props.quest.effect === "strike" ? "attack" : "idle",
+  ),
+);
+const enemy = computed(() =>
+  characterArt(
+    props.foe === "蚀阵傀儡" ? "golem" : "raider",
+    ["strike", "win"].includes(props.quest.effect)
+      ? "hurt"
+      : props.quest.effect === "hurt" || props.telegraph === "guard"
+        ? "attack"
+        : "idle",
+  ),
+);
 </script>
 <template>
   <div
     class="battle-stage"
-    :class="quest.effect"
+    :class="[quest.effect, { 'art-paused': !pageVisible }]"
     :key="`${quest.attempts}-${quest.cleared}-${quest.duel?.turn}-${quest.effect}`"
     :data-foe="foe === '蚀阵傀儡' ? 'golem' : 'raider'"
     :data-tell="telegraph"
@@ -50,94 +71,35 @@ defineProps<{
         stroke-width="15"
       />
       <path d="M0 152 Q160 125 300 154 T600 148 V180 H0" fill="#31493e" />
-      <g class="hero" transform="translate(135 0)">
-        <ellipse cx="0" cy="157" rx="43" ry="7" fill="#101f1c" />
-        <path d="M-11 76 L-39 151 Q0 165 36 151 L12 76Z" fill="#b6c7a0" />
-        <path
-          d="M0 85 L-4 155 M-11 95 L-31 128 M10 95 L42 107"
-          fill="none"
-          stroke="#e5d7b6"
-          stroke-width="9"
-        />
-        <circle cy="58" r="18" fill="#dfc5a0" />
-        <path d="M-19 58 Q-20 23 13 37 L22 70 L12 46 L-11 46Z" fill="#172321" />
-        <path d="M-9 58 L-5 58 M5 58 L9 58" stroke="#34453d" stroke-width="2" />
-        <path
-          d="M-17 103 L17 109 M-19 110 L12 116"
-          stroke="#526b53"
-          stroke-width="5"
-        />
-        <path
-          d="M-18 149 L-25 157 H-6 M12 150 L22 158 H6"
-          fill="none"
-          stroke="#1a2c27"
-          stroke-width="5"
-        />
-        <path
-          class="blade"
-          d="M39 107 L98 69"
-          stroke="#fff0b6"
-          stroke-width="5"
+      <g class="hero">
+        <image
+          :href="hero"
+          x="65"
+          y="5"
+          width="140"
+          height="165"
+          preserveAspectRatio="xMidYMax meet"
         />
         <ellipse
           class="shield"
-          cx="25"
+          cx="140"
           cy="100"
-          rx="45"
-          ry="62"
+          rx="54"
+          ry="68"
           fill="none"
           stroke="#9ee1d1"
-          stroke-width="4"
+          stroke-width="3"
         />
       </g>
-      <g class="enemy" transform="translate(460 0)">
-        <ellipse cx="0" cy="159" rx="48" ry="7" fill="#101f1c" />
-        <g v-if="foe === '蚀阵傀儡'" class="golem">
-          <path
-            d="M-27 69 L-39 113 L-29 139 L-34 157 L-8 157 L0 130 L9 157 L36 157 L28 130 L39 106 L27 69Z"
-            fill="#778b80"
-            stroke="#b2b9a0"
-            stroke-width="2"
-          />
-          <path
-            d="M-27 76 L-52 92 L-63 126 L-45 134 L-28 103 M28 76 L49 90 L63 127 L45 133 L28 105"
-            fill="#536b63"
-            stroke="#93a591"
-            stroke-width="3"
-          />
-          <path d="M-20 38 L0 28 L21 39 L16 65 L-17 65Z" fill="#9ca38c" />
-          <path
-            d="M-13 49 L-4 53 M5 53 L14 49"
-            stroke="#ffc581"
-            stroke-width="4"
-          />
-          <path d="M0 78 L13 97 L0 115 L-13 97Z" fill="#e5ac5f" class="core" />
-          <path
-            d="M-22 77 L-9 87 M24 78 L10 88 M-18 117 L-3 122 L12 116"
-            stroke="#334e47"
-            stroke-width="3"
-            fill="none"
-          />
-        </g>
-        <g v-else class="raider">
-          <path
-            d="M-16 70 L-35 146 L-10 139 L-9 158 L5 158 L9 134 L20 157 L34 157 L25 125 L19 72Z"
-            fill="#33404a"
-            stroke="#758785"
-            stroke-width="2"
-          />
-          <path
-            d="M-18 79 L-44 101 L-64 80 M18 80 L31 110"
-            stroke="#5e706c"
-            stroke-width="13"
-            fill="none"
-          />
-          <path d="M-66 84 Q-108 39 -90 21 L-58 75Z" fill="#d1d5bc" />
-          <path d="M-22 67 L-25 48 Q0 9 23 48 L22 69Z" fill="#273137" />
-          <path d="M-12 48 H12 L9 57 H-10Z" fill="#d3b68b" />
-          <path d="M-20 64 Q0 51 20 64 L11 76 H-12Z" fill="#495854" />
-          <path d="M-17 99 L23 106" stroke="#b59363" stroke-width="6" />
-        </g>
+      <g class="enemy">
+        <image
+          :href="enemy"
+          x="380"
+          y="5"
+          width="150"
+          height="165"
+          preserveAspectRatio="xMidYMax meet"
+        />
       </g>
       <path
         class="wave"
@@ -210,7 +172,7 @@ meter::-webkit-meter-optimum-value {
 [data-tell="discern"] .enemy {
   animation: veil 1.8s ease-in-out infinite;
 }
-[data-tell="strike"] .core {
+[data-tell="strike"] .enemy {
   animation: flash 1.4s infinite;
 }
 @keyframes ready {
@@ -294,10 +256,13 @@ p {
   .guard .shield,
   .discern .runes,
   .strike .enemy {
-    animation: hit 0.65s 0.15s;
+    animation: none;
   }
   .strike .wave {
     opacity: 1;
   }
+}
+.battle-stage.art-paused * {
+  animation-play-state: paused !important;
 }
 </style>

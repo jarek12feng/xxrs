@@ -65,8 +65,8 @@ it("renders different opponents and accessible exact health meters", async () =>
   const boss = await renderToString(
     createSSRApp(BattleStage, { quest: p.state.expedition, foe: "蚀阵傀儡" }),
   );
-  expect(boss).toContain('class="golem"');
-  expect(boss).not.toContain('class="raider"');
+  expect(boss).toContain('/art/characters/golem.webp');
+  expect(boss).not.toContain('/art/characters/raider.webp');
 });
 it("keeps the tutorial fight accessible across both paths and all aptitudes", () => {
   for (const path of ["wood", "sword"] as const)

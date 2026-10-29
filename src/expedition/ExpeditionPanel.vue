@@ -52,6 +52,7 @@ const actions = computed<
         <small>{{ style.name }} · 灵草 {{ game.herbs }}</small>
       </header>
       <BattleStage
+        :gender="game.social.gender"
         :quest="q"
         :foe="encounter.foe"
         :player-max="meters.playerMax"
@@ -140,6 +141,7 @@ const actions = computed<
           需筑基。建议根基 6、神识 6、心得 2；建议不是必胜门槛，仍需看破招式。
         </p>
         <BattleStage
+          :gender="game.social.gender"
           v-if="q.cleared !== 1 && q.effect !== 'win'"
           :quest="q"
           :foe="encounter.foe"
@@ -148,6 +150,7 @@ const actions = computed<
         />
       </template>
       <BattleStage
+        :gender="game.social.gender"
         v-if="q.effect === 'win' && !q.duel && q.cleared !== 2"
         :quest="q"
         :foe="encounters[Math.max(0, q.cleared - 1)]!.foe"

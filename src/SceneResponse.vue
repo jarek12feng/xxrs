@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ItemArt from "./presentation/ItemArt.vue";
+import { rewardArt } from "./presentation/art";
 import { ref, watch, nextTick } from "vue";
 import type { ActionReceipt } from "./action-feedback";
 const props = defineProps<{ text: string; receipt?: ActionReceipt | null }>();
@@ -55,7 +57,11 @@ watch(
     </p>
     <div v-if="receipt?.changes.length" class="scene-deltas">
       <span v-for="c in receipt.changes" :key="c.label"
-        >{{ c.label }} {{ c.after > c.before ? "+" : "−"
+        ><ItemArt
+          v-if="rewardArt[c.label]"
+          :id="rewardArt[c.label]!"
+          :size="32"
+        />{{ c.label }} {{ c.after > c.before ? "+" : "−"
         }}{{ Math.abs(c.after - c.before) }}</span
       >
     </div>

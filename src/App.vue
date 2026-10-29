@@ -106,6 +106,7 @@ import AdventurePanel from "./AdventurePanel.vue";
 import RoadPanel from "./RoadPanel.vue";
 import MistPanel from "./MistPanel.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
+import ItemArt from "./presentation/ItemArt.vue";
 import PracticeStage from "./PracticeStage.vue";
 import ActionFeedback from "./ActionFeedback.vue";
 import SceneArrival from "./SceneArrival.vue";
@@ -1055,6 +1056,7 @@ onUnmounted(() => {
             />
             <PracticeStage
               :key="practiceSerial"
+              :gender="game.social.gender"
               :activity="practice ?? activity"
               :playing="!!practice && !modal"
             />
@@ -1442,6 +1444,7 @@ onUnmounted(() => {
               郁青姐姐：已证实随队救治，平安与归期仍未确认。
             </li>
             <li v-if="game.journey.maps.sea < 3">
+              <ItemArt id="letter" :size="48" />
               陆迟家书：可在地图的「道友寻亲」继续；这不是突破的必选条件。
             </li>
             <li v-else>陆迟家书已送达；父亲仍在守引航阵，尚未团聚。</li>

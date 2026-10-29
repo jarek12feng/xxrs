@@ -1,0 +1,9 @@
+# 候选美术提示词
+
+生成方式：内置 image_gen，2026-10-29。文件：`style-board-v1.png`。参考：现有 `public/characters/luchi-base.png`，用于陆迟身份与画风。
+
+用途：角色与道具风格预览，尚非透明底生产素材，未接入游戏。检查结果：三名角色与八类道具完整可见，配色统一；主角与陆迟的脸型和发式仍偏近，后续主角基准需加强辨识；石傀儡细节较密，制作战斗素材时须在实际尺寸检验阵核和动作轮廓。预览中清心丹为多颗摆盘，正式图标数量由 UI 表示，不能据此改变库存规则。
+
+## 最终提示词
+
+Use case: stylized-concept. Asset type: art direction preview board for an existing Chinese cultivation single-player RPG, NOT final sprite sheet. Create one refined landscape visual development board on pale warm ivory with generous negative space. Top row: three complete full-body characters, clearly separated and same ground line: a youthful Chinese cultivator protagonist with refined natural proportions, restrained jade-green robes and a simple sheathed sword; Lu Chi, exactly preserve the recognizable face, half tied black hair, cloth tie, worn blue-grey robe and notched sword identity in the attached reference portrait, extend naturally to full body; a formidable moss-grey ancient stone formation golem with distinct amber diamond-shaped chest core and readable articulated stone limbs. All are polished ink-and-mineral-watercolor illustrations with elegant silhouettes, not chibi, not geometric stick figures, no exaggerated glossy anime. Bottom row: eight separated large item concepts, clearly readable: a bundle of medicinal herbs; a translucent spirit stone; one golden foundation pill in a small open case; a cloth pouch of healing powder; a pale green clarity pill in a small porcelain saucer; an elegant straight iron sword with restrained jade fittings; a jade-green spirit flask with narrow neck; a cloth-bound cultivation manual with a subtle botanical motif. Props share the same painterly rendering and restrained teal, grey, warm gold palette as the characters. No labels, no readable writing, no UI, no arrows, no prices, no logos, no watermark. No cropped feet or objects. This is one coherent reusable art direction, not a game screenshot.

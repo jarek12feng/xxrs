@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CharacterSprite from "./presentation/CharacterSprite.vue";
+import { heroArt, rivalArt } from "./presentation/art";
 import { computed, ref, watch, nextTick, onUnmounted } from "vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 import {
@@ -297,8 +299,12 @@ const intentText: Record<Stance, string> = {
           <h3>{{ rivals[duel.opponent].name }} · 第 {{ duel.turn + 1 }} 合</h3>
           <div class="combatants">
             <div>
-              <span class="fighter-seal">{{ game.name.slice(0, 1) }}</span
-              ><span
+              <CharacterSprite
+                style="height: 150px"
+                :character="heroArt(game.social.gender)"
+                pose="attack"
+                :label="game.name"
+              /><span
                 >你的气势
                 <strong>{{ duel.hp }} / {{ duel.maxHp }}</strong></span
               >
@@ -315,10 +321,12 @@ const intentText: Record<Stance, string> = {
             </div>
             <b class="clash-mark" aria-hidden="true">交锋</b>
             <div>
-              <span class="fighter-seal enemy">{{
-                rivals[duel.opponent].name.slice(0, 1)
-              }}</span
-              ><span
+              <CharacterSprite
+                v-if="rivalArt[rivals[duel.opponent].name]"
+                style="height: 150px"
+                :character="rivalArt[rivals[duel.opponent].name]!"
+                :label="rivals[duel.opponent].name"
+              /><span
                 >对手气势
                 <strong
                   >{{ duel.enemyHp }} / {{ rivals[duel.opponent].hp }}</strong
@@ -412,7 +420,12 @@ const intentText: Record<Stance, string> = {
                     : "后续对手"
               }}</span>
             </div>
-
+            <CharacterSprite
+              v-if="rivalArt[rival.name]"
+              style="height: 180px"
+              :character="rivalArt[rival.name]!"
+              :label="rival.name"
+            />
             <p>{{ rival.style }} · {{ rival.story }}</p>
             <small>首次胜利：{{ rival.prize }}</small
             ><template v-if="game.social.arena.wins === index"

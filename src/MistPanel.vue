@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ItemArt from "./presentation/ItemArt.vue";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 import SceneResponse from "./SceneResponse.vue";
@@ -542,7 +543,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
             m.ward ? "已有护归准备，再 +20（不叠加）。" : "可回营研究护归法。"
           }}
         </p>
-        <p v-if="m.lamp">
+        <p v-if="m.lamp"><ItemArt id="lamp" />
           探灵灯：照见旧山祠的隐藏灵痕，也能照出药圃根脉。不占战斗灵器槽。
         </p>
         <p v-if="m.settled">

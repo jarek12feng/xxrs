@@ -1,0 +1,98 @@
+{
+  "generator": "image_gen",
+  "date": "2026-10-29",
+  "assets": [
+    {
+      "id": "foundation-pill",
+      "kind": "items",
+      "prompt": "Edit the reference into a production asset for an authentic Chinese xianxia cultivation game. Preserve the hand-painted ink/mineral pigment illustration style, but follow this corrected art direction: 筑基丹。Replace the jewelry box and giant pearl entirely with one elegant antique Chinese amber-glazed porcelain DAN BOTTLE, rounded pear shape, narrow neck sealed with red silk tied by hemp cord, small blank hanging paper tag, subtle restrained auspicious cloud carving. One very small golden medicinal pill at its foot only as identification; bottle is dominant, not a potion. Warm ochre and vermilion palette. Isolated single object or character on fully transparent alpha background, no shadow backdrop or halo, no text, no UI, no border. Clear silhouette readable at small size. Do not bake any dark background. Keep 12% transparent padding around the entire subject.",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-16f5303a-cce6-4308-b5e8-4333d1cff63f.png",
+      "file": "items/foundation-pill.png",
+      "sha256": "125eed15bcb3299cbc1c7d5c6d57af2922f18df154c256c05d62eac6aa760dbb",
+      "name": "筑基丹·丹瓶"
+    },
+    {
+      "id": "clarity-pill",
+      "kind": "items",
+      "prompt": "Edit the reference into a production asset for an authentic Chinese xianxia cultivation game. Preserve the hand-painted ink/mineral pigment illustration style, but follow this corrected art direction: 清心丹。Replace the plate and oversized pearl entirely with one slender antique Chinese pale celadon porcelain DAN BOTTLE, narrow neck with jade stopper, dark green silk cord, small lotus motif. One tiny pale green medicinal pill by its foot. Bottle holds pills, not liquid. Tall slim silhouette unmistakably distinct from rounded amber bottle. No glass, liquid, corked western potion flask. Isolated single object or character on fully transparent alpha background, no shadow backdrop or halo, no text, no UI, no border. Clear silhouette readable at small size. Do not bake any dark background. Keep 12% transparent padding around the entire subject.",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-b6c08c02-6e70-4841-b26d-86ed463fe3bf.png",
+      "file": "items/clarity-pill.png",
+      "sha256": "d946aee2e78fe41afa0df71189db52efaee673cba8cbd602b4c0cc4d7c4815f0",
+      "name": "清心丹·丹瓶"
+    },
+    {
+      "id": "healing-powder",
+      "kind": "items",
+      "prompt": "Edit the reference into a production asset for an authentic Chinese xianxia cultivation game. Preserve the hand-painted ink/mineral pigment illustration style, but follow this corrected art direction: 回春散。Replace the fancy cloth bag with one traditional Chinese small squat broad-mouthed dark earthenware medicine jar, fitted wooden lid tilted beside its mouth revealing finely ground beige medicinal powder, simple linen sealing band, a short bamboo medicine scoop resting along its side. Compact sturdy silhouette, modest herbalist object, not a western potion, no jewel adornments. Isolated single object or character on fully transparent alpha background, no shadow backdrop or halo, no text, no UI, no border. Clear silhouette readable at small size. Do not bake any dark background. Keep 12% transparent padding around the entire subject.",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-26b80982-c463-4e41-9f1f-85b8b07da239.png",
+      "file": "items/healing-powder.png",
+      "sha256": "06afbe2a264b8e7e881fcdfb8b531b0597cd3dd4233a73b62b34f3759e9897ba",
+      "name": "回春散·药罐"
+    },
+    {
+      "id": "golem",
+      "kind": "characters",
+      "prompt": "Edit the reference into a production asset for an authentic Chinese xianxia cultivation game. Preserve the hand-painted ink/mineral pigment illustration style, but follow this corrected art direction: 蚀阵傀儡 existing Chinese cultivation game enemy, REDESIGN away from science fiction robot / western crystal golem. A solemn ancient Chinese stone tomb guardian puppet, broad simple solid weathered basalt limbs, carved ancient Chinese guardian face, worn layered Chinese stone armor reminiscent of temple guardian sculpture, etched cinnabar talisman lines along arms and torso, a small embedded round bronze array disk in chest with subtle amber light. No exposed mechanical hinges/gears, no angular robot helmet, no big faceted gemstone, no moss covering whole body. Preserve full-body large humanoid silhouette, facing slightly left, idle pose hands lowered. Not zombie, not a new gameplay enemy. 2D hand-painted ink and muted mineral pigments, same restrained green/gold art direction. Natural hand anatomy. Entire body and both feet visible with 12% clear margin. No diffuse glow outside silhouette, no environment. Isolated single object or character on fully transparent alpha background, no shadow backdrop or halo, no text, no UI, no border. Clear silhouette readable at small size. Do not bake any dark background. Keep 12% transparent padding around the entire subject.",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2db36a57-c653-45ad-a720-88628a959bfb.png",
+      "file": "characters/golem.png",
+      "sha256": "01c368fd29516f3377fabeeb19a31c650d54e858c112fa500c9208ffd5bc5556",
+      "name": "蚀阵傀儡·待机"
+    },
+    {
+      "id": "golem-attack",
+      "name": "蚀阵傀儡·蓄力",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2db36a57-c653-45ad-a720-88628a959bfb.png"
+      ],
+      "detail": "Edit this exact Chinese stone guardian identity into a poised attack stance, raising both stone forearms diagonally, weight settled on both feet. Preserve carved guardian face, basalt Chinese armor, cinnabar talisman lines, small round bronze array disk in chest. No crystal core or science fiction parts.",
+      "prompt": "Edit this exact Chinese stone guardian identity into a poised attack stance, raising both stone forearms diagonally, weight settled on both feet. Preserve carved guardian face, basalt Chinese armor, cinnabar talisman lines, small round bronze array disk in chest. No crystal core or science fiction parts. Production full-body 2D character sprite for Chinese xianxia game, hand-painted mineral pigments and restrained ink outlines matching existing muted jade/ochre game art, naturally proportioned face, detailed but readable at 200px, face slightly toward viewer, entire body with both feet visible, subject occupies at most 80% of canvas height and width, generous transparent padding. Fully transparent background, no halo, no smoke, no ground, no background scene, no text or UI. Do not crop hair, weapons, sleeves or feet.",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-0cd0ca5d-5eaf-4b10-8d4f-07b15e533e83.png",
+      "kind": "characters",
+      "file": "characters/golem-attack.png",
+      "sha256": "d496a89566be353e5f7c260b505290fa4d9dd86165ea91dc9f1a7f13a9e53419"
+    },
+    {
+      "id": "golem-hurt",
+      "name": "蚀阵傀儡·受击",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2db36a57-c653-45ad-a720-88628a959bfb.png"
+      ],
+      "detail": "Edit this exact Chinese stone guardian identity into a recoiling stance, one arm across chest and torso turned slightly backward, both feet entirely visible and grounded. Preserve carved guardian face, basalt Chinese armor, cinnabar lines and small round bronze chest disk. No injury gore. No crystal core or science fiction parts.",
+      "prompt": "Edit this exact Chinese stone guardian identity into a recoiling stance, one arm across chest and torso turned slightly backward, both feet entirely visible and grounded. Preserve carved guardian face, basalt Chinese armor, cinnabar lines and small round bronze chest disk. No injury gore. No crystal core or science fiction parts. Production full-body 2D character sprite for Chinese xianxia game, hand-painted mineral pigments and restrained ink outlines matching existing muted jade/ochre game art, naturally proportioned face, detailed but readable at 200px, face slightly toward viewer, entire body with both feet visible, subject occupies at most 80% of canvas height and width, generous transparent padding. Fully transparent background, no halo, no smoke, no ground, no background scene, no text or UI. Do not crop hair, weapons, sleeves or feet.",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-09681f24-5be4-4bd3-8ebf-ed9b5d6d6e8c.png",
+      "kind": "characters",
+      "file": "characters/golem-hurt.png",
+      "sha256": "cdc51d20eb7bca4e52ef62d3a0265b6a610ab01c56f8fde78b70341ad6b4f88d"
+    },
+    {
+      "id": "gongyan",
+      "name": "巩砚",
+      "detail": "A Chinese male cultivation sect sparring rival Gong Yan, adult about 35, broad grounded physique, square warm serious face, simple topknot, restrained earth-brown and stone-grey Chinese cross-collar cloth cultivation robes, cloth wrist wraps and sturdy boots, a small medicine convoy rope coil at belt as past escort clue. No armor suit, no western design. Calm guarded stance with open hands, solid reliable silhouette, human with dignity, not villain, not monster.",
+      "prompt": "A Chinese male cultivation sect sparring rival Gong Yan, adult about 35, broad grounded physique, square warm serious face, simple topknot, restrained earth-brown and stone-grey Chinese cross-collar cloth cultivation robes, cloth wrist wraps and sturdy boots, a small medicine convoy rope coil at belt as past escort clue. No armor suit, no western design. Calm guarded stance with open hands, solid reliable silhouette, human with dignity, not villain, not monster. Production full-body 2D character sprite for Chinese xianxia game, hand-painted mineral pigments and restrained ink outlines matching existing muted jade/ochre game art, naturally proportioned face, detailed but readable at 200px, face slightly toward viewer, entire body with both feet visible, subject occupies at most 80% of canvas height and width, generous transparent padding. Fully transparent background, no halo, no smoke, no ground, no background scene, no text or UI. Do not crop hair, weapons, sleeves or feet.",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-b14021e9-c292-423a-a0c2-cc7dad9b0bb2.png",
+      "kind": "characters",
+      "file": "characters/gongyan.png",
+      "sha256": "89a2707acb5f623d7f7235f402b995024e79176e39cb26d04c353cf31aa61b03"
+    },
+    {
+      "id": "peizhufeng",
+      "name": "裴逐风",
+      "detail": "A Chinese male cultivation sect sparring rival Pei Zhufeng, adult about 25, lean athletic figure, sharp confident face, high topknot with short muted teal ribbon, clean narrow-sleeved dark teal Chinese cross-collar sword cultivator robes, modest silver-grey edging, carrying a traditional straight Chinese jian diagonally down with blade fully inside canvas. Alert ready stance, light swift silhouette, no attack victim, not villain, not European armor.",
+      "prompt": "A Chinese male cultivation sect sparring rival Pei Zhufeng, adult about 25, lean athletic figure, sharp confident face, high topknot with short muted teal ribbon, clean narrow-sleeved dark teal Chinese cross-collar sword cultivator robes, modest silver-grey edging, carrying a traditional straight Chinese jian diagonally down with blade fully inside canvas. Alert ready stance, light swift silhouette, no attack victim, not villain, not European armor. Production full-body 2D character sprite for Chinese xianxia game, hand-painted mineral pigments and restrained ink outlines matching existing muted jade/ochre game art, naturally proportioned face, detailed but readable at 200px, face slightly toward viewer, entire body with both feet visible, subject occupies at most 80% of canvas height and width, generous transparent padding. Fully transparent background, no halo, no smoke, no ground, no background scene, no text or UI. Do not crop hair, weapons, sleeves or feet.",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-0299008d-ae16-4683-910c-3c57ba998582.png",
+      "kind": "characters",
+      "file": "characters/peizhufeng.png",
+      "sha256": "91774710e741f439e632c56e8ab3c8ab4b02911f67f2eed73af75b5b3dc8707c"
+    },
+    {
+      "id": "qiuxingluo",
+      "name": "邱星罗",
+      "detail": "A Chinese male cultivation sect sparring rival Qiu Xingluo, adult about 40, composed thoughtful face with short neatly trimmed beard, traditional Chinese scholar topknot and small jade hairpin, layered indigo and ivory Chinese cross-collar cultivation robes with sparse subtle constellation-dot embroidery. Holds a small circular bronze formation disk close to waist, other hand poised with two fingers indicating an array. Measured calm upright stance. Distinct scholarly silhouette, no wizard hat/staff, no western fantasy armor.",
+      "prompt": "A Chinese male cultivation sect sparring rival Qiu Xingluo, adult about 40, composed thoughtful face with short neatly trimmed beard, traditional Chinese scholar topknot and small jade hairpin, layered indigo and ivory Chinese cross-collar cultivation robes with sparse subtle constellation-dot embroidery. Holds a small circular bronze formation disk close to waist, other hand poised with two fingers indicating an array. Measured calm upright stance. Distinct scholarly silhouette, no wizard hat/staff, no western fantasy armor. Production full-body 2D character sprite for Chinese xianxia game, hand-painted mineral pigments and restrained ink outlines matching existing muted jade/ochre game art, naturally proportioned face, detailed but readable at 200px, face slightly toward viewer, entire body with both feet visible, subject occupies at most 80% of canvas height and width, generous transparent padding. Fully transparent background, no halo, no smoke, no ground, no background scene, no text or UI. Do not crop hair, weapons, sleeves or feet.",
+      "path": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-44c675d9-a656-4ff2-9509-7fc4ddac0534.png",
+      "kind": "characters",
+      "file": "characters/qiuxingluo.png",
+      "sha256": "9b5339b6a620bf870c59a4216513e40da385462a7cef217fb5d364face446aac"
+    }
+  ]
+}

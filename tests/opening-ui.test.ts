@@ -239,7 +239,8 @@ it("plays the corresponding cultivation figure only after persistence succeeds, 
   expect(
     document.querySelector(".practice-stage")?.getAttribute("data-playing"),
   ).toBe("true");
-  expect(document.querySelector(".practice-stage .hoe")).not.toBeNull();
+  expect(document.querySelector(".practice-stage .character-sprite img")?.getAttribute("src")).toContain("/art/characters/hero-male.webp");
+  expect(document.querySelector(".practice-stage .practice-prop img")?.getAttribute("src")).toContain("/art/items/herbs.webp");
   await vi.advanceTimersByTimeAsync(3600);
   await flush();
   expect(
