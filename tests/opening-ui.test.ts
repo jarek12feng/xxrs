@@ -185,7 +185,7 @@ it("keeps legacy exploration available from the new route atlas", async () => {
   await mount(home());
   button("地图").click();
   await flush();
-  button("山河探索").click();
+  button("道友寻亲").click();
   await flush();
   for (const title of ["回春谷", "雾岭古道", "雾海孤灯"]) {
     expect(

@@ -1,7 +1,19 @@
 <script setup lang="ts">
+import SceneResponse from "./SceneResponse.vue";
+import type { ActionReceipt } from "./action-feedback";
 import { computed, ref } from "vue";
-import { relics, type State, type Intent } from "./core";
-const props = defineProps<{ game: State; busy: boolean }>();
+import {
+  medicines,
+  medicineError,
+  relics,
+  type State,
+  type Intent,
+} from "./core";
+const props = defineProps<{
+  game: State;
+  busy: boolean;
+  receipt?: ActionReceipt | null;
+}>();
 const emit = defineEmits<{
   act: [intent: Intent];
   forge: [];
@@ -24,6 +36,13 @@ const items = computed(() => [
     count: props.game.pills,
     description: "尝试筑基时选择服用，不能在储物袋中直接消耗。",
   },
+  ...(["healing", "clarity"] as const).map((id) => ({
+    id,
+    name: medicines[id].name,
+    category: "丹药",
+    count: props.game.growth.medicines[id],
+    description: medicines[id].hint,
+  })),
   ...(["vial", "sword"] as const)
     .filter((id) => props.game.journey.relics[id] > 0)
     .map((id) => ({
@@ -44,6 +63,19 @@ const item = computed(
 );
 </script>
 <template>
+  <SceneResponse
+    v-if="receipt && !receipt.scene"
+    :text="receipt.notes[0] || receipt.next"
+    :receipt="receipt"
+  />
+  <p
+    v-if="
+      game.growth.lastMedicineMonth !== null &&
+      game.month < game.growth.lastMedicineMonth + 3
+    "
+  >
+    药性未散：第 {{ game.growth.lastMedicineMonth + 3 }} 月可再次服药。
+  </p>
   <p>
     灵石 {{ game.stones }} · 当前灵器：{{
       game.journey.equipped ? relics[game.journey.equipped].name : "未装备"
@@ -79,11 +111,11 @@ const item = computed(
       <template v-if="item.id === 'vial' || item.id === 'sword'">
         <p>
           {{ game.journey.relics[item.id] === 2 ? "精炼灵器" : "普通灵器" }} ·
-          基础闯关助益 +{{ game.journey.relics[item.id] * 10 }}%
+          基础闯关助益 +{{ game.journey.relics[item.id] === 2 ? 32 : 10 }}%
         </p>
         <p v-if="game.journey.equipped">
           当前装备：{{ relics[game.journey.equipped].name }} · 基础助益 +{{
-            game.journey.relics[game.journey.equipped] * 10
+            game.journey.relics[game.journey.equipped] === 2 ? 32 : 10
           }}%
         </p>
         <button
@@ -99,6 +131,27 @@ const item = computed(
         >
           {{ game.journey.equipped === item.id ? "已装备" : "装备" }}
         </button>
+      </template>
+      <template v-if="item.id === 'healing' || item.id === 'clarity'">
+        <p>
+          丹方：灵草 {{ medicines[item.id].herbs }}、灵石
+          {{ medicines[item.id].stones }}，需心得
+          1。两种药共用三个月服药间隔；筑基丹不受影响。
+        </p>
+        <button
+          :disabled="busy || !!medicineError(game, item.id)"
+          @click="emit('act', { type: 'brew', medicine: item.id })"
+        >
+          炼制{{ item.name }}
+        </button>
+        <small>{{ medicineError(game, item.id) }}</small>
+        <button
+          :disabled="busy || !!medicineError(game, item.id, true)"
+          @click="emit('act', { type: 'consume', medicine: item.id })"
+        >
+          服用{{ item.name }}
+        </button>
+        <small>{{ medicineError(game, item.id, true) }}</small>
       </template>
       <button
         v-if="item.id === 'pills'"

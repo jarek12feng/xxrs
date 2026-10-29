@@ -13,7 +13,7 @@ export function expeditionGoal(s: State): string | null {
   const preparation =
     s.qi >= 360
       ? "修为已满，检查伤势、丹药与突破把握，再叩关。"
-      : `回洞府吐纳积累修为（${s.qi}/360），按需炼丹、固本；陆迟的旧约照常赴约。`;
+      : `回洞府吐纳积累修为（${s.qi}/360），先装配护送所得灵器，再研修主修功法提高吐纳与交锋收益；按需炼丹、固本；${s.story.stage === "resolved" ? "陆迟旧约已了结，安心准备突破。" : "陆迟的旧约照常赴约。"}`;
   return `药队已撤回坊市，青嶂封住旧阵。${preparation}筑基后回青嶂关会合，线索与小关进度保留。`;
 }
 export function expeditionIntermission(s: State): string | null {

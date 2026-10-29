@@ -1,3 +1,4 @@
+import { mainTraining, supportTraining } from "./growth";
 import type { State } from "./world";
 import type { EventView } from "./chapter";
 
@@ -310,6 +311,8 @@ export function turnPreview(s: State, stance: Stance) {
   const skill = s.journey.main,
     support = s.journey.support;
   const damage =
+    mainTraining(s) * 2 +
+    (stance === "endure" ? -2 : 0) +
     (correct ? 8 : 3) +
     Math.floor((s.root + s.sense + s.study + s.mastery) / 8) +
     (gear === "sword" ? s.journey.relics.sword * 2 : 0) +
@@ -318,7 +321,9 @@ export function turnPreview(s: State, stance: Stance) {
     (stance === "discern" && support === "lantern" ? 3 : 0);
   const incoming = Math.max(
     1,
-    rivals[d.opponent].attack +
+    rivals[d.opponent].attack -
+      supportTraining(s) -
+      (stance === "endure" ? 4 : 0) +
       (correct ? 0 : 5) -
       (support === "guard" ? 2 : 0) -
       (gear === "vial" ? s.journey.relics.vial : 0),

@@ -472,6 +472,8 @@ const intentText: Record<Stance, string> = {
 </template>
 <style>
 .duel-board {
+  color: #f4eedc;
+  background: #172923;
   scroll-margin-top: 64px;
 }
 .combatants {
@@ -534,7 +536,8 @@ const intentText: Record<Stance, string> = {
 }
 .combat-receipt {
   padding: 12px;
-  background: #e1e8d9;
+  background: #263b30;
+  color: #f4eedc;
   border-left: 3px solid #6c8464;
   line-height: 1.8;
   font-size: 14px;
@@ -542,18 +545,19 @@ const intentText: Record<Stance, string> = {
 .combat-intent {
   padding: 12px;
   border: 1px solid #c5c5ab;
-  background: #f6f2e7;
+  background: #26352e;
+  color: #f4eedc;
   line-height: 1.7;
   font-size: 14px;
 }
 .combat-intent strong {
   display: block;
-  color: #495e46;
+  color: #cbe0b8;
   margin-bottom: 6px;
 }
 .combat-phase {
   font-size: 12px;
-  color: #6a755b;
+  color: #cbe0b8;
 }
 .combat-impact {
   animation: combat-impact 0.6s ease-out;
@@ -611,6 +615,40 @@ const intentText: Record<Stance, string> = {
   }
   .vital-track i {
     transition: none;
+  }
+}
+</style>
+
+<style>
+.social-content .duel-board {
+  color: #f4eedc;
+  background: #172923;
+}
+@media (max-width: 650px) {
+  .social-content .duel-board {
+    padding: 10px;
+    margin: 8px 0;
+  }
+  .social-content .duel-board .stance-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .social-content .duel-board .stance-options button {
+    padding: 8px 3px;
+    min-height: 90px;
+    font-size: 13px;
+  }
+  .social-content .duel-board .combatants {
+    margin: 8px 0;
+  }
+  .social-content .duel-board .fighter-seal {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+  .social-content .duel-board .combat-intent,
+  .social-content .duel-board .combat-receipt {
+    padding: 8px;
+    line-height: 1.5;
   }
 }
 </style>

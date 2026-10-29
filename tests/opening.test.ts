@@ -143,7 +143,7 @@ it("rejects missing or premature choice fields and preserves completed v10 as le
     }),
   ).toBe(false);
   expect(
-    validState({ ...rescue(), adventure: current.adventure, version: 13 }),
+    validState({ ...rescue(), adventure: current.adventure, version: 14 }),
   ).toBe(false);
   const start = createGame("客", "wood");
   expect(
@@ -161,8 +161,8 @@ it("shows relevant guidance without changing state or forcing a play duration", 
   });
   expect(openingGuide(s)?.body).toContain("护根");
   s = dispatch(s, { id: "thanks", type: "road", action: "thanks" });
-  expect(openingGuide(s)?.action).toBe("road");
-  expect(openingGuide(s)?.body).toContain("炼气期");
+  expect(openingGuide(s)?.action).toBe("skills");
+  expect(openingGuide(s)?.body).toContain("装配主修");
   const before = structuredClone(s);
   openingGuide(s);
   expect(s).toEqual(before);

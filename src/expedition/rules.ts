@@ -145,11 +145,26 @@ function complete(s: State) {
   q.duel = null;
   q.effect = "win";
   q.last = `${e.name}完成：灵石 +${e.reward}、灵草 +2；本关不可重复领奖。`;
-  if (q.cleared === 1)
-    q.last += "药箱保住了，袭击者遗落的药签却印着旧阵的纹样。";
+  if (q.cleared === 1) {
+    const relic = s.path === "sword" ? "sword" : "vial";
+    if (!s.journey.relics[relic]) {
+      s.journey.relics[relic] = 1;
+      q.last += `药队赠你${relic === "sword" ? "听松灵剑" : "归元灵瓶"}，请在储物袋装配，下一场交锋便能生效。`;
+    } else {
+      s.stones += 12;
+      q.last += "已有药队赠器，折为精炼资材：灵石 +12。";
+    }
+    s.growth.medicines.healing++;
+    q.last +=
+      "另获回春散一份，可在储物袋疗伤。药箱保住了，袭击者遗落的药签却印着旧阵的纹样。";
+  }
   if (q.cleared === 2) q.last += e.story + expeditionIntermission(s);
   if (q.cleared === 3) {
     if (!s.journey.known.includes("guard")) s.journey.known.push("guard");
+    else {
+      s.stones += 12;
+      q.last += "已掌握护身诀，折为研修资材：灵石 +12。";
+    }
     q.last +=
       "获得护身诀（可在功法面板装配）。你们在阵核里找到完整转运册，可在下方对簿查看名单真相。青嶂让出旧阵：救草、开山还是修阵，这次由你决定。";
   }

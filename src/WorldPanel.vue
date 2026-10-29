@@ -2,6 +2,8 @@
 import { computed, ref, watch } from "vue";
 import {
   places,
+  trainingError,
+  encounterDescription,
   opponents,
   techniques,
   relics,
@@ -23,7 +25,9 @@ import {
   landmarkLabel,
 } from "./landmarks";
 import WorldAtlas from "./WorldAtlas.vue";
-const selectedPlace = ref<Place>("valley");
+const selectedPlace = defineModel<Place>("selectedPlace", {
+  default: "valley",
+});
 import ChallengeCard from "./ChallengeCard.vue";
 import SocialPanel from "./SocialPanel.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
@@ -44,7 +48,9 @@ const emit = defineEmits<{
   travel: [intent: Intent];
   resumeStory: [];
 }>();
-const atlasMode = ref<"story" | "explore">("story");
+const atlasMode = defineModel<"story" | "explore">("atlasMode", {
+  default: "story",
+});
 const current = computed(() => currentLandmark(props.game));
 const selectedRoute = ref(current.value.key);
 watch(
@@ -140,7 +146,7 @@ const mapImages = {
   <section class="world-panel" :class="{ 'desktop-room': !!room }">
     <div v-if="!embedded" class="panel-heading">
       <h2>山外有天地</h2>
-      <span class="muted">修行，是为了赴一场约</span>
+      <span class="muted">修行成长 · 山河与故人</span>
     </div>
     <nav v-if="!embedded" aria-label="山外功能">
       <button :class="{ active: tab === 'world' }" @click="tab = 'world'">
@@ -197,12 +203,12 @@ const mapImages = {
           :aria-pressed="atlasMode === 'story'"
           @click="atlasMode = 'story'"
         >
-          主线归路</button
+          成长行路</button
         ><button
           :aria-pressed="atlasMode === 'explore'"
           @click="atlasMode = 'explore'"
         >
-          山河探索
+          道友寻亲
         </button>
       </nav>
       <p class="atlas-objective">
@@ -239,7 +245,9 @@ const mapImages = {
           <p>
             {{
               route.condition === "不在对应地点"
-                ? "需沿当前主线抵达相邻地点，不能跨越剧情直接传送。"
+                ? game.adventure.mist.stage !== "dormant"
+                  ? "先回到现场，返回行营后选择药圃或废驿；已查明的证据会保留。"
+                  : "先回到当前现场，再沿坊市、行营、山口的连接前往。"
                 : route.condition
             }}
           </p>
@@ -264,7 +272,8 @@ const mapImages = {
       </section>
       <template v-else>
         <p class="muted">
-          回春谷 → 筑基后的雾岭 →
+          可选道友任务：帮助陆迟寻父，取得功法与航图。与主角修行线并行，功法也可由师门或坊市取得。回春谷
+          → 筑基后的雾岭 →
           雾海孤灯。每次探索用时一月；先处理待决事件，伤势不超过 2。
         </p>
         <article
@@ -284,7 +293,10 @@ const mapImages = {
                 : id !== 'valley' &&
                     game.journey.maps[id] === 1 &&
                     game.journey.encounters[id]
-                  ? opponents[game.journey.encounters[id]!.kind].description
+                  ? encounterDescription(
+                      game,
+                      game.journey.encounters[id]!.kind,
+                    )
                   : place.goal
             "
             compact
@@ -373,7 +385,7 @@ const mapImages = {
       </p>
       <p class="muted">
         灵器可炼制、装配，筑基后可精炼一次。普通灵器闯关 +10%，精炼
-        +20%；针对不同敌人另有作用。一次只装配一件。法宝、灵宝、通天灵宝留待后续境界，不在本版开放。
+        +32%；针对不同敌人另有作用。一次只装配一件。法宝、灵宝、通天灵宝留待后续境界，不在本版开放。
       </p>
       <article v-for="(r, id) in relics" :key="id" class="map-card">
         <h3>
@@ -487,12 +499,12 @@ const mapImages = {
             :disabled="locked"
             @click="emit('act', { type: 'mentor', answer: 'care' })"
           >
-            为护住身边的人 · 获赠灵草 4</button
+            为护住身边的人</button
           ><button
             :disabled="locked"
             @click="emit('act', { type: 'mentor', answer: 'seek' })"
           >
-            为亲眼看看山外 · 心得 +1
+            为亲眼看看山外
           </button>
         </div>
         <p class="muted">
@@ -535,6 +547,28 @@ const mapImages = {
             <small>{{ t.slot === "main" ? "主修" : "辅修" }}</small>
           </h3>
           <p>{{ t.hint }}</p>
+          <p v-if="game.journey.known.includes(id)">
+            当前境界：{{
+              ["入门", "熟练", "通达"][game.growth.training[id]]
+            }}。{{
+              t.slot === "main"
+                ? "每阶：吐纳、历练、劳作修为 +2，交锋伤害 +2。"
+                : id === "herb"
+                  ? "每阶：交锋减伤 +1，采药额外 +1。"
+                  : "每阶：交锋减伤 +1。"
+            }}
+          </p>
+          <button
+            v-if="game.journey.known.includes(id)"
+            :disabled="locked || !!trainingError(game, id)"
+            @click="emit('act', { type: 'trainTechnique', technique: id })"
+          >
+            研修{{ t.name }} · 灵石 12 / 灵草 2
+          </button>
+          <small v-if="game.journey.known.includes(id)">{{
+            trainingError(game, id) ||
+            "心得 2 可研修；每阶费用相同，筑基解锁通达。"
+          }}</small>
         </div>
         <button
           v-if="game.journey.known.includes(id)"

@@ -1,3 +1,4 @@
+import { mainTraining, supportTraining } from "../growth";
 import type { State } from "../world";
 import { encounters, type Move } from "./content";
 export function readiness(s: State) {
@@ -5,10 +6,12 @@ export function readiness(s: State) {
     hp: Math.max(16, 36 + s.foundation - s.injury * 5),
     damage:
       5 +
+      mainTraining(s) * 2 +
       Math.floor((s.sense + s.study * 2 + s.mastery + s.foundation) / 4) +
       (s.journey.equipped === "sword" ? s.journey.relics.sword * 2 : 0),
     armor:
       (s.journey.support === "guard" ? 2 : 0) +
+      supportTraining(s) +
       (s.journey.equipped === "vial" ? s.journey.relics.vial : 0),
   };
 }
@@ -66,6 +69,18 @@ export function exchangePreview(s: State, move: Move) {
         : "归元息辨清身形，伤害 +2、承伤 −2。";
   }
   if (q.cleared === 2) {
+    // A closed core resists blind attacks; scouting or the exposed turn opens it.
+    if (
+      move === "strike" &&
+      d.turn % e.pattern.length !== 2 &&
+      q.effect !== "discern" &&
+      q.effect !== "guard"
+    ) {
+      damage = Math.max(1, damage - 8);
+      incoming += 4;
+      note += "阵核闭合，抢攻伤害 −8、反震 +4；先辨影或等阵核露出。";
+    }
+
     if (d.enemy <= e.hp / 2) {
       incoming += 2;
       note += "阵核暴露，傀儡狂乱，承伤 +2。";

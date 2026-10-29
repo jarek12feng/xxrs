@@ -56,12 +56,15 @@ const details = computed(() => challengeDetails(props.game, props.place));
       :disabled="
         locked ||
         !!explorationError(game, place) ||
-        game.herbs < 6 ||
-        game.study < 2
+        (!game.adventure.mist.garden && (game.herbs < 6 || game.study < 2))
       "
       @click="emit('act', { type: 'challenge', place, mode: 'parley' })"
     >
-      带药交涉 · 灵草 −6 / 需心得 2 / 必过
+      {{
+        game.adventure.mist.garden
+          ? "凭救草旧交通行 · 不耗灵草"
+          : "带药交涉 · 灵草 −6 / 需心得 2 / 必过"
+      }}
     </button>
     <div class="aid-options">
       <p>寻求帮助（本关限一位，不消耗好感）</p>
@@ -77,7 +80,7 @@ const details = computed(() => challengeDetails(props.game, props.place));
         :disabled="locked || !!aidError(game, place, 'luchi')"
         @click="emit('act', { type: 'aid', place, helper: 'luchi' })"
       >
-        请陆迟同行</button
+        与陆迟商定护阵</button
       ><small>{{
         aidError(game, place, "luchi") || "赠丹与信任，现在有了回响"
       }}</small>

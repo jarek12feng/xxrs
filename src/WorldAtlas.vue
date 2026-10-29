@@ -44,7 +44,13 @@ const distant = [
         >
           {{ landmarkLabel(node.title)
           }}<small>{{
-            node.current ? "你在此处" : node.intent ? "可前往" : "循线索开启"
+            node.current
+              ? "你在此处"
+              : node.visited
+                ? "已探访"
+                : node.intent
+                  ? "可前往"
+                  : "循线索开启"
           }}</small>
         </button>
       </template>
@@ -138,7 +144,9 @@ const distant = [
                 ? '你在此处'
                 : node.intent
                   ? '可前往'
-                  : '循线索开启')
+                  : node.visited
+                    ? '已探访'
+                    : '循线索开启')
             "
             @click="emit('selectStory', node.key)"
           >
@@ -147,7 +155,13 @@ const distant = [
             }}</span
             ><strong>{{ landmarkLabel(node.title) }}</strong
             ><small>{{
-              node.current ? "你在此处" : node.intent ? "可前往" : "循线索开启"
+              node.current
+                ? "你在此处"
+                : node.visited
+                  ? "已探访"
+                  : node.intent
+                    ? "可前往"
+                    : "循线索开启"
             }}</small>
           </button>
         </template>

@@ -125,6 +125,8 @@ export const mistScenes: Record<
   },
 };
 export function mistHomeBody(s: State): string {
+  if (s.journey.maps.sea === 3)
+    return "探灵灯照着你整理好的行路记录。陆迟已带亲笔信回到故乡，与母亲等候守灯人的归期。郁青留在茶摊，继续核对尚未归来的药工名单。";
   return (
     "郁青收起空白的路簿。探灵灯搁在摊前，灯光映出路簿上早已褪色的几行字。" +
     (s.adventure.mist.partner === "luchi"
@@ -139,12 +141,16 @@ export function mistPartner(s: State) {
       name: companions[s.social.gender].name,
       portrait: companions[s.social.gender].portrait,
     };
+  if (m.stage === "home" && s.journey.maps.sea === 3)
+    return { name: "行路手记", portrait: null };
   if (m.partner === "luchi" || m.stage === "letter" || m.stage === "home")
     return { name: "陆迟", portrait: "/characters/luchi-base.png" };
   return { name: "行路手记", portrait: null };
 }
 export function mistQuote(s: State): string {
   const m = s.adventure.mist;
+  if (m.stage === "home" && s.journey.maps.sea === 3)
+    return "亲笔信已送到家中，守灯人尚未归来。寻亲已有答案，你的修行仍有自己的方向。";
   if (m.stage === "letter")
     return s.journey.maps.sea >= 2
       ? "我们已经知道他在守灯。可他当年为什么留下来，家书里没有细说，也许答案就在这里。"
@@ -202,6 +208,8 @@ export function mistGoal(s: State): string {
         : "记住这道看不清的刻痕。雾海来信提到的灯，也许能照出它。";
   if (m.stage === "archive")
     return "读完陈渡的记录，带走探灵灯；它能照见旧地点的隐藏阵迹。";
+  if (m.stage === "home" && m.revisited)
+    return "归灯已经点亮，本章已完成。可补探支线；陆迟家书的后续见山河探索·道友寻亲。";
   if (m.stage === "home")
     return m.settled
       ? "带着探灵灯重访救过药工的山祠，看看旧墙后藏着什么。"
@@ -489,6 +497,9 @@ export function runMist(input: State, action: MistAction, id: string): State {
       break;
     case "home":
       m.stage = "home";
+      if (m.settled && m.station)
+        m.result =
+          "你将新核实的废驿记录补进手记。" + expeditionMistEcho(s, "share");
       break;
     case "share":
       m.settled = true;
