@@ -1,4 +1,5 @@
 import type { State } from "../world";
+import { expeditionIntermission } from "./progression";
 import { encounters, type Move } from "./content";
 import { readiness, exchangePreview } from "./combat";
 export { readiness } from "./combat";
@@ -81,7 +82,7 @@ export function runExpedition(
   if (a === "accept") {
     s.expedition.accepted = true;
     s.expedition.last =
-      "接下护送委托。每次出战消耗一月与补给；小关进度永久保留。先护住药车，再追查旧阵。";
+      "接下护送委托。先护住药车，再调查古阵；前两关炼气即可完成。阵核深处需筑基护体，届时药队撤回坊市、封阵休整，约定筑基后再会合。每次行前准备消耗一月与补给，小关进度永久保留。";
   } else if (a === "withdraw") {
     s.expedition.duel = null;
     s.expedition.effect = "loss";
@@ -91,7 +92,7 @@ export function runExpedition(
     s = tick(s);
     if (s.status !== "alive" || s.pending) {
       s.expedition.last =
-        "行前遇到人生事件，尚未扣除补给或开始挑战；处理后再出发。";
+        "你先撤回山下休整、筹备一月行装，收到陆迟的消息，暂缓出发。尚未扣除补给或开始挑战；处理约定后再回青嶂关会合。";
     } else {
       const q = s.expedition,
         e = encounters[q.cleared]!;
@@ -116,8 +117,8 @@ export function runExpedition(
     d.enemy = Math.max(0, d.enemy - damage);
     d.turn++;
     s.herbs -= herbs;
-    q.effect = correct ? (a as Move) : "hurt";
-    q.last = `第 ${d.turn} 合：${correct ? "看破招式" : "未能化解来招"}，敌方气势 −${damage}。${note}`;
+    q.effect = q.cleared === 2 || correct ? (a as Move) : "hurt";
+    q.last = `第 ${d.turn} 合：${correct ? "看破招式" : q.cleared === 2 ? "变招应对" : "未能化解来招"}，敌方气势 −${damage}。${note}`;
     if (d.enemy === 0) complete(s);
     else {
       d.hp = Math.max(0, d.hp - incoming) + healing;
@@ -146,7 +147,7 @@ function complete(s: State) {
   q.last = `${e.name}完成：灵石 +${e.reward}、灵草 +2；本关不可重复领奖。`;
   if (q.cleared === 1)
     q.last += "药箱保住了，袭击者遗落的药签却印着旧阵的纹样。";
-  if (q.cleared === 2) q.last += e.story + "你们约定带着这枚药签一起查下去。";
+  if (q.cleared === 2) q.last += e.story + expeditionIntermission(s);
   if (q.cleared === 3) {
     if (!s.journey.known.includes("guard")) s.journey.known.push("guard");
     q.last +=

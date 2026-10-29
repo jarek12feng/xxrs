@@ -1,4 +1,5 @@
 import { rescueEcho, type State } from "./core";
+import { expeditionGoal } from "./expedition/progression";
 // Read-only coaching. No timers, rewards, randomness or extra save fields.
 export function openingGuide(s: State) {
   if (s.status !== "alive" || s.realm !== 0 || s.adventure.step !== "done")
@@ -43,13 +44,13 @@ export function openingGuide(s: State) {
     return s.qi < 360
       ? {
           title: "旧阵深处，需要筑基之力",
-          body: "两处小关已经保留。回洞府积累修为至 360，按需炼丹或固本；遇到陆迟的约期先处理剧情，再继续准备。",
+          body: expeditionGoal(s)!,
           action: "cultivate" as const,
           label: "为守阵交锋修炼",
         }
       : {
           title: "准备叩关，再赴旧阵",
-          body: "修为已经足够。先检查伤势、丹药和突破把握；筑基后返回原关卡，不用重复护送与寻踪。",
+          body: expeditionGoal(s)!,
           action: "break" as const,
           label: "查看筑基准备",
         };

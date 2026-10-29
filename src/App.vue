@@ -114,11 +114,18 @@ let practiceTimer: ReturnType<typeof setTimeout> | undefined;
 let receiptTimer: ReturnType<typeof setTimeout> | undefined;
 let actionOrigin: HTMLElement | null = null;
 async function closeReceipt() {
-  const returnToPerson =
-    !!receipt.value?.person || receipt.value?.ritual === "duel";
+  const returnPanel = receipt.value?.returnTo;
+  const returnToPerson = !!returnPanel || receipt.value?.ritual === "duel";
   receiptExpanded.value = false;
   receipt.value = null;
   clearTimeout(receiptTimer);
+  if (
+    returnPanel &&
+    game.value?.social.met &&
+    !game.value.pending &&
+    !game.value.social.scene
+  )
+    dialog.value = returnPanel;
   await nextTick();
   if (modal.value)
     document.querySelector<HTMLElement>("[role=dialog] h2")?.focus();
@@ -143,7 +150,7 @@ const view = ref<"story" | "cultivation">("story");
 const showRoad = ref(false);
 const titleScreen = ref(true);
 const creating = ref(false);
-const targetVisible = ref(true);
+const targetVisible = ref(false);
 const panelTitles: Record<string, string> = {
   character: "人物",
   inventory: "储物袋",
@@ -219,6 +226,11 @@ async function followOpening() {
 }
 function openPanel(id: string) {
   if (ui.busy || receiptExpanded.value) return;
+  if (
+    game.value?.expedition.duel &&
+    !["system", "saves", "settings", "backup"].includes(id)
+  )
+    return;
   ui.running = false;
   dialog.value = id;
 }
@@ -412,10 +424,7 @@ async function act(intent: Intent) {
     arrivalFinished.value = false;
     receiptSerial.value++;
     receiptExpanded.value =
-      (!!receipt.value?.ritual ||
-        !!receipt.value?.person ||
-        !!receipt.value?.process) &&
-      !automatic;
+      (!!receipt.value?.ritual || !!receipt.value?.spotlight) && !automatic;
     if (receiptExpanded.value) {
       ui.running = false;
       dialog.value = "";
@@ -1163,6 +1172,7 @@ onUnmounted(() => {
       :key="receiptSerial"
       :receipt="receipt"
       expanded
+      @equip="closeReceipt().then(() => openPanel('skills'))"
       @close="closeReceipt"
     />
   </div>
@@ -1458,7 +1468,7 @@ onUnmounted(() => {
           :body="event.body"
           :portrait="heart?.portrait ?? npc?.portrait"
           :speaker="heart?.name ?? '陆迟'"
-          :quote="heart?.title ?? npc?.whereabouts"
+          :quote="heart?.title ?? npc?.quote.replace(/[“”]/g, '')"
           heading-id="modal-title"
           compact
         />

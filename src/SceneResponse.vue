@@ -36,8 +36,19 @@ watch(
   >
     <span class="eyebrow">{{ receipt?.title || "方才发生的事" }}</span>
     <p>{{ receipt?.scene?.body || text }}</p>
-    <ul v-if="receipt?.scene?.unlocks.length" class="discovery-chips">
-      <li v-for="item in receipt.scene.unlocks" :key="item">{{ item }}</li>
+    <p v-if="receipt?.person" class="reply-person">
+      {{ receipt.person.name }}：“{{ receipt.person.response }}”
+    </p>
+    <ul
+      v-if="(receipt?.scene?.unlocks || receipt?.unlocks)?.length"
+      class="discovery-chips"
+    >
+      <li
+        v-for="item in receipt?.scene?.unlocks || receipt?.unlocks"
+        :key="item"
+      >
+        {{ item }}
+      </li>
     </ul>
     <div v-if="receipt?.changes.length" class="scene-deltas">
       <span v-for="c in receipt.changes" :key="c.label"

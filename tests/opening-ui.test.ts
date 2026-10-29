@@ -77,7 +77,7 @@ it("shows both irreversible consequences before committing, and waits for persis
       }),
   );
   await mount(home());
-  expect(button("留下成株").textContent).toContain("日后可独自疏通");
+  expect(button("留下成株").textContent).toContain("山下伤者需等下一队送药");
   expect(button("带回成株").textContent).toContain("灵草 4");
   button("带回成株").click();
   await flush();
@@ -88,9 +88,10 @@ it("shows both irreversible consequences before committing, and waits for persis
   finish();
   await flush();
   expect(audio.cue).toHaveBeenCalledWith("choice");
-  button("跳过演出").click();
-  await flush();
-  expect(document.body.textContent).toContain("陆迟记得归途上的药篓");
+  expect(document.querySelector(".feedback-layer")).toBeNull();
+  expect(
+    document.querySelector(".scene-response .reply-person")?.textContent,
+  ).toContain("陆迟");
 });
 it("keeps the decision available with no success audio when saving fails", async () => {
   vi.mocked(save).mockRejectedValue(new Error("磁盘不可写"));

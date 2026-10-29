@@ -14,6 +14,8 @@ export interface ActionReceipt {
   ritual:
     "break" | "refine" | "retreat" | "challenge" | "forge" | "duel" | null;
   unlocks?: string[];
+  spotlight?: boolean;
+  returnTo?: "relationship";
   scene?: {
     from: string;
     to: string;
@@ -166,6 +168,14 @@ export function actionReceipt(
   };
   if (!ritual && !dead && labels[effective.type])
     title = labels[effective.type]!;
+  if (effective.type === "promote") title = "晋升外门 · 新功法入手";
+  if (after.realm > before.realm) {
+    const qi = changes.find((c) => c.label === "修为");
+    if (qi) {
+      qi.label = "炼气修为转化";
+      qi.good = true;
+    }
+  }
   const cost =
     effective.type === "prepare"
       ? effective.kind === "refine"
@@ -174,6 +184,14 @@ export function actionReceipt(
       : "下方为本次行动的实际净变化。";
   return enrichReceipt(before, after, intent, {
     title,
+    spotlight:
+      effective.type === "promote" ||
+      (effective.type === "choose" &&
+        (before.pending?.kind === "relic" || !!before.social.scene)) ||
+      (effective.type === "road" &&
+        ["healPass", "cutPass", "restorePass"].includes(effective.action)) ||
+      (effective.type === "mist" &&
+        ["read", "illuminate"].includes(effective.action)),
     ritual,
     tone: dead || failed ? "warning" : ritual ? "success" : "neutral",
     months: Math.max(0, after.month - before.month),

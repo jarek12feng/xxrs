@@ -4,9 +4,17 @@ import type { State } from "./chapter";
 export function luchiView(
   s: Omit<State, "version"> & {
     journey?: { maps: { sea: number; peak: number } };
+    adventure?: {
+      step: string;
+      mist: { stage: string; partner: string; settled: boolean };
+    };
   },
 ) {
   const kind = s.pending?.kind;
+  const m = s.adventure?.mist;
+  const together =
+    m?.partner === "luchi" && !["dormant", "letter"].includes(m.stage);
+  const metOnRoad = s.adventure && s.adventure.step !== "ferry";
   const portrait =
     s.story.luchi === "foundation"
       ? "foundation"
@@ -23,7 +31,9 @@ export function luchiView(
         : null;
   const whereabouts =
     kind === "meeting"
-      ? "听松山下 · 渡口初逢"
+      ? metOnRoad
+        ? "听松渡口 · 营救之后再会"
+        : "听松山下 · 渡口初逢"
       : kind === "letter" || kind === "visit"
         ? "听松山居 · 与你相叙"
         : s.story.luchi === "stranger"
@@ -59,11 +69,17 @@ export function luchiView(
   return {
     portrait: "/characters/luchi-" + portrait + ".png",
     scene,
-    whereabouts:
-      s.journey?.maps.sea === 3 ? "故乡 · 与母亲读父亲的来信" : whereabouts,
+    whereabouts: together
+      ? m?.stage === "home"
+        ? "山下坊市 · 与你整理归途记录"
+        : "雾海归路 · 与你同行"
+      : s.journey?.maps.sea === 3
+        ? "故乡 · 与母亲读父亲的来信"
+        : whereabouts,
     known,
-    quote:
-      s.journey?.maps.sea === 3
+    quote: together
+      ? "“记录还没读完，我们一起查下去。”"
+      : s.journey?.maps.sea === 3
         ? "“她终于肯把窗边的灯放下了。谢谢你，把这封信带回来。”"
         : s.journey?.maps.peak === 3
           ? "“原来他还活着。你去雾海时，替我把这封信带上。”"

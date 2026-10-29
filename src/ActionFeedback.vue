@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import type { ActionReceipt } from "./action-feedback";
 const props = defineProps<{ receipt: ActionReceipt; expanded?: boolean }>();
-const emit = defineEmits<{ close: []; inspect: [] }>();
+const emit = defineEmits<{ close: []; inspect: []; equip: [] }>();
 const playing = ref(
   !!props.expanded && !!(props.receipt.ritual || props.receipt.process),
 );
@@ -191,6 +191,13 @@ const ritualText = {
             {{ note }}
           </p>
           <p class="receipt-next">{{ receipt.next }}</p>
+          <button
+            v-if="receipt.unlocks?.some((x) => x.includes('功法'))"
+            class="primary full"
+            @click="emit('equip')"
+          >
+            查看并装配新功法
+          </button>
           <button class="primary full" @click="emit('close')">
             知晓结果 · 继续
           </button></template

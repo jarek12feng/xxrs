@@ -219,3 +219,46 @@ it("does not invent station evidence when the player only explored the garden", 
   expect(expeditionMistEcho(p.state, "share")).toContain("还未核实");
   expect(expeditionMistEcho(p.state, "share")).not.toContain("随队救治");
 });
+
+it("boss preparation carries exactly one exchange and survives saving without another roll", () => {
+  const p = boss();
+  const seed = p.state.seed;
+  const first = p.state;
+  p.send({ type: "expedition", action: "guard" });
+  const guarded = p.state;
+  expect(exchangePreview(guarded, "strike")!.damage).toBe(
+    exchangePreview(
+      { ...guarded, expedition: { ...guarded.expedition, effect: "none" } },
+      "strike",
+    )!.damage + 10,
+  );
+  expect(migrateSave(guarded)).toEqual(guarded);
+  p.send({ type: "expedition", action: "discern" });
+  const probed = p.state;
+  const plain = {
+    ...probed,
+    expedition: { ...probed.expedition, effect: "none" as const },
+  };
+  expect(exchangePreview(probed, "strike")!.damage).toBe(
+    exchangePreview(plain, "strike")!.damage + 6,
+  );
+  p.send({ type: "expedition", action: "strike" });
+  expect(p.state.seed).toBe(seed);
+  expect(first.expedition.duel!.turn).toBe(0);
+  expect(p.state.expedition.effect).toBe("strike");
+});
+it("the same boss configuration supports reading tells and a deliberate guard-counter route", () => {
+  function play(approach: "read" | "counter") {
+    const p = boss("blade");
+    if (approach === "read") p.fight();
+    else
+      for (let i = 0; p.state.expedition.duel && i < 12; i++)
+        p.send({ type: "expedition", action: i % 2 ? "strike" : "guard" });
+    expect(p.state.expedition.cleared).toBe(3);
+    expect(p.state.injury).toBe(0);
+    expect(validState(p.state)).toBe(true);
+    return p.state;
+  }
+  expect(play("read")).toEqual(play("read"));
+  expect(play("counter")).toEqual(play("counter"));
+});

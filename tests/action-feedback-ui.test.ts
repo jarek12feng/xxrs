@@ -228,10 +228,7 @@ it("NPC choices have a named response, affection and memory before returning to 
   await click("人物关系");
   await click("赴约 · 一月");
   await click("用研读所得标出安全通路");
-  expect(document.querySelector(".action-feedback")?.textContent).not.toContain(
-    "共同记忆 · 共勘旧路",
-  );
-  await click("跳过演出");
+  expect(document.querySelector(".action-feedback.playing")).toBeNull();
   const dialog = document.querySelector("[role=dialog]");
   expect(dialog?.textContent).toContain("沈听澜");
   expect(dialog?.textContent).toContain("共同记忆 · 共勘旧路");
@@ -239,8 +236,10 @@ it("NPC choices have a named response, affection and memory before returning to 
   expect(dialog?.querySelector(".reply-person")).not.toBeNull();
   expect(dialog?.textContent).not.toContain("山门暂掩");
   await click("知晓结果");
-  expect(document.querySelector("[role=dialog]")).toBeNull();
-  expect(document.activeElement?.textContent).toBe("洞府修行 · 操作区");
+  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
+    "人物关系",
+  );
+  expect(document.querySelector(".social-content")).not.toBeNull();
 });
 it("NPC response is not fabricated on save failure", async () => {
   await mount(mistCheckpoint());
@@ -349,4 +348,30 @@ it("opens character and inventory overlays without advancing the world", async (
     "当前灵器",
   );
   expect(vi.mocked(save).mock.calls.length).toBe(before);
+});
+
+it("shows routine sect work in place and offers equipment immediately after promotion", async () => {
+  await mount(state());
+  await click("拜访师门");
+  await click("拜入丹堂");
+  await click("整理旧卷");
+  expect(
+    document.querySelector(".world-panel .scene-response")?.textContent,
+  ).toContain("师门事务完成");
+  await click("整理旧卷");
+  await click("整理旧卷");
+  await click("为护住身边的人");
+  await click("晋升外门");
+  expect(document.querySelector(".feedback-layer")?.textContent).toContain(
+    "晋升外门",
+  );
+  expect(document.querySelector(".feedback-layer")?.textContent).toContain(
+    "长春诀",
+  );
+  await click("查看并装配新功法");
+  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
+    "功法",
+  );
+  await click("装配长春诀");
+  expect(vi.mocked(save).mock.lastCall?.[0].journey.main).toBe("spring");
 });

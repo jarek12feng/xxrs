@@ -1,3 +1,4 @@
+import { expeditionGoal } from "./expedition/progression";
 import {
   freshExpedition,
   validExpedition,
@@ -8,9 +9,21 @@ import {
 import { validAdventureV10 } from "./legacy-adventure-v10";
 import { validRoadV9 } from "./legacy-road-v9";
 import * as chapter from "./chapter";
-import { freshMist, validMist, runMist, type MistAction } from "./mist";
+import {
+  freshMist,
+  validMist,
+  runMist,
+  mistGoal,
+  type MistAction,
+} from "./mist";
 export * from "./mist";
-import { freshRoad, validRoad, runRoad, type RoadAction } from "./road";
+import {
+  freshRoad,
+  validRoad,
+  runRoad,
+  roadGoal,
+  type RoadAction,
+} from "./road";
 export * from "./road";
 import { validState as validV4 } from "./legacy-v4";
 import {
@@ -341,9 +354,15 @@ export function aidError(s: State, p: TrialPlace, helper: "mentor" | "luchi") {
   return "";
 }
 export function nextGoal(s: State) {
+  if (s.status !== "alive" || s.pending) return chapter.nextGoal(base(s));
   if (s.social.arena.duel)
     return "擂台交锋中：查看对手意图，选择应对方式，或主动认负。时间暂停。";
   if (s.social.scene) return "眼前的人在等你的回应，完成对话后再继续修行。";
+  const quest = expeditionGoal(s);
+  if (quest) return quest;
+  if (s.adventure.mist.stage !== "dormant" && !s.adventure.mist.revisited)
+    return mistGoal(s);
+  if (s.adventure.road.map && !s.adventure.road.surveyed) return roadGoal(s);
   if (s.story.stage === "unmet" && s.adventure.step === "done")
     return "药工已平安归家。先修炼与休整，第三个月赴渡口，再听陆迟未说完的心事。";
   if (s.realm === 0 || s.story.stage !== "resolved")

@@ -65,6 +65,30 @@ export function exchangePreview(s: State, move: Move) {
         ? "归元息照见阵核，伤害 +7、承伤 −2。"
         : "归元息辨清身形，伤害 +2、承伤 −2。";
   }
+  if (q.cleared === 2) {
+    if (d.enemy <= e.hp / 2) {
+      incoming += 2;
+      note += "阵核暴露，傀儡狂乱，承伤 +2。";
+    }
+    if (q.effect === "guard" && move === "strike") {
+      damage += 10;
+      note += "借上合稳守蓄势，反击伤害 +10。";
+    }
+    if (q.effect === "discern") {
+      damage += 6;
+      incoming -= 2;
+      note += "沿上合辨出的阵路，伤害 +6、承伤 −2。";
+    }
+    if (move === "guard") {
+      damage = Math.max(1, damage - 4);
+      incoming -= 4;
+      note += "稳守：伤害 −4、承伤 −4；下合反击 +10。";
+    }
+    if (move === "discern") {
+      damage = Math.max(1, damage - 3);
+      note += "探阵：本合伤害 −3；下合伤害 +6、承伤 −2。";
+    }
+  }
   incoming = d.enemy <= damage ? 0 : Math.max(1, incoming);
   const remaining = d.hp - incoming;
   const healing =
@@ -86,6 +110,17 @@ export function exchangePreview(s: State, move: Move) {
 }
 
 export function moveHint(s: State, move: Move) {
+  if (s.expedition.duel && s.expedition.cleared === 2) {
+    const p = exchangePreview(s, move)!;
+    return (
+      `伤敌 ${p.damage} / 承伤 ${p.incoming}${p.healing ? ` / 耗草 ${p.herbs} 回 ${p.healing}` : ""}；` +
+      (move === "guard"
+        ? "蓄势，下合反击 +10"
+        : move === "discern"
+          ? "探阵，下合增伤减伤"
+          : "立即抢攻")
+    );
+  }
   if (s.journey.main === "blade" && move === "strike")
     return "抢攻：伤害 +8；未击倒时承伤 +2";
   if (s.journey.main === "spring" && move === "guard")

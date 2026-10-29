@@ -1,3 +1,4 @@
+import { expeditionGoal } from "./expedition/progression";
 import { expeditionBlocksPass } from "./expedition/rules";
 import { rescueEcho } from "./adventure";
 import type { State } from "./world";
@@ -144,15 +145,8 @@ export const roadScenes = {
 } as const;
 export function roadGoal(s: State): string {
   const r = s.adventure.road;
-  if (s.expedition?.accepted && s.expedition.cleared < 3) {
-    if (s.expedition.duel)
-      return "留意来招，选择守势、反击或凝神；也可主动撤回准备。";
-    return [
-      "护送药车通过山道；准备好补给后开始交锋。",
-      "调查古阵：凝神研读辨阵，或备齐灵草温养草根。",
-      "筑基后挑战蚀阵傀儡，再决定山口的归路。",
-    ][s.expedition.cleared]!;
-  }
+  const quest = expeditionGoal(s);
+  if (quest) return quest;
   if (r.stage === "home")
     return r.thanked
       ? "带上缺角航图，去山下坊市寻找郁青。"
