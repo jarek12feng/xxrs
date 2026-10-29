@@ -1,3 +1,12 @@
+import {
+  freshGrowth,
+  validGrowth,
+  runGrowth,
+  mainTraining,
+  type Growth,
+  type GrowthCommand,
+} from "./growth";
+export * from "./growth";
 import { expeditionGoal } from "./expedition/progression";
 import {
   freshExpedition,
@@ -70,8 +79,14 @@ export type Place = "valley" | "peak" | "sea";
 export type TrialPlace = "peak" | "sea";
 export type Relic = "vial" | "sword";
 export const relics = {
-  vial: { name: "归元灵瓶", hint: "应对妖修的瘴气额外 +8；失败少受 1 层伤势" },
-  sword: { name: "听松灵剑", hint: "应对邪修的袭击额外 +8" },
+  vial: {
+    name: "归元灵瓶",
+    hint: "回合交锋每品阶减伤 1；山外应对妖修额外 +8%，失败少受 1 层伤势",
+  },
+  sword: {
+    name: "听松灵剑",
+    hint: "回合交锋每品阶伤害 +2；山外应对邪修额外 +8%",
+  },
 };
 export const opponents = {
   guardian: {
@@ -153,13 +168,15 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 12;
+  version: 13;
+  growth: Growth;
   expedition: Expedition;
   adventure: Adventure;
   journey: Journey;
   social: SocialState;
 }
 export type Command =
+  | GrowthCommand
   | { id: string; type: "expedition"; action: ExpeditionAction }
   | chapter.Command
   | SocialCommand
@@ -213,6 +230,7 @@ function base(s: State): chapter.State {
     social: __,
     adventure: ___,
     expedition: ____,
+    growth: _____,
     ...rest
   } = s;
   return { ...rest, version: 3 };
@@ -225,7 +243,8 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 12,
+    version: 13,
+    growth: freshGrowth(),
     journey,
     social,
     adventure,
@@ -277,7 +296,9 @@ export const preparationError = (s: State, k: "refine" | "retreat") => {
     : error;
 };
 export const cultivationGain = (s: State) =>
-  chapter.cultivationGain(base(s)) + (s.journey.main === "spring" ? 3 : 0);
+  chapter.cultivationGain(base(s)) +
+  (s.journey.main === "spring" ? 3 : 0) +
+  mainTraining(s) * 2;
 function log(s: State, text: string) {
   s.log.unshift({ month: s.month, text, kind: "story" });
   s.log = s.log.slice(0, 180);
@@ -296,12 +317,17 @@ function roll(s: State) {
   s.seed = x >>> 0 || 1;
   return s.seed / 4294967296;
 }
+export function encounterDescription(s: State, kind: keyof typeof opponents) {
+  return kind === "guardian" && s.adventure.mist.garden
+    ? "石角认出救过药圃的你，已愿意为药队开放通路。可凭旧交和平通行，不必再送药证明来意。"
+    : opponents[kind].description;
+}
 export function challengeDetails(s: State, p: TrialPlace) {
   const e = s.journey.encounters[p];
   if (!e) return null;
   const equipped = s.journey.equipped;
   const gear = equipped
-    ? s.journey.relics[equipped] * 10 +
+    ? (s.journey.relics[equipped] === 2 ? 32 : 10) +
       ((equipped === "vial" && e.kind === "guardian") ||
       (equipped === "sword" && e.kind === "raider")
         ? 8
@@ -309,7 +335,7 @@ export function challengeDetails(s: State, p: TrialPlace) {
     : 0;
   const terms = [
     { name: "应敌基础", value: opponents[e.kind].base },
-    { name: "根骨与神识", value: s.root + s.sense * 2 },
+    { name: "根骨与神识", value: Math.floor(s.root / 2) + s.sense },
     { name: "根基与剑意", value: Math.floor(s.foundation / 2) + s.mastery },
     { name: "研读心得", value: s.study * 5 },
     {
@@ -368,11 +394,11 @@ export function nextGoal(s: State) {
   if (s.realm === 0 || s.story.stage !== "resolved")
     return chapter.nextGoal(base(s));
   if (s.journey.maps.valley < 3)
-    return "筑基不是终点：前往回春谷，追查采药人的旧营地。";
+    return "筑基已成：研修功法、精炼装备，挑战听松擂台。也可在道友寻亲中前往回春谷追查旧营地。";
   if (s.journey.maps.peak < 3)
-    return "进入雾岭古道：凭宗门外门资格，或神识 8 与心得 2 自行识路。";
+    return "道友寻亲：进入雾岭古道，凭宗门外门资格，或神识 8 与心得 2 自行识路。";
   if (s.journey.maps.sea < 3)
-    return "航图已得：前往雾海孤灯，替等待的人带回一封信。";
+    return "道友寻亲的航图已得：可前往雾海孤灯带回家书，也可继续自己的构筑与历练。";
   return `雾海来信已送达。可参加听松擂台、补齐功法或主动轮回。${relationshipGoal(s)}`;
 }
 export function explorationError(s: State, p: Place) {
@@ -397,6 +423,7 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.growth = n.life === old.life ? structuredClone(old.growth) : freshGrowth();
   n.expedition =
     n.life === old.life ? structuredClone(old.expedition) : freshExpedition();
   if (n.status !== "alive") n.expedition.duel = null;
@@ -429,6 +456,8 @@ function normalize(n: State, old: State) {
 }
 export function dispatch(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (c.type === "trainTechnique" || c.type === "brew" || c.type === "consume")
+    return runGrowth(input, c);
   if (c.type === "expedition")
     return runExpedition(input, c.action, c.id, (s) =>
       normalize(
@@ -444,7 +473,20 @@ export function dispatch(input: State, c: Command): State {
   if (input.expedition.duel) return input;
   if (c.type === "mist") return runMist(input, c.action, c.id);
   if (c.type === "road") return runRoad(input, c.action, c.id);
-  if (c.type === "adventure") return runAdventure(input, c.action, c.id);
+  if (c.type === "adventure") {
+    const n = runAdventure(input, c.action, c.id);
+    if (
+      n !== input &&
+      input.adventure.step !== "done" &&
+      n.adventure.step === "done" &&
+      n.status === "alive"
+    ) {
+      const technique = n.path === "sword" ? "blade" : "spring";
+      learn(n, technique);
+      n.adventure.result += `药工送来一册${techniques[technique].name}作为谢礼。请在功法面板装配；它会改变修行收益与下一场交锋。`;
+    }
+    return n;
+  }
   if (
     socialCommands.includes(c.type) ||
     (c.type === "choose" && !input.pending && input.social.scene)
@@ -491,12 +533,55 @@ export function dispatch(input: State, c: Command): State {
                   (a === "work" && n.journey.main === "breath")
                 ? 4
                 : 0;
-          if (n.realm === 0) n.qi = Math.min(360, n.qi + bonus);
-          if (a === "gather" && n.journey.support === "herb") n.herbs++;
+          if (n.realm === 0)
+            n.qi = Math.min(
+              360,
+              n.qi +
+                bonus +
+                (["cultivate", "train", "work"].includes(a)
+                  ? mainTraining(n) * 2
+                  : 0),
+            );
+          if (a === "gather" && n.journey.support === "herb")
+            n.herbs += 1 + n.growth.training.herb;
           if (a === "train" && n.journey.support === "guard")
             n.injury = old.injury;
           if (a === "meditate" && n.journey.support === "lantern")
             n.study = Math.min(4, n.study + 1);
+          if (n.realm === 1) n.qi = old.qi;
+          const prefix = {
+            cultivate: "",
+            train: "历练剑意",
+            gather: "采药得",
+            work: "山下劳作",
+            study: "研读残卷",
+            meditate: "凝神内观",
+            rest: "静养经脉",
+          }[a];
+          const values = (
+            [
+              ["qi", "修为"],
+              ["mastery", "剑意"],
+              ["sense", "神识"],
+              ["study", "心得"],
+              ["herbs", "灵草"],
+              ["stones", "灵石"],
+              ["injury", "伤势"],
+            ] as const
+          )
+            .filter(([key]) => n[key] !== old[key])
+            .map(
+              ([key, label]) =>
+                `${label} ${n[key] - old[key] > 0 ? "+" : ""}${n[key] - old[key]}`,
+            );
+          const entry = prefix
+            ? n.log.find(
+                (l) => l.month === n.month && l.text.startsWith(prefix),
+              )
+            : null;
+          const actual = `${queueActions[a]}：${values.join("、") || "属性未变"}。已计入功法与当月收入。`;
+          if (entry) entry.text = actual;
+          else log(n, actual);
         }
         // One user command owns a batch; intermediate months do not own its id.
         n.seen = old.seen;
@@ -596,7 +681,7 @@ export function dispatch(input: State, c: Command): State {
       log(
         s,
         c.helper === "luchi"
-          ? "陆迟带剑来赴约：“这次，不让你独自闯阵。”本关援助 +20，失败后仍会陪你重试。"
+          ? "你与陆迟分定守阵的位置：“这次，我来护住你的背后。”本关援助 +20，失败后仍会陪你重试。"
           : "执事答应为你护持阵眼：“准备好了再来，我等你。”本关援助 +20，失败后仍有效。",
       );
       return accept();
@@ -612,7 +697,8 @@ export function dispatch(input: State, c: Command): State {
       if (!e || e.passed) return input;
       if (
         c.mode === "parley" &&
-        (e.kind !== "guardian" || s.herbs < 6 || s.study < 2)
+        (e.kind !== "guardian" ||
+          (!s.adventure.mist.garden && (s.herbs < 6 || s.study < 2)))
       )
         return input;
       if (c.mode === "fight" && s.stones < 4) return input;
@@ -621,12 +707,14 @@ export function dispatch(input: State, c: Command): State {
       const current = s.journey.encounters[c.place]!;
       current.attempts++;
       if (c.mode === "parley") {
-        s.herbs -= 6;
+        if (!s.adventure.mist.garden) s.herbs -= 6;
         current.passed = true;
         current.outcome = "peace";
         log(
           s,
-          "你带来灵草，解释采药人的来意。石角收起瘴阵：“原来你不是来夺药的。走吧，别惊扰族人。”交涉通关，不掷骰。",
+          s.adventure.mist.garden
+            ? "石角认出救过药圃的你，主动撤去瘴阵：“救草的恩情我记得。药队可从这里走。”凭旧交通行，不耗灵草。"
+            : "你带来灵草，解释采药人的来意。石角收起瘴阵：“原来你不是来夺药的。走吧，别惊扰族人。”交涉通关，不掷骰。",
         );
       } else {
         s.stones -= 4;
@@ -781,7 +869,18 @@ export function dispatch(input: State, c: Command): State {
       s.journey.contribution -= 6;
       s.journey.rank = 1;
       s.journey.mentor = true;
-      learn(s, s.journey.branch === "dan" ? "spring" : "blade");
+      {
+        const t = s.journey.branch === "dan" ? "spring" : "blade";
+        if (s.journey.known.includes(t)) {
+          if (s.growth.training[t] < 1) {
+            s.growth.training[t] = 1;
+            log(s, "师门指点将已有主修提升至熟练，装配后生效。");
+          } else {
+            s.stones += 12;
+            log(s, "主修已熟练，师门另赠研修灵石 12。");
+          }
+        } else learn(s, t);
+      }
       log(
         s,
         "你凭亲历与心得成为外门弟子。执事交付雾岭通行令：资格不是终点，带一个答案回来。",
@@ -822,7 +921,12 @@ export function dispatch(input: State, c: Command): State {
         s.journey.encounters[c.place] = {
           kind,
           attempts: 0,
-          aid: "none",
+          aid:
+            s.story.luchi === "foundation" &&
+            s.story.trust >= 3 &&
+            (s.adventure.mist.partner === "luchi" || c.place === "sea")
+              ? "luchi"
+              : "none",
           passed: false,
           lastRoll: 0,
           lastChance: 0,
@@ -830,7 +934,7 @@ export function dispatch(input: State, c: Command): State {
         };
         log(
           s,
-          `前路遇阻：${opponents[kind].name}。${opponents[kind].description}`,
+          `前路遇阻：${opponents[kind].name}。${encounterDescription(s, kind)}`,
         );
       }
       if (c.place === "valley") {
@@ -914,9 +1018,9 @@ export function dispatch(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 12);
+  return validWorldState(x, 13);
 }
-function validWorldState(x: unknown, version: 10 | 11 | 12): boolean {
+function validWorldState(x: unknown, version: 10 | 11 | 12 | 13): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
@@ -930,7 +1034,8 @@ function validWorldState(x: unknown, version: 10 | 11 | 12): boolean {
       : validAdventure(s.adventure)) ||
     !validRoad(s.adventure.road, s) ||
     !validMist(s) ||
-    (version === 12 && !validExpedition(s))
+    (version >= 12 && !validExpedition(s)) ||
+    (version === 13 && !validGrowth(s))
   )
     return false;
   const integer = (v: unknown, max = 1e9) =>
@@ -998,6 +1103,16 @@ function validWorldState(x: unknown, version: 10 | 11 | 12): boolean {
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 12) {
+    if (!validWorldState(x, 12)) throw new Error("旧存档损坏，原档未修改。");
+    const upgraded = {
+      ...structuredClone(x),
+      version: 13,
+      growth: freshGrowth(),
+    };
+    if (validState(upgraded)) return upgraded;
+    throw new Error("旧存档损坏，原档未修改。");
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 11) {
     if (!validWorldState(x, 11)) throw new Error("旧存档损坏，原档未修改。");
     const upgraded = {
@@ -1005,7 +1120,7 @@ export function migrateSave(x: unknown): State {
       version: 12,
       expedition: freshExpedition(),
     };
-    if (validState(upgraded)) return upgraded;
+    if (validWorldState(upgraded, 12)) return migrateSave(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 10) {

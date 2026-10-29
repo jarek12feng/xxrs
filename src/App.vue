@@ -69,6 +69,8 @@ import {
   type Gender,
   cultivationGain,
   refineCost,
+  growthGoals,
+  mainTraining,
   replayHints,
   type Aptitude,
   createGame,
@@ -121,9 +123,9 @@ async function closeReceipt() {
   clearTimeout(receiptTimer);
   if (
     returnPanel &&
-    game.value?.social.met &&
-    !game.value.pending &&
-    !game.value.social.scene
+    (returnPanel !== "relationship" || game.value?.social.met) &&
+    !game.value?.pending &&
+    !game.value?.social.scene
   )
     dialog.value = returnPanel;
   await nextTick();
@@ -146,6 +148,8 @@ function inspectReceipt() {
   receiptExpanded.value = true;
   receiptSerial.value++;
 }
+const atlasMode = ref<"story" | "explore">("story");
+const selectedPlace = ref<"valley" | "peak" | "sea">("valley");
 const view = ref<"story" | "cultivation">("story");
 const showRoad = ref(false);
 const titleScreen = ref(true);
@@ -214,6 +218,9 @@ async function followOpening() {
     case "cultivate":
       view.value = "cultivation";
       activity.value = "cultivate";
+      break;
+    case "skills":
+      openPanel("skills");
       break;
     case "sect":
       openPanel("sect");
@@ -393,6 +400,14 @@ async function act(intent: Intent) {
   }
   const ok = await persist(n);
   if (ok) {
+    const changedScene =
+      old.adventure.step !== n.adventure.step ||
+      old.adventure.road.stage !== n.adventure.road.stage ||
+      old.adventure.mist.stage !== n.adventure.mist.stage;
+    if (changedScene && !dialog.value) {
+      await nextTick();
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
     const performed =
       intent.type === "advance"
         ? intent.activity
@@ -827,9 +842,11 @@ onUnmounted(() => {
       <div class="creation-art">
         <img src="/mountains.svg" alt="云海中的听松山" />
         <div class="art-copy">
-          <span class="eyebrow">筑基篇 / 三年之约</span>
+          <span class="eyebrow">筑基篇 / 初入仙途</span>
           <h1>初入听松山</h1>
-          <p>修行不只为了长生。<br />那个等你赴约的人，你会记得吗？</p>
+          <p>
+            练成自己的法门，走出第一段仙途。<br />途中相遇的人，会记住你的选择。
+          </p>
         </div>
       </div>
       <section class="creation-form">
@@ -999,7 +1016,7 @@ onUnmounted(() => {
               <h3 class="controls-heading">洞府修行 · 操作区</h3>
               <div class="progress-label">
                 <h2>
-                  {{ game.realm ? "筑基已成 · 山外寻人" : "炼气 → 筑基" }}
+                  {{ game.realm ? "筑基已成 · 构筑与历练" : "炼气 → 筑基" }}
                 </h2>
                 <strong v-if="game.realm === 0"
                   >{{ game.qi }} / {{ MAX_QI }}</strong
@@ -1032,7 +1049,13 @@ onUnmounted(() => {
                     actionError(game, a.id) ||
                     (a.id === "cultivate"
                       ? `每月修为 +${cultivationGain(game)}（含根骨加成）`
-                      : a.hint)
+                      : a.id === "train"
+                        ? `剑意 +1 · 修为 +${game.realm ? 0 : 10 + (game.journey.main === "blade" ? 4 : 0) + mainTraining(game) * 2}；${game.journey.support === "guard" ? "护身诀免历练伤势" : "每四重受伤"}`
+                        : a.id === "work"
+                          ? `每月灵石 +5${!game.realm && game.journey.main ? " · 修为 +" + ((game.journey.main === "breath" ? 4 : 0) + mainTraining(game) * 2) : ""}`
+                          : a.id === "gather"
+                            ? `灵草 +${2 + (game.journey.support === "herb" ? 1 + game.growth.training.herb : 0)} · 修为 +${game.realm ? 0 : 3}`
+                            : a.hint)
                   }}</small>
                 </button>
               </div>
@@ -1310,6 +1333,7 @@ onUnmounted(() => {
         >
         <InventoryPanel
           v-else-if="dialog === 'inventory' && game"
+          :receipt="receipt"
           :game="game"
           :busy="ui.busy"
           @act="worldAct"
@@ -1320,6 +1344,8 @@ onUnmounted(() => {
           v-else-if="worldTab && game"
           :key="worldTab"
           :initial-tab="worldTab"
+          v-model:atlas-mode="atlasMode"
+          v-model:selected-place="selectedPlace"
           embedded
           :game="game"
           :receipt="receipt"
@@ -1333,6 +1359,29 @@ onUnmounted(() => {
         <template v-else-if="dialog === 'journal' && game"
           ><h3>当前目标</h3>
           <p>{{ currentGoal }}</p>
+          <h3>我的成长</h3>
+          <ul>
+            <li v-for="goal in growthGoals(game)" :key="goal">{{ goal }}</li>
+          </ul>
+          <button @click="dialog = 'skills'">功法研修</button
+          ><button @click="dialog = 'inventory'">装备与丹药</button>
+          <h3>尚待核实的线索</h3>
+          <ul>
+            <li
+              v-if="
+                game.expedition.cleared === 3 && !game.adventure.mist.station
+              "
+            >
+              郁青姐姐：雾海废驿交接簿尚未核对。
+            </li>
+            <li v-if="game.adventure.mist.station">
+              郁青姐姐：已证实随队救治，平安与归期仍未确认。
+            </li>
+            <li v-if="game.journey.maps.sea < 3">
+              陆迟家书：可在地图的「道友寻亲」继续；这不是突破的必选条件。
+            </li>
+            <li v-else>陆迟家书已送达；父亲仍在守引航阵，尚未团聚。</li>
+          </ul>
           <h3>与陆迟的约定</h3>
           <p>
             {{

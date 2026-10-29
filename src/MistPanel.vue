@@ -200,8 +200,10 @@ const choices = computed<Choice[]>(() => {
           : []),
         {
           action: "shrine",
-          label: "带灯重访救过药工的山祠",
-          hint: "灯光能照出那堵墙后的灵痕，也许还有一条被遗忘的路",
+          label: r.revisited ? "回看已点亮的山祠" : "带灯重访救过药工的山祠",
+          hint: r.revisited
+            ? "归灯已亮，本章完成；可回顾墙后的誓言"
+            : "灯光能照出那堵墙后的灵痕，也许还有一条被遗忘的路",
         },
       ];
     case "shrine":

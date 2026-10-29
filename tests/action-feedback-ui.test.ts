@@ -375,3 +375,46 @@ it("shows routine sect work in place and offers equipment immediately after prom
   await click("装配长春诀");
   expect(vi.mocked(save).mock.lastCall?.[0].journey.main).toBe("spring");
 });
+it("returns to the selected exploration place after a modal result", async () => {
+  const s = mistCheckpoint();
+  s.journey.maps.valley = 3;
+  s.journey.approach = "trace";
+  s.journey.maps.peak = 3;
+  s.journey.encounters.peak = {
+    kind: "raider",
+    aid: "none",
+    passed: true,
+    attempts: 1,
+    lastRoll: 1,
+    lastChance: 100,
+    outcome: "win",
+  };
+  s.journey.maps.sea = 2;
+  s.journey.encounters.sea = {
+    kind: "raider",
+    aid: "none",
+    passed: true,
+    attempts: 1,
+    lastRoll: 1,
+    lastChance: 100,
+    outcome: "win",
+  };
+  await mount(s);
+  await click("地图");
+  await click("道友寻亲");
+  await click("雾海孤灯");
+  const explore = [
+    ...document.querySelectorAll<HTMLButtonElement>(".map-card button"),
+  ].find((b) => b.textContent?.includes("继续追寻") && !b.disabled)!;
+  explore.click();
+  await flush();
+  expect(text()).toContain("一封终于到家的信");
+  await click("知晓结果");
+  expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
+    "此地故事已完成",
+  );
+  expect(
+    document.querySelector('.map-card:not([style*="display: none"])')
+      ?.textContent,
+  ).toContain("雾海孤灯");
+});

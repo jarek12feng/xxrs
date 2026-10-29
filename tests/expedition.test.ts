@@ -91,7 +91,7 @@ it("rejects malformed progress and migrates v11 without resetting prior accompli
   const frozen = structuredClone(old);
   expect(migrateSave(old)).toEqual({
     ...rest,
-    version: 12,
+    version: 13,
     expedition: freshExpedition(),
   });
   expect(old).toEqual(frozen);
@@ -109,7 +109,7 @@ it("rejects malformed progress and migrates v11 without resetting prior accompli
       }),
     ).toBe(false);
   expect(() => migrateSave({ ...old, stones: -1 })).toThrow();
-  expect(() => migrateSave({ ...old, version: 13 })).toThrow();
+  expect(() => migrateSave({ ...old, version: 14 })).toThrow();
 });
 it("honors resource gates, command idempotency and no free-pass bypass once accepted", () => {
   const p = expeditionSession();

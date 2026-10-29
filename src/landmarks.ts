@@ -164,6 +164,7 @@ export interface RouteNode {
   x: number;
   y: number;
   current: boolean;
+  visited?: boolean;
   intent?: Intent;
   condition: string;
 }
@@ -265,6 +266,26 @@ export function routeNodes(s: State): RouteNode[] {
         x: coords[i][0],
         y: coords[i][1],
         current: isCurrent,
+        visited:
+          current.chapter === "mist"
+            ? key === "garden"
+              ? s.adventure.mist.garden
+              : key === "station"
+                ? s.adventure.mist.station
+                : key === "gate"
+                  ? s.adventure.mist.passed
+                  : key === "home"
+                    ? s.adventure.mist.settled
+                    : false
+            : current.chapter === "road"
+              ? key === "home"
+                ? s.adventure.road.thanked
+                : key === "market"
+                  ? s.adventure.road.map
+                  : key === "beyond"
+                    ? s.adventure.road.passed
+                    : false
+              : false,
         intent: isCurrent ? undefined : intent,
         condition: isCurrent ? current.goal : condition,
       };

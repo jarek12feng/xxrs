@@ -124,7 +124,7 @@ it("opens the main route atlas with a current location and a separate exploratio
   expect(html).toContain("雨夜渡口");
   expect(html).toContain("你在此处");
   expect(html).toContain("主线地标详情");
-  expect(html).toContain("山河探索");
+  expect(html).toContain("道友寻亲");
 });
 it("puts the required market conversation before optional locked investigation", async () => {
   const game = createGame("旅人", "wood", 42);

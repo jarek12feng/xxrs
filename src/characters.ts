@@ -49,14 +49,19 @@ export function luchiView(
                   : s.month >= 24
                     ? "渡口 · 准备三年之约"
                     : "山下集市 · 为赴约奔走";
-  const known = s.memories.confided
-    ? "他想筑基，是为了入山寻找失踪的父亲，让守灯的母亲不必再等。"
-    : s.story.stage === "unmet"
-      ? "你还不知道渡口那名散修的故事。"
-      : "寡言，记人恩情。旧剑上有三道刻痕，他从不肯换。";
+  const delivered = s.journey?.maps.sea === 3;
+  const known = delivered
+    ? "你已带回父亲的亲笔来信。他仍在雾海守护引航阵，陆迟与母亲终于知道了他的下落。"
+    : s.memories.confided
+      ? "他想筑基，是为了入山寻找失踪的父亲，让守灯的母亲不必再等。"
+      : s.story.stage === "unmet"
+        ? "你还不知道渡口那名散修的故事。"
+        : "寡言，记人恩情。旧剑上有三道刻痕，他从不肯换。";
   const quote =
     s.story.luchi === "stranger"
-      ? "渡口有人倚剑而坐，似乎在等一封回信。"
+      ? kind === "meeting" && metOnRoad
+        ? "“上次一起救人的事，我记得。这封家书，想再托你一回。”"
+        : "渡口有人倚剑而坐，似乎在等一封回信。"
       : s.story.luchi === "foundation"
         ? "“这回，你安心闭关。我在门外。”"
         : s.story.choice === "self"
@@ -69,20 +74,24 @@ export function luchiView(
   return {
     portrait: "/characters/luchi-" + portrait + ".png",
     scene,
-    whereabouts: together
-      ? m?.stage === "home"
-        ? "山下坊市 · 与你整理归途记录"
-        : "雾海归路 · 与你同行"
-      : s.journey?.maps.sea === 3
-        ? "故乡 · 与母亲读父亲的来信"
-        : whereabouts,
+    whereabouts: delivered
+      ? "故乡 · 与母亲读父亲的来信"
+      : together
+        ? m?.stage === "home"
+          ? "山下坊市 · 与你整理归途记录"
+          : "雾海归路 · 与你同行"
+        : s.journey?.maps.sea === 3
+          ? "故乡 · 与母亲读父亲的来信"
+          : whereabouts,
     known,
-    quote: together
-      ? "“记录还没读完，我们一起查下去。”"
-      : s.journey?.maps.sea === 3
-        ? "“她终于肯把窗边的灯放下了。谢谢你，把这封信带回来。”"
-        : s.journey?.maps.peak === 3
-          ? "“原来他还活着。你去雾海时，替我把这封信带上。”"
-          : quote,
+    quote: delivered
+      ? "“她终于肯把窗边的灯放下了。谢谢你，把这封信带回来。”"
+      : together
+        ? "“记录还没读完，我们一起查下去。”"
+        : s.journey?.maps.sea === 3
+          ? "“她终于肯把窗边的灯放下了。谢谢你，把这封信带回来。”"
+          : s.journey?.maps.peak === 3
+            ? "“原来他还活着。你去雾海时，替我把这封信带上。”"
+            : quote,
   };
 }

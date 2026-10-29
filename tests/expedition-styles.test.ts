@@ -230,7 +230,7 @@ it("boss preparation carries exactly one exchange and survives saving without an
     exchangePreview(
       { ...guarded, expedition: { ...guarded.expedition, effect: "none" } },
       "strike",
-    )!.damage + 10,
+    )!.damage + 18, // 10 蓄势 + 8 避开闭核抗性
   );
   expect(migrateSave(guarded)).toEqual(guarded);
   p.send({ type: "expedition", action: "discern" });

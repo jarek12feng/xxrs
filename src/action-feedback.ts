@@ -15,7 +15,7 @@ export interface ActionReceipt {
     "break" | "refine" | "retreat" | "challenge" | "forge" | "duel" | null;
   unlocks?: string[];
   spotlight?: boolean;
-  returnTo?: "relationship";
+  returnTo?: "relationship" | "world" | "gear";
   scene?: {
     from: string;
     to: string;
@@ -107,6 +107,16 @@ export function actionReceipt(
   add("道友信任", before.story.trust, after.story.trust);
   add("好感", before.social.affection, after.social.affection);
   add("宗门贡献", before.journey.contribution, after.journey.contribution);
+  add(
+    "回春散",
+    before.growth.medicines.healing,
+    after.growth.medicines.healing,
+  );
+  add(
+    "清心丹",
+    before.growth.medicines.clarity,
+    after.growth.medicines.clarity,
+  );
   add("灵瓶品阶", before.journey.relics.vial, after.journey.relics.vial);
   add("灵剑品阶", before.journey.relics.sword, after.journey.relics.sword);
   // Find the retained log suffix even when the 180-entry ring is full.

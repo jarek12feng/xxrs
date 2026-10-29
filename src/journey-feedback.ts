@@ -102,6 +102,18 @@ export function enrichReceipt(
               ],
             };
   }
+  if (intent.type === "explore" || intent.type === "challenge")
+    r.returnTo = "world";
+  if (intent.type === "forge") r.returnTo = "gear";
+  if (
+    intent.type === "explore" &&
+    intent.place === "sea" &&
+    before.journey.maps.sea === 2 &&
+    after.journey.maps.sea === 3
+  ) {
+    r.spotlight = true;
+    r.title = "一封终于到家的信";
+  }
   r.unlocks = after.journey.known
     .filter((k) => !before.journey.known.includes(k))
     .map((k) => `习得功法 · ${techniques[k].name}`);
@@ -127,7 +139,12 @@ export function enrichReceipt(
     before.journey.maps[intent.place] !== after.journey.maps[intent.place]
   ) {
     const step = after.journey.maps[intent.place];
-    r.title = step === 3 ? "此地探索完成" : "山河见闻 · 新的进展";
+    r.title =
+      intent.place === "sea" && step === 3
+        ? "一封终于到家的信"
+        : step === 3
+          ? "此地探索完成"
+          : "山河见闻 · 新的进展";
     r.scene = {
       from: places[intent.place].name,
       to: places[intent.place].name,
@@ -253,7 +270,9 @@ export function enrichReceipt(
             ? "好，不提了。渡口的风大，坐里边些。"
             : "娘每年都留着父亲那副碗筷。我总得去找一找。"
           : kind === "visit"
-            ? "药带来了，搁你桌上。我多买了一份，别跟我推来推去。"
+            ? after.sense > before.sense || after.study > before.study
+              ? "这段残诀，我们一起读。你看懂的地方，也讲给我听。"
+              : "药带来了，搁你桌上。我多买了一份，别跟我推来推去。"
             : kind === "departure"
               ? intent.option === "stay"
                 ? "那就各自保重。这一趟，我自己走。"

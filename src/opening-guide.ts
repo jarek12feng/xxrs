@@ -14,6 +14,17 @@ export function openingGuide(s: State) {
       action: "road" as const,
       label: "回访药工，看看后来发生的事",
     };
+  if (
+    !s.adventure.road.map &&
+    !s.journey.main &&
+    s.journey.known.some((t) => t === "blade" || t === "spring")
+  )
+    return {
+      title: "把第一册功法用起来",
+      body: "药工的谢礼已收入功法页。装配主修会改变修行与战斗；以后可用灵草和灵石研修至熟练。",
+      action: "skills" as const,
+      label: "装配第一册功法",
+    };
   const r = s.adventure.road,
     q = s.expedition;
   if (!r.map)
