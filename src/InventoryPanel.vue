@@ -75,7 +75,8 @@ const item = computed(
       game.month < game.growth.lastMedicineMonth + 3
     "
   >
-    药性未散：第 {{ game.growth.lastMedicineMonth + 3 }} 月可再次服药。
+    药性未散：第
+    {{ game.growth.lastMedicineMonth + 3 }} 月可再次服清心丹；回春散不受影响。
   </p>
   <p>
     <ItemArt id="stones" :size="32" /> 灵石 {{ game.stones }} · 当前灵器：{{
@@ -112,12 +113,11 @@ const item = computed(
       <template v-if="item.id === 'vial' || item.id === 'sword'">
         <p>
           {{ game.journey.relics[item.id] === 2 ? "精炼灵器" : "普通灵器" }} ·
-          基础闯关助益 +{{ game.journey.relics[item.id] === 2 ? 32 : 10 }}%
+          道友寻亲基础把握 +{{ game.journey.relics[item.id] === 2 ? 32 : 10 }}%
         </p>
         <p v-if="game.journey.equipped">
-          当前装备：{{ relics[game.journey.equipped].name }} · 基础助益 +{{
-            game.journey.relics[game.journey.equipped] === 2 ? 32 : 10
-          }}%
+          当前装备：{{ relics[game.journey.equipped].name }} · 道友寻亲基础把握
+          +{{ game.journey.relics[game.journey.equipped] === 2 ? 32 : 10 }}%
         </p>
         <button
           :disabled="
@@ -137,7 +137,7 @@ const item = computed(
         <p>
           丹方：灵草 {{ medicines[item.id].herbs }}、灵石
           {{ medicines[item.id].stones }}，需心得
-          1。两种药共用三个月服药间隔；筑基丹不受影响。
+          1。清心丹间隔三个月；回春散即时疗伤，筑基丹用于突破。
         </p>
         <button
           :disabled="busy || !!medicineError(game, item.id)"

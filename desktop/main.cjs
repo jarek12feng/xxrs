@@ -10,6 +10,8 @@ const path = require("node:path");
 const { pathToFileURL } = require("node:url");
 const { resolveAsset } = require("./paths.cjs");
 
+app.setName("问道听松");
+
 // Keep this identity and origin stable: IndexedDB belongs to this profile/origin.
 app.setPath("userData", path.join(app.getPath("appData"), "cultivation-life"));
 app.setAppUserModelId("com.xxrs.cultivationlife");
@@ -55,7 +57,7 @@ else {
       height: 960,
       minWidth: 1000,
       minHeight: 700,
-      title: "修仙人生 · 试玩版",
+      title: "问道听松 · 试玩版",
       backgroundColor: "#f4efe3",
       show: false,
       autoHideMenuBar: true,

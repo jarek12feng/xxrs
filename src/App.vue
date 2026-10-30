@@ -11,21 +11,23 @@ import {
 import { defineStore } from "pinia";
 import { presences } from "./landmarks";
 import { actionSound } from "./action-sound";
+import { createMusicPlayer, sceneMusic, musicNames } from "./local-music";
 import PreparationValues from "./PreparationValues.vue";
 import LifeReview from "./LifeReview.vue";
 import { automaticPause, type PauseReason } from "./cultivation-feedback";
 import { openingGuide } from "./opening-guide";
 import { expeditionGoal } from "./expedition/progression";
 import { createSoundscape, soundSettings, type SoundMood } from "./audio";
-const localMusicEnabled =
-  import.meta.env.DEV && import.meta.env.MODE === "local-music";
+// User-authorized audio revision; gameplay freeze remains in force.
+const localMusicEnabled = true;
 let music:
   ReturnType<typeof import("./local-music").createMusicPlayer> | undefined;
 const musicVolume = ref(0.45);
 const musicNotice = ref("");
 const musicTitle = ref("");
 const musicPlaying = ref("");
-const sound = createSoundscape();
+import { createFileEffects } from "./file-effects";
+const sound = createSoundscape(undefined, createFileEffects());
 const soundPrefs = ref(soundSettings(null));
 const soundNotice = ref("");
 function blurSound() {
@@ -468,7 +470,11 @@ async function act(intent: Intent) {
         practice.value = null;
       }, 3600);
     }
-    if (!automatic) sound.cue(actionSound(old, n, intent));
+    if (
+      !automatic ||
+      (old.status !== n.status && ["dead", "complete"].includes(n.status))
+    )
+      sound.cue(actionSound(old, n, intent));
     clearTimeout(receiptTimer);
     receipt.value = actionReceipt(old, n, intent);
     arrivalFinished.value = false;
@@ -580,7 +586,7 @@ function download(value: unknown, suffix = "") {
   );
   const a = document.createElement("a");
   a.href = url;
-  a.download = "修仙人生" + suffix + ".json";
+  a.download = "问道听松" + suffix + ".json";
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -699,8 +705,6 @@ let unmounted = false;
 const stopAudioWatches: (() => void)[] = [];
 onMounted(async () => {
   if (localMusicEnabled) {
-    const { createMusicPlayer, sceneMusic, musicNames } =
-      await import("./local-music");
     if (unmounted) return;
     music = createMusicPlayer(
       undefined,
@@ -713,9 +717,15 @@ onMounted(async () => {
     );
     stopAudioWatches.push(
       watch(
-        currentScene,
-        (scene) => {
-          const cue = sceneMusic(scene.name);
+        () => ({
+          scene: currentScene.value,
+          shrineRelit: game.value?.adventure.mist.revisited ?? false,
+          fighting: Boolean(
+            game.value?.social.arena.duel || game.value?.expedition.duel,
+          ),
+        }),
+        ({ scene, fighting, shrineRelit }) => {
+          const cue = fighting ? "trial" : sceneMusic(scene.name, shrineRelit);
           musicTitle.value = musicNames[cue];
           music?.scene(cue);
         },
@@ -831,7 +841,7 @@ onUnmounted(() => {
           ></span
         >
       </button>
-      <span v-else class="brand">修仙人生</span>
+      <span v-else class="brand">问道听松</span>
       <button
         class="sound-toggle"
         :aria-pressed="soundPrefs.enabled"
@@ -860,7 +870,7 @@ onUnmounted(() => {
     </header>
     <main v-if="ready && titleScreen && !creating" class="title-screen">
       <p class="eyebrow">一卷山海 · 几世修行</p>
-      <h1>修仙人生</h1>
+      <h1>问道听松</h1>
       <p>山关风起，故人待归。</p>
       <button v-if="game" class="primary" @click="resumeGame">
         继续游戏<small

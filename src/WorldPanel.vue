@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ItemArt from "./presentation/ItemArt.vue";
+import { familyQuestGoal } from "./expedition/progression";
 import { computed, ref, watch } from "vue";
 import {
   places,
@@ -52,6 +53,7 @@ const emit = defineEmits<{
 const atlasMode = defineModel<"story" | "explore">("atlasMode", {
   default: "story",
 });
+const familyGoal = computed(() => familyQuestGoal(props.game));
 const current = computed(() => currentLandmark(props.game));
 const selectedRoute = ref(current.value.key);
 watch(
@@ -213,9 +215,16 @@ const mapImages = {
         </button>
       </nav>
       <p class="atlas-objective">
-        你在 · {{ landmarkLabel(current.title) }}<br /><small>{{
-          current.goal
-        }}</small>
+        <template v-if="atlasMode === 'story'"
+          >主线现场 · {{ landmarkLabel(current.title) }}<br /><small>{{
+            current.goal
+          }}</small></template
+        >
+        <template v-else
+          >可选支线 · {{ places[selectedPlace].name }}<br /><small>{{
+            familyGoal
+          }}</small></template
+        >
       </p>
       <WorldAtlas
         :game="game"
@@ -273,7 +282,7 @@ const mapImages = {
       </section>
       <template v-else>
         <p class="muted">
-          可选道友任务：帮助陆迟寻父，取得功法与航图。与主角修行线并行，功法也可由师门或坊市取得。回春谷
+          可选道友任务：查父亲近况、带信回家。成长行路追查药队旧案，这条支线追查守灯人的去向，进度各自保留；功法也可由师门或坊市取得。回春谷
           → 筑基后的雾岭 →
           雾海孤灯。每次探索用时一月；先处理待决事件，伤势不超过 2。
         </p>
@@ -551,7 +560,7 @@ const mapImages = {
           </h3>
           <p>{{ t.hint }}</p>
           <p v-if="game.journey.known.includes(id)">
-            当前境界：{{
+            研修层级：{{
               ["入门", "熟练", "通达"][game.growth.training[id]]
             }}。{{
               t.slot === "main"
