@@ -2,6 +2,7 @@ import type { Move } from "../expedition/content";
 export type Destination =
   "home" | "ferry" | "estate" | "snow" | "inn" | "frontier";
 export type BattleId =
+  | "culmination"
   | "well"
   | "exit"
   | "estate"
@@ -15,6 +16,9 @@ export type BattleId =
   | "rank5";
 export type Side = "estate" | "snow" | "inn";
 export interface FoundationJourney {
+  epilogue: boolean;
+  aftermath: Record<Side, boolean>;
+  sharedMoment: boolean;
   cultivation: number;
   location: Destination;
   ferry: 0 | 1 | 2 | 3 | 4;
@@ -40,6 +44,7 @@ export interface FoundationJourney {
   };
   won: BattleId[];
   duel: {
+    ruleset: 1 | 2;
     id: BattleId;
     hp: number;
     enemy: number;
@@ -52,6 +57,9 @@ export interface FoundationJourney {
   last: string;
 }
 export const freshFoundationJourney = (): FoundationJourney => ({
+  epilogue: false,
+  aftermath: { estate: false, snow: false, inn: false },
+  sharedMoment: false,
   cultivation: 0,
   location: "home",
   ferry: 0,
@@ -81,6 +89,8 @@ export const freshFoundationJourney = (): FoundationJourney => ({
   last: "",
 });
 export type JourneyAction =
+  | { kind: "revisit"; side: Side }
+  | { kind: "sharedMoment" | "epilogue" }
   | { kind: "travel"; destination: Destination }
   | { kind: "battle"; battle: BattleId }
   | { kind: "move"; move: Move }

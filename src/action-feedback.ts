@@ -1,3 +1,4 @@
+import { foundationGoal } from "./foundation-journey/progression";
 import { foundationBoard } from "./foundation-journey/view";
 import { trialBoard } from "./world-ambition";
 import {
@@ -233,7 +234,10 @@ export function actionReceipt(
   const inherited =
     before.foundationJourney.inheritance !==
     after.foundationJourney.inheritance;
-  if (completedPreparation) title = "凝丹准备已记下 · 本段道途收束";
+  if (completedPreparation) title = "周天贯流已成 · 去试长风归流";
+  const chapterComplete =
+    !before.foundationJourney.epilogue && after.foundationJourney.epilogue;
+  if (chapterComplete) title = "长风归山 · 筑基篇终";
   if (inherited) title = "沉井传承领悟 · 装配后亲手试用";
   const cost =
     effective.type === "prepare"
@@ -251,6 +255,7 @@ export function actionReceipt(
           : "world"
         : undefined,
     spotlight:
+      chapterComplete ||
       completedPreparation ||
       inherited ||
       ranked ||
@@ -285,18 +290,20 @@ export function actionReceipt(
     ],
     next: ranked
       ? foundationBoard(after).next
-      : dead
-        ? "确认后回看修行履历，可读取存档或另启新程。"
-        : after.pending || after.social.scene
-          ? "有新的剧情在等你，确认后继续回应。"
-          : ritual === "break"
-            ? after.realm
-              ? `境界已从炼气晋升筑基，炼气修为已转化为新境界（归零并非损失）。${expeditionGoal(after) || "功法通达与灵器精炼已开放，回到当前行路查看后续目标。"}`
-              : "先养伤、补回修为，再炼丹或闭关固本；准备好后可以再次突破。"
-            : ritual === "refine"
-              ? "丹药已收入行囊。修为满 360 后可叩关，每次必消耗一枚；失败后可依丹方补炼。"
-              : ritual === "challenge" && failed
-                ? "线索仍在。查看当前挑战提示，提升实力或寻求帮助后再来。"
-                : "成果已自动保存，可以继续行动。",
+      : effective.type === "foundationJourney" && !dead
+        ? foundationGoal(after)
+        : dead
+          ? "确认后回看修行履历，可读取存档或另启新程。"
+          : after.pending || after.social.scene
+            ? "有新的剧情在等你，确认后继续回应。"
+            : ritual === "break"
+              ? after.realm
+                ? `境界已从炼气晋升筑基，炼气修为已转化为新境界（归零并非损失）。${expeditionGoal(after) || "功法通达与灵器精炼已开放，回到当前行路查看后续目标。"}`
+                : "先养伤、补回修为，再炼丹或闭关固本；准备好后可以再次突破。"
+              : ritual === "refine"
+                ? "丹药已收入行囊。修为满 360 后可叩关，每次必消耗一枚；失败后可依丹方补炼。"
+                : ritual === "challenge" && failed
+                  ? "线索仍在。查看当前挑战提示，提升实力或寻求帮助后再来。"
+                  : "成果已自动保存，可以继续行动。",
   });
 }

@@ -1,3 +1,4 @@
+import { realmPressure, type OpponentRealm } from "../realm-pressure";
 import { mainTraining, supportTraining } from "../growth";
 import type { State } from "../world";
 import { encounters, type Move } from "./content";
@@ -44,9 +45,12 @@ export function combatStyle(s: State) {
 }
 // One calculation drives settlement and tests; no UI, time or random side effects.
 export interface CombatEncounter {
+  realm?: 0 | 1;
+  stage?: number;
   hp: number;
   attack: number;
   pattern: readonly Move[];
+  coreOpen?: boolean;
 }
 export function exchangePreview(s: State, move: Move) {
   const q = s.expedition;
@@ -68,6 +72,7 @@ export function tacticalExchange(
   effect: string,
   arrayCore = false,
   power = readiness(s),
+  deferLethal = false,
 ) {
   if (!["guard", "strike", "discern"].includes(move)) return null;
   const correct = move === e.pattern[d.turn % e.pattern.length];
@@ -97,7 +102,7 @@ export function tacticalExchange(
     // A closed core resists blind attacks; scouting or the exposed turn opens it.
     if (
       move === "strike" &&
-      d.turn % e.pattern.length !== 2 &&
+      !(e.coreOpen ?? d.turn % e.pattern.length === 2) &&
       effect !== "discern" &&
       effect !== "guard"
     ) {
@@ -129,7 +134,13 @@ export function tacticalExchange(
       note += "探阵：本合伤害 −3；下合伤害 +6、承伤 −2。";
     }
   }
-  incoming = d.enemy <= damage ? 0 : Math.max(1, incoming);
+  if (!deferLethal && e.realm !== undefined && e.stage !== undefined) {
+    const pressure = realmPressure(s, e as OpponentRealm);
+    damage = Math.max(1, Math.floor(damage * pressure.damageFactor));
+    incoming += pressure.incomingExtra;
+    if (pressure.gap) note += pressure.description;
+  }
+  incoming = !deferLethal && d.enemy <= damage ? 0 : Math.max(1, incoming);
   const remaining = d.hp - incoming;
   const healing =
     s.journey.main === "spring" &&

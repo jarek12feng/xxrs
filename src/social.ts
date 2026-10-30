@@ -1,3 +1,4 @@
+import { realmPressure } from "./realm-pressure";
 import { companionScene } from "./companion-scenes";
 import {
   availableOrigins,
@@ -47,6 +48,8 @@ export const companions = {
 } as const;
 export const rivals = [
   {
+    realm: 0 as const,
+    stage: 0,
     name: "巩砚",
     style: "磐石守势",
     story:
@@ -57,6 +60,8 @@ export const rivals = [
     prize: "归元息 · 灵石 8",
   },
   {
+    realm: 0 as const,
+    stage: 1,
     name: "裴逐风",
     style: "疾剑连攻",
     story: "快剑争先，连攻后会短暂换气。硬追他的剑尖，常会先耗尽自己的气息。",
@@ -66,6 +71,8 @@ export const rivals = [
     prize: "护身诀 · 灵石 12",
   },
   {
+    realm: 0 as const,
+    stage: 2,
     name: "邱星罗",
     style: "流光阵步",
     story:
@@ -160,8 +167,7 @@ export function relationship(s: State) {
           : "尚未相识";
 }
 export function relationshipGoal(s: State) {
-  if (!s.social.gender)
-    return "请先在人物页选择角色性别，再去山门外相识。";
+  if (!s.social.gender) return "请先在人物页选择角色性别，再去山门外相识。";
   if (s.age < 216)
     return "成年并筑基后，可在山门外结识新的同行者。眼下先走好自己的修行路。";
   if (!s.social.met && s.realm < 1)
@@ -362,7 +368,7 @@ export function turnPreview(s: State, stance: Stance) {
   const gear = s.journey.equipped;
   const skill = s.journey.main,
     support = s.journey.support;
-  const damage =
+  let damage =
     mainTraining(s) * 2 +
     (stance === "endure" ? -2 : 0) +
     (correct ? 8 : 3) +
@@ -371,7 +377,7 @@ export function turnPreview(s: State, stance: Stance) {
     (stance === "break" && skill === "blade" ? 4 : 0) +
     (stance === "discern" && skill === "breath" ? 3 : 0) +
     (stance === "discern" && support === "lantern" ? 3 : 0);
-  const incoming = Math.max(
+  let incoming = Math.max(
     1,
     rivals[d.opponent].attack +
       Math.floor(d.turn / 3) * 2 +
@@ -383,6 +389,9 @@ export function turnPreview(s: State, stance: Stance) {
       (support === "guard" ? 2 : 0) -
       (gear === "vial" ? s.journey.relics.vial : 0),
   );
+  const pressure = realmPressure(s, rivals[d.opponent]);
+  damage = Math.max(1, Math.floor(damage * pressure.damageFactor));
+  incoming += pressure.incomingExtra;
   const heal =
     (stance === "endure" && skill === "spring" && s.herbs > 0 ? 6 : 0) +
     (support === "herb" ? 1 : 0);

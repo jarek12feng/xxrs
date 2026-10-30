@@ -2,9 +2,13 @@
 import { computed } from "vue";
 import type { State, Intent } from "../world";
 import type { JourneyAction } from "./state";
-import { challenges, destinations, sideChoices } from "./content";
+import { challenges, destinations } from "./content";
 import { moves } from "../expedition/content";
-import { foundationExchange, foundationPower } from "./combat";
+import {
+  foundationExchange,
+  foundationPower,
+  foundationBattleReadiness,
+} from "./combat";
 import {
   journeyActionError,
   foundationGoal,
@@ -12,8 +16,11 @@ import {
 } from "./progression";
 import { foundationBoard, journeyOptions, journeyPresentation } from "./view";
 import JourneyResult from "./JourneyResult.vue";
-import { foundationBattleCue } from "./battle-cues";
+import { chapterEnding } from "./aftermath";
+import { journeyPreparation } from "./preparation";
+import { foundationBattleCue, foundationMoveSetup } from "./battle-cues";
 import SceneBackdrop from "../SceneBackdrop.vue";
+import CultivationOutlook from "../CultivationOutlook.vue";
 const props = withDefaults(
   defineProps<{
     game: State;
@@ -23,6 +30,10 @@ const props = withDefaults(
   { mode: "journey" },
 );
 const emit = defineEmits<{ act: [intent: Intent]; equipment: [] }>();
+const preparation = computed(() =>
+  journeyPreparation(props.game, props.mode === "board"),
+);
+const ending = computed(() => chapterEnding(props.game));
 const q = computed(() => props.game.foundationJourney);
 const board = computed(() => foundationBoard(props.game));
 const options = computed(() =>
@@ -31,12 +42,16 @@ const options = computed(() =>
     props.mode === "relationship" ? "relationship" : "journey",
   ),
 );
+const battlePreparation = computed(() =>
+  q.value.duel ? foundationBattleReadiness(props.game, q.value.duel.id) : null,
+);
 const foe = computed(() => (q.value.duel ? challenges[q.value.duel.id] : null));
 const moveOptions = computed(() =>
   Object.entries(moves).map(([move, label]) => ({
     move: move as keyof typeof moves,
     label,
     preview: foundationExchange(props.game, move as keyof typeof moves),
+    setup: foundationMoveSetup(props.game, move as keyof typeof moves),
   })),
 );
 const presentation = computed(() =>
@@ -62,6 +77,75 @@ function act(action: JourneyAction) {
           : '筑基行旅'
     "
   >
+    <aside
+      v-if="
+        preparation &&
+        mode !== 'relationship' &&
+        (preparation.missing || preparation.injury || preparation.needsFunds)
+      "
+      class="foundation-preparation"
+      aria-label="当前挑战准备"
+    >
+      <p v-if="preparation.missing">
+        {{ preparation.optionalBattle ? "同阶应战参考修行" : "下一段需要修行" }}
+        {{ preparation.target }}，还差 {{ preparation.missing }}。{{
+          preparation.optionalBattle ? "也可凭机缘直接越阶挑战。" : ""
+        }}本次最多吐纳 {{ preparation.months }} 月，剧情出现时会停下。
+      </p>
+      <CultivationOutlook
+        v-if="preparation.missing"
+        :game="game"
+        :target="preparation.target"
+        :months="preparation.months"
+      />
+      <button
+        v-if="preparation.missing"
+        :disabled="busy || preparation.months < 1"
+        @click="
+          emit('act', {
+            type: 'advance',
+            activity: 'cultivate',
+            months: preparation.months,
+          })
+        "
+      >
+        积累修行 · 最多 {{ preparation.months }} 月
+      </button>
+      <button
+        v-if="preparation.injury"
+        :disabled="busy"
+        @click="
+          emit('act', {
+            type: 'advance',
+            activity: 'rest',
+            months: preparation.injury,
+          })
+        "
+      >
+        免费静养 · 最多 {{ preparation.injury }} 月
+      </button>
+      <button
+        v-if="preparation.needsFunds"
+        :disabled="busy"
+        @click="emit('act', { type: 'advance', activity: 'work', months: 1 })"
+      >
+        劳作一月 · 灵石 +5
+      </button>
+    </aside>
+    <article
+      v-if="
+        q.epilogue && mode === 'journey' && q.location === 'home' && !q.duel
+      "
+      class="chapter-ending"
+      aria-label="筑基篇尾声"
+    >
+      <small>你的道途 · 已完成筑基篇</small>
+      <h2>{{ ending[0] }}</h2>
+      <p v-for="line in ending.slice(1)" :key="line">{{ line }}</p>
+      <p class="ending-scope">
+        本篇到此完成，角色与存档继续保留。可自由回访、补完支线和榜单；金丹突破与后续篇章尚未开放。
+      </p>
+    </article>
     <template v-if="q.duel && foe">
       <div class="foundation-duel">
         <img :src="foe.image" :alt="foe.foe" />
@@ -71,6 +155,10 @@ function act(action: JourneyAction) {
           <p>
             {{ foe.foe }} · 气势 {{ q.duel.enemy }}/{{ foe.hp }}<br />你的气势
             {{ q.duel.hp }}/{{ foundationPower(game).hp }}
+          </p>
+          <p v-if="battlePreparation">
+            {{ battlePreparation.description }}
+            {{ battlePreparation.cooperationNote }}
           </p>
           <p class="battle-cue">来招：{{ foundationBattleCue(game) }}</p>
           <p>
@@ -98,11 +186,24 @@ function act(action: JourneyAction) {
                 : ""
             }}</small
           >
+          <small v-if="m.preview && m.preview.incoming >= q.duel.hp"
+            >此招承伤会耗尽气势，回春无法救回；可改招或撤退。</small
+          >
+          <small v-if="m.setup">{{ m.setup }}</small>
         </button>
         <button :disabled="busy" @click="act({ kind: 'withdraw' })">
           沿原路撤退 · 补给不退
         </button>
       </div>
+      <details>
+        <summary>查看本合效果明细</summary>
+        <p v-for="m in moveOptions" :key="m.move">
+          {{ m.label }}：{{ m.preview?.note || "无额外效果" }}
+        </p>
+      </details>
+      <p>
+        来招提示与连招收益需一起权衡。伤害、承伤已计入本合效果；连招不会自动替你出招。
+      </p>
       <p role="status" class="foundation-result">{{ q.last }}</p>
     </template>
     <template v-else-if="mode === 'board'">
@@ -134,7 +235,12 @@ function act(action: JourneyAction) {
           <h3>{{ row.rank }} · {{ row.foe }}</h3>
           <p>{{ row.purpose }}</p>
           <p>
-            首胜奖励：灵石 {{ row.prize }}、筑基修行 40（至多 600）{{
+            {{ foundationBattleReadiness(game, row.id).description }}
+            {{ foundationBattleReadiness(game, row.id).cooperationNote }}
+          </p>
+          <p>
+            首胜奖励：灵石 {{ row.prize }}、筑基修行
+            {{ Math.min(40, 600 - q.cultivation) }}（至多 600）{{
               row.extra ? `、${row.extra}` : ""
             }}。每场只结算一次。
           </p>
@@ -189,21 +295,29 @@ function act(action: JourneyAction) {
           :speaker="presentation.speaker"
           compact
         />
-        <p>
-          行旅之外，可随时回洞府修行；支线标有“可选”。
-        </p>
+        <p>行旅之外，可随时回洞府修行；支线标有“可选”。</p>
         <button :disabled="busy" @click="emit('equipment')">
           装配传承与功法
         </button>
-        <p v-if="q.location === 'estate' && q.sides.estate.outcome">
-          {{ sideChoices.estate[q.sides.estate.outcome]?.result }}
-        </p>
-        <p v-if="q.location === 'snow' && q.sides.snow.outcome">
-          {{ sideChoices.snow[q.sides.snow.outcome]?.result }}
-        </p>
-        <p v-if="q.location === 'inn' && q.sides.inn.outcome">
-          {{ sideChoices.inn[q.sides.inn.outcome]?.result }}
-        </p>
+        <details>
+          <summary>挑战吃力时，怎样准备？</summary>
+          <p>
+            高小境界敌人有真实的境界压制；修行到同阶或取得越阶机缘后，再衡量胜算。先静养伤势，再比较三招的承伤、蓄势与换招收益；一直重复同一套连招也可能撞上重击。
+          </p>
+          <p>
+            护身诀可在功法页装配并研修，每级研修增加护体
+            1；主修研修每级增加基础伤害 2。研修需心得 2、灵石 12、灵草
+            2，筑基后可达二级。
+          </p>
+          <p>
+            灵器可在灵器页精炼至二阶：灵瓶每阶减伤 1，灵剑每阶伤害
+            +2；每次需心得 2、灵石 24、灵草
+            4。根基未满时可在洞府固本，提高气势与基础伤害。
+          </p>
+          <p v-if="game.journey.main === 'spring'">
+            长春守势需有灵草，且承伤后仍存活才会回气；储物袋有药也不能在交锋中起死回生。
+          </p>
+        </details>
       </template>
       <template v-else
         ><SceneBackdrop
@@ -232,9 +346,29 @@ function act(action: JourneyAction) {
           }}。闭关与现实离线不会损害关系。
         </p></template
       >
-      <JourneyResult v-if="q.last" :text="q.last" expanded />
+      <JourneyResult
+        v-if="
+          q.last &&
+          !(
+            q.epilogue &&
+            q.location === 'home' &&
+            q.last.startsWith(ending[0]!)
+          )
+        "
+        :text="q.last"
+        expanded
+      />
       <div class="foundation-options">
         <article v-for="option in options" :key="JSON.stringify(option.action)">
+          <p v-if="option.action.kind === 'battle'">
+            {{
+              foundationBattleReadiness(game, option.action.battle).description
+            }}
+            {{
+              foundationBattleReadiness(game, option.action.battle)
+                .cooperationNote
+            }}
+          </p>
           <button
             :disabled="busy || !!option.error"
             @click="act(option.action)"
@@ -247,6 +381,28 @@ function act(action: JourneyAction) {
   </section>
 </template>
 <style scoped>
+.chapter-ending {
+  padding: 22px;
+  border: 1px solid #d8b96b;
+  border-radius: 12px;
+  background: #20382e;
+}
+.chapter-ending h2 {
+  color: #ffe5a5;
+}
+.ending-scope {
+  border-top: 1px solid #788676;
+  padding-top: 12px;
+}
+.foundation-preparation {
+  padding: 12px;
+  border: 1px solid #788676;
+  border-radius: 8px;
+}
+.foundation-preparation button {
+  margin: 4px;
+}
+
 .foundation-panel {
   display: grid;
   gap: 14px;
@@ -333,6 +489,28 @@ function act(action: JourneyAction) {
 }
 </style>
 <style scoped>
+.chapter-ending {
+  padding: 22px;
+  border: 1px solid #d8b96b;
+  border-radius: 12px;
+  background: #20382e;
+}
+.chapter-ending h2 {
+  color: #ffe5a5;
+}
+.ending-scope {
+  border-top: 1px solid #788676;
+  padding-top: 12px;
+}
+.foundation-preparation {
+  padding: 12px;
+  border: 1px solid #788676;
+  border-radius: 8px;
+}
+.foundation-preparation button {
+  margin: 4px;
+}
+
 .foundation-panel button {
   background: #e8eadc;
   color: #203b31;

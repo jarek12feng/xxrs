@@ -168,7 +168,7 @@ it("v16 migration starts new progression empty and rejects malformed or future s
   const upgraded = migrateSave(old);
   expect(upgraded.foundationJourney).toEqual(freshFoundationJourney());
   expect(old).toEqual(before);
-  expect(() => migrateSave({ ...upgraded, version: 18 })).toThrow();
+  expect(() => migrateSave({ ...upgraded, version: 19 })).toThrow();
   for (const patch of [
     { cultivation: -1 },
     { cultivation: 601 },
@@ -258,6 +258,14 @@ it.each(["male", "female"] as const)(
     expect(p.state.foundationJourney.bond).toBe("promised");
     p.act({ kind: "covenant" });
     expect(p.state.foundationJourney.bond).toBe("covenant");
+    p.act({ kind: "sharedMoment" });
+    expect(p.state.foundationJourney.sharedMoment).toBe(true);
+    expect(p.state.foundationJourney.last).toContain(
+      gender === "male" ? "沈听澜" : "尹照川",
+    );
+    const evening = p.state;
+    p.act({ kind: "sharedMoment" });
+    expect(p.state).toBe(evening);
     p.act({ kind: "prepareTogether" });
     p.act({ kind: "depart" });
     expect(p.state.foundationJourney.aid).toBe(false);

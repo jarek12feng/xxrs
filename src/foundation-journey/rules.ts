@@ -20,7 +20,9 @@ export function runFoundationJourney(
     s = tick(s);
     if (s.status !== "alive" || s.pending) {
       s.foundationJourney.last =
-        "行前准备耗去一月，眼前事件打断了出发。尚未扣挑战补给，原进度保留；先处理事件。";
+        s.status === "dead"
+          ? "行前准备耗去最后一月寿元，此生已经结束。未扣挑战补给，也未开始交锋或领取奖励。"
+          : "行前准备耗去一月，眼前事件打断了出发。尚未扣挑战补给，原进度保留；先处理事件。";
       return accept(input, s, id);
     }
   }
@@ -29,6 +31,7 @@ export function runFoundationJourney(
     const e = challenges[action.battle];
     s.stones -= e.cost;
     q.duel = {
+      ruleset: 2,
       id: action.battle,
       hp: foundationPower(s).hp,
       enemy: e.hp,
@@ -78,7 +81,7 @@ function accept(input: State, s: State, id: string) {
   s.log = s.log.slice(0, 180);
   return s;
 }
-export function validFoundationJourney(s: State) {
+export function validFoundationJourney(s: State, legacy = false) {
   const q = s.foundationJourney,
     integer = (v: unknown, max = 1e9) =>
       Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= max;
@@ -119,8 +122,11 @@ export function validFoundationJourney(s: State) {
   if (
     !Array.isArray(q.won) ||
     new Set(q.won).size !== q.won.length ||
-    q.won.length > 11 ||
-    !q.won.every((id) => Object.hasOwn(challenges, id))
+    q.won.length > (legacy ? 11 : 12) ||
+    !q.won.every(
+      (id) =>
+        Object.hasOwn(challenges, id) && (!legacy || id !== "culmination"),
+    )
   )
     return false;
   if (
@@ -246,10 +252,30 @@ export function validFoundationJourney(s: State) {
       (q.rescue === 1 ? "missing" : q.rescue === 4 ? "rescued" : "shelter")
   )
     return false;
+  if (
+    !legacy &&
+    (typeof q.epilogue !== "boolean" ||
+      typeof q.sharedMoment !== "boolean" ||
+      !q.aftermath ||
+      typeof q.aftermath !== "object" ||
+      Array.isArray(q.aftermath) ||
+      !(["estate", "snow", "inn"] as const).every(
+        (k) =>
+          typeof q.aftermath[k] === "boolean" &&
+          (!q.aftermath[k] || q.sides?.[k]?.step === 3),
+      ) ||
+      (q.sharedMoment && q.bond !== "covenant") ||
+      (q.won.includes("culmination") && !q.condensation) ||
+      (q.epilogue && !q.won.includes("culmination")) ||
+      (q.duel?.id === "culmination" && !q.condensation))
+  )
+    return false;
   if (q.duel) {
     const d = q.duel,
       e = challenges[d.id];
     if (
+      (!legacy && ![1, 2].includes(d.ruleset)) ||
+      (legacy && d.id === "culmination") ||
       !Object.hasOwn(challenges, d.id) ||
       s.status !== "alive" ||
       s.pending ||

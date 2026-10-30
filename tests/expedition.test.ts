@@ -91,7 +91,7 @@ it("rejects malformed progress and migrates v11 without resetting prior accompli
   const frozen = structuredClone(old);
   expect(migrateSave(old)).toEqual({
     ...rest,
-    version: 17,
+    version: 18,
     expedition: freshExpedition(),
   });
   expect(old).toEqual(frozen);

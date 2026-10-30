@@ -39,6 +39,7 @@ it("describes every real pattern step, retains opening guidance, and leaves comb
   for (const [id, enemy] of Object.entries(challenges)) {
     for (let turn = 0; turn < enemy.pattern.length * 2; turn++) {
       s.foundationJourney.duel = {
+        ruleset: 2,
         id: id as keyof typeof challenges,
         hp: 80,
         enemy: enemy.hp,

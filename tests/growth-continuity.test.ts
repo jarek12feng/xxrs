@@ -126,7 +126,7 @@ it("migrates v12 conservatively, rejects corrupt growth, and retains it across m
   const old = { ...rest, version: 12 };
   const copy = structuredClone(old);
   const n = migrateSave(old);
-  expect(n.version).toBe(17);
+  expect(n.version).toBe(18);
   expect(old).toEqual(copy);
   expect(n.seed).toBe(old.seed);
   expect(
@@ -157,6 +157,7 @@ it("escort earns usable equipment and medicine once; a closed boss core punishes
   expect(p.state.journey.relics.sword + p.state.journey.relics.vial).toBe(1);
   expect(p.state.growth.medicines.healing).toBe(1);
   const s = learner();
+  s.realm = 1; // Guardian combat opens only after foundation breakthrough.
   s.expedition = {
     accepted: true,
     cleared: 2,

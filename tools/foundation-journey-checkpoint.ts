@@ -6,11 +6,12 @@ import {
   type Gender,
   type Path,
 } from "../src/core";
+import { cultivationProjection } from "../src/cultivation";
 import { mistCheckpoint } from "./mist-checkpoint";
 import { challenges } from "../src/foundation-journey/content";
 import type { BattleId, JourneyAction } from "../src/foundation-journey/state";
-import { foundationExchange } from "../src/foundation-journey/combat";
-import { moves } from "../src/expedition/content";
+import { findCombatRoute } from "./foundation-tactics-audit";
+
 // Reproducible development checkpoint. All progress is earned through public commands.
 export function journeyPlayer(initial = mistCheckpoint()) {
   let state = initial,
@@ -31,8 +32,18 @@ export function journeyPlayer(initial = mistCheckpoint()) {
   const cultivate = (target: number) => {
     let guard = 0;
     while (state.foundationJourney.cultivation < target) {
-      if (++guard > 100) throw new Error("Cultivation stalled");
-      send({ type: "advance", activity: "cultivate", months: 1 });
+      if (++guard > 100 || state.status !== "alive")
+        throw new Error("Cultivation stalled or lifespan exhausted");
+      const plan = cultivationProjection(state, target);
+      if (!plan.batchMonths) throw new Error("No cultivation time remains");
+      const before = state.foundationJourney.cultivation;
+      send({
+        type: "advance",
+        activity: "cultivate",
+        months: plan.batchMonths,
+      });
+      if (state.foundationJourney.cultivation <= before)
+        throw new Error("Cultivation did not advance");
     }
   };
   const fight = (id: BattleId) => {
@@ -42,22 +53,21 @@ export function journeyPlayer(initial = mistCheckpoint()) {
       send({ type: "advance", activity: "work", months: 3 });
     act({ kind: "battle", battle: id });
     if (!state.foundationJourney.duel) throw new Error(`Cannot start ${id}`);
-    let guard = 0;
-    while (state.foundationJourney.duel) {
-      if (++guard > 12) throw new Error("Battle stalled");
-      // Pick from public previews: prefer lethal hits, then damage per received hit.
-      const options = (Object.keys(moves) as (keyof typeof moves)[]).map(
-        (move) => ({ move, p: foundationExchange(state, move)! }),
-      );
-      options.sort((a, b) => {
-        const score = (o: typeof a) =>
-          o.p.damage >= state.foundationJourney.duel!.enemy
-            ? 10000
-            : o.p.damage / Math.max(1, o.p.incoming - o.p.healing);
-        return score(b) - score(a);
-      });
-      act({ kind: "move", move: options[0]!.move });
+    let plan = findCombatRoute(state);
+    if (
+      !plan &&
+      state.foundationJourney.cultivation < challenges[id].stage * 200
+    ) {
+      // A public-command safe alternative to finding an exceptional cross-stage build.
+      act({ kind: "withdraw" });
+      cultivate(challenges[id].stage * 200);
+      while (state.stones < 4)
+        send({ type: "advance", activity: "work", months: 3 });
+      act({ kind: "battle", battle: id });
+      plan = findCombatRoute(state);
     }
+    if (!plan) throw new Error(`No bounded-search route for ${id}`);
+    for (const move of plan.moves) act({ kind: "move", move });
     if (!state.foundationJourney.won.includes(id))
       throw new Error(`Lost ${id}: ${state.foundationJourney.last}`);
   };

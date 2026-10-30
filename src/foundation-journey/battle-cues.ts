@@ -1,9 +1,15 @@
 import type { State } from "../world";
 import { moves, type Move } from "../expedition/content";
 import { challenges } from "./content";
+import { expectedMove, tacticalCue } from "./tactics";
 import type { BattleId } from "./state";
 // Match the same turn/pattern as combat. Descriptions never select a move or consume RNG.
 const cues: Record<BattleId, Record<Move, string>> = {
+  culmination: {
+    guard: "三股乱流压向经脉，护阵旗已收起。",
+    discern: "经脉渐稳，交错的灵光各有去向。",
+    strike: "灵流贯通，阵心已向你敞开。",
+  },
   well: {
     guard: "石偶双臂合拢，石梁般的重击正面压来。",
     strike: "石偶收回双臂，胸前阵核短暂露出。",
@@ -63,13 +69,40 @@ const cues: Record<BattleId, Record<Move, string>> = {
 export function foundationBattleCue(s: State) {
   const d = s.foundationJourney.duel;
   if (!d) return "";
-  const e = challenges[d.id],
-    move = e.pattern[d.turn % e.pattern.length]!;
+  const move = expectedMove(s);
   const teaching = d.id === "well" || d.id === "rank1";
   return (
     cues[d.id][move] +
+    tacticalCue(s) +
+    (d.ruleset === 2 && d.id === "culmination"
+      ? "同招连用会被灵流截住，伤害 −6、承伤 +3。"
+      : "") +
     (teaching
       ? `初试提示：${moves[move]}可顺势应对；也可比较下方伤害与消耗。`
       : "")
   );
+}
+
+// Prospective effects are visible before committing a move; no extra settlement or prediction.
+export function foundationMoveSetup(s: State, move: Move): string {
+  const d = s.foundationJourney.duel;
+  if (!d) return "";
+  const hints: string[] = [];
+  if (challenges[d.id].array) {
+    if (move === "guard") hints.push("蓄势：下合反击伤害 +10");
+    if (move === "discern") hints.push("探阵：下合伤害 +6、承伤 −2");
+  }
+  if (d.ruleset === 2) {
+    if (d.id === "exit" && move === "discern")
+      hints.push("下合反击另增伤 12、减伤 4");
+    if (d.id === "frontier" && move === "discern")
+      hints.push("下合反击另增伤 8");
+    if (d.id === "rescue" && move === "guard")
+      hints.push("下合辨影另增伤 12、减伤 4");
+    if (d.id === "snow" && move === "guard") hints.push("下合反击另增伤 6");
+    if (d.id === "rank2" && move === "discern") hints.push("下合反击伤害 +8");
+    if (s.foundationJourney.condensation)
+      hints.push("下合换招可贯流：伤害 +5、承伤 −2");
+  }
+  return hints.join("；");
 }

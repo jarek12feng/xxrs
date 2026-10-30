@@ -1,6 +1,8 @@
 import type { BattleId, Destination, Side } from "./state";
 import type { Move } from "../expedition/content";
 export interface Challenge {
+  realm: 1;
+  stage: number;
   name: string;
   foe: string;
   hp: number;
@@ -14,6 +16,7 @@ export interface Challenge {
   purpose: string;
 }
 const battle = (
+  stage: number,
   name: string,
   foe: string,
   hp: number,
@@ -24,6 +27,8 @@ const battle = (
   purpose: string,
   array = false,
 ): Challenge => ({
+  realm: 1,
+  stage,
   name,
   foe,
   hp,
@@ -37,7 +42,20 @@ const battle = (
   purpose,
 });
 export const challenges: Record<BattleId, Challenge> = {
+  culmination: battle(
+    3,
+    "圆满试炼 · 长风归流",
+    "古道归流阵",
+    245,
+    30,
+    600,
+    ["guard", "discern", "strike"],
+    "/art/characters/golem.webp",
+    "程砚撤去外援，你独自将三股乱流引回经脉。稳住、辨清、放出，让自己的所学走完一个周天。胜后归山，完成筑基篇。",
+    true,
+  ),
   well: battle(
+    0,
     "沉井探府",
     "失控守府石偶",
     110,
@@ -49,6 +67,7 @@ export const challenges: Record<BattleId, Challenge> = {
     true,
   ),
   exit: battle(
+    1,
     "破开离渡禁制",
     "祝庭的渡口执卫",
     135,
@@ -59,6 +78,7 @@ export const challenges: Record<BattleId, Challenge> = {
     "祝庭站在渡牌后，将一张空名籍推来：“得了井里的东西，就该留在渡上效力。”你没有接笔。执卫横枪封住石阶，身后已有渡客收起行囊，退回雨棚。",
   ),
   estate: battle(
+    0,
     "药庄引水试炼",
     "失控护圃阵",
     120,
@@ -70,6 +90,7 @@ export const challenges: Record<BattleId, Challenge> = {
     true,
   ),
   snow: battle(
+    1,
     "雪线留引试炼",
     "残损护山阵",
     155,
@@ -81,6 +102,7 @@ export const challenges: Record<BattleId, Challenge> = {
     true,
   ),
   frontier: battle(
+    1,
     "古道外缘挑战",
     "裂谷守阵石偶",
     165,
@@ -92,6 +114,7 @@ export const challenges: Record<BattleId, Challenge> = {
     true,
   ),
   rescue: battle(
+    2,
     "内外应声",
     "崩裂的核心禁制",
     205,
@@ -103,6 +126,7 @@ export const challenges: Record<BattleId, Challenge> = {
     true,
   ),
   rank1: battle(
+    0,
     "筑基试剑 · 初登榜",
     "罗砺 · 护舟刀",
     105,
@@ -113,6 +137,7 @@ export const challenges: Record<BattleId, Challenge> = {
     "刀势重，收刀后露出空当。首胜进入筑基榜前三十。",
   ),
   rank2: battle(
+    1,
     "筑基试剑 · 前十五",
     "周雁回 · 回风剑",
     135,
@@ -123,6 +148,7 @@ export const challenges: Record<BattleId, Challenge> = {
     "追剑会吃反击，分辨她收势与回身的节拍。",
   ),
   rank3: battle(
+    1,
     "筑基试剑 · 前八",
     "孟照野 · 照石阵",
     160,
@@ -134,20 +160,22 @@ export const challenges: Record<BattleId, Challenge> = {
     true,
   ),
   rank4: battle(
+    2,
     "筑基试剑 · 前三",
     "江问荷 · 长息诀",
     185,
-    27,
+    24,
     360,
     ["guard", "discern", "guard", "strike"],
     "/art/foundation-journey/rank-jiangwenhe.webp",
     "长息守势要求连续应对；准备灵草，或以剑经抢攻。",
   ),
   rank5: battle(
+    3,
     "筑基试剑 · 争魁",
     "邱星罗 · 重整阵步",
     220,
-    29,
+    26,
     500,
     ["discern", "guard", "strike", "discern"],
     "/art/characters/qiuxingluo.webp",
@@ -194,7 +222,7 @@ export const destinations: Record<
     name: "听雨旅亭",
     image: "roadside-pavilion",
     intro:
-      "守驿的老人说阿团总叼灯出门。它是一只獾。你可以跟着泥脚印看看，也可以就此喝完茶离开；这里没有等着你揭开的巨大阴谋。",
+      "守驿的老人说阿团总叼灯出门。它是一只獾。你可以跟着泥脚印看看，也可以就此喝完茶离开；雨渐渐密了，老人将灶里的火拨旺一些。",
   },
   frontier: {
     name: "云外古道",

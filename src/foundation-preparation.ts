@@ -1,6 +1,6 @@
+import { cultivationProjection } from "./cultivation";
 import {
   actionError,
-  cultivationGain,
   preparationError,
   breakthroughDetails,
   type State,
@@ -27,12 +27,13 @@ export function foundationPreparation(s: State) {
     const months = Math.min(
       12,
       waiting && target === 360 ? stop - s.month : 12,
-      Math.ceil((target - s.qi) / cultivationGain(s)),
+      cultivationProjection(s, target).batchMonths,
     );
     return action(
       `吐纳至${target === 180 ? "探府" : "叩关"}修为 · 最多 ${months} 月`,
       { type: "advance", activity: "cultivate", months },
-      actionError(s, "cultivate"),
+      actionError(s, "cultivate") ||
+        (months <= 0 ? "剩余寿元不足以完成一月修炼" : ""),
     );
   };
   const waiting =

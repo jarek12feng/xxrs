@@ -1,8 +1,37 @@
+import { realmPressure } from "../realm-pressure";
 import { sideTrialResult } from "./narrative";
 import type { State } from "../world";
 import { readiness, tacticalExchange } from "../expedition/combat";
 import type { Move } from "../expedition/content";
+import { expectedMove, tacticalAdjustment } from "./tactics";
 import { challenges, rankIds } from "./content";
+export function foundationCooperation(s: State, id: keyof typeof challenges) {
+  const q = s.foundationJourney;
+  return (
+    !id.startsWith("rank") &&
+    id !== "culmination" &&
+    q.bond === "covenant" &&
+    q.reunion &&
+    s.companionship.stage === "done" &&
+    ["home", "returned", "rescued"].includes(q.whereabouts) &&
+    (q.duel ? q.duel.aid : q.aid)
+  );
+}
+export function foundationBattleReadiness(
+  s: State,
+  id: keyof typeof challenges,
+) {
+  const cooperation = foundationCooperation(s, id);
+  return {
+    ...realmPressure(s, challenges[id], cooperation),
+    cooperation,
+    cooperationNote: cooperation
+      ? "道侣依约同行，正确应对时协助牵制：伤害 +4、承伤 −3；共同准备仅供本场。"
+      : id === "culmination" || id.startsWith("rank")
+        ? "本场独自应战，不提供道侣协作。"
+        : "道侣结契、远行归来且在场，共同准备后可协作一场。",
+  };
+}
 export function foundationPower(s: State) {
   const base = readiness(s),
     tier = Math.floor(s.foundationJourney.cultivation / 100);
@@ -23,11 +52,26 @@ export function foundationExchange(s: State, move: Move) {
   const p = tacticalExchange(
     s,
     move,
-    challenges[d.id],
+    d.ruleset === 2
+      ? {
+          ...challenges[d.id],
+          coreOpen: expectedMove(s) === "strike",
+          pattern: Array(challenges[d.id].pattern.length).fill(expectedMove(s)),
+        }
+      : {
+          ...challenges[d.id],
+          attack:
+            d.id === "rank4"
+              ? 27
+              : d.id === "rank5"
+                ? 29
+                : challenges[d.id].attack,
+        },
     d,
     d.effect,
     challenges[d.id].array,
     foundationPower(s),
+    true,
   );
   if (!p) return null;
   const trained =
@@ -37,7 +81,7 @@ export function foundationExchange(s: State, move: Move) {
       { spring: "guard", blade: "strike", breath: "discern" }[q.inheritance];
   if (trained) {
     p.damage += 4;
-    p.incoming = d.enemy <= p.damage ? 0 : Math.max(0, p.incoming - 2);
+    p.incoming = Math.max(0, p.incoming - 2);
     p.note += "沉井传承生效：伤害 +4、承伤 −2。";
     p.healing =
       s.journey.main === "spring" &&
@@ -49,6 +93,42 @@ export function foundationExchange(s: State, move: Move) {
         : 0;
     p.herbs = p.healing ? 1 : 0;
   }
+  if (d.ruleset === 2) {
+    const adjustment = tacticalAdjustment(s, move);
+    p.damage = Math.max(1, p.damage + adjustment.damage);
+    p.incoming = Math.max(0, p.incoming + adjustment.incoming);
+    p.note += adjustment.note;
+    p.healing =
+      s.journey.main === "spring" &&
+      move === "guard" &&
+      s.herbs > 0 &&
+      p.incoming > 0 &&
+      d.hp > p.incoming
+        ? Math.max(0, Math.min(7, foundationPower(s).hp - (d.hp - p.incoming)))
+        : 0;
+    p.herbs = p.healing ? 1 : 0;
+  }
+  const preparation = foundationBattleReadiness(s, d.id);
+  if (preparation.cooperation && p.correct) {
+    p.damage += 4;
+    p.incoming = Math.max(0, p.incoming - 3);
+    p.note += "道侣牵制来势，伤害 +4、承伤 −3。";
+  }
+  p.damage = Math.max(1, Math.floor(p.damage * preparation.damageFactor));
+  p.incoming =
+    d.enemy <= p.damage
+      ? 0
+      : Math.max(0, p.incoming + preparation.incomingExtra);
+  if (preparation.gap) p.note += preparation.description;
+  p.healing =
+    s.journey.main === "spring" &&
+    move === "guard" &&
+    s.herbs > 0 &&
+    p.incoming > 0 &&
+    d.hp > p.incoming
+      ? Math.max(0, Math.min(7, foundationPower(s).hp - (d.hp - p.incoming)))
+      : 0;
+  p.herbs = p.healing ? 1 : 0;
   return p;
 }
 export function completeChallenge(s: State) {
@@ -110,5 +190,8 @@ export function completeChallenge(s: State) {
         : "闻岑在内侧牵绳，你从外侧断开支点；一名队员在断阶前迟疑，闻岑折回接住他的手，将自己的行囊留在石上。你稳住外侧，直到陶泊的船把最后两人接走。") +
       "程砚把落脚点交回药队。伤者安顿下来后，他请你再留片刻：“接人出来靠的是大家。接下来，该看看你自己的周天了。”";
   }
+  if (d.id === "culmination")
+    q.last +=
+      "三股乱流终于归于一息。你独自完成长风归流，周天贯流可继续用于筑基挑战。程砚收起护阵旗，邀你带着自己的所得归山。回听松行前居，翻开本篇尾声。";
   q.duel = null;
 }

@@ -15,13 +15,6 @@ export function openingGuide(s: State) {
     };
   }
   const echo = rescueEcho(s.adventure);
-  if (!s.adventure.road.thanked)
-    return {
-      title: "第一段归路已完成",
-      body: echo || "药工已经平安归家。旧航图指向山外，先听听他的消息。",
-      action: "road" as const,
-      label: "回访药工，看看后来发生的事",
-    };
   if (
     (!s.adventure.road.map || s.expedition.cleared === 1) &&
     !s.journey.main &&
@@ -29,9 +22,16 @@ export function openingGuide(s: State) {
   )
     return {
       title: "把第一册功法用起来",
-      body: "药工的谢礼已收入功法页。装配主修会改变修行与战斗；以后可用灵草和灵石研修至熟练。",
+      body: `${!s.adventure.road.thanked ? echo : ""} 药工的谢礼已收入功法页。先装配主修，下一次修行或交锋便能用上；再回访药工，听听归路的消息。`,
       action: "skills" as const,
       label: "装配第一册功法",
+    };
+  if (!s.adventure.road.thanked)
+    return {
+      title: "第一段归路已完成",
+      body: echo || "药工已经平安归家。旧航图指向山外，先听听他的消息。",
+      action: "road" as const,
+      label: "回访药工，看看后来发生的事",
     };
   if (
     s.expedition.cleared === 1 &&

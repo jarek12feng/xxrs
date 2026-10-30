@@ -75,14 +75,15 @@ it("emits unique event cues only for new outcomes through public commands, never
     actionSound(start, prepared, { type: "companionship", action: "insight" }),
   ).toBe("ward-learn");
 });
-it("gives an actionable exit goal once the cultivation threshold is already met", async () => {
+it("invites the earned inheritance into a real cross-stage exit trial without a cultivation gate", async () => {
   const { foundationGoal } =
     await import("../src/foundation-journey/progression");
   const p = journeyPlayer(journeyCheckpoint());
   p.act({ kind: "travel", destination: "ferry" });
   p.fight("well");
   p.act({ kind: "inherit", technique: "spring" });
-  expect(p.state.foundationJourney.cultivation).toBeGreaterThanOrEqual(80);
-  expect(foundationGoal(p.state)).toContain("修行已足");
-  expect(p.state.foundationJourney.last).toContain("修行已足");
+  expect(p.state.foundationJourney.cultivation).toBeLessThan(200);
+  expect(foundationGoal(p.state)).toContain("越阶胜利");
+  p.act({ kind: "battle", battle: "exit" });
+  expect(p.state.foundationJourney.duel?.id).toBe("exit");
 });

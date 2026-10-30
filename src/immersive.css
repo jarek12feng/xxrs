@@ -932,3 +932,18 @@
     line-height: 1.5;
   }
 }
+
+/* Keep lifespan and realm readable on narrow screens. */
+@media (max-width: 600px) {
+  .game-hud .avatar-entry small {
+    display: block;
+    font-size: 10px;
+    line-height: 1.25;
+    margin-top: 2px;
+  }
+  .immersive-shell .game-hud {
+    height: auto;
+    min-height: 64px;
+    flex-basis: 64px;
+  }
+}

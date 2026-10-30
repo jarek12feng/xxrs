@@ -194,7 +194,7 @@ export function enrichReceipt(
       a.rescueChoice !== b.rescueChoice &&
       (b.rescueChoice === "roots" || b.rescueChoice === "supplies")
     ) {
-      unlocks.push(rescueChoices[b.rescueChoice].title + " · 本世选择已记下");
+      unlocks.push(rescueChoices[b.rescueChoice].title + " · 归途选择已记下");
       r.person = {
         name: "陆迟",
         portrait: "/characters/luchi-base.png",

@@ -1,6 +1,7 @@
 import type { State } from "../world";
 import type { JourneyAction, BattleId, Destination, Side } from "./state";
 import { challenges, rankIds, sideChoices } from "./content";
+import { aftermathScene } from "./aftermath";
 import { ferryScene, sideScene, homeScene } from "./narrative";
 import { journeyActionError } from "./progression";
 export const rankNames = [
@@ -38,10 +39,13 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
   const add = (label: string, action: JourneyAction) =>
     actions.push({ label, action, error: journeyActionError(s, action) });
   const fight = (id: BattleId) =>
-    add(`${challenges[id].name} · 一月 / 灵石 4 / 首胜灵石 10、修行 40`, {
-      kind: "battle",
-      battle: id,
-    });
+    add(
+      `${challenges[id].name} · 一月 / 灵石 4 / 首胜灵石 10、修行 ${Math.min(40, 600 - q.cultivation)}`,
+      {
+        kind: "battle",
+        battle: id,
+      },
+    );
   if (mode === "relationship") {
     if (q.contact === "none") {
       add("约定药队递信", { kind: "contact", contact: "letters" });
@@ -50,6 +54,8 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
     if (q.bond === "none" && s.social.bonded)
       add("商议结为道侣 · 可以暂缓", { kind: "propose" });
     if (q.bond === "promised") add("明确答应，结为道侣", { kind: "covenant" });
+    if (q.bond === "covenant" && !q.sharedMoment)
+      add("一起吃顿晚饭，聊聊各自的远路", { kind: "sharedMoment" });
     add("共同准备 · 灵草 2 / 下次筑基挑战减伤 2", { kind: "prepareTogether" });
     if (!q.reunion && q.whereabouts === "home")
       add("各自远行 · 三个游戏月后重逢", { kind: "depart" });
@@ -59,6 +65,8 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
       add("回听松行前居 · 一月", { kind: "travel", destination: "home" });
     return actions;
   }
+  if (q.location === "home" && q.won.includes("culmination") && !q.epilogue)
+    add("归山 · 翻开筑基篇尾声", { kind: "epilogue" });
   if (q.location === "ferry") {
     if (q.ferry === 1) fight("well");
     if (q.ferry === 2 && q.inheritance === "none")
@@ -101,6 +109,8 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
   if (["estate", "snow", "inn"].includes(q.location)) {
     const side = q.location as Side,
       step = q.sides[side].step;
+    if (step === 3 && !q.aftermath[side])
+      add(aftermathScene(s, side)!.label, { kind: "revisit", side });
     if (step === 0)
       add(side === "inn" ? "循泥脚印跟随阿团" : "了解现场与旧记录", {
         kind: "sideInvestigate",
@@ -125,7 +135,8 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
       add("向程砚学稳脉 · 后续筑基挑战减伤 2", { kind: "mentor" });
     if (q.rescue === 3) fight("rescue");
     if (q.rescue === 4 && !q.condensation)
-      add("整理凝丹准备，收束金丹前主线", { kind: "finish" });
+      add("贯通周天 · 换招增伤减伤，准备圆满试炼", { kind: "finish" });
+    if (q.condensation && !q.won.includes("culmination")) fight("culmination");
   }
   if (q.ferry === 4 && !q.oldFriend)
     add("接续陆迟与旧师长的近况", { kind: "oldFriend" });
@@ -200,16 +211,32 @@ export function journeyPresentation(s: State, relationship = false) {
     ][q.rescue]!;
     speaker = q.rescue >= 3 ? "程砚" : "陶泊";
     portrait = q.rescue >= 3 ? "frontier-mentor" : "frontier-boatman";
-    body =
-      q.rescue === 4
-        ? "接应已经完成，探索队回到落脚点。程砚留下稳脉要诀，你可以继续积累修行，待圆满时整理凝丹准备。"
+    body = q.won.includes("culmination")
+      ? "谷口的灵流已平息，程砚正在卷起护阵旗。他望了望山门方向，笑着催你先走，自己还要等最后一班渡船。"
+      : q.rescue === 4
+        ? "接应已经完成，探索队回到落脚点。程砚收好归绳，向你指了指谷口的归流阵：“大家都已安顿。接下来，走你自己的路。”"
         : q.rescue === 2 || q.rescue === 3
-          ? "内部人员已经传出信号，避险处可以维持。先打通外缘送入补给，再和内部接应者约好撤离节奏；这段准备没有现实倒计时。"
+          ? "内部人员已经传出信号，避险处可以维持。先打通外缘送入补给，再和内部接应者约好撤离节奏；程砚接过外侧阵旗，示意你安心准备。"
           : "";
   }
   if (!relationship && ["estate", "snow", "inn"].includes(q.location)) {
-    body = sideScene(s, q.location as Side);
+    const side = q.location as Side;
+    const followup = aftermathScene(s, side);
+    if (followup) body = q.aftermath[side] ? followup.result : followup.scene;
+    else body = sideScene(s, side);
   }
+  if (
+    relationship &&
+    q.sharedMoment &&
+    ["home", "returned", "rescued"].includes(q.whereabouts)
+  )
+    body +=
+      s.social.gender === "male"
+        ? "。窗边还压着你们一起晾干的图，行囊上的蓝线也没有解下。"
+        : "。那张一起修好的桌子仍放在窗边，盐罐摆在灶旁顺手的位置。";
+  if (!relationship && q.location === "home" && q.epilogue)
+    body =
+      "窗下的行囊还带着山风的气息。你已从长风归流阵归来，今夜可以安心歇一歇，明日再去看看故人。";
   return {
     image: `/art/foundation-journey/${image}.webp`,
     speaker,

@@ -240,7 +240,7 @@ describe("v4 world progression", () => {
     const before = structuredClone(old),
       s = migrateSave(old);
     expect(old).toEqual(before);
-    expect(s.version).toBe(17);
+    expect(s.version).toBe(18);
     expect(s.seed).toBe(91);
     expect(s.status).toBe("complete");
     expect(act(s, { type: "continue" }).legacy).toBe(5);

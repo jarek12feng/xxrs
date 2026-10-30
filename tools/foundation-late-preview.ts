@@ -125,6 +125,48 @@ createApp({
         h(
           "button",
           {
+            onClick: () => {
+              game.value = journeyCheckpoint("male", true);
+              mode.value = "journey";
+              receipt.value = null;
+            },
+          },
+          "载入圆满试炼检查点",
+        ),
+        h(
+          "button",
+          {
+            onClick: () => {
+              const p = journeyPlayer(journeyCheckpoint("male", true));
+              p.act({ kind: "travel", destination: "estate" });
+              p.act({ kind: "sideInvestigate", side: "estate" });
+              p.fight("estate");
+              p.act({ kind: "sideResolve", side: "estate", outcome: "shared" });
+              game.value = p.state;
+              mode.value = "journey";
+              receipt.value = null;
+            },
+          },
+          "载入药庄共同契约回访",
+        ),
+        h(
+          "button",
+          {
+            onClick: () => {
+              const p = journeyPlayer(journeyCheckpoint("male", true));
+              p.fight("culmination");
+              p.act({ kind: "travel", destination: "home" });
+              p.act({ kind: "epilogue" });
+              game.value = p.state;
+              mode.value = "journey";
+              receipt.value = null;
+            },
+          },
+          "载入归山尾声检查点",
+        ),
+        h(
+          "button",
+          {
             onClick: () =>
               act({ type: "advance", activity: "cultivate", months: 3 }),
           },
@@ -144,6 +186,11 @@ createApp({
                 },
               },
               [
+                h(
+                  "button",
+                  { onClick: () => (receipt.value = null) },
+                  "关闭验收回执",
+                ),
                 h("h2", receipt.value.title),
                 h("p", receipt.value.notes.join(" ")),
                 h(

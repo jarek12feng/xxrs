@@ -454,5 +454,6 @@ it("foundation ranking shows actual reward after save, returns to its group and 
   expect(text()).toContain("金丹组尚未开放");
   await click("筑基组");
   expect(text()).toContain("首胜灵石 +14");
+  expect(text()).toContain("已获胜");
   expect(save).toHaveBeenCalledTimes(1);
 });

@@ -1,3 +1,4 @@
+import { cultivationGainAtAge, cultivationMonthlyGain } from "./cultivation";
 import {
   hasFoundationRecipe,
   breakthroughError,
@@ -274,7 +275,7 @@ export function breakthroughDetails(s: State, pill = false) {
   };
 }
 export function cultivationGain(s: State) {
-  return paths[s.path].gain + Math.max(0, s.root - 4);
+  return cultivationMonthlyGain(s);
 }
 export function refineCost(s: State) {
   return {
@@ -751,7 +752,7 @@ export function dispatch(input: State, c: Command): State {
       const previousQi = s.qi;
       if (actionError(s, c.activity) || !month(s)) break;
       if (c.activity === "cultivate")
-        s.qi = Math.min(MAX_QI, s.qi + cultivationGain(s));
+        s.qi = Math.min(MAX_QI, s.qi + cultivationGainAtAge(s));
       if (c.activity === "gather") {
         s.herbs += 2;
         s.qi = Math.min(MAX_QI, s.qi + 3);
@@ -817,6 +818,11 @@ export function dispatch(input: State, c: Command): State {
   }
   if (c.type === "break") {
     if (breakthroughError(s) || !c.pill) return input;
+    const previousStones = s.stones;
+    if (!month(s)) return accept();
+    s.stones = previousStones;
+    hooks(s);
+    if (s.pending) return accept();
     const chance = breakthroughDetails(s, c.pill).chance,
       roll = Math.floor(rng(s) * 100) + 1;
     if (c.pill) s.pills--;

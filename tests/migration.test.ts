@@ -28,7 +28,7 @@ it("preserves original-v8 before writing the new letter chapter", async () => {
   const old = { ...current, version: 8, adventure };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(17);
+  expect(migrated.version).toBe(18);
   expect(migrated.adventure.mist.stage).toBe("dormant");
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -45,7 +45,7 @@ it("backs up original-v7 before persisting environmental discoveries", async () 
   };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(17);
+  expect(migrated.version).toBe(18);
   expect(migrated.adventure.road.discoveries).toEqual([]);
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -58,7 +58,7 @@ it("keeps original-v6 intact before saving the new road chapter", async () => {
   const old = { ...current, version: 6, adventure };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(17);
+  expect(migrated.version).toBe(18);
   expect(migrated.adventure.step).toBe(old.adventure.step);
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -68,7 +68,7 @@ it("preserves the original v4 save while migrating social data", async () => {
   const old = v4Game("旧世", "wood", 3);
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(17);
+  expect(upgraded.version).toBe(18);
   expect(upgraded.social.gender).toBeNull();
   expect(await raw("current")).toEqual(old);
   await save(upgraded);
@@ -149,7 +149,7 @@ it("upgrades v2 without resetting progress and preserves its first original snap
   old.qi = 28;
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(17);
+  expect(upgraded.version).toBe(18);
   expect(upgraded.qi).toBe(28);
   expect(upgraded.seed).toBe(88);
   expect(await raw("current")).toEqual(old);
@@ -195,7 +195,7 @@ it("preserves original-v9 before recording a different road solution", async () 
   };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(17);
+  expect(migrated.version).toBe(18);
   expect(migrated.adventure.road.solution).toBe("none");
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -240,7 +240,7 @@ it("backs up v11 before adding adventure checkpoints", async () => {
   const old = { ...rest, version: 11 };
   await raw("current", old);
   const state = (await load()).state!;
-  expect(state.version).toBe(17);
+  expect(state.version).toBe(18);
   expect(state.expedition.accepted).toBe(false);
   expect(await raw("current")).toEqual(old);
   await save(state);
@@ -275,7 +275,7 @@ it("backs up v13 before persisting six-round combat without changing the origina
   const old = { ...createGame("旧旅人", "wood", 42), version: 13 };
   await raw("current", old);
   const state = (await load()).state!;
-  expect(state.version).toBe(17);
+  expect(state.version).toBe(18);
   expect(await raw("current")).toEqual(old);
   await save(state);
   expect(await raw("original-v13")).toEqual(old);
@@ -288,13 +288,13 @@ it("preserves original-v14 once, does not invent origin sightings, and rejects f
   const old = { ...current, version: 14, social };
   await raw("current", old);
   const n = (await load()).state!;
-  expect(n.version).toBe(17);
+  expect(n.version).toBe(18);
   expect(n.social.origins).toEqual([]);
   expect(await raw("current")).toEqual(old);
   await save(n);
   await save(n);
   expect(await raw("original-v14")).toEqual(old);
-  const future = { ...n, version: 18 };
+  const future = { ...n, version: 19 };
   await raw("current", future);
   await expect(load()).rejects.toThrow("较新版本");
   await expect(save(n)).rejects.toThrow();
@@ -305,7 +305,7 @@ it("preserves original-v16 before adding foundation progression without fabricat
   const old = { ...rest, version: 16 };
   await raw("current", old);
   const n = (await load()).state!;
-  expect(n.version).toBe(17);
+  expect(n.version).toBe(18);
   expect(n.foundationJourney.board.wins).toEqual([]);
   await save(n);
   expect(await raw("original-v16")).toEqual(old);

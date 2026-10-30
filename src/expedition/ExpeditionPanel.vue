@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { realmPressure } from "../realm-pressure";
 import { computed } from "vue";
 import type { State, Intent } from "../core";
 import { encounters, moves, type Move } from "./content";
@@ -60,6 +61,7 @@ const actions = computed<
         :enemy-max="meters.enemyMax"
         :telegraph="encounter.pattern[q.duel.turn % encounter.pattern.length]"
       />
+      <p>{{ realmPressure(game, encounter).description }}</p>
       <p class="battle-intent">
         {{ encounter.tells[q.duel.turn % encounter.tells.length] }}
       </p>
@@ -107,6 +109,9 @@ const actions = computed<
       </p>
       <template v-else-if="q.cleared < 3">
         <h4>{{ encounter.name }}</h4>
+        <p v-if="q.cleared !== 1 && q.cleared < 3">
+          {{ realmPressure(game, encounter).description }}
+        </p>
         <p>
           {{
             q.cleared === 1

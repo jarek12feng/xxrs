@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { realmPressure } from "./realm-pressure";
 import FoundationPanel from "./foundation-journey/FoundationPanel.vue";
 import { companionPresent } from "./foundation-journey/progression";
 import CompanionshipPanel from "./companionship/CompanionshipPanel.vue";
@@ -444,6 +445,12 @@ const intentText: Record<Stance, string> = {
                 </div>
               </div>
             </div>
+            <p>
+              {{
+                realmPressure(game, rivals[duel.opponent]!).description
+              }}
+              本场独自应战。
+            </p>
             <p v-if="!duel.turn" class="combat-receipt">
               已付灵石 4 · 当月收入 1。 本场不再扣费，不推进月份。
             </p>
@@ -524,6 +531,7 @@ const intentText: Record<Stance, string> = {
                 :label="rival.name"
               />
               <p>{{ rival.style }} · {{ rival.story }}</p>
+              <p>{{ realmPressure(game, rival).description }} 本场独自应战。</p>
               <small>首次胜利：{{ rival.prize }}</small
               ><template v-if="game.social.arena.wins === index"
                 ><button

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   ref,
+  defineAsyncComponent,
   shallowRef,
   computed,
   onMounted,
@@ -8,6 +9,11 @@ import {
   watch,
   nextTick,
 } from "vue";
+const playtestEnabled =
+  new URLSearchParams(window.location.search).get("playtest") === "1";
+const PlaytestRecorder = defineAsyncComponent(
+  () => import("./playtest/PlaytestRecorder.vue"),
+);
 import { defineStore } from "pinia";
 import { presences } from "./landmarks";
 import { actionSound } from "./action-sound";
@@ -78,7 +84,6 @@ import {
   activeEventId,
   companion,
   type Gender,
-  cultivationGain,
   refineCost,
   growthGoals,
   mainTraining,
@@ -112,6 +117,13 @@ import MistPanel from "./MistPanel.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import PracticeStage from "./PracticeStage.vue";
+import CultivationOutlook from "./CultivationOutlook.vue";
+import {
+  realmStageLabel,
+  remainingLifeMonths,
+  formatLifeMonths,
+  cultivationMonthlyGain,
+} from "./cultivation";
 import ActionFeedback from "./ActionFeedback.vue";
 import SceneArrival from "./SceneArrival.vue";
 import { actionReceipt, type ActionReceipt } from "./action-feedback";
@@ -827,6 +839,7 @@ onUnmounted(() => {
 });
 </script>
 <template>
+  <PlaytestRecorder v-if="playtestEnabled" :game="game" />
   <div v-if="ui.busy" class="saving-pulse" role="status">正在结算并保存……</div>
   <div v-if="notice" class="notice" role="alert">{{ notice }}</div>
   <div
@@ -850,8 +863,10 @@ onUnmounted(() => {
         ><span
           >{{ game.name
           }}<small
-            >{{ game.realm ? "筑基" : "炼气" }} · {{ paths[game.path].name }} ·
-            伤势 {{ game.injury }}</small
+            >{{ realmStageLabel(game) }} · {{ paths[game.path].name }} · 伤势
+            {{ game.injury }}</small
+          ><small class="life-remaining"
+            >余寿 {{ formatLifeMonths(remainingLifeMonths(game)) }}</small
           ></span
         >
       </button>
@@ -894,7 +909,7 @@ onUnmounted(() => {
       </p>
       <button v-if="game" class="primary" @click="resumeGame">
         继续游戏<small
-          >{{ game.name }} · {{ game.realm ? "筑基" : "炼气" }} · 第
+          >{{ game.name }} · {{ realmStageLabel(game) }} · 第
           {{ game.month }} 月</small
         >
       </button>
@@ -1150,6 +1165,12 @@ onUnmounted(() => {
                 }}
                 筑基丹是必需品；固本与护法可进一步提高把握，不要求全部完成。伤势会降低成功率，可先静养。
               </p>
+              <CultivationOutlook
+                v-if="activity === 'cultivate'"
+                :game="game"
+                :months="3"
+                automatic
+              />
               <div class="activity-grid">
                 <button
                   v-for="a in activities"
@@ -1163,13 +1184,11 @@ onUnmounted(() => {
                   ><small>{{
                     actionError(game, a.id) ||
                     (a.id === "cultivate"
-                      ? game.realm
-                        ? `筑基修行 +${18 + mainTraining(game) * 2} / 月（含主修研修，上限 600）`
-                        : `每月修为 +${cultivationGain(game)}（含根骨加成）`
+                      ? `下月${game.realm ? "筑基修行" : "修为"} +${cultivationMonthlyGain(game)}（已计寿元效率）`
                       : a.id === "train"
-                        ? `剑意 +1 · ${game.realm ? "筑基修行" : "修为"} +${game.realm ? 8 : 10 + (game.journey.main === "blade" ? 4 : 0) + mainTraining(game) * 2}；${game.journey.support === "guard" ? "护身诀免历练伤势" : "每四重受伤"}`
+                        ? `剑意 +1${game.realm ? "" : " · 修为 +" + (10 + (game.journey.main === "blade" ? 4 : 0) + mainTraining(game) * 2)}；${game.journey.support === "guard" ? "护身诀免历练伤势" : "每四重受伤"}`
                         : a.id === "work"
-                          ? `每月灵石 +5${game.realm ? " · 筑基修行 +4" : ""}${!game.realm && game.journey.main ? " · 修为 +" + ((game.journey.main === "breath" ? 4 : 0) + mainTraining(game) * 2) : ""}`
+                          ? `每月灵石 +5${!game.realm && game.journey.main ? " · 修为 +" + ((game.journey.main === "breath" ? 4 : 0) + mainTraining(game) * 2) : ""}`
                           : a.id === "gather"
                             ? `灵草 +${2 + (game.journey.support === "herb" ? 1 + game.growth.training.herb : 0)} · 修为 +${game.realm ? 0 : 3}`
                             : a.id === "meditate"
@@ -1206,8 +1225,11 @@ onUnmounted(() => {
                 </button>
               </div>
               <p class="fineprint">
-                每月收入 1 灵石。自动每 0.8
-                秒推进一月，遇关键剧情、修为满或切后台暂停。
+                {{
+                  game.realm === 1 && activity === "cultivate"
+                    ? "筑基吐纳期间没有灵石收入。"
+                    : "每月收入 1 灵石。"
+                }}自动每 0.8 秒推进一月，遇关键剧情、修为满或切后台暂停。
               </p>
               <div class="preparations">
                 <button
@@ -1381,10 +1403,16 @@ onUnmounted(() => {
             </div>
             <h1>{{ game.name }}</h1>
             <p class="realm-label">
-              {{ game.realm ? "筑基" : "炼气" }}
+              {{ realmStageLabel(game) }}
               <span>{{ paths[game.path].name }}</span>
             </p>
             <div class="character-line"></div>
+            <div class="stat">
+              <span>剩余寿元</span
+              ><strong>{{
+                formatLifeMonths(remainingLifeMonths(game))
+              }}</strong>
+            </div>
             <div class="stat">
               <span>年岁 / 寿元</span
               ><strong
@@ -1415,7 +1443,7 @@ onUnmounted(() => {
               <div>
                 <strong>{{ game.root }}</strong
                 ><span>根骨</span
-                ><small>吐纳 +{{ cultivationGain(game) }} / 月</small>
+                ><small>吐纳 +{{ cultivationMonthlyGain(game) }} / 月</small>
               </div>
               <div>
                 <strong>{{ game.wisdom }}</strong
@@ -1765,7 +1793,10 @@ onUnmounted(() => {
           />
           <PreparationValues :game="game" :pill="true" />
           <p class="warning-text">
-            成功延寿十八年。{{
+            本次突破耗时一月，剩余寿元
+            {{
+              formatLifeMonths(remainingLifeMonths(game))
+            }}；若当月寿尽，将先结束人生，不能靠突破延寿。成功延寿十八年。{{
               game.ward
                 ? "护脉丹纹生效：首次失败保留九成修为、不减寿，随后消耗；伤势仍 +2。"
                 : "失败保留七成修为、伤势 +2、寿元上限 −1 年。"

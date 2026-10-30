@@ -116,7 +116,7 @@ it("restores choice consequences and contextual guidance without replaying rewar
   ).toContain("护根");
   expect(
     document.querySelector('[aria-label="初入仙途指引"] > div > strong')
-      ?.textContent === "第一段归路已完成",
+      ?.textContent === "把第一册功法用起来",
   ).toBe(true);
   expect(save).not.toHaveBeenCalled();
   expect(audio.cue).not.toHaveBeenCalled();
@@ -144,16 +144,26 @@ it("exposes independent sound controls without touching game saves", async () =>
   );
   expect(save).not.toHaveBeenCalled();
 });
-it("makes the first guidance action perform the promised revisit", async () => {
+it("first guidance equips earned power before returning to the promised revisit", async () => {
   const s = dispatch(home(), {
     id: "chosen",
     type: "adventure",
     action: "return",
   });
   await mount(s);
+  button("装配第一册功法").click();
+  await flush();
+  expect(save).not.toHaveBeenCalled();
+  button("装配长春诀").click();
+  await flush();
+  expect(vi.mocked(save).mock.calls[0]![0].journey.main).toBe("spring");
+  document.querySelector<HTMLButtonElement>('[aria-label="关闭面板"]')!.click();
+  await flush();
   button("回访药工，看看后来").click();
   await flush();
-  expect(vi.mocked(save).mock.calls[0]![0].adventure.road.thanked).toBe(true);
+  expect(vi.mocked(save).mock.calls.at(-1)![0].adventure.road.thanked).toBe(
+    true,
+  );
 });
 it("travels from the map only after a successful save and exposes local scenery", async () => {
   const state = dispatch(createGame("行者", "wood", 42), {

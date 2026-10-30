@@ -63,8 +63,18 @@ export function lifeReview(s: State) {
         : "与闻岑内外接应，探索队安全撤回。",
     );
   if (q.condensation)
-    records.push("筑基修行圆满，金丹前主线收束，已整理凝丹准备。");
+    records.push("筑基修行圆满，已将沉井传承与古道稳脉接成周天贯流。");
   else if (q.ferry)
     unfinished.push("仍在积累筑基修行与古道稳脉机缘，凝丹准备尚未完成。");
+  if (q.won.includes("culmination"))
+    records.push("独自走完长风归流阵，完成筑基圆满试炼。");
+  if (q.epilogue) records.push("长风归山：筑基篇已完成，继续同一角色的道途。");
+  if (q.sharedMoment)
+    records.push("与道侣在行前居共度雨夜，留下各自远行前的一顿饭。");
+  for (const side of ["estate", "snow", "inn"] as const)
+    if (q.aftermath[side])
+      records.push(
+        `${{ estate: "药庄", snow: "雪线", inn: "旅亭" }[side]}回访：亲手参与了自己选择留下的后续。`,
+      );
   return { records, unfinished };
 }

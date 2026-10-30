@@ -1,10 +1,24 @@
 import type { State } from "../world";
+import { revisit, chapterEnding } from "./aftermath";
 import { destinations, sideChoices } from "./content";
 import type { JourneyAction } from "./state";
 export function advancePlot(s: State, a: JourneyAction) {
   const q = s.foundationJourney,
     shen = s.social.gender === "male";
   switch (a.kind) {
+    case "revisit":
+      revisit(s, a.side);
+      return;
+    case "epilogue":
+      q.epilogue = true;
+      q.last = chapterEnding(s).join("\n");
+      return;
+    case "sharedMoment":
+      q.sharedMoment = true;
+      q.last = shen
+        ? "雨下得急，沈听澜把湿图摊在桌边。你将饭碗挪开，帮她压住翘起的纸角。她说小时候总以为画到山外就算走远，如今倒想把回来的路也画好。锅里的饭煮软了，你们谁也没先提。临睡前，她在你的行囊上系了一截蓝线。"
+        : "尹照川照着你的口味煮面，却忘了先放盐。你递过盐罐，他笑着说往日总等交班才吃，面早坨了。饭后你们一起修好摇晃的桌脚，他把明日的工单留在门边，陪你听完了这场雨。";
+      return;
     case "travel":
       q.location = a.destination;
       if (a.destination === "ferry" && !q.ferry) q.ferry = 1;
@@ -15,7 +29,7 @@ export function advancePlot(s: State, a: JourneyAction) {
       if (!s.journey.known.includes(a.technique))
         s.journey.known.push(a.technique);
       s.growth.training[a.technique] = 2;
-      q.last = `${{ spring: "长春续脉", blade: "剑经分流", breath: "归元定枢" }[a.technique]}传承已领悟，对应主修研修至通达。装配它，在筑基挑战使用${{ spring: "守势", blade: "反击", breath: "辨影" }[a.technique]}时额外伤害 +4、承伤 −2。你循着古院铭记走完一遍行功路线，曾经淤在腕脉的灵息顺着指尖散开。门外却响起了催你登记名籍的铜铃。${q.cultivation >= 80 ? "修行已足，装配后即可去出口亲手试用。" : `再积累 ${80 - q.cultivation} 点筑基修行，便可去出口亲手试用。`}`;
+      q.last = `${{ spring: "长春续脉", blade: "剑经分流", breath: "归元定枢" }[a.technique]}传承已领悟，对应主修研修至通达。装配它，在筑基挑战使用${{ spring: "守势", blade: "反击", breath: "辨影" }[a.technique]}时额外伤害 +4、承伤 −2。你循着古院铭记走完一遍行功路线，曾经淤在腕脉的灵息顺着指尖散开。门外却响起了催你登记名籍的铜铃。出口执卫是筑基中期，装配传承后可尝试越阶，也可先修到同阶再来。`;
       return;
     case "sister":
       q.sister = "promised";
@@ -61,7 +75,7 @@ export function advancePlot(s: State, a: JourneyAction) {
         }[a.outcome] +
         (q.sister === "reunited"
           ? "郁晚舟约初七写信，郁青说：“别省那张新纸。”"
-          : "你没有参与姐弟重逢，不会在履历中得到那段经历。");
+          : "郁青收起行囊，还想再去侧院问一次消息。");
       return;
     case "sideInvestigate":
       q.sides[a.side].step = a.side === "inn" ? 2 : 1;
@@ -77,7 +91,8 @@ export function advancePlot(s: State, a: JourneyAction) {
       q.last = sideChoices[a.side][a.outcome]!.result;
       if (a.side === "estate") {
         s.herbs += 6;
-        q.last += "灵草 6 已收入行囊。许芦抱着救急的药，与等在门外的同伴先行一步。";
+        q.last +=
+          "灵草 6 已收入行囊。许芦抱着救急的药，与等在门外的同伴先行一步。";
       }
       if (a.side === "snow") {
         if (!s.journey.known.includes("lantern"))
@@ -107,21 +122,21 @@ export function advancePlot(s: State, a: JourneyAction) {
     case "covenant":
       q.bond = "covenant";
       q.last =
-        "你明确答应，与对方以简素信物结为道侣。没有豪华婚礼费用，也没有境界奖励；联系办法与各自修行目标写在同一页。共同准备仍只保留一份，朋友也能获得这项帮助。";
+        "你接过信物，把自己的那一枚放进对方掌心。你们在窗下坐到灯芯烧短，将各自想去的地方写在同一页纸上。今后是道侣，也是各有远路的修行人。";
       return;
     case "prepareTogether":
       s.herbs -= 2;
       q.aid = true;
       q.last =
-        "你们用灵草 2 调好一份护脉准备，下次筑基挑战每合承伤再减 2，开战即消耗，不叠加。它来自实际准备，不是远方道侣随时出手；出发分别前未用的共同准备会收回。";
+        "你们用灵草 2 调好一份护脉准备，下次筑基挑战每合承伤再减 2，开战即消耗，不叠加；独战也可使用事前准备的药包。若已结契且远行重逢，道侣会随此次出行，在允许协作的关口依招式牵制敌人。药包已封好；若分别前没有用上，便留给远行的人。";
       return;
     case "depart":
       q.whereabouts = "away";
       q.departedAt = s.month;
       q.aid = false;
       q.last = shen
-        ? "沈听澜独自去补测渡口以外的旧路，带走共同准备。你可以继续自己的修行；三个月后按约重逢，她不再同时出现在山门替你帮忙。"
-        : "尹照川把夜值交给受训渡工，随修阵队去复核外地节点。你可以继续修行；三个月后按约重逢，原地不会再出现一个同时值守的他。";
+        ? "沈听澜独自去补测渡口以外的旧路，带走共同准备。你可以继续自己的修行；三个月后按约重逢，临行时，她朝你晃了晃那截约好的路标绳。"
+        : "尹照川把夜值交给受训渡工，随修阵队去复核外地节点。你可以继续修行；三个月后按约重逢，出门前，他特意指给你看接班人的名字。";
       return;
     case "reunion":
       q.whereabouts = "returned";
@@ -135,8 +150,8 @@ export function advancePlot(s: State, a: JourneyAction) {
       q.oldFriend = true;
       q.last =
         (s.journey.maps.sea === 3
-          ? "陆迟已经把父亲亲笔信带回家，知道父亲还在守灯；他不再追问一场早已查明的生死。"
-          : "陆迟仍在循已知药路找父亲的可靠消息，你没有替他宣布团聚。") +
+          ? "陆迟已经把父亲亲笔信带回家，知道父亲还在守灯；信纸折了又展，边角已有些起毛。"
+          : "陆迟仍在沿药路找父亲的消息。他把新问来的地名圈在图上，请你有空时也替他留意。") +
         (s.story.choice === "gift"
           ? "他提起你当年赠丹：“这次轮到我把自己的修行安排好。”"
           : "他看了看你腰间的丹瓶：“你走得比我快些。下回见面，我也该拿点新本事给你看。”") +
@@ -172,7 +187,7 @@ export function advancePlot(s: State, a: JourneyAction) {
     case "finish":
       q.condensation = true;
       q.last =
-        "你整理好沉井传承、古道稳脉法和自己的圆满修行，记下将来凝丹时必须处理的经脉负荷。金丹前这一段主线已收束：既得功法、关系与世界后果保留。金丹突破尚未开放；没有必须先谈恋爱、收齐支线或夺魁的额外条件。";
+        "你将沉井传承与稳脉法接成一个周天，积在经脉间的涩意渐渐消散。程砚撤去半幅护阵旗：“换一口气，别沿着原来的劲硬顶。试着自己走完。”领悟周天贯流：此后筑基挑战中，相邻两合换招，伤害 +5、承伤 −2。长风归流试炼已可挑战，胜后归山完成本篇。";
       return;
   }
 }

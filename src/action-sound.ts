@@ -120,7 +120,8 @@ export function actionSound(
   if (intent.type === "foundationJourney") {
     const old = before.foundationJourney,
       now = after.foundationJourney;
-    if (now.condensation && !old.condensation) return "closure";
+    if (now.epilogue && !old.epilogue) return "closure";
+    if (now.condensation && !old.condensation) return "inheritance";
     if (now.rescue === 4 && old.rescue !== 4) return "rescue-clear";
     if (now.bond === "covenant" && old.bond !== "covenant") return "vow";
     if (now.reunion && !old.reunion) return "reunion";

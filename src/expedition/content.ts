@@ -6,6 +6,8 @@ export const moves = {
 export type Move = keyof typeof moves;
 export const encounters = [
   {
+    realm: 0,
+    stage: 0,
     name: "山道护送",
     foe: "劫药客",
     hp: 34,
@@ -22,6 +24,8 @@ export const encounters = [
       "郁青扶住倾斜的药箱。蒙面人却越过灵石，直取箱底那页旧账。你挡在车前，听见他低声说：“名单不能进山。”",
   },
   {
+    realm: 0,
+    stage: 0,
     name: "古阵寻踪",
     foe: "逆流阵眼",
     hp: 0,
@@ -34,6 +38,8 @@ export const encounters = [
       "阵眼下压着一枚旧药签，笔迹与账册中的失踪者相同。郁青握紧了图夹：“这是我姐姐的字。她失踪前，让我别再跟着药队。”他终于说出了执意同行的理由。",
   },
   {
+    realm: 1,
+    stage: 0,
     name: "守阵交锋",
     foe: "蚀阵傀儡",
     hp: 64,
