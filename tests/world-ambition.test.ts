@@ -71,7 +71,7 @@ it("separates chapter completion from optional ranking and remembers noncombat c
   s.adventure.step = "done";
   s.adventure.rescueChoice = "supplies";
   s.adventure.road.surveyed = true;
-  expect(journeyHorizon(s).stage).toContain("本篇已完成");
+  expect(journeyHorizon(s).stage).toContain("无名渡");
   expect(journeyHorizon(s).chapter).toContain("可选");
   expect(lifeReview(s).records.join()).toContain("暂歇一季");
   expect(lifeReview(s).records.join()).not.toContain("试剑榜");

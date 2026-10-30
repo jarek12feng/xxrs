@@ -1,4 +1,24 @@
 import {
+  freshFoundationJourney,
+  type FoundationJourney,
+  type JourneyAction,
+} from "./foundation-journey/state";
+import {
+  runFoundationJourney,
+  validFoundationJourney,
+} from "./foundation-journey/rules";
+import {
+  foundationGoal,
+  companionPresent,
+} from "./foundation-journey/progression";
+import {
+  freshCompanionship,
+  runCompanionship,
+  validCompanionship,
+  type Companionship,
+  type CompanionAction,
+} from "./companionship/rules";
+import {
   freshGrowth,
   validGrowth,
   runGrowth,
@@ -167,7 +187,9 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 15;
+  version: 17;
+  foundationJourney: FoundationJourney;
+  companionship: Companionship;
   growth: Growth;
   expedition: Expedition;
   adventure: Adventure;
@@ -175,6 +197,8 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | { id: string; type: "foundationJourney"; action: JourneyAction }
+  | { id: string; type: "companionship"; action: CompanionAction }
   | GrowthCommand
   | { id: string; type: "expedition"; action: ExpeditionAction }
   | chapter.Command
@@ -230,6 +254,8 @@ function base(s: State): chapter.State {
     adventure: ___,
     expedition: ____,
     growth: _____,
+    companionship: ______,
+    foundationJourney: _______,
     ...rest
   } = s;
   return { ...rest, version: 3 };
@@ -242,7 +268,9 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 15,
+    version: 17,
+    foundationJourney: freshFoundationJourney(),
+    companionship: freshCompanionship(),
     growth: freshGrowth(),
     journey,
     social,
@@ -285,9 +313,19 @@ export const breakthroughDetails = (s: State, pill = false) =>
 export const refineCost = (s: State) => chapter.refineCost(base(s));
 export const replayHints = (s: State) => chapter.replayHints(base(s));
 export const actionError = (s: State, a: chapter.Activity) =>
-  a === "cultivate" && s.realm === 1
-    ? "筑基后可凝神、固本、准备灵器并探索山外；金丹未开放"
-    : chapter.actionError(base(s), a);
+  s.foundationJourney.duel
+    ? "先结束筑基交锋"
+    : a === "cultivate" && s.realm === 1
+      ? s.status !== "alive" ||
+        s.pending ||
+        s.social.scene ||
+        s.social.arena.duel ||
+        s.expedition.duel
+        ? "先处理眼前事件或结束交锋"
+        : s.foundationJourney.cultivation >= 600
+          ? "筑基修行圆满，可完成凝丹准备或挑战试剑榜；金丹突破未开放"
+          : ""
+      : chapter.actionError(base(s), a);
 export const preparationError = (s: State, k: "refine" | "retreat") => {
   const error = chapter.preparationError(base(s), k);
   return error === "先去渡口相识" && s.adventure.step === "done"
@@ -382,6 +420,7 @@ export function aidError(s: State, p: TrialPlace, helper: "mentor" | "luchi") {
   return "";
 }
 export function nextGoal(s: State) {
+  if (s.realm === 1 && s.adventure.road.surveyed) return foundationGoal(s);
   if (s.status !== "alive" || s.pending) return chapter.nextGoal(base(s));
   if (s.social.arena.duel)
     return "擂台交锋中：查看对手意图，选择应对方式，或主动认负。时间暂停。";
@@ -420,6 +459,15 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.foundationJourney =
+    n.life === old.life
+      ? structuredClone(old.foundationJourney)
+      : freshFoundationJourney();
+  if (n.status !== "alive") n.foundationJourney.duel = null;
+  n.companionship =
+    n.life === old.life
+      ? structuredClone(old.companionship)
+      : freshCompanionship();
   n.growth = n.life === old.life ? structuredClone(old.growth) : freshGrowth();
   n.expedition =
     n.life === old.life ? structuredClone(old.expedition) : freshExpedition();
@@ -453,6 +501,31 @@ function normalize(n: State, old: State) {
 }
 export function dispatch(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (c.type === "foundationJourney")
+    return runFoundationJourney(input, c.action, c.id, (s) =>
+      normalize(
+        lift(
+          chapter.travelMonth(base(s)),
+          structuredClone(s.journey),
+          structuredClone(s.social),
+          structuredClone(s.adventure),
+        ),
+        s,
+      ),
+    );
+  if (input.foundationJourney.duel) return input;
+  if (
+    !companionPresent(input) &&
+    ["visit", "background", "outing", "confess", "companionship"].includes(
+      c.type,
+    )
+  )
+    return input;
+  if (!companionPresent(input) && c.type === "mist" && c.action === "companion")
+    return input;
+
+  if (c.type === "companionship")
+    return runCompanionship(input, c.action, c.id);
   if (c.type === "trainTechnique" || c.type === "brew" || c.type === "consume")
     return runGrowth(input, c);
   if (c.type === "expedition")
@@ -515,7 +588,16 @@ export function dispatch(input: State, c: Command): State {
       let n = input;
       for (let i = 0; i < command.months; i++) {
         const b = base(n);
-        const result = chapter.dispatch(b, { ...command, id: c.id, months: 1 });
+        if (
+          n.realm === 1 &&
+          command.activity === "cultivate" &&
+          n.foundationJourney.cultivation >= 600
+        )
+          break;
+        const result =
+          n.realm === 1 && command.activity === "cultivate"
+            ? chapter.travelMonth(b)
+            : chapter.dispatch(b, { ...command, id: c.id, months: 1 });
         if (result === b) break;
         const old = n;
         n = normalize(
@@ -551,7 +633,26 @@ export function dispatch(input: State, c: Command): State {
             n.injury = old.injury;
           if (a === "meditate" && n.journey.support === "lantern")
             n.study = Math.min(4, n.study + 1);
-          if (n.realm === 1) n.qi = old.qi;
+          if (n.realm === 1) {
+            n.qi = old.qi;
+            const gain =
+              a === "cultivate"
+                ? 18 + mainTraining(n) * 2
+                : a === "train"
+                  ? 8
+                  : a === "work"
+                    ? 4
+                    : 0;
+            n.foundationJourney.cultivation = Math.min(
+              600,
+              old.foundationJourney.cultivation + gain,
+            );
+            if (gain)
+              log(
+                n,
+                `筑基修行 +${n.foundationJourney.cultivation - old.foundationJourney.cultivation}（${n.foundationJourney.cultivation}/600）。`,
+              );
+          }
           const prefix = {
             cultivate: "",
             train: "历练剑意",
@@ -1017,11 +1118,11 @@ export function dispatch(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 15);
+  return validWorldState(x, 17);
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
@@ -1031,6 +1132,8 @@ function validWorldState(
     !j ||
     !chapter.validState(base(s)) ||
     !validSocial(s) ||
+    (version >= 16 && !validCompanionship(s)) ||
+    (version >= 17 && !validFoundationJourney(s)) ||
     !(version === 10
       ? validAdventureV10(s.adventure)
       : validAdventure(s.adventure)) ||
@@ -1105,6 +1208,26 @@ function validWorldState(
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 16) {
+    if (!validWorldState(x, 16)) throw new Error("旧存档损坏，原档未修改。");
+    const upgraded = {
+      ...structuredClone(x),
+      version: 17,
+      foundationJourney: freshFoundationJourney(),
+    };
+    if (validState(upgraded)) return upgraded;
+    throw new Error("旧存档损坏，原档未修改。");
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 15) {
+    if (!validWorldState(x, 15)) throw new Error("旧存档损坏，原档未修改。");
+    const upgraded = {
+      ...structuredClone(x),
+      version: 16,
+      companionship: freshCompanionship(),
+    };
+    if (validWorldState(upgraded, 16)) return migrateSave(upgraded);
+    throw new Error("旧存档损坏，原档未修改。");
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 14) {
     if (!validWorldState(x, 14)) throw new Error("旧存档损坏，原档未修改。");
     const old = structuredClone(x) as State;
@@ -1113,7 +1236,7 @@ export function migrateSave(x: unknown): State {
       version: 15 as const,
       social: { ...old.social, origins: [] },
     };
-    if (validState(upgraded)) return upgraded;
+    if (validWorldState(upgraded, 15)) return migrateSave(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 13) {

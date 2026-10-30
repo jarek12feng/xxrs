@@ -1,3 +1,4 @@
+import { foundationGoal } from "./foundation-journey/progression";
 import type { State } from "./world";
 import { arenaError, rivals } from "./social";
 
@@ -6,7 +7,7 @@ export function trialBoard(s: State) {
   const wins = s.social.arena.wins;
   const next = rivals[wins];
   return {
-    title: ["尚未入榜", "初登试剑榜", "入围决胜", "听松试剑魁首"][wins]!,
+    title: ["尚未入榜", "初登试剑榜", "入围决胜", "听松炼气组魁首"][wins]!,
     next: next?.name ?? null,
     requirement: next
       ? arenaError(s) || "已可登台；本场一月、灵石 4。"
@@ -16,8 +17,8 @@ export function trialBoard(s: State) {
         ? "巩砚把名册压在石镇下：“十八岁再来报名。眼下先走山路，护好自己和同行的人。”"
         : "巩砚翻开名册：“先看看我的招式。准备好了，就来台上报你的名字。”",
       "巩砚在名册上写下你的名字：“这一场算你的。下次护药过山，咱们可以换你守前路。”",
-      "裴逐风收剑拱手：“你的名字该写到决胜那一页了。邱星罗的阵步，留待筑基后再领教。”",
-      "邱星罗合上名册：“本届魁首，是你。”台边的人让出一条路，巩砚把第一场用过的石镇递给你看，笑着点了点头。",
+      "裴逐风收剑拱手：“你的名字该写到决胜那一页了。邱星罗会按炼气组的尺度试你的阵步。”",
+      "邱星罗合上名册：“本届炼气组魁首，是你。”台边的人让出一条路，巩砚把第一场用过的石镇递给你看，笑着点了点头。",
     ][wins]!,
   };
 }
@@ -31,9 +32,9 @@ export function journeyHorizon(s: State) {
     };
   if (road.surveyed)
     return {
-      stage: "青嶂归路已记入路簿。本篇已完成，可重访故人，看看你留下的变化。",
+      stage: foundationGoal(s),
       chapter:
-        "雾海来信与听松试剑榜都是可选的后续旅程；不必全部完成才算走完本篇。",
+        "探沉井、取得传承，在云外古道学稳脉并完成内外接应，为凝丹准备。人物支线与听松试剑榜均可选择。",
     };
   return {
     stage:

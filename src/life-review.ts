@@ -1,3 +1,4 @@
+import { foundationBoard } from "./foundation-journey/view";
 import { trialBoard } from "./world-ambition";
 import type { State } from "./world";
 import { passSolutions } from "./pass-solutions";
@@ -40,5 +41,30 @@ export function lifeReview(s: State) {
     records.push(
       `听松试剑榜：${trialBoard(s).title}，胜 ${s.social.arena.wins}/3 场。`,
     );
+  const q = s.foundationJourney;
+  if (q.board.wins.length)
+    records.push(
+      `听松试剑榜 · 筑基组：${foundationBoard(s).title}，首胜 ${q.board.wins.length}/5 场，奖励已入袋。`,
+    );
+  if (q.ferry === 4)
+    records.push(
+      `无名渡传承与离渡已完成：${{ open: "脱敏公开追责", escort: "先护送离渡", break: "破禁开放出口", none: "" }[q.ferryOutcome]}。`,
+    );
+  if (q.sister === "reunited")
+    records.push("郁青与郁晚舟当面重逢，各自保留工作与去留。");
+  if (q.bond === "covenant")
+    records.push("双方明确答应结为道侣，仍各自修行与远行。");
+  if (q.reunion)
+    records.push("经历了一次正常分别与重逢，确认了共同接应的记号。");
+  if (q.rescue === 4)
+    records.push(
+      q.target === "companion"
+        ? "与道侣内外接应，和探索队一起安全撤回。"
+        : "与闻岑内外接应，探索队安全撤回。",
+    );
+  if (q.condensation)
+    records.push("筑基修行圆满，金丹前主线收束，已整理凝丹准备。");
+  else if (q.ferry)
+    unfinished.push("仍在积累筑基修行与古道稳脉机缘，凝丹准备尚未完成。");
   return { records, unfinished };
 }

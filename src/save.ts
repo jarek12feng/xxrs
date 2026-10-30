@@ -13,7 +13,7 @@ function newer(value: unknown) {
     typeof value === "object" &&
     "version" in value &&
     typeof value.version === "number" &&
-    value.version > 15
+    value.version > 17
   );
 }
 function read(value: unknown) {
@@ -67,7 +67,7 @@ export async function save(state: State) {
       }
       if (read(old.result)) store.put(old.result, "previous");
       if (
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].includes(
           old.result?.version,
         ) &&
         read(old.result)

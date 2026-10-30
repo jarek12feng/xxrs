@@ -1,6 +1,14 @@
+import { foundationMusic, audioUrl } from "./foundation-audio";
 // Original file score, loaded after app mount; mute/gesture/visibility gates apply.
-export type MusicCue = "home" | "trial" | "journey" | "vista" | "mystery";
+export type MusicCue =
+  | "home"
+  | "trial"
+  | "journey"
+  | "vista"
+  | "mystery"
+  | keyof typeof foundationMusic;
 export const musicNames: Record<MusicCue, string> = {
+  ...foundationMusic,
   home: "听松入定 · 洞府与归家",
   trial: "护路破阵 · 交锋",
   journey: "青山同行 · 山外行路",
@@ -30,19 +38,21 @@ export function sceneMusic(name: string, shrineRelit = false): MusicCue {
   };
   return cues[name] ?? "home";
 }
-export function createMusicPlayer(
+export function createLoopPlayer<Cue extends string>(
+  initial: Cue,
+  urlFor: (cue: Cue) => string,
   factory: (url: string) => HTMLAudioElement = (url) => new Audio(url),
   report: (message: string) => void = () => {},
-  playback: (cue: MusicCue | null) => void = () => {},
+  playback: (cue: Cue | null) => void = () => {},
 ) {
   type Voice = {
     audio: HTMLAudioElement;
-    cue: MusicCue;
+    cue: Cue;
     gain: number;
     pending: boolean;
   };
   const voices = new Set<Voice>();
-  let selected: MusicCue = "home",
+  let selected: Cue = initial,
     enabled = false,
     hidden = false,
     unlocked = false,
@@ -50,8 +60,9 @@ export function createMusicPlayer(
   let volume = 0.45,
     ducked = false,
     lastTime = Date.now();
-  let failed: MusicCue | undefined;
-  const active = () => enabled && unlocked && !hidden && !disposed;
+  let failed: Cue | undefined;
+  const active = () =>
+    enabled && unlocked && !hidden && !disposed && volume > 0;
   function start() {
     if (
       !active() ||
@@ -59,9 +70,17 @@ export function createMusicPlayer(
       [...voices].some((v) => v.cue === selected)
     )
       return;
-    const audio = factory(
-      `${import.meta.env.BASE_URL}audio/original-v1/${selected}.wav`,
-    );
+    // Retain at most one outgoing track during a rapid scene change.
+    while (voices.size >= 2)
+      remove([...voices].sort((a, b) => a.gain - b.gain)[0]!);
+    let audio: HTMLAudioElement;
+    try {
+      audio = factory(urlFor(selected));
+    } catch {
+      failed = selected;
+      report("声音暂不能播放，请再次开启声音。");
+      return;
+    }
     const voice: Voice = { audio, cue: selected, gain: 0, pending: true };
     audio.loop = true;
     audio.preload = "auto";
@@ -117,7 +136,7 @@ export function createMusicPlayer(
   }
   const timer = setInterval(tick, 40);
   return {
-    scene(cue: MusicCue) {
+    scene(cue: Cue) {
       if (cue !== selected) {
         selected = cue;
         failed = undefined;
@@ -127,7 +146,7 @@ export function createMusicPlayer(
     settings(on: boolean, level: number) {
       enabled = on;
       volume = Number.isFinite(level) ? Math.max(0, Math.min(1, level)) : 0.45;
-      if (!on) {
+      if (!on || volume === 0) {
         playback(null);
         for (const v of voices) remove(v);
       } else start();
@@ -152,6 +171,7 @@ export function createMusicPlayer(
           v.audio.volume = 0;
         }
       } else if (active()) {
+        for (const v of voices) if (v.cue !== selected) remove(v);
         for (const v of voices)
           play(v, () => {
             if (!voices.has(v)) return;
@@ -168,4 +188,18 @@ export function createMusicPlayer(
       for (const v of voices) remove(v);
     },
   };
+}
+
+export function createMusicPlayer(
+  factory?: (url: string) => HTMLAudioElement,
+  report?: (message: string) => void,
+  playback?: (cue: MusicCue | null) => void,
+) {
+  return createLoopPlayer<MusicCue>(
+    "home",
+    audioUrl,
+    factory,
+    report,
+    playback,
+  );
 }

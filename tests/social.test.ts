@@ -99,7 +99,7 @@ describe("relationships and arena", () => {
       }),
     ).toBe(n);
   });
-  it("scouting, injury and realm gates cannot be skipped", () => {
+  it("scouting and injury gates hold; the qi-group teacher uses a restricted formation", () => {
     let s = adult();
     expect(act(s, { type: "arenaStart" })).toBe(s);
     s = act(s, { type: "arenaScout" });
@@ -109,7 +109,7 @@ describe("relationships and arena", () => {
     s.social.arena.wins = 2;
     s.realm = 0;
     s.social.arena.scouted.push(2);
-    expect(act(s, { type: "arenaStart" })).toBe(s);
+    expect(act(s, { type: "arenaStart" }).social.arena.duel?.opponent).toBe(2);
   });
   it("losing retains gear, creates recovery needs and cannot reroll a saved turn", () => {
     let s = act(act(adult(), { type: "arenaScout" }), { type: "arenaStart" });

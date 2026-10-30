@@ -92,4 +92,5 @@ export const soundCues = {
   string,
   { notes: number[]; wave: OscillatorType; duration: number; spacing: number }
 >;
-export type SoundCue = keyof typeof soundCues;
+export type SoundCue =
+  keyof typeof soundCues | import("./foundation-audio").FoundationEffect;

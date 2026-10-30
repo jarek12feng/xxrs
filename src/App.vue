@@ -11,6 +11,7 @@ import {
 import { defineStore } from "pinia";
 import { presences } from "./landmarks";
 import { actionSound } from "./action-sound";
+import { foundationAudioScene } from "./audio-scene";
 import { createMusicPlayer, sceneMusic, musicNames } from "./local-music";
 import FoundationJourney from "./FoundationJourney.vue";
 import { breakthroughError } from "./foundation";
@@ -727,13 +728,25 @@ onMounted(async () => {
       watch(
         () => ({
           scene: currentScene.value,
+          foundation: !titleScreen.value
+            ? foundationAudioScene(game.value, dialog.value)
+            : null,
           shrineRelit: game.value?.adventure.mist.revisited ?? false,
           fighting: Boolean(
             game.value?.social.arena.duel || game.value?.expedition.duel,
           ),
         }),
-        ({ scene, fighting, shrineRelit }) => {
-          const cue = fighting ? "trial" : sceneMusic(scene.name, shrineRelit);
+        ({ scene, fighting, shrineRelit, foundation }) => {
+          const cue = fighting
+            ? "trial"
+            : (foundation?.music ?? sceneMusic(scene.name, shrineRelit));
+          const mood =
+            presences[scene.name]?.weather ??
+            ("mood" in scene ? scene.mood : "moon");
+          sound.scene(
+            mood as SoundMood,
+            fighting ? null : (foundation?.ambient ?? null),
+          );
           musicTitle.value = musicNames[cue];
           music?.scene(cue);
         },
@@ -764,14 +777,6 @@ onMounted(async () => {
       /* Optional local preference. */
     }
   }
-  stopAudioWatches.push(
-    watch(currentScene, (scene) => {
-      const mood =
-        presences[scene.name]?.weather ??
-        ("mood" in scene ? scene.mood : "moon");
-      sound.scene(mood as SoundMood);
-    }),
-  );
 
   try {
     soundPrefs.value = soundSettings(localStorage.getItem("xxrs-sound-v1"));
@@ -1096,7 +1101,9 @@ onUnmounted(() => {
             />
             <fieldset
               class="cultivation-panel scene-controls"
-              :disabled="!!game.social.arena.duel"
+              :disabled="
+                !!game.social.arena.duel || !!game.foundationJourney.duel
+              "
               aria-label="洞府修行"
             >
               <h3 class="controls-heading">洞府修行 · 操作区</h3>
@@ -1108,17 +1115,19 @@ onUnmounted(() => {
                   >{{ game.qi }} / {{ MAX_QI }}</strong
                 >
                 <strong v-else
-                  >探索
-                  {{
-                    game.journey.maps.valley +
-                    game.journey.maps.peak +
-                    game.journey.maps.sea
-                  }}
-                  / 9</strong
+                  >筑基修行 {{ game.foundationJourney.cultivation }} /
+                  600</strong
                 >
               </div>
               <div v-if="game.realm === 0" class="qi-track">
                 <i :style="{ width: (game.qi / MAX_QI) * 100 + '%' }"></i>
+              </div>
+              <div v-if="game.realm === 1" class="qi-track">
+                <i
+                  :style="{
+                    width: game.foundationJourney.cultivation / 6 + '%',
+                  }"
+                ></i>
               </div>
               <p class="next-goal">{{ nextGoal(game) }}</p>
               <button
@@ -1149,11 +1158,13 @@ onUnmounted(() => {
                   ><small>{{
                     actionError(game, a.id) ||
                     (a.id === "cultivate"
-                      ? `每月修为 +${cultivationGain(game)}（含根骨加成）`
+                      ? game.realm
+                        ? `筑基修行 +${18 + mainTraining(game) * 2} / 月（含主修研修，上限 600）`
+                        : `每月修为 +${cultivationGain(game)}（含根骨加成）`
                       : a.id === "train"
-                        ? `剑意 +1 · 修为 +${game.realm ? 0 : 10 + (game.journey.main === "blade" ? 4 : 0) + mainTraining(game) * 2}；${game.journey.support === "guard" ? "护身诀免历练伤势" : "每四重受伤"}`
+                        ? `剑意 +1 · ${game.realm ? "筑基修行" : "修为"} +${game.realm ? 8 : 10 + (game.journey.main === "blade" ? 4 : 0) + mainTraining(game) * 2}；${game.journey.support === "guard" ? "护身诀免历练伤势" : "每四重受伤"}`
                         : a.id === "work"
-                          ? `每月灵石 +5${!game.realm && game.journey.main ? " · 修为 +" + ((game.journey.main === "breath" ? 4 : 0) + mainTraining(game) * 2) : ""}`
+                          ? `每月灵石 +5${game.realm ? " · 筑基修行 +4" : ""}${!game.realm && game.journey.main ? " · 修为 +" + ((game.journey.main === "breath" ? 4 : 0) + mainTraining(game) * 2) : ""}`
                           : a.id === "gather"
                             ? `灵草 +${2 + (game.journey.support === "herb" ? 1 + game.growth.training.herb : 0)} · 修为 +${game.realm ? 0 : 3}`
                             : a.id === "meditate"
@@ -1440,6 +1451,7 @@ onUnmounted(() => {
           @breakthrough="dialog = 'break'"
         />
         <WorldPanel
+          @equipment="openPanel('skills')"
           v-else-if="worldTab && game"
           :key="worldTab"
           :initial-tab="worldTab"

@@ -1,3 +1,4 @@
+import { mistCheckpoint } from "../tools/mist-checkpoint";
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createApp, nextTick, type App as VueApp } from "vue";
@@ -184,7 +185,7 @@ it("travels from the map only after a successful save and exposes local scenery"
   expect(document.querySelector(".landmark-presence")?.textContent).toContain(
     "瓷碗",
   );
-  expect(audio.scene).toHaveBeenLastCalledWith("warm");
+  expect(audio.scene).toHaveBeenLastCalledWith("warm", null);
 });
 it("keeps legacy exploration available from the new route atlas", async () => {
   await mount(home());
@@ -327,4 +328,56 @@ it("first relic coaching opens equipment and equips the earned item through a sa
   await flush();
   expect(vi.mocked(save).mock.calls.at(-1)![0].journey.equipped).toBe("vial");
   expect(document.body.textContent).not.toContain("药队送来的灵器，还未装配");
+});
+
+it("completes the companion field test through persisted UI commands and the actual skill panel", async () => {
+  await mount(mistCheckpoint(42, "wood", "male"));
+  const relation = [
+    ...document.querySelectorAll<HTMLButtonElement>("button"),
+  ].find(
+    (b) =>
+      b.getAttribute("aria-label") === "人物关系" ||
+      b.textContent?.includes("人物关系"),
+  );
+  expect(relation).toBeDefined();
+  relation!.click();
+  await flush();
+  button("商量这次同行").click();
+  await flush();
+  button("辨清稳固节点").click();
+  await flush();
+  button("先刻公共干道").click();
+  await flush();
+  button("打开功法，装配护身诀").click();
+  await flush();
+  expect(document.querySelector('[data-panel="skills"]')).not.toBeNull();
+  const guard = [...document.querySelectorAll("article")].find(
+    (a) => a.textContent?.includes("护身诀") && a.querySelector("button"),
+  );
+  const equip = [...(guard?.querySelectorAll("button") || [])].find((b) =>
+    b.textContent?.includes("装配"),
+  );
+  expect(equip).toBeDefined();
+  equip!.click();
+  await flush();
+  expect(vi.mocked(save).mock.calls.at(-1)![0].journey.support).toBe("guard");
+  document
+    .querySelector<HTMLButtonElement>('button[aria-label="关闭面板"]')!
+    .click();
+  await flush();
+  const reopen = [
+    ...document.querySelectorAll<HTMLButtonElement>("button"),
+  ].find(
+    (b) =>
+      b.getAttribute("aria-label") === "人物关系" ||
+      b.textContent?.includes("人物关系"),
+  );
+  reopen!.click();
+  await flush();
+  button("亲自校验归路").click();
+  await flush();
+  expect(vi.mocked(save).mock.calls.at(-1)![0].companionship.stage).toBe(
+    "done",
+  );
+  expect(document.body.textContent).toContain("岔路引导");
 });

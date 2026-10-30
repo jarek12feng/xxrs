@@ -43,12 +43,33 @@ export function combatStyle(s: State) {
   };
 }
 // One calculation drives settlement and tests; no UI, time or random side effects.
+export interface CombatEncounter {
+  hp: number;
+  attack: number;
+  pattern: readonly Move[];
+}
 export function exchangePreview(s: State, move: Move) {
-  const q = s.expedition,
-    d = q.duel;
-  if (!d || !["guard", "strike", "discern"].includes(move)) return null;
-  const e = encounters[q.cleared]!,
-    power = readiness(s);
+  const q = s.expedition;
+  if (!q.duel) return null;
+  return tacticalExchange(
+    s,
+    move,
+    encounters[q.cleared]!,
+    q.duel,
+    q.effect,
+    q.cleared === 2,
+  );
+}
+export function tacticalExchange(
+  s: State,
+  move: Move,
+  e: CombatEncounter,
+  d: { hp: number; enemy: number; turn: number },
+  effect: string,
+  arrayCore = false,
+  power = readiness(s),
+) {
+  if (!["guard", "strike", "discern"].includes(move)) return null;
   const correct = move === e.pattern[d.turn % e.pattern.length];
   let damage =
       power.damage +
@@ -66,20 +87,19 @@ export function exchangePreview(s: State, move: Move) {
     note = "长春守势收敛攻势，伤害 −2。";
   }
   if (s.journey.main === "breath" && move === "discern") {
-    damage += q.cleared === 2 ? 7 : 2;
+    damage += arrayCore ? 7 : 2;
     incoming -= 2;
-    note =
-      q.cleared === 2
-        ? "归元息照见阵核，伤害 +7、承伤 −2。"
-        : "归元息辨清身形，伤害 +2、承伤 −2。";
+    note = arrayCore
+      ? "归元息照见阵核，伤害 +7、承伤 −2。"
+      : "归元息辨清身形，伤害 +2、承伤 −2。";
   }
-  if (q.cleared === 2) {
+  if (arrayCore) {
     // A closed core resists blind attacks; scouting or the exposed turn opens it.
     if (
       move === "strike" &&
       d.turn % e.pattern.length !== 2 &&
-      q.effect !== "discern" &&
-      q.effect !== "guard"
+      effect !== "discern" &&
+      effect !== "guard"
     ) {
       damage = Math.max(1, damage - 8);
       incoming += 4;
@@ -88,13 +108,13 @@ export function exchangePreview(s: State, move: Move) {
 
     if (d.enemy <= e.hp / 2) {
       incoming += 2;
-      note += "阵核暴露，傀儡狂乱，承伤 +2。";
+      note += "阵核暴露，阵势转急，承伤 +2。";
     }
-    if (q.effect === "guard" && move === "strike") {
+    if (effect === "guard" && move === "strike") {
       damage += 10;
       note += "借上合稳守蓄势，反击伤害 +10。";
     }
-    if (q.effect === "discern") {
+    if (effect === "discern") {
       damage += 6;
       incoming -= 2;
       note += "沿上合辨出的阵路，伤害 +6、承伤 −2。";

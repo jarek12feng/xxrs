@@ -1,6 +1,6 @@
 import { expect, it, vi } from "vitest";
 import { createSoundscape, soundSettings } from "../src/audio";
-function runtime() {
+function runtime(files?: Parameters<typeof createSoundscape>[1]) {
   const param = () => ({
     value: 0,
     setValueAtTime: vi.fn(),
@@ -40,7 +40,7 @@ function runtime() {
     }),
   };
   const factory = vi.fn(() => c as unknown as AudioContext);
-  return { c, factory, sound: createSoundscape(factory) };
+  return { c, factory, sound: createSoundscape(factory, files) };
 }
 const on = { enabled: true, ambience: 0.25, effects: 0.35 };
 it("is silent and allocates no audio until enabled and unlocked by a gesture", async () => {
@@ -128,4 +128,63 @@ it("shares mute and disposal across combat accents", async () => {
   sound.dispose();
   sound.cue("hurt");
   expect(c.createOscillator).toHaveBeenCalledTimes(6);
+});
+
+it("file ambience replaces procedural noise, survives scene switches, and stops on mute", async () => {
+  vi.useFakeTimers();
+  const audios: {
+    src: string;
+    pause: ReturnType<typeof vi.fn>;
+    load: ReturnType<typeof vi.fn>;
+  }[] = [];
+  vi.stubGlobal(
+    "Audio",
+    class {
+      volume = 0;
+      loop = false;
+      preload = "";
+      muted = false;
+      onerror = null;
+      pause = vi.fn();
+      load = vi.fn();
+      removeAttribute = vi.fn();
+      play = vi.fn(() => Promise.resolve());
+      constructor(public src: string) {
+        audios.push(this);
+      }
+    },
+  );
+  const files = {
+    settings: vi.fn(),
+    unlock: vi.fn(),
+    hidden: vi.fn(),
+    cue: vi.fn(),
+    dispose: vi.fn(),
+  };
+  const { sound, c } = runtime(files);
+  try {
+    sound.scene("rain", "waterside");
+    sound.settings(on);
+    expect(audios).toHaveLength(0);
+    await sound.unlock();
+    expect(audios[0]!.src).toContain("foundation-v2/waterside.wav");
+    expect(c.createBufferSource).not.toHaveBeenCalled();
+    sound.hidden(true);
+    expect(audios[0]!.pause).toHaveBeenCalled();
+    sound.scene("moon", "snow-wind");
+    expect(audios).toHaveLength(1);
+    sound.hidden(false);
+    await Promise.resolve();
+    expect(audios.at(-1)!.src).toContain("snow-wind.wav");
+    sound.settings({ ...on, ambience: 0 });
+    expect(audios.every((a) => a.load.mock.calls.length > 0)).toBe(true);
+    sound.scene("warm");
+    sound.settings(on);
+    await Promise.resolve();
+    expect(c.createBufferSource).toHaveBeenCalledTimes(1);
+  } finally {
+    sound.dispose();
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  }
 });

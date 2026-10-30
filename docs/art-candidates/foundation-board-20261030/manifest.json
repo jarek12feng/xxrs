@@ -1,0 +1,96 @@
+{
+  "assets": [
+    {
+      "id": "rank-jiangwenhe",
+      "name": "江问荷·长息诀",
+      "detail": "Adult Chinese woman about35, softly rounded face, low straight eyebrows, calm firm eyes, dark hair in compact low bun with simple wooden pin, sturdy balanced build. Plain warm ivory and muted moss-green Chinese Daoist robe with practical narrow sleeves, trousers and cloth shoes. Stable defensive posture, one open palm forward at chest height and other hand near abdomen, relaxed long-breath discipline, no weapon, no magical aura.",
+      "prompt": "Use case: stylized-concept. Create an ORIGINAL distinct named human rival for Chinese cultivation game, not a reskin of existing characters. Adult Chinese woman about35, softly rounded face, low straight eyebrows, calm firm eyes, dark hair in compact low bun with simple wooden pin, sturdy balanced build. Plain warm ivory and muted moss-green Chinese Daoist robe with practical narrow sleeves, trousers and cloth shoes. Stable defensive posture, one open palm forward at chest height and other hand near abdomen, relaxed long-breath discipline, no weapon, no magical aura. Refined Chinese ink and mineral watercolor illustration with realistic natural anatomy and clean simple silhouette. Two clothing layers max, no elaborate armor, no ragged cape, no many hanging belts. Full body including all feet, hair and entire weapon visible, wide 12 percent margin. No scenic backdrop, no shadows or vignette, TRUE transparent cutout, no text, no watermark. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-aa4ff987-a08e-450f-a7a7-ebb58d07bcfb.png",
+      "tool": "builtin-imagegen",
+      "refs": [],
+      "status": "reviewed-candidate",
+      "dimensions": [
+        512,
+        768
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "runtimePath": "public/art/foundation-journey/rank-jiangwenhe.webp",
+      "bytes": 69326,
+      "sha256": "eb6a93629a8b37df8ef841253f0b00e3c449e4cf6b06e3e0d6310d0e1fc29658",
+      "review": "已检查专属人族形象、道具、完整立绘；WebP高度768和透明通道通过。最终UI背景混合边缘待接入复查。",
+      "exportNote": "最终采用剧情接入 session 导出的 quality 88 WebP，未再次覆盖运行文件。"
+    },
+    {
+      "id": "rank-luoli",
+      "name": "罗砺·护舟刀",
+      "detail": "Adult Chinese man about38, broad square jaw, sun-tanned skin, close-cut moustache, stocky muscular build, dark hair in low practical knot. Steady boat-route escort, plain brown and muted navy fitted jacket with one belt, holding a single unornamented Chinese dao down at his side, protective grounded stance.",
+      "prompt": "Use case: stylized-concept. Create an ORIGINAL distinct named human rival for Chinese cultivation game, not a reskin of existing characters. Adult Chinese man about38, broad square jaw, sun-tanned skin, close-cut moustache, stocky muscular build, dark hair in low practical knot. Steady boat-route escort, plain brown and muted navy fitted jacket with one belt, holding a single unornamented Chinese dao down at his side, protective grounded stance. Refined Chinese ink and mineral watercolor illustration with realistic natural anatomy and clean simple silhouette. Two clothing layers max, no elaborate armor, no ragged cape, no many hanging belts. Full body including all feet, hair and entire weapon visible, wide 12 percent margin. No scenic backdrop, no shadows or vignette, TRUE transparent cutout, no text, no watermark. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-c23d39ea-a95b-4a8c-86ac-010f1063eb4e.png",
+      "tool": "builtin-imagegen",
+      "refs": [],
+      "status": "reviewed-candidate",
+      "dimensions": [
+        512,
+        768
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "runtimePath": "public/art/foundation-journey/rank-luoli.webp",
+      "bytes": 68376,
+      "sha256": "fc8d777e5e66fadcff53263751f4dfbcc57fe3728618ff59968b399dc058cbc9",
+      "review": "已检查专属人族形象、道具、完整立绘；WebP高度768和透明通道通过。最终UI背景混合边缘待接入复查。",
+      "exportNote": "最终采用剧情接入 session 导出的 quality 88 WebP，未再次覆盖运行文件。"
+    },
+    {
+      "id": "rank-mengzhaoye",
+      "name": "孟照野·照石阵",
+      "detail": "Adult Chinese male formation practitioner about32, long angular face, clean shaven, calm analytical eyes, dark hair neat topknot with plain wooden pin. Lean medium-height build, simple slate green robe, short practical sleeves, one belt. Holding a small clearly stone-carved formation disk with the other hand indicating a measured step, observant grounded stance. No magic halo.",
+      "prompt": "Use case: stylized-concept. Create an ORIGINAL distinct named human rival for Chinese cultivation game, not a reskin of existing characters. Adult Chinese male formation practitioner about32, long angular face, clean shaven, calm analytical eyes, dark hair neat topknot with plain wooden pin. Lean medium-height build, simple slate green robe, short practical sleeves, one belt. Holding a small clearly stone-carved formation disk with the other hand indicating a measured step, observant grounded stance. No magic halo. Refined Chinese ink and mineral watercolor illustration with realistic natural anatomy and clean simple silhouette. Two clothing layers max, no elaborate armor, no ragged cape, no many hanging belts. Full body including all feet, hair and entire weapon visible, wide 12 percent margin. No scenic backdrop, no shadows or vignette, TRUE transparent cutout, no text, no watermark. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-361cf10e-8718-45f4-abe5-05b28d5676c7.png",
+      "tool": "builtin-imagegen",
+      "refs": [],
+      "status": "reviewed-candidate",
+      "dimensions": [
+        512,
+        768
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "runtimePath": "public/art/foundation-journey/rank-mengzhaoye.webp",
+      "bytes": 52650,
+      "sha256": "9034e215992627a7d081e00b2eb6ba64ab2f2f214fd6b81af64b703fea1389b8",
+      "review": "已检查专属人族形象、道具、完整立绘；WebP高度768和透明通道通过。最终UI背景混合边缘待接入复查。",
+      "exportNote": "最终采用剧情接入 session 导出的 quality 88 WebP，未再次覆盖运行文件。"
+    },
+    {
+      "id": "rank-zhouyanhui",
+      "name": "周雁回·回风剑",
+      "detail": "Adult Chinese female swordswoman about28, narrow oval face, high cheekbones, alert long eyes, dark hair in high ponytail without braid. Lightweight pale grey and muted crimson narrow-sleeved Chinese travel robe and trousers, simple cloth boots. Turning back in a controlled flowing sword stance holding ONE plain Chinese straight jian, no glowing effects. Athletic capable demeanor.",
+      "prompt": "Use case: stylized-concept. Create an ORIGINAL distinct named human rival for Chinese cultivation game, not a reskin of existing characters. Adult Chinese female swordswoman about28, narrow oval face, high cheekbones, alert long eyes, dark hair in high ponytail without braid. Lightweight pale grey and muted crimson narrow-sleeved Chinese travel robe and trousers, simple cloth boots. Turning back in a controlled flowing sword stance holding ONE plain Chinese straight jian, no glowing effects. Athletic capable demeanor. Refined Chinese ink and mineral watercolor illustration with realistic natural anatomy and clean simple silhouette. Two clothing layers max, no elaborate armor, no ragged cape, no many hanging belts. Full body including all feet, hair and entire weapon visible, wide 12 percent margin. No scenic backdrop, no shadows or vignette, TRUE transparent cutout, no text, no watermark. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2795e983-7441-4182-8cf9-f6f2b3fbbb6a.png",
+      "tool": "builtin-imagegen",
+      "refs": [],
+      "status": "reviewed-candidate",
+      "dimensions": [
+        512,
+        768
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "runtimePath": "public/art/foundation-journey/rank-zhouyanhui.webp",
+      "bytes": 84700,
+      "sha256": "9c352f1a9115165dad32574eebe0aadc9e09544ba59556d6d603d96fa9f137fa",
+      "review": "已检查专属人族形象、道具、完整立绘；WebP高度768和透明通道通过。最终UI背景混合边缘待接入复查。",
+      "exportNote": "最终采用剧情接入 session 导出的 quality 88 WebP，未再次覆盖运行文件。"
+    }
+  ]
+}

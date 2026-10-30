@@ -68,7 +68,7 @@ export const rivals = [
     name: "邱星罗",
     style: "流光阵步",
     story:
-      "筑基阵修，把每一步都藏进阵纹。先看阵眼，再决定何时出手，比盲目猛攻有效。",
+      "筑基阵修担任炼气组守榜教习，将气息与阵步限制在炼气组尺度。先看阵眼，再决定何时出手，比盲目猛攻有效。",
     hp: 38,
     attack: 12,
     pattern: ["discern", "discern", "endure"] as Stance[],
@@ -173,7 +173,7 @@ export function relationshipGoal(s: State) {
   if (!s.social.memories.includes("watch"))
     return "完成一场擂台胜利，或两次败后复盘，再一起谈谈胜负。无需夺魁才能发展感情。";
   return s.social.bonded
-    ? "已经定情，保留彼此的修行目标。婚礼与婚后生活尚未开放。"
+    ? "已经定情，保留彼此的修行目标。完成职业同行并商定联络后，可另行商议结契。"
     : "共同经历让心意渐明。是否定情，由你选择；保持朋友关系也不影响修行。";
 }
 function note(s: State, text: string) {
@@ -341,8 +341,7 @@ export function outingError(s: State, outing: Memory) {
 export function arenaError(s: State) {
   if (s.age < 216) return "年满十八岁后可参加";
   if (s.social.arena.wins >= 3) return "本届三位对手已全部击败，不重复发奖";
-  if (s.social.arena.wins === 2 && s.realm < 1)
-    return "决胜场需筑基；可先探索与准备突破";
+
   if (s.injury > 0) return "擂台不接纳负伤参赛，先养伤";
   if (s.stones < 4) return "需要灵石 4 作为擂台修缮费";
   if (!s.social.arena.scouted.includes(s.social.arena.wins))

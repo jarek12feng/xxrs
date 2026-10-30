@@ -45,3 +45,34 @@ describe("save snapshots", () => {
     expect(await load()).toEqual({ state: null, recovered: false });
   });
 });
+it("persists and resumes the new companion adventure without replaying rewards", async () => {
+  const { mistCheckpoint } = await import("../tools/mist-checkpoint");
+  let state = mistCheckpoint();
+  state = dispatch(state, {
+    id: "together",
+    type: "companionship",
+    action: "start",
+  });
+  state = dispatch(state, {
+    id: "survey",
+    type: "companionship",
+    action: "insight",
+  });
+  await save(state);
+  const restored = (await load()).state!;
+  expect(restored).toEqual(state);
+  expect(
+    dispatch(restored, {
+      id: "survey-again",
+      type: "companionship",
+      action: "insight",
+    }),
+  ).toBe(restored);
+  const next = dispatch(restored, {
+    id: "route",
+    type: "companionship",
+    action: "public",
+  });
+  await save(next);
+  expect((await load()).state?.companionship.stage).toBe("trial");
+});

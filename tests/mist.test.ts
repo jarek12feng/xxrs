@@ -1,3 +1,4 @@
+import { freshFoundationJourney } from "../src/foundation-journey/state";
 import { expect, it } from "vitest";
 import {
   createGame,
@@ -263,6 +264,7 @@ it("migrates real v8 progress without touching existing story, RNG or discoverie
   expect(migrateSave(old)).toEqual({
     ...s,
     adventure: { ...s.adventure, rescueChoice: "legacy" },
+    foundationJourney: freshFoundationJourney(),
   });
   expect(old).toEqual(before);
   expect(() => migrateSave({ ...old, stones: -1 })).toThrow();

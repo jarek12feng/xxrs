@@ -4,7 +4,7 @@
 
 **玩家为突破境界、证道长生而修行；通过准备、秘境闯关争取机缘，在突破后获得真正不同的行动能力，途中留下自己的恩怨与牵挂。**
 
-所有后续 session 先读 [主线总纲](docs/mainline.md)，再读 [炼气至筑基的当前规则](docs/foundation-volume.md) 和 [后续剧情方案](docs/narrative/README.md)。后续故事尚未接入，金丹及以上未实现；本地实现不等于已提交或发布。开发约束见 [AGENTS.md](AGENTS.md)。 筑基后的感情、道侣成长、旧人去向与新人登场见 [后续剧情与游戏设计](docs/narrative/04-companions-and-world.md)，目前为未实施方案。
+所有后续 session 先读 [主线总纲](docs/mainline.md)，再读 [炼气至筑基的当前规则](docs/foundation-volume.md) 和 [后续剧情方案](docs/narrative/README.md)。筑基行旅、明确结契与分别重逢、古道内外接应、凝丹准备和分境界听松试剑榜已接入，见 [当前实施与验收](docs/foundation-late-review/README.md)；金丹突破及以上未实现；本地实现不等于已提交或发布。开发约束见 [AGENTS.md](AGENTS.md)。 筑基后的感情、道侣成长、旧人去向与新人登场见 [后续剧情与游戏设计](docs/narrative/04-companions-and-world.md)，实际落地范围见上述实施记录，长期动态生活与更高境界仍为方案。
 
 以下版本段落是历史记录；旧数值、可选用丹、试玩冻结与未来设想不作为当前规则。当前实现应核对源码及上述专题。
 

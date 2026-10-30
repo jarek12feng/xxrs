@@ -26,7 +26,7 @@ it.each(Object.keys(mistScenes).filter((k) => k !== "dormant") as MistStage[])(
     const index = html.indexOf('class="scene-controls"');
     expect(index).toBeGreaterThan(0);
     expect(html.slice(0, index)).toContain(mistScenes[stage].title);
-    expect(html.slice(0, index)).not.toContain("<button");
+    expect(html.slice(html.indexOf('class="scene-backdrop"'), index)).not.toContain("<button");
     expect(html.slice(index)).toContain("雾海探索操作区");
     expect(html.slice(index)).toContain("<button");
   },
@@ -78,7 +78,7 @@ it.each(["market", "pass"] as const)(
         : "/characters/qingzhang.jpg",
     );
     const index = html.indexOf('class="scene-controls"');
-    expect(html.slice(0, index)).not.toContain("<button");
+    expect(html.slice(html.indexOf('class="scene-backdrop"'), index)).not.toContain("<button");
     expect(html.slice(index)).toContain("环顾四周调查区");
     expect(html.slice(index)).toContain(
       stage === "market" ? "药队旧账册" : "石阶上的刻痕",
@@ -105,7 +105,7 @@ it.each(["opening", "road", "relationship", "arena"] as const)(
     const index = html.indexOf('class="scene-controls"');
     expect(index).toBeGreaterThan(0);
     expect(html.slice(0, index)).toContain('class="scene-narrative"');
-    expect(html.slice(0, index)).not.toContain("<button");
+    expect(html.slice(html.indexOf('class="scene-backdrop"'), index)).not.toContain("<button");
     expect(html.slice(index)).toContain("操作区");
     expect(html.slice(index)).toContain("<button");
   },

@@ -1,3 +1,4 @@
+import { foundationBoard } from "./foundation-journey/view";
 import { trialBoard } from "./world-ambition";
 import {
   queueActions,
@@ -20,7 +21,7 @@ export interface ActionReceipt {
     "break" | "refine" | "retreat" | "challenge" | "forge" | "duel" | null;
   unlocks?: string[];
   spotlight?: boolean;
-  returnTo?: "relationship" | "world" | "gear";
+  returnTo?: "relationship" | "world" | "gear" | "arena";
   scene?: {
     from: string;
     to: string;
@@ -58,6 +59,7 @@ export function actionReceipt(
   )
     return null;
   if (
+    (intent.type === "foundationJourney" && !!after.foundationJourney.duel) ||
     (intent.type === "arenaTurn" && after.social.arena.duel) ||
     (intent.type === "arenaStart" && after.social.arena.duel)
   )
@@ -110,6 +112,11 @@ export function actionReceipt(
       key === "injury",
     );
   }
+  add(
+    "筑基修行",
+    before.foundationJourney.cultivation,
+    after.foundationJourney.cultivation,
+  );
   add("道友信任", before.story.trust, after.story.trust);
   add("好感", before.social.affection, after.social.affection);
   add("宗门贡献", before.journey.contribution, after.journey.contribution);
@@ -205,6 +212,29 @@ export function actionReceipt(
     title = trialBoard(after).title;
     growthNotes.push(trialBoard(after).response);
   }
+  const ranked =
+    after.foundationJourney.board.wins.length >
+    before.foundationJourney.board.wins.length;
+  const journeyWin =
+    after.foundationJourney.won.length > before.foundationJourney.won.length;
+  const journeyLoss =
+    effective.type === "foundationJourney" &&
+    effective.action.kind === "move" &&
+    !!before.foundationJourney.duel &&
+    !after.foundationJourney.duel &&
+    !journeyWin;
+  if (journeyLoss) title = "本场败退 · 整备再来";
+  if (ranked) {
+    title = `筑基试剑榜 · ${foundationBoard(after).title}`;
+  } else if (journeyWin) title = "挑战告捷 · 机缘入囊";
+  const completedPreparation =
+    !before.foundationJourney.condensation &&
+    after.foundationJourney.condensation;
+  const inherited =
+    before.foundationJourney.inheritance !==
+    after.foundationJourney.inheritance;
+  if (completedPreparation) title = "凝丹准备已记下 · 本段道途收束";
+  if (inherited) title = "沉井传承领悟 · 装配后亲手试用";
   const cost =
     effective.type === "prepare"
       ? effective.kind === "refine"
@@ -214,7 +244,17 @@ export function actionReceipt(
   const payoff = routePayoff(before, after, intent);
   return enrichReceipt(before, after, intent, {
     title,
+    returnTo:
+      effective.type === "foundationJourney"
+        ? before.foundationJourney.duel?.id.startsWith("rank")
+          ? "arena"
+          : "world"
+        : undefined,
     spotlight:
+      completedPreparation ||
+      inherited ||
+      ranked ||
+      journeyWin ||
       effective.type === "promote" ||
       (effective.type === "choose" &&
         (before.pending?.kind === "relic" || !!before.social.scene)) ||
@@ -223,7 +263,12 @@ export function actionReceipt(
       (effective.type === "mist" &&
         ["read", "illuminate"].includes(effective.action)),
     ritual,
-    tone: dead || failed ? "warning" : ritual ? "success" : "neutral",
+    tone:
+      dead || failed || journeyLoss
+        ? "warning"
+        : ritual || journeyWin
+          ? "success"
+          : "neutral",
     months: Math.max(0, after.month - before.month),
     changes,
     cost,
@@ -238,18 +283,20 @@ export function actionReceipt(
       ...growthNotes,
       ...entries.slice(0, 4).map((entry) => entry.text),
     ],
-    next: dead
-      ? "确认后回看修行履历，可读取存档或另启新程。"
-      : after.pending || after.social.scene
-        ? "有新的剧情在等你，确认后继续回应。"
-        : ritual === "break"
-          ? after.realm
-            ? `境界已从炼气晋升筑基，炼气修为已转化为新境界（归零并非损失）。${expeditionGoal(after) || "功法通达与灵器精炼已开放，回到当前行路查看后续目标。"}`
-            : "先养伤、补回修为，再炼丹或闭关固本；准备好后可以再次突破。"
-          : ritual === "refine"
-            ? "丹药已收入行囊。修为满 360 后可叩关，每次必消耗一枚；失败后可依丹方补炼。"
-            : ritual === "challenge" && failed
-              ? "线索仍在。查看当前挑战提示，提升实力或寻求帮助后再来。"
-              : "成果已自动保存，可以继续行动。",
+    next: ranked
+      ? foundationBoard(after).next
+      : dead
+        ? "确认后回看修行履历，可读取存档或另启新程。"
+        : after.pending || after.social.scene
+          ? "有新的剧情在等你，确认后继续回应。"
+          : ritual === "break"
+            ? after.realm
+              ? `境界已从炼气晋升筑基，炼气修为已转化为新境界（归零并非损失）。${expeditionGoal(after) || "功法通达与灵器精炼已开放，回到当前行路查看后续目标。"}`
+              : "先养伤、补回修为，再炼丹或闭关固本；准备好后可以再次突破。"
+            : ritual === "refine"
+              ? "丹药已收入行囊。修为满 360 后可叩关，每次必消耗一枚；失败后可依丹方补炼。"
+              : ritual === "challenge" && failed
+                ? "线索仍在。查看当前挑战提示，提升实力或寻求帮助后再来。"
+                : "成果已自动保存，可以继续行动。",
   });
 }

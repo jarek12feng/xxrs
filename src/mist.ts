@@ -1,3 +1,4 @@
+import { companionPresent } from "./foundation-journey/progression";
 import { expeditionMistEcho } from "./expedition/resolution";
 import type { State } from "./world";
 import { companions } from "./social";
@@ -349,6 +350,8 @@ export function mistError(s: State, action: MistAction): string {
     return "先筑基越关，并在云栈旅亭留下归路";
   if (!Object.hasOwn(allowed, action) || !allowed[action].includes(m.stage))
     return "不在对应地点";
+  if (action === "companion" && !companionPresent(s))
+    return "对方正在远行或等待接应，不能同时赴约；可独行或邀陆迟";
   if (["solo", "luchi", "companion"].includes(action)) {
     if (m.passed) return "这段同行经历已经写入故事";
     if (m.partner === action) return "已经约好同行方式";

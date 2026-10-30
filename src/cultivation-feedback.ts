@@ -24,7 +24,13 @@ export function automaticPause(
       target: "story",
       label: "回看履历",
     };
-  if (s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel)
+  if (
+    s.pending ||
+    s.social.scene ||
+    s.social.arena.duel ||
+    s.expedition.duel ||
+    s.foundationJourney.duel
+  )
     return {
       text: "眼前有待处理的事件，自动修行已暂停；完成回应后可自行继续。",
       target: "story",

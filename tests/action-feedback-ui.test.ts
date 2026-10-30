@@ -260,6 +260,7 @@ it("combat shows damage at the controls, gates rapid follow-up and keeps the fin
   });
   await mount(s);
   await click("听松擂台");
+  await click("炼气组");
   await click("登台挑战");
   await vi.advanceTimersByTimeAsync(650);
   await click("破势");
@@ -418,4 +419,40 @@ it("returns to the selected exploration place after a modal result", async () =>
     document.querySelector('.map-card:not([style*="display: none"])')
       ?.textContent,
   ).toContain("雾海孤灯");
+});
+it("foundation ranking shows actual reward after save, returns to its group and retains the receipt", async () => {
+  const { journeyCheckpoint, journeyPlayer } =
+    await import("../tools/foundation-journey-checkpoint");
+  const { foundationExchange } =
+    await import("../src/foundation-journey/combat");
+  const { moves } = await import("../src/expedition/content");
+  const p = journeyPlayer(journeyCheckpoint());
+  p.act({ kind: "battle", battle: "rank1" });
+  while (
+    p.state.foundationJourney.duel &&
+    foundationExchange(p.state, "guard")!.damage <
+      p.state.foundationJourney.duel.enemy
+  )
+    p.act({ kind: "move", move: "guard" });
+  expect(p.state.foundationJourney.duel).not.toBeNull();
+  const before = p.state.stones;
+  await mount(p.state);
+  await click("听松擂台");
+  await click(moves.guard);
+  const result = document.querySelector('[role="dialog"]')?.textContent;
+  expect(result).toContain("筑基试剑榜 · 第三十名");
+  expect(result).toContain("灵石");
+  expect(result).toContain("未入榜 → 第三十");
+  expect(result).toContain("周雁回");
+  const saved = vi.mocked(save).mock.calls.at(-1)![0];
+  expect(saved.stones).toBe(before + 14);
+  expect(saved.foundationJourney.board.wins).toEqual(["rank1"]);
+  await click("知晓结果");
+  expect(text()).toContain("听松试剑榜 · 筑基组");
+  expect(text()).toContain("奖励已入袋");
+  await click("金丹组");
+  expect(text()).toContain("金丹组尚未开放");
+  await click("筑基组");
+  expect(text()).toContain("均已结算");
+  expect(save).toHaveBeenCalledTimes(1);
 });

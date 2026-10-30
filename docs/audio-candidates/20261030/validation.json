@@ -1,0 +1,206 @@
+{
+  "checks": "Decoded PCM format, non-silence, peak headroom, duration, loop seam, one-shot endpoints, SHA-256",
+  "notValidated": "Human listening quality, true-peak/LUFS, Windows device mix, long-session fatigue",
+  "files": [
+    {
+      "file": "foundation.wav",
+      "decodedFrames": 1536000,
+      "peakDbFS": -11.52,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "survey.wav",
+      "decodedFrames": 1462857,
+      "peakDbFS": -10.73,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "lamps.wav",
+      "decodedFrames": 1706667,
+      "peakDbFS": -11.29,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "sunken.wav",
+      "decodedFrames": 2048000,
+      "peakDbFS": -10.96,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "frontier.wav",
+      "decodedFrames": 1280000,
+      "peakDbFS": -9.09,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "parting.wav",
+      "decodedFrames": 1807059,
+      "peakDbFS": -11.71,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "return.wav",
+      "decodedFrames": 1616842,
+      "peakDbFS": -11.91,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "route-mark.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -12.42,
+      "rmsDbFS": -28.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "lamp-align.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -9.96,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "ward-learn.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -8.61,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "ward-test.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -9.86,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "handover.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -9.33,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "array-open.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -7.12,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "inheritance.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -10.18,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "signal-send.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -7.63,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "signal-reply.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -9.1,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "rescue-clear.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -8.5,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "vow.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -9.23,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "farewell.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -12.07,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "memorial.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -11.85,
+      "rmsDbFS": -24.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "boat-step.wav",
+      "decodedFrames": 128000,
+      "peakDbFS": -4.0,
+      "rmsDbFS": -28.26,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "waterside.wav",
+      "decodedFrames": 768000,
+      "peakDbFS": -15.18,
+      "rmsDbFS": -31.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "rain-shelter.wav",
+      "decodedFrames": 768000,
+      "peakDbFS": -15.53,
+      "rmsDbFS": -31.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "wind-chimes.wav",
+      "decodedFrames": 768000,
+      "peakDbFS": -15.04,
+      "rmsDbFS": -31.0,
+      "seamDelta": 0.0,
+      "passed": true
+    },
+    {
+      "file": "snow-wind.wav",
+      "decodedFrames": 768000,
+      "peakDbFS": -15.25,
+      "rmsDbFS": -31.0,
+      "seamDelta": 0.0,
+      "passed": true
+    }
+  ]
+}

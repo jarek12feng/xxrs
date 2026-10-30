@@ -1,3 +1,5 @@
+import { createLoopPlayer } from "./local-music";
+import { audioUrl, type AmbientCue } from "./foundation-audio";
 import type { createFileEffects } from "./file-effects";
 import { soundCues, type SoundCue } from "./sound-cues";
 // Procedural local soundscape. This module never reads or writes game state/RNG.
@@ -33,6 +35,10 @@ export function createSoundscape(
   factory: () => AudioContext = () => new AudioContext(),
   files?: ReturnType<typeof createFileEffects>,
 ) {
+  const ambient = files
+    ? createLoopPlayer<AmbientCue>("wind-chimes", audioUrl)
+    : undefined;
+  let ambientCue: AmbientCue | null = null;
   let ctx: AudioContext | undefined, bed: AudioBufferSourceNode | undefined;
   let filter: BiquadFilterNode | undefined, ambientGain: GainNode | undefined;
   let enabled = false,
@@ -59,7 +65,7 @@ export function createSoundscape(
     voices.clear();
   }
   function atmosphere() {
-    if (!available() || !ctx || bed || ambience === 0) return;
+    if (!available() || !ctx || bed || ambientCue || ambience === 0) return;
     const buffer = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
     const samples = buffer.getChannelData(0);
     // Deterministic synthetic noise; independent of the player's seed.
@@ -112,6 +118,7 @@ export function createSoundscape(
         ctx ??= factory();
         unlocked = true;
         files?.unlock();
+        ambient?.unlock();
         await sync();
         return ctx.state === "running";
       } catch {
@@ -121,6 +128,7 @@ export function createSoundscape(
     },
     settings(next: SoundSettings) {
       files?.settings(next.enabled, next.effects);
+      ambient?.settings(next.enabled && ambientCue !== null, next.ambience);
       enabled = next.enabled;
       ambience = next.ambience;
       effects = next.effects;
@@ -133,8 +141,22 @@ export function createSoundscape(
         );
       void sync();
     },
-    scene(next: SoundMood) {
+    scene(next: SoundMood, cue: AmbientCue | null = null) {
       mood = next;
+      ambientCue = cue;
+      if (cue) {
+        bed?.stop();
+        bed?.disconnect();
+        bed = undefined;
+        filter?.disconnect();
+        filter = undefined;
+        ambientGain?.disconnect();
+        ambientGain = undefined;
+        ambient?.scene(cue);
+      }
+      ambient?.settings(enabled && cue !== null, ambience);
+      if (unlocked) ambient?.unlock();
+      void sync();
       if (filter && ctx)
         filter.frequency.setTargetAtTime(
           { rain: 1600, mist: 450, warm: 220, moon: 700 }[mood],
@@ -145,6 +167,7 @@ export function createSoundscape(
     hidden(value: boolean) {
       hidden = value;
       files?.hidden(value);
+      ambient?.hidden(value);
       void sync();
     },
     cue(kind: SoundCue) {
@@ -153,7 +176,8 @@ export function createSoundscape(
         files.cue(kind);
         return;
       }
-      const { notes, wave, duration, spacing } = soundCues[kind];
+      const { notes, wave, duration, spacing } =
+        soundCues[kind as keyof typeof soundCues] ?? soundCues.discovery;
       notes.forEach((frequency, i) => {
         const c = ctx!,
           voice = c.createOscillator(),
@@ -179,6 +203,7 @@ export function createSoundscape(
     dispose() {
       disposed = true;
       files?.dispose();
+      ambient?.dispose();
       silence();
       void ctx?.close().catch(() => {});
     },

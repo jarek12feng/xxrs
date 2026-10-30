@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FoundationPanel from "./foundation-journey/FoundationPanel.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import { familyQuestGoal } from "./expedition/progression";
 import { computed, ref, watch } from "vue";
@@ -49,6 +50,7 @@ const emit = defineEmits<{
   runQueue: [];
   travel: [intent: Intent];
   resumeStory: [];
+  equipment: [];
 }>();
 const atlasMode = defineModel<"story" | "explore">("atlasMode", {
   default: "story",
@@ -70,7 +72,7 @@ const tab = ref<
   "world" | "sect" | "skills" | "queue" | "gear" | "relationship" | "arena"
 >(props.initialTab || "world");
 watch(
-  () => !!props.game.social.arena.duel,
+  () => !!props.game.social.arena.duel || !!props.game.foundationJourney.duel,
   (active) => {
     if (active) tab.value = "arena";
   },
@@ -85,7 +87,8 @@ const locked = computed(
     props.game.status !== "alive" ||
     !!props.game.pending ||
     !!props.game.social.scene ||
-    !!props.game.social.arena.duel,
+    !!props.game.social.arena.duel ||
+    !!props.game.foundationJourney.duel,
 );
 const mentors = {
   dan: {
@@ -195,11 +198,19 @@ const mapImages = {
       :key="tab"
       :game="game"
       :mode="tab"
+      @equipment="emit('equipment')"
       :busy="busy"
       :running="running"
       @act="emit('act', $event)"
     />
     <div v-else-if="tab === 'world'" class="world-content">
+      <FoundationPanel
+        v-if="game.realm >= 1"
+        :game="game"
+        :busy="busy || running"
+        @act="emit('act', $event)"
+        @equipment="emit('equipment')"
+      />
       <nav aria-label="地图路线">
         <button
           :aria-pressed="atlasMode === 'story'"

@@ -117,3 +117,31 @@ it("hard mutes every fading voice immediately rather than relying on pause alone
   }
   player.dispose();
 });
+it("bounds rapid switches to two live tracks and releases zero-volume audio", async () => {
+  const { player, audios } = setup(true);
+  player.settings(true, 0.5);
+  player.unlock();
+  for (const cue of [
+    "foundation",
+    "survey",
+    "lamps",
+    "sunken",
+    "frontier",
+    "parting",
+    "return",
+  ] as const)
+    player.scene(cue);
+  expect(
+    audios.filter(
+      (a) => !(a.load as ReturnType<typeof vi.fn>).mock.calls.length,
+    ),
+  ).toHaveLength(2);
+  expect(audios.at(-1)!.src).toContain("foundation-v2/return.wav");
+  player.settings(true, 0);
+  expect(
+    audios.every(
+      (a) => (a.load as ReturnType<typeof vi.fn>).mock.calls.length > 0,
+    ),
+  ).toBe(true);
+  player.dispose();
+});

@@ -1,3 +1,4 @@
+import { audioUrl } from "./foundation-audio";
 import type { SoundCue } from "./sound-cues";
 
 // Bounded, gesture-gated file voices. Never reads game state or delays saving.
@@ -42,9 +43,7 @@ export function createFileEffects(
       if (!active()) return;
       if (voices.size >= 6) remove(voices.values().next().value!);
       try {
-        const audio = factory(
-          `${import.meta.env.BASE_URL}audio/original-v1/${kind}.wav`,
-        );
+        const audio = factory(audioUrl(kind));
         audio.volume = volume;
         audio.preload = "auto";
         voices.add(audio);

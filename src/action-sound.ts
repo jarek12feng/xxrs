@@ -104,6 +104,41 @@ export function actionSound(
       intent.stance
     ];
   }
+  if (
+    intent.type === "companionship" &&
+    before.companionship.last !== after.companionship.last
+  ) {
+    const old = before.companionship,
+      now = after.companionship;
+    if (now.stage === "dispute" && old.stage === "prepare") return "ward-learn";
+    if (now.plan !== old.plan)
+      return after.social.gender === "male" ? "route-mark" : "lamp-align";
+    if (now.stage === "done" && old.stage !== "done") return "ward-test";
+    if (intent.action === "test") return "hurt";
+    if (intent.action === "revisit") return "handover";
+  }
+  if (intent.type === "foundationJourney") {
+    const old = before.foundationJourney,
+      now = after.foundationJourney;
+    if (now.condensation && !old.condensation) return "closure";
+    if (now.rescue === 4 && old.rescue !== 4) return "rescue-clear";
+    if (now.bond === "covenant" && old.bond !== "covenant") return "vow";
+    if (now.reunion && !old.reunion) return "reunion";
+    if (now.whereabouts === "away" && old.whereabouts !== "away")
+      return "farewell";
+    if (now.rescue === 1 && old.rescue === 0) return "signal-send";
+    if (now.rescue === 2 && old.rescue === 1) return "signal-reply";
+    if (now.ferryOutcome !== old.ferryOutcome) return "handover";
+    if (now.won.length > old.won.length)
+      return old.duel?.id === "well" || old.duel?.id === "exit"
+        ? "array-open"
+        : "victory";
+    if (now.inheritance !== old.inheritance) return "inheritance";
+    if (now.location !== old.location && now.location === "ferry")
+      return "boat-step";
+    if (intent.action.kind === "move" && old.duel)
+      return now.duel ? intent.action.move : "hurt";
+  }
   if (intent.type === "expedition") {
     const effect = after.expedition.effect;
     if (effect === "win") return "victory";

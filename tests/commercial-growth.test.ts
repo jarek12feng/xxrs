@@ -1,3 +1,4 @@
+import { freshFoundationJourney } from "../src/foundation-journey/state";
 import { expect, it } from "vitest";
 import {
   createGame,
@@ -82,9 +83,9 @@ it("v13 mid-duel migration preserves resources, seed, turn and original; future 
   s = dispatch(s, { id: "start", type: "arenaStart" });
   const old = { ...s, version: 13 };
   const copy = structuredClone(old);
-  expect(migrateSave(old)).toEqual({ ...old, version: 15 });
+  expect(migrateSave(old)).toEqual({ ...old, version: 17, foundationJourney: freshFoundationJourney() });
   expect(old).toEqual(copy);
-  expect(() => migrateSave({ ...old, version: 16 })).toThrow();
+  expect(() => migrateSave({ ...old, version: 18 })).toThrow();
   const invalid = structuredClone(old);
   invalid.social.arena.duel!.turn = 4;
   expect(() => migrateSave(invalid)).toThrow();
