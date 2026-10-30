@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { opponentRealmName } from "../realm-pressure";
 import type { State, Intent } from "../world";
 import type { JourneyAction } from "./state";
 import { challenges, destinations } from "./content";
@@ -153,8 +154,10 @@ function act(action: JourneyAction) {
           <small>第 {{ q.duel.turn + 1 }} 合 / 最多 12 合</small>
           <h3>{{ foe.name }}</h3>
           <p>
-            {{ foe.foe }} · 气势 {{ q.duel.enemy }}/{{ foe.hp }}<br />你的气势
-            {{ q.duel.hp }}/{{ foundationPower(game).hp }}
+            {{ foe.foe }} · {{ opponentRealmName(foe) }} · 气势
+            {{ q.duel.enemy }}/{{ foe.hp }}<br />你的气势 {{ q.duel.hp }}/{{
+              foundationPower(game).hp
+            }}
           </p>
           <p v-if="battlePreparation">
             {{ battlePreparation.description }}
@@ -232,7 +235,7 @@ function act(action: JourneyAction) {
           :key="row.id"
           :class="{ current: row.current, won: row.won }"
         >
-          <h3>{{ row.rank }} · {{ row.foe }}</h3>
+          <h3>{{ row.rank }} · {{ row.foe }} · {{ opponentRealmName(row) }}</h3>
           <p>{{ row.purpose }}</p>
           <p>
             {{ foundationBattleReadiness(game, row.id).description }}

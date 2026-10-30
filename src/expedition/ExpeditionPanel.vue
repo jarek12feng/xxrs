@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { realmPressure } from "../realm-pressure";
+import { realmPressure, opponentRealmName } from "../realm-pressure";
 import { computed } from "vue";
 import type { State, Intent } from "../core";
 import { encounters, moves, type Move } from "./content";
@@ -50,7 +50,10 @@ const actions = computed<
   >
     <template v-if="q.duel">
       <header class="battle-heading">
-        <h3>{{ encounter.name }} · 第 {{ q.duel.turn + 1 }} 合</h3>
+        <h3>
+          {{ encounter.foe }} · {{ opponentRealmName(encounter) }} · 第
+          {{ q.duel.turn + 1 }} 合
+        </h3>
         <small>{{ style.name }} · 灵草 {{ game.herbs }}</small>
       </header>
       <BattleStage
@@ -108,7 +111,12 @@ const actions = computed<
         药队需要同行之人。先以炼气之身护送、寻踪；随后药队回坊市、封阵休整，待你筑基再合力取出阵核里的证据。可随时在交锋外回洞府准备。
       </p>
       <template v-else-if="q.cleared < 3">
-        <h4>{{ encounter.name }}</h4>
+        <h4>
+          {{ encounter.name
+          }}<template v-if="q.cleared !== 1">
+            · {{ encounter.foe }} · {{ opponentRealmName(encounter) }}</template
+          >
+        </h4>
         <p v-if="q.cleared !== 1 && q.cleared < 3">
           {{ realmPressure(game, encounter).description }}
         </p>

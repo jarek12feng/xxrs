@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { realmPressure } from "./realm-pressure";
+import { realmPressure, opponentRealmName } from "./realm-pressure";
 import FoundationPanel from "./foundation-journey/FoundationPanel.vue";
 import { companionPresent } from "./foundation-journey/progression";
 import CompanionshipPanel from "./companionship/CompanionshipPanel.vue";
@@ -391,7 +391,9 @@ const intentText: Record<Stance, string> = {
               >交锋中 · 时间暂停 · 灵草 {{ game.herbs }}</span
             >
             <h3>
-              {{ rivals[duel.opponent].name }} · 第 {{ duel.turn + 1 }} 合
+              {{ rivals[duel.opponent].name }} ·
+              {{ opponentRealmName(rivals[duel.opponent]!) }} · 第
+              {{ duel.turn + 1 }} 合
             </h3>
             <div class="combatants">
               <div>
@@ -446,9 +448,7 @@ const intentText: Record<Stance, string> = {
               </div>
             </div>
             <p>
-              {{
-                realmPressure(game, rivals[duel.opponent]!).description
-              }}
+              {{ realmPressure(game, rivals[duel.opponent]!).description }}
               本场独自应战。
             </p>
             <p v-if="!duel.turn" class="combat-receipt">
@@ -515,7 +515,7 @@ const intentText: Record<Stance, string> = {
               :class="{ 'rival-current': game.social.arena.wins === index }"
             >
               <div class="panel-heading">
-                <h3>{{ rival.name }}</h3>
+                <h3>{{ rival.name }} · {{ opponentRealmName(rival) }}</h3>
                 <span>{{
                   index < game.social.arena.wins
                     ? "已胜"

@@ -1,3 +1,4 @@
+import { opponentRealmName } from "../realm-pressure";
 import type { State } from "../world";
 import type { JourneyAction, BattleId, Destination, Side } from "./state";
 import { challenges, rankIds, sideChoices } from "./content";
@@ -40,7 +41,7 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
     actions.push({ label, action, error: journeyActionError(s, action) });
   const fight = (id: BattleId) =>
     add(
-      `${challenges[id].name} · 一月 / 灵石 4 / 首胜灵石 10、修行 ${Math.min(40, 600 - q.cultivation)}`,
+      `${challenges[id].name} · ${opponentRealmName(challenges[id])} · 一月 / 灵石 4 / 首胜灵石 10、修行 ${Math.min(40, 600 - q.cultivation)}`,
       {
         kind: "battle",
         battle: id,
