@@ -1,6 +1,7 @@
 import type { State } from "../world";
 import type { JourneyAction, BattleId, Destination, Side } from "./state";
 import { challenges, rankIds, sideChoices } from "./content";
+import { ferryScene, sideScene, homeScene } from "./narrative";
 import { journeyActionError } from "./progression";
 export const rankNames = [
   "未入榜",
@@ -70,7 +71,7 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
     if (q.ferry === 2 && q.inheritance !== "none") fight("exit");
     if (q.sister === "none") add("可选：答应郁青寻姐", { kind: "sister" });
     if (q.sister === "promised")
-      add("可选：去侧院见郁晚舟", { kind: "reuniteSister" });
+      add("可选：去侧院打听消息", { kind: "reuniteSister" });
     if (q.sister === "reunited" && !q.consent)
       add("可选：询问证言公开范围", { kind: "consent" });
     for (const [evidence, label] of [
@@ -91,7 +92,7 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
           outcome: "break",
         });
       }
-      add("证据齐备后，脱敏公开并交接追责", {
+      add("隐去病人身份，将证据交给两堂见证人", {
         kind: "ferryOutcome",
         outcome: "open",
       });
@@ -133,10 +134,10 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
 export const whereaboutsText = {
   home: "在听松，可共同准备",
   away: "已按约独自远行；三个月后可以重逢",
-  returned: "已正常重逢，有了各自的修行收获",
+  returned: "已回到听松，带来了远行见闻",
   missing: "古道事故后失联，生死尚未确认",
   shelter: "已确认在内部避险处，能共同接应",
-  rescued: "已完成内外接应，一同安全撤回",
+  rescued: "已与你一同撤回，可在听松相聚",
 };
 export function journeyPresentation(s: State, relationship = false) {
   const q = s.foundationJourney;
@@ -168,6 +169,8 @@ export function journeyPresentation(s: State, relationship = false) {
       portrait = `${id}-${q.bond === "covenant" ? "vow" : q.reunion ? "reunion" : "growth"}`;
     }
     body = whereaboutsText[q.whereabouts];
+  } else if (q.location === "home") {
+    body = homeScene(s);
   } else if (q.location === "ferry") {
     image =
       q.ferry === 1
@@ -177,17 +180,12 @@ export function journeyPresentation(s: State, relationship = false) {
           : q.ferry === 3
             ? "ferry-return"
             : "wuming-ferry";
-    body =
-      q.ferry === 4
-        ? "沉井传承已经握在自己手中，离渡的通路也已打开。你可以继续远行，或补完这里尚未亲历的人与事。"
-        : q.ferry === 2
-          ? "守府石偶已停下。古院留下的是乱流中稳住经脉的自修法门，后添的名籍控制支路与传承本身无关。"
-          : "你为沉井修行院的传承而来，渡口执卫却不断检查离渡名籍。先争取自己的机缘，也可停下核实药队留下的疑问。";
+    body = ferryScene(s);
     if (q.sister === "reunited") {
       speaker = "郁晚舟";
       portrait = "healer-sister";
       body +=
-        "郁晚舟仍在侧院救治伤者，已与郁青当面重逢。她的去留与证言公开范围，由她自己决定。";
+        "侧院还传来捣药声。郁晚舟低头换药，郁青坐在门槛上，替她将干净的药布叠好。";
     }
   } else if (q.location === "estate") {
     speaker = "阙明棠";
@@ -208,6 +206,9 @@ export function journeyPresentation(s: State, relationship = false) {
         : q.rescue === 2 || q.rescue === 3
           ? "内部人员已经传出信号，避险处可以维持。先打通外缘送入补给，再和内部接应者约好撤离节奏；这段准备没有现实倒计时。"
           : "";
+  }
+  if (!relationship && ["estate", "snow", "inn"].includes(q.location)) {
+    body = sideScene(s, q.location as Side);
   }
   return {
     image: `/art/foundation-journey/${image}.webp`,

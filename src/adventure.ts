@@ -49,7 +49,7 @@ export const adventureScenes = {
     image: "/characters/luchi-ferry.png",
     mood: "rain",
     goal: "山下药工失踪。是否接下这次寻人委托？",
-    body: "这是一段新增的独立寻人支线，不会重写你与陆迟已有的经历。",
+    body: "信上说，药工进山后迟迟未归，有人从上游捞回了他的药篓。渡口仍有人等着，盼你过去看一眼。",
   },
   ferry: {
     name: "雨夜渡口",
@@ -91,7 +91,7 @@ export const adventureScenes = {
     image: "/mountains.svg",
     mood: "warm",
     goal: "下一站：筑基，获得深入雾岭的能力。",
-    body: "航图在桌上摊开。修行终于有了一个具体的去处：雾岭深处，还有药工没有走完的路。",
+    body: "你把航图摊在桌上，手指顺着山路移到云层之外。那里的灵流，炼气之身还承受不住。你记得背出药工时发抖的手，也想亲眼看看越过那片云是什么模样。",
   },
 } as const;
 export function validAdventure(a: Adventure) {
@@ -132,7 +132,7 @@ export function adventureOptions(
 ): { action: AdventureAction; label: string }[] {
   switch (a.step) {
     case "invitation":
-      return [{ action: "enter", label: "接下寻人委托 · 不重置旧进度" }];
+      return [{ action: "enter", label: "接下寻人委托，去渡口看看" }];
     case "ferry":
       return [
         { action: "inspect", label: "检查药篓与布片 · 寻找线索" },

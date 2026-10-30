@@ -111,7 +111,7 @@ export function journeyActionError(s: State, a: JourneyAction): string {
     if (a.kind === "reuniteSister")
       return q.sister === "promised" && q.ferry >= 2
         ? ""
-        : "答应寻亲并打通外府后，才可去侧院见人";
+        : "答应寻亲并打通外府后，可去侧院打听消息";
     if (a.kind === "consent")
       return q.sister === "reunited" && !q.consent
         ? ""
@@ -196,7 +196,7 @@ export function journeyActionError(s: State, a: JourneyAction): string {
     if (a.kind === "depart")
       return q.contact !== "none" && !q.reunion && q.whereabouts === "home"
         ? ""
-        : "先商定联络，本段正常分别只发生一次";
+        : "先约好联络；这趟远行已经安排过了";
   }
   if (["report", "signal", "supply", "mentor", "finish"].includes(a.kind)) {
     if (q.location !== "frontier" || q.ferry < 4) return "先到云外古道";

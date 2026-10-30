@@ -126,7 +126,7 @@ export function runCompanionship(
     s.stones -= plans[n.plan].cost;
     n.stage = "trial";
     n.last = femaleCompanion
-      ? "“我没写名字。”沈听澜看着药舍住户指出的井口与果树，终于放下刻刀：“可这些已经够找上门了。”这户人家拒绝以孩子抵债的私约，住址未经同意不能公开。你们选定修改办法；她亲自改图，你去复核归路，不能只在纸上画一条安全线。"
+      ? "“我没写名字。”沈听澜看着药舍住户指出的井口与果树，终于放下刻刀：“可这些已经够找上门了。”门外那家人仍抱着孩子等消息。她亲自刮去刻样上的旧线，请你去复核新路，刻坊的人被她留在门外。"
       : "尹照川又把自己的名字填进每个空班。“风标是我修的，漏写也是我的错。”你指出一直熬着不能补上训练。他划去多余夜值，答应按你们选定的办法交接。先让渡工独立报信，你去验备用泊点。";
   } else if (action === "test") {
     // The same existing support technique that reduces combat damage now
@@ -148,7 +148,7 @@ export function runCompanionship(
   } else {
     const revisit =
       plans[n.plan!].result +
-      "归路仍按这份安排运作，没有额外报酬，也不要求你留下代班。";
+      "你路过时，新接手的人正照着路簿做事。他认出你，招呼你坐下喝碗茶。";
     if (n.last === revisit) return input;
     n.last = revisit;
   }

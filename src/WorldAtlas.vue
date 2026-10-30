@@ -45,9 +45,7 @@ const distant = worldMap.distant;
     </header>
     <div class="atlas-scope">
       <p>{{ worldMap.overview }}</p>
-      <p class="atlas-scope-note">
-        图上有名，不代表已经走过。当前行路仍须满足修为与剧情条件。
-      </p>
+      <p class="atlas-scope-note">点选地标，查看去路与行前准备。</p>
       <details class="atlas-regions">
         <summary>本界地域一览 · 听松山之外还有什么</summary>
         <div class="atlas-region-grid">

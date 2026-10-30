@@ -254,7 +254,7 @@ const intentText: Record<Stance, string> = {
                 100</strong
               >
               <p class="muted">
-                好感不是战力。通过不同的共同经历培养，不能重复送礼或重复剧情刷满。
+                共同历险与相处可以增进好感，同一段经历只增加一次。
               </p>
             </article>
             <button
@@ -323,7 +323,7 @@ const intentText: Record<Stance, string> = {
               <p class="muted">
                 {{
                   game.foundationJourney.bond === "covenant"
-                    ? "已经双方明确答应结为道侣，仍各自修行与远行。"
+                    ? "已结为道侣。"
                     : "已定情；完成职业同行并商定联系后，可以另行商议结契。"
                 }}共同洞府与长期生活事件尚未开放。
               </p>
@@ -359,14 +359,13 @@ const intentText: Record<Stance, string> = {
         </template>
         <template v-else>
           <p class="muted">
-            三位具名 NPC
-            的单机擂台，不是真实玩家排行榜。不入宗门、不发展恋情也能参赛。每场一月、灵石
+            三位具名 NPC 的本届比试，散修也可报名。每场一月、灵石
             4，最多交锋六合；第四合起对手承接上一轮招式、伤害
             +2。先将对手气势归零且自身仍站稳才获胜，同归或六合未破均判负。
           </p>
           <section v-if="!duel" class="trial-board" aria-label="本届试剑榜">
             <h3>{{ game.name }} · {{ ranking.title }}</h3>
-            <p>听松山本届试剑记名，只记本届三场实绩，不是青玄界总排名。</p>
+            <p>听松山本届炼气组试剑记名。</p>
             <p>{{ ranking.response }}</p>
             <p v-if="ranking.next">
               下一位对手：{{ ranking.next }} · {{ ranking.requirement }}

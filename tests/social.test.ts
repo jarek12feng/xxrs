@@ -160,16 +160,23 @@ it.each(["male", "female"] as const)(
       let s = choose(act(adult(gender), { type: "visit" }), "listen");
       s = choose(act(s, { type: "outing", outing: "walk" }), "care");
       s = act(migrateSave(s), { type: "outing", outing: "night" });
-      expect(eventView(s)?.body).toContain("照料伤者");
+      expect(eventView(s)?.body).toContain("替药工敷过药");
       expect(eventView(s)?.body).toContain("闭关");
       s = choose(s, night);
       s.social.arena.losses = 2;
       s = choose(act(s, { type: "outing", outing: "watch" }), "thanks");
       s = act(migrateSave(s), { type: "confess" });
       expect(eventView(s)?.body).toContain(
-        night === "promise" ? "愿意与我再走" : "心里的不安",
+        night === "promise"
+          ? "出关"
+          : gender === "male"
+            ? "不定什么时候回来"
+            : "不用定日子",
       );
-      expect(eventView(s)?.body).toContain("不想你放弃自己的");
+      expect(eventView(s)?.body).toContain(
+        gender === "male" ? "归途图" : "引路木符",
+      );
+      expect(eventView(s)?.options.some((o) => o.id === "later")).toBe(true);
       expect(migrateSave(s)).toEqual(s);
     }
   },

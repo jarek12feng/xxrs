@@ -446,7 +446,8 @@ export function runMist(input: State, action: MistAction, id: string): State {
       break;
     case "accept":
       m.stage = "camp";
-      m.result = "你把信收进行囊。先找证据，不替信中的人下结论。";
+      m.result =
+        "你将信收进行囊。信纸已经发脆，封口却还留着新近消散的灵光。得去寄信的地方看看。";
       break;
     case "camp":
       m.stage = "camp";
@@ -457,7 +458,7 @@ export function runMist(input: State, action: MistAction, id: string): State {
       m.partner = action;
       m.result =
         action === "solo"
-          ? "你把归程留给陆迟，约定回来再一起读信。独行需要自己准备药理与识阵，但不缺少通往真相的路。"
+          ? "你把归程留给陆迟，约定回来再一起读信。你检查药囊和识阵笔记，独自踏上山路。"
           : action === "luchi"
             ? "陆迟带来药囊：“药圃的根脉我能帮忙。父亲的事，我们一步步查。”"
             : `${mistPartner(s).name}收好行囊：“废驿的旧阵我可以帮你辨认。但我的心愿，是让这条路以后也有人能走。”`;
@@ -509,8 +510,8 @@ export function runMist(input: State, action: MistAction, id: string): State {
     case "ward":
       m.ward = true;
       m.result = s.journey.mentor
-        ? "执事根据你带回的阵眼记录，教你以三息护住归绳。师门的教导终于有了具体的用处：本章把握 +20。"
-        : "你把失败带回的节拍反复推演，找到了三息换气的空隙。本章把握 +20；这一次的准备有了明确的答案。";
+        ? "执事根据你带回的阵眼记录，教你以三息护住归绳。入阵把握 +20。"
+        : "你把失败带回的节拍反复推演，找到了三息换气的空隙。本章把握 +20；归绳随灵流起伏，不再绷紧。";
       break;
     case "read":
       m.lamp = true;

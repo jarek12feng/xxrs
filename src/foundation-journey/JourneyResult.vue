@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
-const props = defineProps<{ text: string; label?: string }>();
+const props = defineProps<{
+  text: string;
+  label?: string;
+  expanded?: boolean;
+}>();
 const split = computed(() => {
   const end = props.text.indexOf("。");
   return end < 0
@@ -14,7 +18,7 @@ const split = computed(() => {
 <template>
   <div class="journey-result">
     <p role="status">{{ split.brief }}</p>
-    <details v-if="split.rest" :key="text">
+    <details v-if="split.rest" :key="text" :open="expanded">
       <summary>{{ label || "查看完整经过" }}</summary>
       <p>{{ split.rest }}</p>
     </details>

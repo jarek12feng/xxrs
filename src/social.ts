@@ -1,3 +1,4 @@
+import { companionScene } from "./companion-scenes";
 import {
   availableOrigins,
   originNotes,
@@ -160,7 +161,7 @@ export function relationship(s: State) {
 }
 export function relationshipGoal(s: State) {
   if (!s.social.gender)
-    return "先补选角色性别。本版按角色性别安排异性恋爱对象，不影响战力。";
+    return "请先在人物页选择角色性别，再去山门外相识。";
   if (s.age < 216)
     return "成年并筑基后，可在山门外结识新的同行者。眼下先走好自己的修行路。";
   if (!s.social.met && s.realm < 1)
@@ -250,7 +251,7 @@ export function heartEvent(s: State): EventView | null {
   if (kind === "walk")
     return {
       title: "同行 · 雨中的旧路",
-      body: `${who.name}与你勘察旧路，崖边的引路符忽然熄了。${who.pronoun}先把你推回石阶，自己攀住摇晃的绳索。崖下还有受伤药工，雨正在抹去回程记号。“别只顾拉我，”${who.pronoun}喘着气说，“我还能撑。你去救人，或者替我把归路标出来。”你第一次发现，同行不是替对方决定该冒什么险。`,
+      body: companionScene(s, "walk"),
       options: [
         {
           id: "care",
@@ -274,7 +275,7 @@ export function heartEvent(s: State): EventView | null {
   if (kind === "night")
     return {
       title: "灯下 · 各自的远方",
-      body: `${who.name}把${who.gender === "女" ? "一张被雨泡皱的路图" : "那枚裂开的引路阵盘"}推到灯下。${s.social.answers.walk === "care" ? "你那日留下照料伤者，让对方腾出手稳住归路。" : s.social.answers.walk === "mark" ? "你那日补下的标记还在，最后一个药工顺着它走出了雨幕。" : "你那日没催谁快走，一直陪到最后一个人回山。"}“我想${who.goal}可我也要留些时间闭关修行，不能总靠眼前这点本事走远路。”${who.pronoun}把手缩回袖里，袖口还留着那天替你挡石的裂痕。“你若也要去求自己的道，不必为了我留下。”说完这句，${who.pronoun}却没有收走你面前的茶。`,
+      body: companionScene(s, "night"),
       options: [
         {
           id: "promise",
@@ -291,7 +292,7 @@ export function heartEvent(s: State): EventView | null {
   if (kind === "watch")
     return {
       title: "赛后 · 胜负之外",
-      body: `${who.name}在台阶下等你，递来一块浸过凉水的帕子。“虎口都红了，擦擦。刚才台下挤，我喊了两声，你听见没有？”`,
+      body: companionScene(s, "watch"),
       options: [
         {
           id: "thanks",
@@ -307,12 +308,12 @@ export function heartEvent(s: State): EventView | null {
     };
   return {
     title: "月下 · 两心相许",
-    body: `${who.name}将${who.keepsake}放在桌上。${s.social.answers.night === "promise" ? "“你愿意与我再走一段路。我便把回来的路，一笔一笔留好了。”" : "“你肯把心里的不安告诉我。我想了很久，也不愿让一个期限困住你。”"}${who.pronoun}按住信物，没有立即松手。“我要走的道还没有走完，也不想你放弃自己的。可下一次听见山门的铃，我会希望回来的是你。你愿意让我等这个消息吗？”`,
+    body: companionScene(s, "pledge"),
     options: [
       {
         id: "yes",
         label: "好，我收着。你出山时，也记得告诉我",
-        hint: "双方定情，获得纪念信物；婚礼与婚后生活尚未开放",
+        hint: "定情，珍藏信物；结契需日后另行商议",
       },
       {
         id: "later",
@@ -554,7 +555,7 @@ export function dispatchSocial(
         s.social.bonded = true;
         note(
           s,
-          `你与${companion(s)!.name}两心相许，珍藏${companion(s)!.keepsake}。这不是婚礼；你们约好尊重彼此的修行与远方。`,
+          `你与${companion(s)!.name}两心相许，珍藏${companion(s)!.keepsake}。临别时，你又回头看了一眼，对方仍站在灯下。`,
         );
       }
       s.social.answers[kind] = c.option;

@@ -9,7 +9,7 @@ const scene = computed(() => companionshipView(props.game));
 <template>
   <section class="companionship-panel" aria-label="筑基后共同历险">
     <h3>筑基同行 · {{ scene.title }}</h3>
-    <p class="muted">可选历险 · 朋友与已定情者均可参与 · 不作为突破前置</p>
+    <p class="muted">可选历险 · 与道友相约同行</p>
     <div
       v-if="game.companionship.stage !== 'unstarted'"
       class="companion-scene"

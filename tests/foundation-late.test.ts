@@ -57,7 +57,7 @@ it("five consecutive ranks settle actual rewards once, keep separate old results
     })!;
     expect(receipt.title).toContain(foundationBoard(p.state).title);
     expect(receipt.spotlight).toBe(true);
-    expect(receipt.notes.join("")).toContain("均已结算");
+    expect(receipt.notes.join("")).toContain(`首胜灵石 +${10 + (i + 1) * 4}`);
     expect(receipt.next).toContain(
       i === 4 ? "金丹组尚未开放" : challenges[rankIds[i + 1]!].foe,
     );
@@ -81,7 +81,9 @@ it("optional sister and public accountability require actual meeting and consent
   p.act({ kind: "sister" });
   p.act({ kind: "evidence", evidence: "paper" });
   p.act({ kind: "evidence", evidence: "registry" });
-  expect(p.state.foundationJourney.last).toContain("目前能够确认");
+  expect(p.state.foundationJourney.evidence).toEqual(["paper", "registry"]);
+  expect(p.state.foundationJourney.sister).toBe("promised");
+  expect(p.state.foundationJourney.consent).toBe(false);
   p.fight("well");
   p.act({ kind: "inherit", technique: "breath" });
   p.act({ kind: "evidence", evidence: "control" });

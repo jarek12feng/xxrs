@@ -73,7 +73,7 @@ it("reveals current-world geography without pretending distant lands are open or
   expect(catalogue.textContent).toContain("雾岭与雾海");
   expect(catalogue.querySelectorAll("article")).toHaveLength(6);
   expect(catalogue.querySelectorAll("button")).toHaveLength(0);
-  expect(catalogue.textContent).toContain("仙境”是地名");
+  expect(catalogue.textContent).toContain("青玄界外海群岛");
   expect(document.querySelector(".atlas-boundary")?.textContent).toContain(
     "发现新的界域",
   );

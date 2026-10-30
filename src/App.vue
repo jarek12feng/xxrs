@@ -19,6 +19,7 @@ import PreparationValues from "./PreparationValues.vue";
 import LifeReview from "./LifeReview.vue";
 import { automaticPause, type PauseReason } from "./cultivation-feedback";
 import { journeyHorizon } from "./world-ambition";
+import { sisterNote } from "./foundation-journey/narrative";
 import { openingGuide } from "./opening-guide";
 import { expeditionGoal } from "./expedition/progression";
 import { createSoundscape, soundSettings, type SoundMood } from "./audio";
@@ -1480,21 +1481,12 @@ onUnmounted(() => {
           </ul>
           <button @click="dialog = 'skills'">功法研修</button
           ><button @click="dialog = 'inventory'">装备与丹药</button>
-          <h3>尚待核实的线索</h3>
+          <h3>人物消息与线索</h3>
           <ul>
-            <li
-              v-if="
-                game.expedition.cleared === 3 && !game.adventure.mist.station
-              "
-            >
-              郁青姐姐：雾海废驿交接簿尚未核对。
-            </li>
-            <li v-if="game.adventure.mist.station">
-              郁青姐姐：已证实随队救治，平安与归期仍未确认。
-            </li>
+            <li v-if="sisterNote(game)">{{ sisterNote(game) }}</li>
             <li v-if="game.journey.maps.sea < 3">
               <ItemArt id="letter" :size="48" />
-              陆迟家书：可在地图的「道友寻亲」继续；这不是突破的必选条件。
+              陆迟家书：可选寻亲，可在地图的「道友寻亲」继续。
             </li>
             <li v-else>陆迟家书已送达；父亲仍在守引航阵，尚未团聚。</li>
           </ul>

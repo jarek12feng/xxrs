@@ -190,7 +190,7 @@ function act(action: JourneyAction) {
           compact
         />
         <p>
-          独行也能完成主线。寻亲、追责、药庄、雪线、旅亭、道侣和试剑榜均可暂缓。
+          行旅之外，可随时回洞府修行；支线标有“可选”。
         </p>
         <button :disabled="busy" @click="emit('equipment')">
           装配传承与功法
@@ -218,10 +218,10 @@ function act(action: JourneyAction) {
         <p>
           {{
             q.bond === "covenant"
-              ? "已经双方明确同意，结为道侣。"
+              ? "已结为道侣。"
               : q.bond === "promised"
-                ? "已经表达意愿，仍待你明确答应；可以暂缓。"
-                : "结契是可选关系，不增加境界数值。朋友也可以共同准备。"
+                ? "对方正等你的答复，也可以再想一想。"
+                : "尚未结契。可以相约准备远行，也可以继续做朋友。"
           }}
         </p>
         <p>
@@ -232,7 +232,7 @@ function act(action: JourneyAction) {
           }}。闭关与现实离线不会损害关系。
         </p></template
       >
-      <JourneyResult v-if="q.last" :text="q.last" />
+      <JourneyResult v-if="q.last" :text="q.last" expanded />
       <div class="foundation-options">
         <article v-for="option in options" :key="JSON.stringify(option.action)">
           <button

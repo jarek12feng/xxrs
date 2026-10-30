@@ -28,8 +28,7 @@ export function lifeReview(s: State) {
     records.push(
       `你选择了${passSolutions[route].name}。${passSolutions[route].consequence}`,
     );
-  } else if (route === "legacy")
-    records.push("你沿旧路越过山口，没有取得三种新解法的专属能力。");
+  } else if (route === "legacy") records.push("你沿旧路越过青嶂山口。");
   else unfinished.push("青嶂关尚未留下你的归路选择。");
   if (s.adventure.mist.revisited)
     records.push("你带回探灵灯，重访山祠，点亮了归灯。");
@@ -48,14 +47,15 @@ export function lifeReview(s: State) {
     );
   if (q.ferry === 4)
     records.push(
-      `无名渡传承与离渡已完成：${{ open: "脱敏公开追责", escort: "先护送离渡", break: "破禁开放出口", none: "" }[q.ferryOutcome]}。`,
+      `无名渡传承与离渡已完成：${{ open: "隐去病人身份，公开证据", escort: "先护送离渡", break: "破禁开放出口", none: "" }[q.ferryOutcome]}。`,
     );
   if (q.sister === "reunited")
-    records.push("郁青与郁晚舟当面重逢，各自保留工作与去留。");
-  if (q.bond === "covenant")
-    records.push("双方明确答应结为道侣，仍各自修行与远行。");
+    records.push(
+      "郁青与郁晚舟当面重逢，她还在侧院照料伤者，姐弟约好继续通信。",
+    );
+  if (q.bond === "covenant") records.push("你与知己在窗下交换信物，结为道侣。");
   if (q.reunion)
-    records.push("经历了一次正常分别与重逢，确认了共同接应的记号。");
+    records.push("分别远行后，你们在听松重逢，交换了新图或修阵所得。");
   if (q.rescue === 4)
     records.push(
       q.target === "companion"

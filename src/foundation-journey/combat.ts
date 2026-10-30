@@ -1,3 +1,4 @@
+import { sideTrialResult } from "./narrative";
 import type { State } from "../world";
 import { readiness, tacticalExchange } from "../expedition/combat";
 import type { Move } from "../expedition/content";
@@ -58,7 +59,7 @@ export function completeChallenge(s: State) {
   s.stones += e.prize;
   const gain = Math.min(40, 600 - q.cultivation);
   q.cultivation += gain;
-  q.last = `击败${e.foe}。首胜灵石 +${e.prize}，筑基修行 +${gain}（上限600），已实际入袋。`;
+  q.last = `击败${e.foe}。首胜灵石 +${e.prize}，筑基修行 +${gain}（上限600）。`;
   if (rankIds.includes(d.id)) {
     const old = ["未入榜", "第三十", "第十五", "第八", "第三"][
       q.board.wins.length
@@ -69,7 +70,7 @@ export function completeChallenge(s: State) {
       q.board.wins.length - 1
     ];
     s.stones += q.board.wins.length * 4;
-    q.last = `听松试剑榜 · 筑基组：${old} → ${rank}。${e.foe}认下这一场，记名执事当面更换榜签。${d.turn} 合获胜，首胜灵石 +${e.prize + q.board.wins.length * 4}、筑基修行 +${gain}（上限600），均已结算。`;
+    q.last = `听松试剑榜 · 筑基组：${old} → ${rank}。${e.foe}认下这一场，记名执事当面更换榜签。${d.turn} 合获胜，首胜灵石 +${e.prize + q.board.wins.length * 4}、筑基修行 +${gain}（上限600）。`;
     if (q.board.wins.length === 3) {
       s.growth.medicines.healing += 2;
       q.last += "入围前八：回春散 2 瓶已入储物袋。";
@@ -84,27 +85,30 @@ export function completeChallenge(s: State) {
   if (d.id === "well") {
     q.ferry = 2;
     q.last +=
-      "守卫停下，外府传承室已打开。请选择一条修行传承，寻亲不是领取条件。";
+      "石偶垂下手臂，身后的传承室亮了起来。你跨过曾被它封住的石阶，壁上运功痕迹触手可及。";
   }
   if (d.id === "exit") {
     q.ferry = 3;
     q.last +=
-      "渡口执卫退开，名籍支路不再阻止出渡。传承已用于实战，如何交接由你决定。";
+      "你将井中所学运过最后一处滞涩，执卫的枪尖被灵流荡开。祝庭伸手去按渡牌，牌上的禁光却熄了。他看向你，终于收回那张空名籍。船上的人还在等谁先迈出一步。";
   }
-  if (d.id === "estate" || d.id === "snow") q.sides[d.id].step = 2;
+  if (d.id === "estate" || d.id === "snow") {
+    q.sides[d.id].step = 2;
+    q.last += sideTrialResult[d.id];
+  }
   if (d.id === "frontier")
     q.last +=
-      "你救出外缘同行者，把药队备好的补给送进避险处。程砚留守落脚点，现在可以向他学习稳脉，再打开内层。";
+      "外缘石偶倒下时，一名同行者从岩缝里爬出，将另一端归绳交到你手中。你们把补给逐包送进石室，内侧敲了两下石壁，示意收到了。你松手才发现，掌心已被绳勒白；程砚叫你过来，先把那股冲进腕脉的逆流化开。";
   if (d.id === "rescue") {
     q.rescue = 4;
     if (q.target === "companion") q.whereabouts = "rescued";
     q.last +=
       (q.target === "companion"
         ? s.social.gender === "male"
-          ? "沈听澜在内侧将路标连成安全带，你从外侧断开支点。她先带同行者过绳桥，再和你一起撤出。"
-          : "尹照川在内侧轮换备用节点，你按节奏截断外部回流。内部同伴依次退出，他收起最后一块阵盘，与你会合。"
-        : "闻岑在内侧牵绳，你从外侧断开支点；探索队按陶泊安排的船次全部撤回。") +
-      "程砚把落脚点交回药队，伤者在恢复处休养。你们向援手道谢，重新核对远行约定；救人不换取支配别人生活的权利。";
+          ? "沈听澜在内侧将路标连成安全带，你从外侧断开支点。最后一人踏上绳桥时，一块路标石被回流掀走。她没有追，转身沿先前留下的第二道标记绕回。你守住桥头，直到她将手搭在你腕上：“图还能重画。先走。”"
+          : "尹照川在内侧轮换备用节点，你按节奏截断外部回流。最后一人退出后，旧阵盘卡进了裂缝。他伸手去取，你手中的归绳猛地一紧。他看了你一眼，松开阵盘，踏上绳桥：“记下接法就够了。”"
+        : "闻岑在内侧牵绳，你从外侧断开支点；一名队员在断阶前迟疑，闻岑折回接住他的手，将自己的行囊留在石上。你稳住外侧，直到陶泊的船把最后两人接走。") +
+      "程砚把落脚点交回药队。伤者安顿下来后，他请你再留片刻：“接人出来靠的是大家。接下来，该看看你自己的周天了。”";
   }
   q.duel = null;
 }

@@ -292,8 +292,7 @@ const mapImages = {
       </section>
       <template v-else>
         <p class="muted">
-          可选道友任务：查父亲近况、带信回家。成长行路追查药队旧案，这条支线追查守灯人的去向，进度各自保留；功法也可由师门或坊市取得。回春谷
-          → 筑基后的雾岭 →
+          可选寻亲：替陆迟寻找父亲，送一封家书。回春谷 → 筑基后的雾岭 →
           雾海孤灯。每次探索用时一月；先处理待决事件，伤势不超过 2。
         </p>
         <article
@@ -403,7 +402,7 @@ const mapImages = {
       </p>
       <p class="muted">
         灵器可炼制、装配，筑基后可精炼一次。普通灵器闯关 +10%，精炼
-        +32%；针对不同敌人另有作用。一次只装配一件。法宝、灵宝、通天灵宝留待后续境界，不在本版开放。
+        +32%；针对不同敌人另有作用。一次只装配一件。
       </p>
       <article v-for="(r, id) in relics" :key="id" class="map-card">
         <h3>
@@ -441,7 +440,7 @@ const mapImages = {
     <div v-else-if="tab === 'sect'" class="world-content">
       <p class="muted">
         宗门提供师承与通行资格，不是唯一道路。散修也可在坊市学同样的功法，以神识
-        8、心得 2 识路入山。当前角色暂可选择一个堂口。
+        8、心得 2 识路入山。可选择一个堂口拜师。
       </p>
       <article
         v-for="(mentor, branch) in mentors"

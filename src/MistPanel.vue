@@ -570,7 +570,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
         ><button @click="emit('road')">回看第二卷 · 坊市与云路 →</button>
       </div>
       <p class="adventure-footnote">
-        本章入阵是根据证据与准备进行的一次探索判定，不是回合交锋。移动、调查和本章入阵不推进月份；修行按真实月份结算，遇事件暂停。线索、能力与关系自动存档，不因刷新丢失。探灵灯留在当前角色的行囊中。
+        探索与入阵不耗月份，修行仍会推进时间；遇来信或赴约时暂停。进度自动保存。
       </p>
     </section>
   </section>

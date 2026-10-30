@@ -157,7 +157,7 @@ export const places = {
   sea: {
     name: "雾海孤灯",
     goal: "查明那盏为归人点亮的灯",
-    reward: "父亲来信 · 本版探索终章",
+    reward: "父亲来信 · 送信归家",
     realm: 1,
   },
 } as const;
@@ -401,7 +401,7 @@ export function challengeDetails(s: State, p: TrialPlace) {
 }
 export function forgeError(s: State, r: Relic) {
   if (!Object.hasOwn(relics, r)) return "未知灵器";
-  if (s.journey.relics[r] >= 2) return "已精炼至本版上限";
+  if (s.journey.relics[r] >= 2) return "已精炼至二阶";
   if (s.journey.relics[r] === 1 && s.realm !== 1) return "筑基后可精炼";
   if (s.study < 2 || s.stones < 24 || s.herbs < 4)
     return "需心得 2、灵石 24、灵草 4";

@@ -115,13 +115,13 @@ const person = computed(() =>
         </p>
       </div>
       <p v-if="game.adventure.step === 'ferry'" class="opening-note">
-        先找线索，再救人。不必先练满修为；这段路会教你调查、准备和做决定。
+        先检查药篓，也可向陆迟询问。找到线索后前往药庐。
       </p>
       <p v-if="game.adventure.step === 'apothecary'" class="opening-note">
         三种方法都能救人，也都可以改选。配药会练出心得，同行会练出神识，护体会练出根基。先选一种，读完练习提示再动手。
       </p>
       <p v-if="game.adventure.step === 'home'" class="opening-note">
-        这一选择会留在本世。你可以先读清两种后果，决定后才结算归家奖励。
+        留下成株可学护根，带药下山可救急。两种选择都能送药工平安回家。
       </p>
       <div class="adventure-actions">
         <button
