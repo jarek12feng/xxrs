@@ -9,6 +9,7 @@ function met() {
     activity: "gather",
     months: 3,
   });
+  s.crafted = 1; // Existing recipe retained from an earlier save.
   return send(s, {
     type: "choose",
     instanceId: s.pending!.id,

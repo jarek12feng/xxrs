@@ -1,3 +1,4 @@
+import { foundationStep } from "../tools/foundation-playthrough";
 import { expect, it } from "vitest";
 import {
   createGame,
@@ -375,28 +376,7 @@ it.each(["art", "relic", "friend"] as const)(
       p.road(route);
       for (let i = 0; i < 180 && !p.state.journey.settled; i++) {
         const s = p.state;
-        if (s.pending)
-          p.send({
-            type: "choose",
-            instanceId: s.pending.id,
-            option: {
-              meeting: "promise",
-              letter: "listen",
-              visit: "herbs",
-              departure: "go",
-              crossing: "detour",
-              relic: "gift",
-            }[s.pending.kind],
-          });
-        else if (s.injury)
-          p.send({ type: "advance", activity: "rest", months: 12 });
-        else if (s.qi >= 360) p.send({ type: "break", pill: s.pills > 0 });
-        else
-          p.send({
-            type: "advance",
-            activity: s.realm ? "work" : "cultivate",
-            months: 12,
-          });
+        p.send(foundationStep(s));
       }
       expect(p.state.journey.settled).toBe(true);
       for (let i = 0; i < 60; i++) {

@@ -1,3 +1,4 @@
+import { foundationStep } from "./foundation-playthrough";
 // Developer-only: generate an importable checkpoint through public game commands.
 // Bundle with esbuild for Node, then pass a new output path (never overwrites).
 import { writeFileSync } from "node:fs";
@@ -42,29 +43,7 @@ for (const action of [
   "friend",
 ] as RoadAction[])
   road(action);
-while (!state.journey.settled) {
-  if (state.pending)
-    send({
-      type: "choose",
-      instanceId: state.pending.id,
-      option: {
-        meeting: "promise",
-        letter: "listen",
-        visit: "herbs",
-        departure: "go",
-        crossing: "detour",
-        relic: "gift",
-      }[state.pending.kind],
-    });
-  else if (state.injury) send({ type: "advance", activity: "rest", months: 3 });
-  else if (state.qi >= 360) send({ type: "break", pill: state.pills > 0 });
-  else
-    send({
-      type: "advance",
-      activity: state.realm ? "work" : "cultivate",
-      months: 12,
-    });
-}
+while (!state.journey.settled) send(foundationStep(state));
 while (state.injury) send({ type: "advance", activity: "rest", months: 3 });
 while (state.sense < 12)
   send({ type: "advance", activity: "meditate", months: 3 });

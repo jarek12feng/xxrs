@@ -24,11 +24,13 @@ export function luchiView(
           ? "relieved"
           : "base";
   const scene =
-    kind === "meeting"
-      ? "/characters/luchi-ferry.png"
-      : kind === "relic"
-        ? "/characters/luchi-relic.png"
-        : null;
+    s.story.luchi === "distant"
+      ? null
+      : kind === "meeting"
+        ? "/characters/luchi-ferry.png"
+        : kind === "relic"
+          ? "/characters/luchi-relic.png"
+          : null;
   const whereabouts =
     kind === "meeting"
       ? metOnRoad
@@ -39,7 +41,9 @@ export function luchiView(
         : s.story.luchi === "stranger"
           ? "听松山下 · 渡口未逢"
           : s.story.luchi === "foundation"
-            ? "听松山 · 守在你的洞府外"
+            ? s.realm
+              ? "听松山 · 出关相叙后整理行装"
+              : "听松山 · 守在你的洞府外"
             : s.story.luchi === "distant"
               ? "山外 · 去向不明"
               : s.story.choice === "self"
@@ -63,14 +67,18 @@ export function luchiView(
         ? "“上次一起救人的事，我记得。这封家书，想再托你一回。”"
         : "渡口有人倚剑而坐，似乎在等一封回信。"
       : s.story.luchi === "foundation"
-        ? "“这回，你安心闭关。我在门外。”"
-        : s.story.choice === "self"
-          ? "“我先回家。等你出关，替我去山里看一眼。”"
-          : kind === "visit"
-            ? "“上回是你帮我。这次，换我。”"
-            : s.memories.confided
-              ? "“我想让那盏灯，等到一个归来的人。”"
-              : "“第三十六个月，我在渡口等你。”";
+        ? s.realm
+          ? "“如今你也筑基了。下次相见，再看看彼此走了多远。”"
+          : "“这回，你安心闭关。我在门外。”"
+        : s.story.luchi === "distant"
+          ? "渡口旧约已经错过，他的去向只剩山下传来的消息。"
+          : s.story.choice === "self"
+            ? "“我先回家。等你出关，替我去山里看一眼。”"
+            : kind === "visit"
+              ? "“上回是你帮我。这次，换我。”"
+              : s.memories.confided
+                ? "“我想让那盏灯，等到一个归来的人。”"
+                : "“第三十六个月，我在渡口等你。”";
   return {
     portrait: "/characters/luchi-" + portrait + ".png",
     scene,

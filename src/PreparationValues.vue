@@ -19,7 +19,7 @@ const choices = computed(() => preparationValues(props.game, props.pill));
       </li>
     </ul>
     <p>
-      各项单独对照当前丹药勾选与属性，增幅不能直接相加；成功率最多
+      各项单独对照当前属性与必需丹药，增幅不能直接相加；成功率最多
       95%。这里只比较突破把握，养伤与固本也影响交锋。跨月可能遇到剧情或约期，操作前仍需确认。
     </p>
   </details>

@@ -1,4 +1,5 @@
 import { originNotes } from "./companion-origins";
+import { foundationPassageScene, foundationReunion } from "./foundation-scenes";
 import { actionProcess } from "./action-process";
 import {
   adventureScenes,
@@ -275,7 +276,12 @@ export function enrichReceipt(
     if (intent.type === "mist" && ["steady", "pursue"].includes(intent.action))
       r.scene.unlocks.push("已选择入阵方案 · 真正入阵时才扣补给");
   }
-  if (intent.type === "choose" && before.pending && after.status !== "dead") {
+  if (
+    intent.type === "choose" &&
+    before.pending &&
+    after.status !== "dead" &&
+    before.story.choice !== "missed"
+  ) {
     const kind = before.pending.kind;
     const response =
       kind === "meeting"
@@ -293,7 +299,9 @@ export function enrichReceipt(
                 ? "那就各自保重。这一趟，我自己走。"
                 : "走吧。遇到危险，我们先商量，不把谁留在后面。"
               : kind === "crossing"
-                ? "多亏你没有把我留在阵外。前面的路，我们继续一起看。"
+                ? intent.option === "withdraw"
+                  ? "我先走一程。你准备好后再来，别勉强闯阵。"
+                  : "门开了。你先稳住气息，我去看看里面。"
                 : intent.option === "gift"
                   ? "这枚丹药的分量，我记住了。等你叩关，我会在一旁护法。"
                   : "丹药收好，别受潮。你闭关那日，给我留个信。";
@@ -309,6 +317,36 @@ export function enrichReceipt(
       after.story.luchi === "foundation"
     )
       r.unlocks.push("陆迟已筑基 · 突破护法已生效");
+  }
+  if (
+    intent.type === "choose" &&
+    before.pending?.kind === "crossing" &&
+    after.pending?.kind === "relic"
+  ) {
+    r.process = foundationPassageScene(after);
+    r.title = r.process?.title || "走过石阵";
+    r.spotlight = true;
+    r.next = "石门已开，丹药还在匣中。接下来决定归属，再回山准备突破。";
+  }
+  if (
+    intent.type === "choose" &&
+    before.story.choice === "missed" &&
+    before.pending
+  ) {
+    r.person = undefined;
+    if (before.pending.kind === "relic") r.title = "独自取丹，丹方随身";
+    if (intent.option === "withdraw") r.title = "退出石阵，留待再来";
+  }
+  if (before.realm === 0 && after.realm === 1) {
+    const reunion = foundationReunion(after);
+    if (reunion) {
+      r.person = {
+        name: "陆迟",
+        portrait: luchiView(after).portrait,
+        response: reunion,
+        relation: "赠丹与护关，都已兑现",
+      };
+    }
   }
   if (intent.type === "choose" && before.social.scene) {
     r.returnTo = "relationship";

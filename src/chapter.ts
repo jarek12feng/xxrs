@@ -1,4 +1,17 @@
 import {
+  hasFoundationRecipe,
+  breakthroughError,
+  relicJourneyError,
+  foundationGoal,
+  foundationPassages,
+} from "./foundation";
+export {
+  hasFoundationRecipe,
+  breakthroughError,
+  relicJourneyError,
+  foundationGoal,
+} from "./foundation";
+import {
   validState as validLegacy,
   type State as LegacyState,
 } from "./legacy-v1";
@@ -40,7 +53,7 @@ export const paths = {
     label: "采药 · 炼丹 · 济人",
     gain: 10,
     description:
-      "用修行时间培育灵草，亲手炼制筑基丹。丹药与救人，都有可掌握的来路。",
+      "用修行时间培育灵草，闯过遗府取得丹方后可自行补丹。灵草也能解瘴救人。",
   },
   sword: {
     name: "青锋剑道",
@@ -61,7 +74,8 @@ export const inheritances: Record<
   none: { name: "白纸新生", description: "不带传承，重新选择这一世的道路。" },
   herbal: {
     name: "长春丹札",
-    description: "初始灵草 +4；跨路线采药炼丹。亲手炼丹后结算解锁。",
+    description:
+      "初始灵草 +4；跨路线采药。各道途取得遗府丹方后均可补炼。亲手炼丹后结算解锁。",
   },
   sword: {
     name: "青锋残谱",
@@ -126,6 +140,7 @@ export type Command =
   | { id: string; type: "prepare"; kind: "refine" | "retreat" }
   | { id: string; type: "choose"; instanceId: string; option: string }
   | { id: string; type: "break"; pill: boolean }
+  | { id: string; type: "revisitRelic" }
   | {
       id: string;
       type: "next";
@@ -291,8 +306,7 @@ export function nextGoal(s: State) {
     return `第二十四月，陆迟将带回山外消息；还有 ${24 - s.month} 个月。第三十六月仍须赴约。`;
   if (s.story.stage === "waiting")
     return `第三十六个月与陆迟会合，还剩 ${Math.max(0, 36 - s.month)} 个月。闭关六个月若跨过约期，将失约。`;
-  if (s.realm === 0)
-    return "青石遗府的约定已了结，寻父仍待新线索。积满修为、准备突破，再走山外的路。";
+  if (s.realm === 0) return foundationGoal(s);
   return "筑基篇即将结算。";
 }
 export function eventView(s: State): EventView | null {
@@ -364,7 +378,7 @@ export function eventView(s: State): EventView | null {
     case "departure":
       return {
         title: "三年之约",
-        body: `陆迟已经在渡口等你。${s.realm === 1 ? "你已筑基，可以从容护送他越过遗府石阵。" : "你尚在炼气。遗府有石阵与毒瘴，准备的灵草或剑意将派上用场。"}现在出发，往返需三个月；留下则永远错过本世遗府。`,
+        body: `陆迟已经在渡口等你。${s.realm === 1 ? "你已筑基，可以从容护送他越过遗府石阵。" : "你尚在炼气。遗府有石阵与毒瘴，准备的灵草或剑意将派上用场。"}现在出发，往返需三个月；留下会失去同行与护法，但此后仍可独自探府。`,
         options: [
           o(
             "go",
@@ -374,59 +388,46 @@ export function eventView(s: State): EventView | null {
           o(
             "stay",
             "留在洞府，专心修行",
-            "失约 · 陆迟独行，无丹药与护法；仍可自行筑基",
+            "失约 · 陆迟独行，无护法；之后可独自重返遗府取丹",
           ),
         ],
       };
-    case "crossing":
+    case "crossing": {
+      const alone = s.story.choice === "missed";
       return {
         title: "青石阵前",
-        body: "遗府石门外，毒瘴与剑阵交错。陆迟旧伤复发，必须决定如何带他过去。所有风险都摆在眼前。",
-        options: [
-          ...(s.realm === 1
-            ? [o("protect", "以筑基修为护送", "无伤通过 · 信任 +1")]
-            : []),
-          ...(s.inherited === "bond"
-            ? [o("memory", "沿梦中的旧路绕行", "前缘专属 · 无伤通过 · 信任 +1")]
-            : []),
+        body:
+          (alone
+            ? "你独自站在遗府石门前，毒瘴与剑阵封住去路。"
+            : "遗府石门外，毒瘴与剑阵交错。陆迟旧伤复发，你们需要合力过阵。") +
+          "至少需要 180 修为稳住灵息，再选一种手段破阵。" +
+          (alone
+            ? "准备不足可退出休整，再独自回来。"
+            : "准备不足可以退出，陆迟会先行；此后仍可独自取丹，但不再有赠丹护法的机会。"),
+        options: foundationPassages(s).concat([
           o(
-            "endure",
-            "以山岳根骨护住陆迟",
-            "根骨至少 8 · 伤势 +1 · 信任 +1",
-            s.root < 8 ? "需要根骨 8" : undefined,
+            "withdraw",
+            "退出石阵，回去准备",
+            alone
+              ? "不耗月份、不发奖励；准备好后可独自再来"
+              : "不耗月份、不发奖励；陆迟先行，失去护法机会，之后可独自重返遗府",
           ),
-          o(
-            "sense",
-            "以神识窥见阵眼",
-            "神识至少 8 · 无伤通过 · 信任 +1",
-            s.sense < 8 ? "需要神识 8" : undefined,
-          ),
-          o(
-            "decipher",
-            "参透石门残诀",
-            "悟性至少 8、研读心得 2 · 无伤通过 · 信任 +1",
-            s.wisdom < 8 || s.study < 2 ? "需要悟性 8 与心得 2" : undefined,
-          ),
-          o(
-            "medicine",
-            "以灵草解瘴",
-            "灵草 −4 · 无伤通过 · 信任 +1",
-            s.herbs < 4 ? "需要 4 株灵草" : undefined,
-          ),
-          o(
-            "blade",
-            "以剑意破阵",
-            "剑意至少 4 · 伤势 +1 · 信任 +1",
-            s.mastery < 4 ? "需要 4 点剑意" : undefined,
-          ),
-          o(
-            "detour",
-            "搀扶陆迟，强行绕过",
-            "无需准备 · 伤势 +2 · 后续可养伤恢复",
-          ),
-        ],
+        ]),
       };
+    }
     case "relic":
+      if (s.story.choice === "missed")
+        return {
+          title: "独入遗府",
+          body: "石阵散去，石匣中留着一枚筑基丹与刻在匣底的丹方。你拓下丹方，从此不必为每次叩关再闯此阵。这里没有等候你的故人，陆迟早已走上自己的路。",
+          options: [
+            o(
+              "self",
+              "取丹，拓下丹方",
+              "筑基丹 +1 · 解锁补炼 · 一次护脉丹纹；旧约不恢复",
+            ),
+          ],
+        };
       return {
         title:
           s.realm === 1
@@ -439,17 +440,17 @@ export function eventView(s: State): EventView | null {
             ? "石匣里只有一枚筑基丹。你已筑基，陆迟却仍困在天关之前。将丹药赠他，可以让故人与你并肩；也可以留下丹药，各赴前程。"
             : s.pills > 0
               ? `你摸到行囊里已有的 ${s.pills} 枚筑基丹。这枚遗府丹不再是你唯一的机会。陆迟看见你的丹瓶，松开了紧握石匣的手：“若你愿意，我想先过天关，再护你一程。”你可以把它交给他，或留作自己再试的储备。`
-              : "石匣里只有一枚筑基丹。陆迟把石匣推到你面前：“一路承蒙照顾，你来决定。”丹药给你，可以帮助自己的突破；给他，他将先一步筑基，并为你护法。",
+              : "石匣里只有一枚筑基丹，匣底刻着可供补炼的丹方。你已将丹方拓下，剑修也可依方备药开炉。陆迟把石匣推到你面前：“一路承蒙照顾，你来决定。”丹药给你，可以先叩天关；给他，他将先一步筑基，并为你护法，你则需再炼一枚。",
         options: [
           o(
             "self",
             "留下筑基丹，自寻长生",
-            "筑基丹 +1 · 一次护脉丹纹（失败保留九成、不减寿） · 无陆迟护法",
+            "筑基丹 +1 · 丹方解锁 · 一次护脉丹纹（失败保留九成、不减寿） · 无陆迟护法",
           ),
           o(
             "gift",
             "将丹药交给陆迟",
-            "不获得丹药 · 陆迟筑基后护法 +10%（信任达 4 则 +15%）",
+            "不获得成丹 · 丹方解锁，可购草补炼 · 陆迟筑基后护法 +10%（信任达 4 则 +15%）",
           ),
         ],
       };
@@ -473,7 +474,9 @@ function finish(s: State, dead = false) {
     : s.story.choice === "gift"
       ? "双星照渡：你与陆迟都已筑基，今后可并肩而行。那句三年之约，终于有了回音。"
       : s.story.choice === "self"
-        ? "独剑入云：你以孤丹叩开天关，记下护脉丹诀。陆迟留下家书，决定先回乡陪母亲过冬；你答应将来替他寻访父亲的下落。"
+        ? s.story.luchi === "distant"
+          ? "独剑入云：你独自闯过遗府，以孤丹叩开天关。丹方与护脉丹纹已经记下，渡口的旧约却无法重来。"
+          : "独剑入云：你以孤丹叩开天关，记下护脉丹诀。陆迟留下家书，决定先回乡陪母亲过冬；你答应将来替他寻访父亲的下落。"
         : "山门独成：你错过了渡口之约，以自己的准备筑基。山下那道身影，已渐行渐远。";
   record(s, s.result, "major");
 }
@@ -487,7 +490,7 @@ function missed(s: State) {
   s.pending = null;
   record(
     s,
-    "约期已过。陆迟独自离开渡口，本世遗府关闭。此后你只能靠自己准备突破。",
+    "约期已过，陆迟独自离开渡口。同行的约定已经错过；你仍可准备好后独自重返青石遗府取丹。",
     "warning",
   );
 }
@@ -544,7 +547,7 @@ export function actionError(s: State, activity: Activity) {
 }
 export function preparationError(s: State, kind: "refine" | "retreat") {
   if (kind === "refine") {
-    if (!canGather(s)) return "需长春医道或长春丹札";
+    if (!hasFoundationRecipe(s)) return "先闯过青石遗府，取得筑基丹方";
     const cost = refineCost(s);
     if (s.herbs < cost.herbs || s.stones < cost.stones)
       return `需要灵草 ${cost.herbs}、灵石 ${cost.stones}`;
@@ -611,6 +614,18 @@ export function dispatch(input: State, c: Command): State {
     return n;
   }
   if (s.status !== "alive") return input;
+  if (c.type === "revisitRelic") {
+    if (relicJourneyError(s)) return input;
+    s.story.stage = "crossing";
+    decision(s, "crossing");
+    record(
+      s,
+      s.story.choice === "missed"
+        ? "你独自重返青石遗府。旧约已失，石阵仍在，能否取丹要靠自己的准备。"
+        : "准备妥当后，你与陆迟重新来到青石阵前。",
+    );
+    return accept();
+  }
   if (c.type === "choose") {
     if (!s.pending || s.pending.id !== c.instanceId) return input;
     const option = eventView(s)?.options.find((o) => o.id === c.option);
@@ -668,6 +683,18 @@ export function dispatch(input: State, c: Command): State {
         record(s, "你准时赴约，与陆迟进入青石遗府。");
       }
     } else if (kind === "crossing") {
+      if (c.option === "withdraw") {
+        const alone = s.story.choice === "missed";
+        if (alone) s.story.stage = "resolved";
+        else missed(s);
+        record(
+          s,
+          alone
+            ? "你独自退出石阵。丹药尚未取得，准备好后仍可再来。"
+            : "你暂退石阵，陆迟先行。丹药尚未取得；准备好后可独自再来，旧约不会恢复。",
+        );
+        return accept();
+      }
       if (c.option === "medicine") s.herbs -= 4;
       s.injury = Math.min(
         6,
@@ -678,12 +705,14 @@ export function dispatch(input: State, c: Command): State {
               ? 1
               : 0),
       );
-      if (c.option !== "detour") s.story.trust = Math.min(6, s.story.trust + 1);
+      if (s.story.choice !== "missed")
+        s.story.trust = Math.min(6, s.story.trust + 1);
       s.memories.crossing = c.option;
       record(s, `${option.label}：${option.hint}。`);
       s.story.stage = "relic";
       decision(s, "relic");
     } else {
+      const alone = s.story.choice === "missed";
       s.story.choice = c.option === "gift" ? "gift" : "self";
       s.story.stage = "resolved";
       if (c.option === "gift") {
@@ -701,13 +730,20 @@ export function dispatch(input: State, c: Command): State {
         s.ward = true;
         record(
           s,
-          "你留下孤丹并拓下匣底护脉丹纹：可抵消一次突破失败的减寿，保留九成修为。陆迟说：“那我先回家。等你出关，替我去山里看一眼。”",
+          alone
+            ? "你独自取出筑基丹，拓下丹方与护脉丹纹：可抵消一次失败的减寿，保留九成修为。旧约已失，丹方留待日后补炼。"
+            : "你留下孤丹并拓下匣底丹方与护脉丹纹：可抵消一次突破失败的减寿，保留九成修为。陆迟说：“那我先回家。等你出关，替我去山里看一眼。”",
           "major",
         );
       }
       for (let i = 0; i < 3; i++) if (!month(s)) break;
       if (s.status === "alive") {
-        record(s, "三个月后，你们离开遗府，回到听松山。");
+        record(
+          s,
+          alone
+            ? "三个月后，你独自离开遗府，带着丹方回到听松山。"
+            : "三个月后，你们带着丹方离开遗府，回到听松山。若需补丹，两条道途都可凭方炼制。",
+        );
         maybeFinish(s);
       }
     }
@@ -800,7 +836,7 @@ export function dispatch(input: State, c: Command): State {
     return accept();
   }
   if (c.type === "break") {
-    if (s.realm !== 0 || s.qi < MAX_QI || (c.pill && s.pills < 1)) return input;
+    if (breakthroughError(s) || !c.pill) return input;
     const chance = breakthroughDetails(s, c.pill).chance,
       roll = Math.floor(rng(s) * 100) + 1;
     if (c.pill) s.pills--;

@@ -130,15 +130,17 @@ export function exchangePreview(s: State, move: Move) {
 }
 
 export function moveHint(s: State, move: Move) {
-  if (s.expedition.duel && s.expedition.cleared === 2) {
+  if (s.expedition.duel) {
     const p = exchangePreview(s, move)!;
     return (
       `伤敌 ${p.damage} / 承伤 ${p.incoming}${p.healing ? ` / 耗草 ${p.herbs} 回 ${p.healing}` : ""}；` +
-      (move === "guard"
-        ? "蓄势，下合反击 +10"
-        : move === "discern"
-          ? "探阵，下合增伤减伤"
-          : "立即抢攻")
+      (s.expedition.cleared === 2
+        ? move === "guard"
+          ? "蓄势，下合反击 +10"
+          : move === "discern"
+            ? "探阵，下合增伤减伤"
+            : "立即抢攻"
+        : p.note || (p.correct ? "看准来招，应对得当" : "未破来招，权衡攻守"))
     );
   }
   if (s.journey.main === "blade" && move === "strike")

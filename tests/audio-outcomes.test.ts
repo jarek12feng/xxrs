@@ -23,9 +23,10 @@ it("real breakthrough failure is identified even at the injury cap", () => {
   a.injury = 6;
   for (const seed of [123456, 987654321, 2147483647, 4294967295]) {
     a.seed = seed;
-    const b = dispatch(a, { id: "failure", type: "break", pill: false });
+    a.pills = 1;
+    const b = dispatch(a, { id: "failure", type: "break", pill: true });
     if (b !== a && b.realm === 0) {
-      expect(actionSound(a, b, { type: "break", pill: false })).toBe("failure");
+      expect(actionSound(a, b, { type: "break", pill: true })).toBe("failure");
       return;
     }
   }

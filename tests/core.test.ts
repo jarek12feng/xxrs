@@ -1,5 +1,7 @@
+import * as world from "../src/core";
+import { foundationStep } from "../tools/foundation-playthrough";
 import { describe, it, expect } from "vitest";
-// Frozen v3 chapter contract; v4 integration and world replays live in world.test.ts.
+// Chapter rules plus current-world public-command journey replays.
 import {
   createGame,
   dispatch,
@@ -32,7 +34,8 @@ function settleMid(s: State) {
 function relic(path: Path = "wood") {
   let s = meeting(path);
   while (s.month < 36) s = settleMid(advance(s, 12));
-  return choose(choose(s, "go"), "detour");
+  s.qi = 180;
+  return choose(choose(s, "go"), "medicine");
 }
 describe("筑基篇", () => {
   it("pauses at meeting, rejects stale choices and duplicate commands", () => {
@@ -66,6 +69,7 @@ describe("筑基篇", () => {
   });
   it("alchemy spends resources and exactly three months", () => {
     let s = advance(meeting(), 3, "gather");
+    s.story.choice = "gift"; // Recipe earned in the relic, isolated alchemy fixture.
     const n = run(s, { type: "prepare", kind: "refine" });
     expect(n.month).toBe(s.month + 3);
     expect(n.herbs).toBe(0);
@@ -109,6 +113,7 @@ describe("筑基篇", () => {
     ).toBeTruthy();
     expect(choose(s, "medicine")).toBe(s);
     s.herbs = 4;
+    s.qi = 180;
     const n = choose(s, "medicine");
     expect(n.herbs).toBe(0);
     expect(n.injury).toBe(0);
@@ -139,7 +144,9 @@ describe("筑基篇", () => {
     let s = choose(relic(), "gift");
     s.qi = 360;
     s.seed = 1;
-    s = run(s, { type: "break", pill: false });
+    s.herbs = 6;
+    s = run(s, { type: "prepare", kind: "refine" });
+    s = run(s, { type: "break", pill: true });
     expect(s.status).toBe("complete");
     expect(s.result).toContain("双星");
     s = run(s, { type: "next", path: "sword", inheritance: "bond" });
@@ -149,6 +156,7 @@ describe("筑基篇", () => {
     expect(s.story.trust).toBe(3);
     while (s.month < 36) s = settleMid(advance(s, 12));
     s = choose(s, "go");
+    s.qi = 180;
     expect(choose(s, "memory").injury).toBe(0);
   });
   it("failure consumes a pill and retains 70% qi", () => {
@@ -199,45 +207,18 @@ describe("筑基篇", () => {
   });
   it("replays 120 complete runs deterministically across routes and endings", () => {
     function simulate(path: Path, seed: number, choice: string) {
-      let s = createGame("重放", path, seed);
+      let s = world.createGame("重放", path, seed);
       let step = 0;
-      const command = (intent: Intent) => {
-        s = dispatch(s, { ...intent, id: String(++step) });
-        expect(validState(s)).toBe(true);
-      };
-      while (s.status === "alive" && step < 400) {
-        if (s.pending) {
-          const k = s.pending.kind;
-          command({
-            type: "choose",
-            instanceId: s.pending.id,
-            option:
-              k === "letter"
-                ? "listen"
-                : k === "visit"
-                  ? "herbs"
-                  : k === "meeting"
-                    ? "aid"
-                    : k === "departure"
-                      ? choice === "missed"
-                        ? "stay"
-                        : "go"
-                      : k === "crossing"
-                        ? "detour"
-                        : choice,
-          });
-        } else if (s.injury)
-          command({ type: "advance", activity: "rest", months: 1 });
-        else if (s.qi === 360) command({ type: "break", pill: s.pills > 0 });
-        else
-          command({
-            type: "advance",
-            activity: s.realm === 1 ? "work" : "cultivate",
-            months: 12,
-          });
+      while (!s.journey.settled && s.status === "alive" && step < 400) {
+        let c = foundationStep(s, choice === "gift");
+        if (choice === "missed" && s.pending?.kind === "departure")
+          c = { type: "choose", instanceId: s.pending.id, option: "stay" };
+        s = world.dispatch(s, { ...c, id: String(++step) });
+        expect(world.validState(s)).toBe(true);
       }
-      expect(s.status).toBe("complete");
-      expect(s.story.choice).toBe(choice);
+      expect(s.journey.settled).toBe(true);
+      expect(s.story.choice).toBe(choice === "missed" ? "self" : choice);
+      if (choice === "missed") expect(s.story.luchi).toBe("distant");
       return s;
     }
     for (const path of ["wood", "sword"] as const)

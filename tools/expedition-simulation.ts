@@ -1,3 +1,4 @@
+import { foundationStep } from "./foundation-playthrough";
 import {
   createGame,
   dispatch,
@@ -42,34 +43,10 @@ export function expeditionSession(
   for (const action of ["deliver", "pass", "inspect", "camp"] as RoadAction[])
     send({ type: "road", action });
   function resolve() {
-    while (state.pending)
-      send({
-        type: "choose",
-        instanceId: state.pending.id,
-        option: {
-          meeting: "promise",
-          letter: "listen",
-          visit: "herbs",
-          departure: "go",
-          crossing: "detour",
-          relic: "gift",
-        }[state.pending.kind],
-      });
+    while (state.pending) send(foundationStep(state));
   }
   function prepare() {
-    while (!state.journey.settled) {
-      if (state.pending) resolve();
-      else if (state.injury)
-        send({ type: "advance", activity: "rest", months: 3 });
-      else if (state.qi >= 360 && !state.realm)
-        send({ type: "break", pill: state.pills > 0 });
-      else
-        send({
-          type: "advance",
-          activity: state.realm ? "work" : "cultivate",
-          months: 12,
-        });
-    }
+    while (!state.journey.settled) send(foundationStep(state));
     while (state.injury) send({ type: "advance", activity: "rest", months: 3 });
     while (state.sense < 6)
       send({ type: "advance", activity: "meditate", months: 1 });

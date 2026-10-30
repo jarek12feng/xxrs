@@ -156,7 +156,9 @@ export function growthGoals(s: State): string[] {
     goals.push("装备：筑基后精炼灵器，强化交锋中的攻守效果。");
   if (s.injury) goals.push("丹药：回春散可恢复伤势；无材料时可免费静养。");
   if (!s.realm)
-    goals.push(`境界：修为 ${s.qi}/360；固本、心得、筑基丹都能改善突破准备。`);
+    goals.push(
+      `境界：修为 ${s.qi}/360；先闯遗府备齐筑基丹，再以固本与疗伤提高把握。`,
+    );
   else {
     const remaining = [
       s.expedition.accepted && s.expedition.cleared < 3 ? "守阵交锋" : "",

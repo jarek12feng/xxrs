@@ -12,6 +12,8 @@ import { defineStore } from "pinia";
 import { presences } from "./landmarks";
 import { actionSound } from "./action-sound";
 import { createMusicPlayer, sceneMusic, musicNames } from "./local-music";
+import FoundationJourney from "./FoundationJourney.vue";
+import { breakthroughError } from "./foundation";
 import PreparationValues from "./PreparationValues.vue";
 import LifeReview from "./LifeReview.vue";
 import { automaticPause, type PauseReason } from "./cultivation-feedback";
@@ -234,7 +236,6 @@ async function followOpening() {
       openPanel("sect");
       break;
     case "break":
-      pill.value = !!game.value?.pills;
       openPanel("break");
       break;
   }
@@ -301,8 +302,7 @@ const ready = ref(false),
   activity = ref<Activity>("cultivate"),
   notice = ref(""),
   saved = ref(""),
-  dialog = ref(""),
-  pill = ref(false);
+  dialog = ref("");
 watch(
   () => !!game.value?.social.arena.duel,
   (active) => {
@@ -328,7 +328,6 @@ function followPause() {
     ui.history = false;
   } else if (target === "cultivate") view.value = "cultivation";
   else {
-    if (target === "break") pill.value = !!game.value?.pills;
     openPanel(target);
   }
 }
@@ -356,6 +355,11 @@ const eventScene = computed(() =>
 );
 const costs = computed(() => (game.value ? refineCost(game.value) : null));
 const fileInput = ref<HTMLInputElement>();
+const soloRelic = computed(
+  () =>
+    game.value?.story.luchi === "distant" &&
+    ["crossing", "relic"].includes(game.value?.pending?.kind ?? ""),
+);
 const event = computed(() => (game.value ? eventView(game.value) : null));
 const systemOverlay = computed(() =>
   ["system", "saves", "settings", "backup"].includes(dialog.value),
@@ -376,7 +380,7 @@ const modal = computed(() =>
           : dialog.value,
 );
 const details = computed(() =>
-  game.value ? breakthroughDetails(game.value, pill.value) : null,
+  game.value ? breakthroughDetails(game.value, true) : null,
 );
 const activities: { id: Activity; name: string; hint: string }[] = [
   { id: "cultivate", name: "吐纳", hint: "根骨影响吐纳速度" },
@@ -563,8 +567,11 @@ async function prepare(kind: "refine" | "retreat") {
   }
   await act({ type: "prepare", kind });
 }
+function foundationCommand(intent: Intent) {
+  return intent.type === "prepare" ? prepare(intent.kind) : act(intent);
+}
 async function commitBreak() {
-  if (await act({ type: "break", pill: pill.value })) dialog.value = "";
+  if (await act({ type: "break", pill: true })) dialog.value = "";
 }
 async function nextLife() {
   if (
@@ -1035,10 +1042,7 @@ onUnmounted(() => {
           @cultivate="view = 'cultivation'"
           @mist="openMist"
           @map="openPanel('world')"
-          @breakthrough="
-            pill = game.pills > 0;
-            dialog = 'break';
-          "
+          @breakthrough="dialog = 'break'"
         />
         <AdventurePanel
           v-else-if="!ui.history && view === 'story'"
@@ -1110,7 +1114,7 @@ onUnmounted(() => {
                     ? `还差 ${MAX_QI - game.qi} 修为可尝试筑基。`
                     : "修为已满，可查看把握后决定是否突破。"
                 }}
-                炼丹、固本和护法可提高把握，不要求全部完成。伤势会降低成功率，可先静养。
+                筑基丹是必需品；固本与护法可进一步提高把握，不要求全部完成。伤势会降低成功率，可先静养。
               </p>
               <div class="activity-grid">
                 <button
@@ -1190,13 +1194,15 @@ onUnmounted(() => {
                   }}</small>
                 </button>
               </div>
+              <FoundationJourney
+                :game="game"
+                :busy="ui.busy || ui.running"
+                @command="foundationCommand"
+              />
               <button
                 class="break-button full"
                 :disabled="ui.busy || game.realm === 1 || game.qi < MAX_QI"
-                @click="
-                  pill = game.pills > 0;
-                  dialog = 'break';
-                "
+                @click="dialog = 'break'"
               >
                 叩问天关 · 尝试筑基 ↗
               </button>
@@ -1592,9 +1598,13 @@ onUnmounted(() => {
           :title="event.title"
           eyebrow="前缘 · 时光暂驻"
           :body="event.body"
-          :portrait="heart?.portrait ?? npc?.portrait"
-          :speaker="heart?.name ?? '陆迟'"
-          :quote="heart?.title ?? npc?.quote.replace(/[“”]/g, '')"
+          :portrait="soloRelic ? null : (heart?.portrait ?? npc?.portrait)"
+          :speaker="soloRelic ? undefined : (heart?.name ?? '陆迟')"
+          :quote="
+            soloRelic
+              ? undefined
+              : (heart?.title ?? npc?.quote.replace(/[“”]/g, ''))
+          "
           heading-id="modal-title"
           compact
         />
@@ -1729,7 +1739,7 @@ onUnmounted(() => {
           image="/scenes/moon-terrace.png"
           title="炼气 → 筑基"
           eyebrow="屏息 · 叩问天关"
-          body="风声仿佛停在洞府之外。你将一路积累的灵气收束于丹田，这一步可以现在迈出，也可以再等准备周全。"
+          body="风声仿佛停在洞府之外。你将一路积累的灵气收束于丹田，丹药与修为备齐之后，便可叩关；是否再打磨根基，由你决定。"
           heading-id="modal-title"
           compact
         />
@@ -1742,20 +1752,25 @@ onUnmounted(() => {
             筑基后开放功法通达与灵器精炼，可继续已有的行路与探索。
           </p>
           <div class="probability">{{ details?.chance }}<small>%</small></div>
-          <p class="muted">本次成功率 · 下限 10%，上限 95%</p>
+          <p class="muted">
+            {{ game.pills ? "本次成功率" : "备齐丹药后的预计把握" }} · 下限
+            10%，上限 95%
+          </p>
           <div class="break-details">
             <span v-for="p in details?.parts" :key="p.label"
               >{{ p.label }} {{ p.value > 0 ? "+" : "" }}{{ p.value }}%　</span
             >
           </div>
-          <label class="pill-option"
-            ><input
-              v-model="pill"
-              type="checkbox"
-              :disabled="game.pills < 1"
-            />使用筑基丹（持有 {{ game.pills }} 枚）</label
-          >
-          <PreparationValues :game="game" :pill="pill" />
+          <p class="pill-option">
+            筑基必需一枚筑基丹（持有
+            {{ game.pills }} 枚）。成功或失败均会消耗；显示把握已计入丹药。
+          </p>
+          <FoundationJourney
+            :game="game"
+            :busy="ui.busy || ui.running"
+            @command="foundationCommand"
+          />
+          <PreparationValues :game="game" :pill="true" />
           <p class="warning-text">
             成功延寿十八年。{{
               game.ward
@@ -1763,7 +1778,14 @@ onUnmounted(() => {
                 : "失败保留七成修为、伤势 +2、寿元上限 −1 年。"
             }}可养伤、炼丹、固本后再试。
           </p>
-          <button class="primary full" :disabled="ui.busy" @click="commitBreak">
+          <p v-if="breakthroughError(game)" class="warning-text">
+            {{ breakthroughError(game) }}
+          </p>
+          <button
+            class="primary full"
+            :disabled="ui.busy || !!breakthroughError(game)"
+            @click="commitBreak"
+          >
             凝神，突破</button
           ><button class="quiet full" :disabled="ui.busy" @click="dialog = ''">
             尚需准备
@@ -1773,7 +1795,7 @@ onUnmounted(() => {
       <template v-else-if="dialog === 'retreat'"
         ><h2 id="modal-title" tabindex="-1">这次闭关将错过约期</h2>
         <p class="event-body">
-          闭关六个月无法中途出关。陆迟会独行，本世遗府、孤丹和护法机会将关闭。确定仍要闭关吗？
+          闭关六个月无法中途出关。陆迟会独行，同行与护法机会将失去；之后仍可独自重返遗府取丹。确定仍要闭关吗？
         </p>
         <p class="event-body">
           若想守约，先取消闭关，再用劳作或凝神推进到第三十六个月；普通行动遇到赴约剧情会自动暂停。

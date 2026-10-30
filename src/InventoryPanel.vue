@@ -35,7 +35,7 @@ const items = computed(() => [
     name: "筑基丹",
     category: "丹药",
     count: props.game.pills,
-    description: "尝试筑基时选择服用，不能在储物袋中直接消耗。",
+    description: "筑基必需一枚，成功或失败都会消耗。遗府通关后可依丹方补炼。",
   },
   ...(["healing", "clarity"] as const).map((id) => ({
     id,
@@ -100,13 +100,28 @@ const item = computed(
         :aria-pressed="item?.id === entry.id"
         @click="selected = entry.id"
       >
-        <ItemArt :id="entry.id" :tier="entry.id === 'sword' || entry.id === 'vial' ? game.journey.relics[entry.id] : 0" /><strong>{{ entry.name }}</strong
+        <ItemArt
+          :id="entry.id"
+          :tier="
+            entry.id === 'sword' || entry.id === 'vial'
+              ? game.journey.relics[entry.id]
+              : 0
+          "
+        /><strong>{{ entry.name }}</strong
         ><small>× {{ entry.count }}</small>
       </button>
       <p v-if="!visible.length">尚未获得此类物品。</p>
     </div>
     <section v-if="item" class="item-detail">
-      <ItemArt :id="item.id" :size="128" :tier="item.id === 'sword' || item.id === 'vial' ? game.journey.relics[item.id] : 0" />
+      <ItemArt
+        :id="item.id"
+        :size="128"
+        :tier="
+          item.id === 'sword' || item.id === 'vial'
+            ? game.journey.relics[item.id]
+            : 0
+        "
+      />
       <small>{{ item.category }}</small>
       <h3>{{ item.name }}</h3>
       <p>{{ item.description }}</p>

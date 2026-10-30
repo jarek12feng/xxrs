@@ -494,9 +494,15 @@ export function dispatch(input: State, c: Command): State {
   }
   if (input.social.scene || input.social.arena.duel) return input;
   if (
-    ["advance", "prepare", "choose", "break", "next", "beginChapter"].includes(
-      c.type,
-    )
+    [
+      "advance",
+      "prepare",
+      "choose",
+      "break",
+      "revisitRelic",
+      "next",
+      "beginChapter",
+    ].includes(c.type)
   ) {
     const command = c as chapter.Command;
     if (command.type === "advance") {

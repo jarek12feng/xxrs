@@ -1,3 +1,4 @@
+import { foundationStep } from "./foundation-playthrough";
 // Pure public-command checkpoint shared by tests and the local browser preview.
 import {
   createGame,
@@ -47,29 +48,7 @@ export function mistCheckpoint(
     "friend",
   ] as RoadAction[])
     send({ type: "road", action });
-  while (!s.journey.settled) {
-    if (s.pending)
-      send({
-        type: "choose",
-        instanceId: s.pending.id,
-        option: {
-          meeting: "promise",
-          letter: "listen",
-          visit: "herbs",
-          departure: "go",
-          crossing: "detour",
-          relic: "gift",
-        }[s.pending.kind],
-      });
-    else if (s.injury) send({ type: "advance", activity: "rest", months: 3 });
-    else if (s.qi >= 360) send({ type: "break", pill: s.pills > 0 });
-    else
-      send({
-        type: "advance",
-        activity: s.realm ? "work" : "cultivate",
-        months: 12,
-      });
-  }
+  while (!s.journey.settled) send(foundationStep(s));
   while (s.injury) send({ type: "advance", activity: "rest", months: 3 });
   while (s.sense < 12)
     send({ type: "advance", activity: "meditate", months: 3 });
@@ -77,6 +56,7 @@ export function mistCheckpoint(
   while (s.stones < 100)
     send({ type: "advance", activity: "work", months: 12 });
   while (s.foundation < 24) send({ type: "prepare", kind: "retreat" });
+  while (s.herbs < 12) send({ type: "supplies" });
   send({ type: "road", action: "pass" });
   if (stopAtPass) return s;
   for (const action of ["challenge", "lookout", "survey"] as RoadAction[])

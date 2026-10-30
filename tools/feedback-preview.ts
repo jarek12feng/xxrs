@@ -1,3 +1,4 @@
+import { foundationStep } from "./foundation-playthrough";
 // Developer-only checkpoints, made with public commands; never overwrite output.
 import { writeFileSync } from "node:fs";
 import { createGame, dispatch, validState, type Intent } from "../src/core";
@@ -12,24 +13,14 @@ function send(c: Intent) {
 }
 send({ type: "advance", activity: "gather", months: 3 });
 send({ type: "choose", instanceId: s.pending!.id, option: "promise" });
-if (mode === "break") {
-  while (s.qi < 360 || s.pending) {
-    if (s.pending)
-      send({
-        type: "choose",
-        instanceId: s.pending.id,
-        option: {
-          meeting: "promise",
-          letter: "listen",
-          visit: "herbs",
-          departure: "go",
-          crossing: "detour",
-          relic: "self",
-        }[s.pending.kind],
-      });
-    else if (s.injury) send({ type: "advance", activity: "rest", months: 3 });
-    else send({ type: "advance", activity: "cultivate", months: 12 });
-  }
+while (true) {
+  const c = foundationStep(s, mode !== "break");
+  if (
+    (mode === "break" && c.type === "break") ||
+    (mode !== "break" && c.type === "prepare" && c.kind === "refine")
+  )
+    break;
+  send(c);
 }
 writeFileSync(output, JSON.stringify(s, null, 2), { flag: "wx" });
 console.log(

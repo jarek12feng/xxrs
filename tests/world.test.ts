@@ -1,3 +1,4 @@
+import { foundationStep } from "../tools/foundation-playthrough";
 import { describe, expect, it } from "vitest";
 import {
   createGame,
@@ -283,6 +284,7 @@ describe("online queue", () => {
     s = act(s, { type: "enqueue", action: "work", repeat: 1 });
     expect(act(s, { type: "queueTick" })).toBe(s);
     expect(s.month).toBe(3);
+    s.crafted = 1; // Existing recipe; this test isolates the resource gate.
     s.herbs = 6;
     s.stones = 20;
     s = act(s, { type: "queueTick" });
@@ -409,29 +411,7 @@ it("replays 60 whole lives through new exploration and intentional reincarnation
       !s.journey.settled && s.status === "alive" && guard < 400;
       guard++
     ) {
-      if (s.pending) {
-        const choices = {
-          meeting: "promise",
-          letter: "listen",
-          visit: "herbs",
-          departure: "go",
-          crossing: "detour",
-          relic: seed % 2 ? "gift" : "self",
-        };
-        send({
-          type: "choose",
-          instanceId: s.pending.id,
-          option: choices[s.pending.kind],
-        });
-      } else if (s.injury > 0)
-        send({ type: "advance", activity: "rest", months: 12 });
-      else if (s.qi >= 360) send({ type: "break", pill: s.pills > 0 });
-      else
-        send({
-          type: "advance",
-          activity: s.realm === 1 ? "work" : "cultivate",
-          months: 12,
-        });
+      send(foundationStep(s, seed % 2 === 1));
     }
     expect(s.status).toBe("alive");
     expect(s.journey.settled).toBe(true);

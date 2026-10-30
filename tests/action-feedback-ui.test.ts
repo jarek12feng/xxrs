@@ -30,6 +30,7 @@ function state() {
     months: 3,
     id: "a",
   });
+  s.crafted = 1; // Existing recipe retained from an earlier save.
   return dispatch(s, {
     type: "choose",
     instanceId: s.pending!.id,
