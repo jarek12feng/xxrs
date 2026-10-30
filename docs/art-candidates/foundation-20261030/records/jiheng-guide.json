@@ -1,0 +1,15 @@
+{
+  "id": "jiheng-guide",
+  "name": "季衡·护送与回望",
+  "kind": "characters",
+  "phase": 3,
+  "detail": "Preserve exact middle-aged male reference face, short beard, dark green robes, sheathed Chinese sword. Full body protective steady stance, weather cloak, sober reflective expression. No villain styling.",
+  "refs": [
+    "/Users/admin/Documents/ChatGPT/xxrs/public/characters/jiheng.png"
+  ],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Preserve exact middle-aged male reference face, short beard, dark green robes, sheathed Chinese sword. Full body protective steady stance, weather cloak, sober reflective expression. No villain styling. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. Reference preserves EXACT recognizable adult face, hair, wardrobe palette and identity.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-e675446e-262b-4826-ba84-3c77e1c25d6e.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

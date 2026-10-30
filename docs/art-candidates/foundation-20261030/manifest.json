@@ -1,0 +1,1849 @@
+{
+  "scope": "candidates-not-runtime",
+  "assets": [
+    {
+      "id": "shentinglan-travel",
+      "name": "沈听澜·同行与分别",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. standing ready to walk with compact travel pack, neutral attentive expression.",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Reference is the approved simpler costume of Shen Tinglan, ADULT Chinese woman age24. Preserve EXACT face, braid, bluegrey sleeveless crossover dress, plain sash, side opening and boots, and refined Chinese ink-watercolor style. Change only pose/expression: Walking calmly, holding a compact rolled map, boots and both feet visible. Full body all limbs and props within frame, generous clear margin, accurate hands. No backpack, extra layers, cape, dangling belts, jewellery, background or vignette. TRUE transparent cutout. Keep opaque practical clothing coverage and modest neckline. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9f203be7-5c01-470d-a152-c790027fabb9.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-travel.png",
+      "export": "exports/characters/shentinglan-travel.webp",
+      "bytes": 62454,
+      "sha256": "ffc68a54ab16ee5d04802f2baf555c6e17867576cfe3536bed218323d7fd20c5"
+    },
+    {
+      "id": "shentinglan-work",
+      "name": "沈听澜·共同工作",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. surveying and drawing a folded map with a brush, independent expert cartographer.",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Reference is the approved simpler costume of Shen Tinglan, ADULT Chinese woman age24. Preserve EXACT face, braid, bluegrey sleeveless crossover dress, plain sash, side opening and boots, and refined Chinese ink-watercolor style. Change only pose/expression: Standing, holding a small route map with one hand and marking a route using a brush with the other. Full body all limbs and props within frame, generous clear margin, accurate hands. No backpack, extra layers, cape, dangling belts, jewellery, background or vignette. TRUE transparent cutout. Keep opaque practical clothing coverage and modest neckline. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-b34ebcf0-2538-4ede-a63a-67f58304a640.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-work.png",
+      "export": "exports/characters/shentinglan-work.webp",
+      "bytes": 60090,
+      "sha256": "0022b3736069c8a8b7b57390053d2f361e6f266a5200a1cf0165cf36f676f8da"
+    },
+    {
+      "id": "shentinglan-disagree",
+      "name": "沈听澜·分歧与商议",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. standing speaking seriously with restrained open hand, thoughtful disagreement, no anger caricature.",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Reference is the approved simpler costume of Shen Tinglan, ADULT Chinese woman age24. Preserve EXACT face, braid, bluegrey sleeveless crossover dress, plain sash, side opening and boots, and refined Chinese ink-watercolor style. Change only pose/expression: Serious thoughtful face, one open palm explaining a concern, folded map held in the other hand. Full body all limbs and props within frame, generous clear margin, accurate hands. No backpack, extra layers, cape, dangling belts, jewellery, background or vignette. TRUE transparent cutout. Keep opaque practical clothing coverage and modest neckline. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-34df05ca-ba96-4cc8-8f2b-5c1bb7c40a89.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-disagree.png",
+      "export": "exports/characters/shentinglan-disagree.webp",
+      "bytes": 68294,
+      "sha256": "26d2c767ebfbaab8dcbb572063f54f76ec2fdf4821f510b954c6b6c188179aae"
+    },
+    {
+      "id": "shentinglan-reunion",
+      "name": "沈听澜·正常重逢",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. warm relieved small smile, open welcoming hand, holding their own work results, no touching unseen person.",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Reference is the approved simpler costume of Shen Tinglan, ADULT Chinese woman age24. Preserve EXACT face, braid, bluegrey sleeveless crossover dress, plain sash, side opening and boots, and refined Chinese ink-watercolor style. Change only pose/expression: Warm relieved smile, modest greeting gesture, standing relaxed with map at waist. Full body all limbs and props within frame, generous clear margin, accurate hands. No backpack, extra layers, cape, dangling belts, jewellery, background or vignette. TRUE transparent cutout. Keep opaque practical clothing coverage and modest neckline. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-d0b1f201-cfa3-4ddd-8b91-77c4da9c2943.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-reunion.png",
+      "export": "exports/characters/shentinglan-reunion.webp",
+      "bytes": 55490,
+      "sha256": "1ab1db7c468212c7b58c3b51238c91c48bac7dad0f8605a0a6777b2f6f59741e"
+    },
+    {
+      "id": "shentinglan-vow",
+      "name": "沈听澜·定情与结契",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. calm sincere formal greeting with hands composed at waist holding a simple uninscribed jade token, same clothes clean, no wedding costume, no forced partner or embrace.",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "仅成年且双方明确同意后的定情/结契；不能据图认定旧档已婚",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Reference is the approved simpler costume of Shen Tinglan, ADULT Chinese woman age24. Preserve EXACT face, braid, bluegrey sleeveless crossover dress, plain sash, side opening and boots, and refined Chinese ink-watercolor style. Change only pose/expression: Calm affectionate expression, holding one simple jade token with both hands in front of her waist, standing. No other person. Full body all limbs and props within frame, generous clear margin, accurate hands. No backpack, extra layers, cape, dangling belts, jewellery, background or vignette. TRUE transparent cutout. Keep opaque practical clothing coverage and modest neckline. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-8f66b957-87f2-4c80-b09a-4df5edc55bba.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-vow.png",
+      "export": "exports/characters/shentinglan-vow.webp",
+      "bytes": 56628,
+      "sha256": "dbc4de4acc07c45b9a65580c2a65a28f1b97851ebcc0c28510d9b389db79a4ef"
+    },
+    {
+      "id": "shentinglan-growth",
+      "name": "沈听澜·独立成长",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. same face and signature clothing neatly repaired, a practical weather cloak and more organized tools, confident posture, no new realm symbols or crown.",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Reference is the approved simpler costume of Shen Tinglan, ADULT Chinese woman age24. Preserve EXACT face, braid, bluegrey sleeveless crossover dress, plain sash, side opening and boots, and refined Chinese ink-watercolor style. Change only pose/expression: Confident focused face, standing straight examining an unfolded route map, her own professional accomplishment, no magical halo. Full body all limbs and props within frame, generous clear margin, accurate hands. No backpack, extra layers, cape, dangling belts, jewellery, background or vignette. TRUE transparent cutout. Keep opaque practical clothing coverage and modest neckline. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-83896fcd-d4e3-466a-8082-f233c3090201.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-growth.png",
+      "export": "exports/characters/shentinglan-growth.webp",
+      "bytes": 64882,
+      "sha256": "cc4067c7a21b8a53c4acf2ce028308fc1072ace3bf3637eb2a307bafadf6ee8c"
+    },
+    {
+      "id": "shentinglan-rescue",
+      "name": "沈听澜·受困行动与接应",
+      "kind": "characters",
+      "phase": 4,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. actively signalling a safe route with a cloth marker, dusty clothes, alert composed face, not helpless or restrained.",
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Reference is the approved simpler costume of Shen Tinglan, ADULT Chinese woman age24. Preserve EXACT face, braid, bluegrey sleeveless crossover dress, plain sash, side opening and boots, and refined Chinese ink-watercolor style. Change only pose/expression: Alert composed face, practical stable standing stance, pointing a safe direction with one hand while holding a small route marker in the other, no injury or helpless pose. Full body all limbs and props within frame, generous clear margin, accurate hands. No backpack, extra layers, cape, dangling belts, jewellery, background or vignette. TRUE transparent cutout. Keep opaque practical clothing coverage and modest neckline. Single character.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-5c30f5f9-4ac9-45c5-9350-213530e39477.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-rescue.png",
+      "export": "exports/characters/shentinglan-rescue.webp",
+      "bytes": 67950,
+      "sha256": "2cf80a10576a8700fba26709bc7dbbc486a7d4c8b96bac40699d65e5f64fb139"
+    },
+    {
+      "id": "yinzhaochuan-travel",
+      "name": "尹照川·同行与分别",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. standing ready to walk with compact travel pack, neutral attentive expression.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Asset type: standalone full-body Chinese xianxia game character. Reference image preserves EXACT face, hair, clothing palette and identity, remove its background entirely. Primary request: Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. standing ready to walk with compact travel pack, neutral attentive expression. Style: refined mineral watercolor and Chinese ink, muted natural colors, believable anatomy. Single complete character head to both feet with all props visible and 12 percent transparent margin, no landscape, no text, no cast shadow rectangle, no aura. Real transparent background.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-f0887500-cf89-4cb5-b140-f8f7359c61c8.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/yinzhaochuan-travel.png",
+      "export": "exports/characters/yinzhaochuan-travel.webp",
+      "bytes": 93690,
+      "sha256": "aad5a84c8ed0da463166987f16d6b6efe8b5a9021d6b2e56e8c89de3991239c8"
+    },
+    {
+      "id": "yinzhaochuan-work",
+      "name": "尹照川·共同工作",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. checking a small wooden navigation talisman and bronze formation disk, competent array repair worker.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Asset type: standalone full-body Chinese xianxia game character. Reference image preserves EXACT face, hair, clothing palette and identity, remove its background entirely. Primary request: Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. checking a small wooden navigation talisman and bronze formation disk, competent array repair worker. Style: refined mineral watercolor and Chinese ink, muted natural colors, believable anatomy. Single complete character head to both feet with all props visible and 12 percent transparent margin, no landscape, no text, no cast shadow rectangle, no aura. Real transparent background.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-a2a0145b-c6e7-4b6a-b7da-213683646df5.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/yinzhaochuan-work.png",
+      "export": "exports/characters/yinzhaochuan-work.webp",
+      "bytes": 104366,
+      "sha256": "8a3d9de164b21b769ec4c08bff33ad2c3ae80484097cf2e6ff359da46360fe00"
+    },
+    {
+      "id": "yinzhaochuan-disagree",
+      "name": "尹照川·分歧与商议",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. standing speaking seriously with restrained open hand, thoughtful disagreement, no anger caricature.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Asset type: standalone full-body Chinese xianxia game character. Reference image preserves EXACT face, hair, clothing palette and identity, remove its background entirely. Primary request: Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. standing speaking seriously with restrained open hand, thoughtful disagreement, no anger caricature. Style: refined mineral watercolor and Chinese ink, muted natural colors, believable anatomy. Single complete character head to both feet with all props visible and 12 percent transparent margin, no landscape, no text, no cast shadow rectangle, no aura. Real transparent background.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-a8b6b470-8d83-4f33-9cba-bb4aa4628831.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/yinzhaochuan-disagree.png",
+      "export": "exports/characters/yinzhaochuan-disagree.webp",
+      "bytes": 99874,
+      "sha256": "86df25287546654fe9949b74a301ba4cf9721714ab1cf1e5a6e550e0c45bb831"
+    },
+    {
+      "id": "yinzhaochuan-reunion",
+      "name": "尹照川·正常重逢",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. warm relieved small smile, open welcoming hand, holding their own work results, no touching unseen person.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. warm relieved small smile, open welcoming hand, holding their own work results, no touching unseen person. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. Reference preserves EXACT recognizable adult face, hair, wardrobe palette and identity.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-99967d52-16c8-4adb-8ef5-8662a88f5d8d.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/yinzhaochuan-reunion.png",
+      "export": "exports/characters/yinzhaochuan-reunion.webp",
+      "bytes": 81072,
+      "sha256": "92044dc831bb13859a256de490dcd3b6fae40798420ff2b24f08d8cb4d6f9c5a"
+    },
+    {
+      "id": "yinzhaochuan-vow",
+      "name": "尹照川·定情与结契",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. calm sincere formal greeting with hands composed at waist holding a simple uninscribed jade token, same clothes clean, no wedding costume, no forced partner or embrace.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "仅成年且双方明确同意后的定情/结契；不能据图认定旧档已婚",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. calm sincere formal greeting with hands composed at waist holding a simple uninscribed jade token, same clothes clean, no wedding costume, no forced partner or embrace. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. Reference preserves EXACT recognizable adult face, hair, wardrobe palette and identity.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-b53bfe6d-3335-46eb-a7c9-2e53c95529cf.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/yinzhaochuan-vow.png",
+      "export": "exports/characters/yinzhaochuan-vow.webp",
+      "bytes": 71584,
+      "sha256": "00b5fc21e3c7030ab56ccf56967e44b1ae00181b5016cfa126b70ec2b98e88ab"
+    },
+    {
+      "id": "yinzhaochuan-growth",
+      "name": "尹照川·独立成长",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. same face and signature clothing neatly repaired, a practical weather cloak and more organized tools, confident posture, no new realm symbols or crown.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. same face and signature clothing neatly repaired, a practical weather cloak and more organized tools, confident posture, no new realm symbols or crown. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. Reference preserves EXACT recognizable adult face, hair, wardrobe palette and identity.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-67ed0d6a-0f9e-4032-b1c5-d89692132424.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/yinzhaochuan-growth.png",
+      "export": "exports/characters/yinzhaochuan-growth.webp",
+      "bytes": 91666,
+      "sha256": "2e490f2c972f20a5ad2a316a25add560688527d219d5d1044ece5c9aaea76cf7"
+    },
+    {
+      "id": "yinzhaochuan-rescue",
+      "name": "尹照川·受困行动与接应",
+      "kind": "characters",
+      "phase": 4,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. actively stabilizing a portable formation node while signalling with the other hand, dusty clothes, focused composed face, not helpless or restrained.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. actively stabilizing a portable formation node while signalling with the other hand, dusty clothes, focused composed face, not helpless or restrained. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. Reference preserves EXACT recognizable adult face, hair, wardrobe palette and identity.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-bd9ae504-ae8c-4074-acd7-a4f89ef83c59.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/yinzhaochuan-rescue.png",
+      "export": "exports/characters/yinzhaochuan-rescue.webp",
+      "bytes": 109742,
+      "sha256": "678163c6eee079542130286d2adc94f99909085b14a61575a9861404fe502e99"
+    },
+    {
+      "id": "luchi-grown",
+      "name": "陆迟·筑基后回访",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve reference identity, youthful Chinese man, blue grey clean repaired robe and familiar worn sheathed sword. Full body calm standing friendly greeting, no crown or new artifact.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/luchi-foundation.png"
+      ],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Asset type: standalone full-body Chinese xianxia game character. Reference image preserves EXACT face, hair, clothing palette and identity, remove its background entirely. Primary request: Preserve reference identity, youthful Chinese man, blue grey clean repaired robe and familiar worn sheathed sword. Full body calm standing friendly greeting, no crown or new artifact. Style: refined mineral watercolor and Chinese ink, muted natural colors, believable anatomy. Single complete character head to both feet with all props visible and 12 percent transparent margin, no landscape, no text, no cast shadow rectangle, no aura. Real transparent background.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-087576f3-f56d-46bf-9e46-410220dafbc1.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/luchi-grown.png",
+      "export": "exports/characters/luchi-grown.webp",
+      "bytes": 92884,
+      "sha256": "7b21899096d12b772c19f23372776ec97a8dd0d6a7501cc827f3a7b35b44eb95"
+    },
+    {
+      "id": "yuqing-reunion",
+      "name": "郁青·关切重逢",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve exact male reference identity, olive robe and ochre scarf. Full body turned slightly toward an unseen relative, hopeful restrained smile, map satchel. No tears or forced embrace.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yuqing.jpg"
+      ],
+      "gate": "仅实际参加寻姐且见到本人之后",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: identity-preserve. Asset type: standalone full-body Chinese xianxia game character. Reference image preserves EXACT face, hair, clothing palette and identity, remove its background entirely. Primary request: Preserve exact male reference identity, olive robe and ochre scarf. Full body turned slightly toward an unseen relative, hopeful restrained smile, map satchel. No tears or forced embrace. Style: refined mineral watercolor and Chinese ink, muted natural colors, believable anatomy. Single complete character head to both feet with all props visible and 12 percent transparent margin, no landscape, no text, no cast shadow rectangle, no aura. Real transparent background.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-c1221738-a82a-4783-ae0c-c1b658ef8a2b.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1156,
+        1360
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/characters/yuqing-reunion.png",
+      "export": "exports/characters/yuqing-reunion.webp",
+      "bytes": 119336,
+      "sha256": "639936c0020678ff1b46443b94903c68987df5852ecb217d1e86550e14dd5304"
+    },
+    {
+      "id": "wenheng-care",
+      "name": "温蘅·诊治与传授",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Preserve exact reference woman's face and pale green ivory herbalist robes, hair ornament. Full body seated on a simple low stool, holding clean bandage and medicine bottle, composed compassionate expression.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/wenheng.png"
+      ],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Preserve exact reference woman's face and pale green ivory herbalist robes, hair ornament. Full body seated on a simple low stool, holding clean bandage and medicine bottle, composed compassionate expression. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. Reference preserves EXACT recognizable adult face, hair, wardrobe palette and identity.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-e35ae66a-817e-4285-8f28-1eb3b9c2c4f2.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/wenheng-care.png",
+      "export": "exports/characters/wenheng-care.webp",
+      "bytes": 99388,
+      "sha256": "7b52dfab668169353ff294faaef40c533e211e97d7e2fcc7f7aea3e18ee39f0c"
+    },
+    {
+      "id": "jiheng-guide",
+      "name": "季衡·护送与回望",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Preserve exact middle-aged male reference face, short beard, dark green robes, sheathed Chinese sword. Full body protective steady stance, weather cloak, sober reflective expression. No villain styling.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/jiheng.png"
+      ],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Preserve exact middle-aged male reference face, short beard, dark green robes, sheathed Chinese sword. Full body protective steady stance, weather cloak, sober reflective expression. No villain styling. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. Reference preserves EXACT recognizable adult face, hair, wardrobe palette and identity.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-e675446e-262b-4826-ba84-3c77e1c25d6e.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/jiheng-guide.png",
+      "export": "exports/characters/jiheng-guide.webp",
+      "bytes": 96782,
+      "sha256": "3083f75131f0561738202085b3bcbc367451e5a32b22e6b9636596fb1a009817"
+    },
+    {
+      "id": "healer-sister",
+      "name": "姐姐·救治者候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "An adult Chinese female field healer about 30, olive and ivory simple robes with rolled sleeves, dark hair braided into practical bun, small clean linen bandage in hands and ceramic medicine bottle at belt. Calm focused working posture. Name and kinship not printed; not a clone of male Yuqing.",
+      "refs": [],
+      "gate": "NAR-01；郁晚舟为拟名，姓名与服饰待定，未参与寻亲不可揭示身份",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: An adult Chinese female field healer about 30, olive and ivory simple robes with rolled sleeves, dark hair braided into practical bun, small clean linen bandage in hands and ceramic medicine bottle at belt. Calm focused working posture. Name and kinship not printed; not a clone of male Yuqing. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-7f682ee4-1f47-409f-b009-6df60f4946cb.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/healer-sister.png",
+      "export": "exports/characters/healer-sister.webp",
+      "bytes": 52354,
+      "sha256": "f40c5589c213e47194baa9d6aed3cba043f3ea1f41133a02563cb9007bbbec8b"
+    },
+    {
+      "id": "ferry-steward",
+      "name": "渡口管事候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "An adult middle-aged Chinese male ferry steward in restrained brown long robe and dark cap, holding closed document folio, composed watchful face. An ordinary human authority figure, no evil aura or monster features.",
+      "refs": [],
+      "gate": "NAR-01；祝庭候选，不凭外貌宣布全部罪行",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: An adult middle-aged Chinese male ferry steward in restrained brown long robe and dark cap, holding closed document folio, composed watchful face. An ordinary human authority figure, no evil aura or monster features. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-ec8def2a-9f63-4bde-b733-2354436864db.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/ferry-steward.png",
+      "export": "exports/characters/ferry-steward.webp",
+      "bytes": 41640,
+      "sha256": "ba24dff6cfc042a981bd764454eb43cf8f26b0cc90ca7b58779801ad693bcf96"
+    },
+    {
+      "id": "ferry-guard",
+      "name": "人族看守候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "An adult Chinese ferry guard in practical dark blue padded cloth vest and simple lamellar shoulder pieces, holding an unthreatening lowered wooden staff, cautious face. Human, not demonic; no European armor.",
+      "refs": [],
+      "gate": "NAR-01；区别人族看守与普通渡工",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: An adult Chinese ferry guard in practical dark blue padded cloth vest and simple lamellar shoulder pieces, holding an unthreatening lowered wooden staff, cautious face. Human, not demonic; no European armor. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-f07af362-717f-4af5-ad0b-276e2e7927b2.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/ferry-guard.png",
+      "export": "exports/characters/ferry-guard.webp",
+      "bytes": 52130,
+      "sha256": "48812443070705a32839708a82e2c64c1bcbdc63a0c996dcbef199c77c0b360f"
+    },
+    {
+      "id": "qu-heir",
+      "name": "药庄继承人候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Adult Chinese woman about 28, tidy muted plum and ivory cross-collar robes, hair in restrained bun, accounting brush and closed folio, determined tired face, practical proprietor.",
+      "refs": [],
+      "gate": "NAR-03；阙明棠拟名，不锁定继承结局",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Adult Chinese woman about 28, tidy muted plum and ivory cross-collar robes, hair in restrained bun, accounting brush and closed folio, determined tired face, practical proprietor. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-04b47ce6-69f1-434f-bd5c-c7f04972be5e.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/qu-heir.png",
+      "export": "exports/characters/qu-heir.webp",
+      "bytes": 45258,
+      "sha256": "c6e4f892ac86cca5a33f86970f635757db469442a6b19e02ef7f5301df9964e7"
+    },
+    {
+      "id": "qu-elder",
+      "name": "药庄长辈候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Chinese male about 55, short greying beard, restrained ochre merchant scholar robe, holding a plain wooden seal box, composed calculating but not caricatured face.",
+      "refs": [],
+      "gate": "NAR-03；阙承礼拟名",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Chinese male about 55, short greying beard, restrained ochre merchant scholar robe, holding a plain wooden seal box, composed calculating but not caricatured face. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-3267940d-3164-4295-b496-bac9d89a3bbc.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/qu-elder.png",
+      "export": "exports/characters/qu-elder.webp",
+      "bytes": 49884,
+      "sha256": "13776a12b4b9ace4e8ad8a8598b3990f8e26d697196071301d2d1f5c4a484b64"
+    },
+    {
+      "id": "worker-scribe",
+      "name": "药工记账人候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Chinese adult woman about 30, sun-weathered face, simple linen brown-blue work clothes, ink-stained fingers holding narrow bamboo tally and notebook, direct confident expression.",
+      "refs": [],
+      "gate": "NAR-03；许芦拟名，性别衣装为候选",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Chinese adult woman about 30, sun-weathered face, simple linen brown-blue work clothes, ink-stained fingers holding narrow bamboo tally and notebook, direct confident expression. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-95e788ad-a536-4d0b-8485-8df42314e08d.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/worker-scribe.png",
+      "export": "exports/characters/worker-scribe.webp",
+      "bytes": 58198,
+      "sha256": "bd5c66cc4758a73b1ec1b425fad4dac9c7336fef9eb4775ec5c74cdd83ccc779"
+    },
+    {
+      "id": "old-steward",
+      "name": "旧任仓务执事候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Chinese adult man about 60, grey moustache, sober slate robe and simple cloth cap, keys tied at waist, closed inventory ledger, wary restrained expression, no villain aura.",
+      "refs": [],
+      "gate": "NAR-04；韩肃拟名",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Chinese adult man about 60, grey moustache, sober slate robe and simple cloth cap, keys tied at waist, closed inventory ledger, wary restrained expression, no villain aura. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-35043248-135f-49ba-b77d-32d4bf8aba6f.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/old-steward.png",
+      "export": "exports/characters/old-steward.webp",
+      "bytes": 41306,
+      "sha256": "9312ee6694f8568a84fde4721045086bd2c67738c34bdfde888704a5d17d4242"
+    },
+    {
+      "id": "inn-elder",
+      "name": "守驿老妪候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Chinese elderly woman innkeeper, deeply kind weathered face, silver hair in simple bun, warm earth-coloured apron over indigo robe, holding a plain ceramic noodle bowl in both hands, standing steadily.",
+      "refs": [],
+      "gate": "NAR-05；普通人，无隐藏高手暗示",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Chinese elderly woman innkeeper, deeply kind weathered face, silver hair in simple bun, warm earth-coloured apron over indigo robe, holding a plain ceramic noodle bowl in both hands, standing steadily. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-b18fe09e-05a3-441f-bd2b-45e577dcd216.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/inn-elder.png",
+      "export": "exports/characters/inn-elder.webp",
+      "bytes": 51914,
+      "sha256": "703a1cc71c35dc385f23424bf3d74632cbd258e81864992a53da965f5eada161"
+    },
+    {
+      "id": "badger-atuan",
+      "name": "阿团·灵兽獾",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "A small stocky Chinese mountain badger, natural short legs and black white face stripes, brown-grey fur, carrying a tiny Chinese wooden lantern gently by its handle in mouth. Friendly ordinary animal anatomy, no horns or magical armor.",
+      "refs": [],
+      "gate": "NAR-05；生活支线，不升格神兽",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: A small stocky Chinese mountain badger, natural short legs and black white face stripes, brown-grey fur, carrying a tiny Chinese wooden lantern gently by its handle in mouth. Friendly ordinary animal anatomy, no horns or magical armor. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-82feed22-83e2-4c38-979d-09780811a673.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/badger-atuan.png",
+      "export": "exports/characters/badger-atuan.webp",
+      "bytes": 213460,
+      "sha256": "bc33fb0278d321779ccc0021cb3c53f5af7df4ec33e4f932d190c9926510c39f"
+    },
+    {
+      "id": "frontier-peer",
+      "name": "远行同辈候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Adult Chinese female cultivator, athletic medium build, russet and grey travel robes, simple bamboo hat hanging behind, plain sheathed sword, carrying climbing rope and herb pouch, alert self-possessed face.",
+      "refs": [],
+      "gate": "NAR-04世界扩展；无名候选，身份地域待定",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Adult Chinese female cultivator, athletic medium build, russet and grey travel robes, simple bamboo hat hanging behind, plain sheathed sword, carrying climbing rope and herb pouch, alert self-possessed face. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-818ebea6-3434-4b5f-bf22-3d3505fbc5c8.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/frontier-peer.png",
+      "export": "exports/characters/frontier-peer.webp",
+      "bytes": 69566,
+      "sha256": "dc8cb2441918769c108b81b2bd5d8c5b0db0449413240ad54ed97e1eca9b90d5"
+    },
+    {
+      "id": "frontier-mentor",
+      "name": "远行高手候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Older Chinese female cultivation mentor, grey hair in simple high knot, weathered calm face, austere dark jade robe, plain walking staff and small scroll bag, poised quietly without glowing halo or rank marks.",
+      "refs": [],
+      "gate": "NAR-04世界扩展；无名候选，境界能力待定",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Older Chinese female cultivation mentor, grey hair in simple high knot, weathered calm face, austere dark jade robe, plain walking staff and small scroll bag, poised quietly without glowing halo or rank marks. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-41eff422-7567-4fdd-a626-dd723ebb0ae4.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/frontier-mentor.png",
+      "export": "exports/characters/frontier-mentor.webp",
+      "bytes": 66598,
+      "sha256": "e9ccf59d519c04a0ddc327a5a356ac4357f9ca9fcbf24aaeb4a41905972e34d3"
+    },
+    {
+      "id": "frontier-boatman",
+      "name": "远行渡工候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Middle-aged Chinese male boat worker with sun-browned face, short beard, patched indigo hemp jacket, straw rain cape folded over shoulder, holding a wooden punt pole upright, knowledgeable steady expression.",
+      "refs": [],
+      "gate": "新地域普通人；无名候选，不预设伤亡或内幕",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Middle-aged Chinese male boat worker with sun-browned face, short beard, patched indigo hemp jacket, straw rain cape folded over shoulder, holding a wooden punt pole upright, knowledgeable steady expression. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-3173d5d3-96a8-43c5-8379-bd1f5d10e0e4.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/frontier-boatman.png",
+      "export": "exports/characters/frontier-boatman.webp",
+      "bytes": 83578,
+      "sha256": "ba3e093d4c1f3a101ffeb0994dd6ea5cfb7c8076854fc59374a5d59c41efc566"
+    },
+    {
+      "id": "wuming-ferry",
+      "name": "无名渡·日常与入口",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "A modest ancient Chinese river ferry village built around an old stone well, wooden landing, moored medicine boat, drying bandages and a small apothecary awning, a visible checking gate with blank wooden plaques. Daily life evidence without identifiable people. Soft overcast river light.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: A modest ancient Chinese river ferry village built around an old stone well, wooden landing, moored medicine boat, drying bandages and a small apothecary awning, a visible checking gate with blank wooden plaques. Daily life evidence without identifiable people. Soft overcast river light. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-bdbfbf26-6a3a-4300-9dc8-7a5144015d7e.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1916,
+        821
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/wuming-ferry.png",
+      "export": "exports/scenes/wuming-ferry.webp",
+      "bytes": 187866,
+      "sha256": "bb55bd80ace5a7ac7306be10c790f232dbfa2a09128e4bc2b8ced5b7d25e9deb"
+    },
+    {
+      "id": "sunken-entry",
+      "name": "沉井遗府·浅层试探",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Looking down a broad ancient stone well stair into a partially flooded Chinese cultivation courtyard, shallow water channels, clearly safe dry ledge at foreground left, exit stair visible, worn stone threshold and restrained bronze array channels. No figures, no treasure reward.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Looking down a broad ancient stone well stair into a partially flooded Chinese cultivation courtyard, shallow water channels, clearly safe dry ledge at foreground left, exit stair visible, worn stone threshold and restrained bronze array channels. No figures, no treasure reward. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9b6f47fd-202e-4496-8876-0991cada495a.png",
+      "revisionPrompt": "Precise object edit of this generated Chinese cultivation game background. Remove ONLY the faint tiny writing or watermark at bottom right. Replace it with uninterrupted natural stone texture. Preserve the entire courtyard, water, stairs, lighting and layout exactly. No letters or watermark anywhere.",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1671,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/sunken-entry.png",
+      "export": "exports/scenes/sunken-entry.webp",
+      "bytes": 269778,
+      "sha256": "90a74760dafd50df493c24ae26d6ebc6f7c03171a6f50377eaa1c0a1c2e959f1"
+    },
+    {
+      "id": "outer-training",
+      "name": "外府修行院·挑战",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Ancient Chinese cultivation training courtyard under the river bed, partially roofed stone hall, raised dry fighting platform centered, water flowing in perimeter channels, two clearly visible exits, weathered bronze formation nodes. No people or monsters baked in, no sci-fi technology.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Ancient Chinese cultivation training courtyard under the river bed, partially roofed stone hall, raised dry fighting platform centered, water flowing in perimeter channels, two clearly visible exits, weathered bronze formation nodes. No people or monsters baked in, no sci-fi technology. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-d9e21860-5643-4b6e-8d9d-759cd7586aa3.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/outer-training.png",
+      "export": "exports/scenes/outer-training.webp",
+      "bytes": 219906,
+      "sha256": "ad22bfc1cbd9ef06a897ac13536cb5b2ff5ad663d07d23b8da3424dd9727d1ef"
+    },
+    {
+      "id": "inheritance-room",
+      "name": "外府传承室",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Small ancient Chinese cultivation study chamber reached from damp stone passage, dry raised alcove with a low stone lectern and empty scroll recess, carved practice diagrams abstract without readable writing, warm reflected light, no guaranteed special treasure or new realm.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Small ancient Chinese cultivation study chamber reached from damp stone passage, dry raised alcove with a low stone lectern and empty scroll recess, carved practice diagrams abstract without readable writing, warm reflected light, no guaranteed special treasure or new realm. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-aaa8988d-0642-48b9-b9de-dd90dfec6807.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/inheritance-room.png",
+      "export": "exports/scenes/inheritance-room.webp",
+      "bytes": 212134,
+      "sha256": "6571fa680c7bec77936e5f0511032f5fd7816a6680292e776f525ba45752d43d"
+    },
+    {
+      "id": "side-courtyard",
+      "name": "侧院·救治与重逢",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Quiet modest Chinese courtyard with an open treatment alcove, low stool, folded clean bandages, ceramic medicine jars, basin and laundry, soft afternoon light, usable empty foreground for separate actors. Care ongoing, no blood, no bodies.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Quiet modest Chinese courtyard with an open treatment alcove, low stool, folded clean bandages, ceramic medicine jars, basin and laundry, soft afternoon light, usable empty foreground for separate actors. Care ongoing, no blood, no bodies. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-5b1b04e4-2df0-418d-b898-158869d4a0e9.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/side-courtyard.png",
+      "export": "exports/scenes/side-courtyard.webp",
+      "bytes": 197918,
+      "sha256": "9278b796573102ab3d8f01c1324e798ce9cb7f2956bf4dce2a851980f8e84c6d"
+    },
+    {
+      "id": "return-seal",
+      "name": "归路·禁制启动",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Chinese ferry exit gate and narrow stone causeway, restrained amber geometric formation line across doorway, visible bronze control node beside wooden document cabinet, water in distance. Clear target and return route, no people, no magical text.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Chinese ferry exit gate and narrow stone causeway, restrained amber geometric formation line across doorway, visible bronze control node beside wooden document cabinet, water in distance. Clear target and return route, no people, no magical text. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-652478f9-de31-4ed8-a748-f41261d4a868.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/return-seal.png",
+      "export": "exports/scenes/return-seal.webp",
+      "bytes": 191892,
+      "sha256": "efabd1e285649a7f619cba53d63c6e2435f77a5f3b0ad675c03eb0589077a7f9"
+    },
+    {
+      "id": "ferry-return",
+      "name": "无名渡·通路回访",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Same kind of modest Chinese river ferry village, ordinary medicine-boat landing, open check gate with uninscribed blank passboard turned aside, repaired plank path and packed travel bundles, calm clear morning. No claim of all survivors settled.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Same kind of modest Chinese river ferry village, ordinary medicine-boat landing, open check gate with uninscribed blank passboard turned aside, repaired plank path and packed travel bundles, calm clear morning. No claim of all survivors settled. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-ba314a1d-5e3d-4f7b-8d00-46bc3c445fde.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1774,
+        887
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/ferry-return.png",
+      "export": "exports/scenes/ferry-return.webp",
+      "bytes": 251082,
+      "sha256": "0c49d7d5fe182b933ccd254d89c37959ca05fadd5acf28bf3bed595cc2b8a7d2"
+    },
+    {
+      "id": "survey-shelter",
+      "name": "绘图·雨棚量路",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Chinese mountain trail with a simple timber rain shelter, low table with unmarked folded paper and measuring cord, uneven stone steps and distant bypass path, misty drizzle, no identifiable houses or published addresses.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Chinese mountain trail with a simple timber rain shelter, low table with unmarked folded paper and measuring cord, uneven stone steps and distant bypass path, misty drizzle, no identifiable houses or published addresses. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-be5370a7-1bdf-4649-a7be-9abd589a5f2c.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/survey-shelter.png",
+      "export": "exports/scenes/survey-shelter.webp",
+      "bytes": 249650,
+      "sha256": "05401eb083e6f317cb9ad2e241d17af8e5fb7873fa54f6d0a54c1b5d94a5dff0"
+    },
+    {
+      "id": "print-workshop",
+      "name": "绘图·刻板之夜",
+      "kind": "scenes",
+      "phase": 2,
+      "detail": "Small Chinese woodblock printing workshop at night, oil lamp, blank paper stacks, half-carved abstract route printing block, brushes and cloth, calm warm work table, no characters and no readable text.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Small Chinese woodblock printing workshop at night, oil lamp, blank paper stacks, half-carved abstract route printing block, brushes and cloth, calm warm work table, no characters and no readable text. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-506add9a-065e-49cb-b76c-470087b48c00.png",
+      "revisionPrompt": "Precise object edit of this generated Chinese cultivation game background. Replace ONLY the glass chimney kerosene-style lamp on the right desk with a simple ancient Chinese shallow ceramic oil bowl, visible small wick flame, no glass chimney. Keep the same warm lighting, workshop, camera, paper and woodblocks unchanged.",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/print-workshop.png",
+      "export": "exports/scenes/print-workshop.webp",
+      "bytes": 173628,
+      "sha256": "2545ea71fb0e5a8a45cc51000c1a2db145dff7dd866178d62363636ead17a1cc"
+    },
+    {
+      "id": "lamp-room",
+      "name": "守灯·共同守夜与交班",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Chinese riverside navigation lamp room open toward a rough-water channel, large wooden lantern, bronze wind gauge, spare formation stone, simple duty board with blank rows, two small bowls on workbench, night with clear visual signal lamps. No people.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Chinese riverside navigation lamp room open toward a rough-water channel, large wooden lantern, bronze wind gauge, spare formation stone, simple duty board with blank rows, two small bowls on workbench, night with clear visual signal lamps. No people. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-77178956-3ce3-4feb-ad11-2c99cb69611b.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1774,
+        887
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/lamp-room.png",
+      "export": "exports/scenes/lamp-room.webp",
+      "bytes": 156170,
+      "sha256": "9a6db25ea0f2bcde0bd6e7a68ac1953e1f03898d7dab6abf390a63b74960ec78"
+    },
+    {
+      "id": "reunion-courtyard",
+      "name": "共同生活·出关重逢",
+      "kind": "scenes",
+      "phase": 2,
+      "detail": "Modest Chinese cultivation dwelling courtyard at warm dawn, two simple tea cups on low table, open gate toward mountain trail, repaired travel cloak on peg, quiet everyday life not palatial luxury, no people.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Modest Chinese cultivation dwelling courtyard at warm dawn, two simple tea cups on low table, open gate toward mountain trail, repaired travel cloak on peg, quiet everyday life not palatial luxury, no people. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-12d01ec9-cad6-4873-9a1d-ac6cd6fb3a9a.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/reunion-courtyard.png",
+      "export": "exports/scenes/reunion-courtyard.webp",
+      "bytes": 260310,
+      "sha256": "8df0b88249191c671a360c68ae9f563e9247ed674c9e8e9ce90ac39e9c5e3e02"
+    },
+    {
+      "id": "vow-terrace",
+      "name": "结契·相约同行",
+      "kind": "scenes",
+      "phase": 2,
+      "detail": "Quiet Chinese mountain terrace at dusk, low wooden table with two simple uninscribed jade tokens and two cups, two empty floor cushions, restrained warm lantern, open horizon, no red imperial wedding decor, no people.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Quiet Chinese mountain terrace at dusk, low wooden table with two simple uninscribed jade tokens and two cups, two empty floor cushions, restrained warm lantern, open horizon, no red imperial wedding decor, no people. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-4ce8cf8e-c9b8-43ba-9096-d85a74dc48bd.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/vow-terrace.png",
+      "export": "exports/scenes/vow-terrace.webp",
+      "bytes": 191976,
+      "sha256": "cf7f862a066f59055d1a74ec3625ffa2fdf8bd632eec33e8e502bcc7eb625b27"
+    },
+    {
+      "id": "journey-fork",
+      "name": "分别·各自远行",
+      "kind": "scenes",
+      "phase": 2,
+      "detail": "Chinese mountain travel fork with two equally inviting paths, plain direction post without text, small stone resting bench, distant river road and mountain pass, morning light, no abandoned or tragic cues, no people.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Chinese mountain travel fork with two equally inviting paths, plain direction post without text, small stone resting bench, distant river road and mountain pass, morning light, no abandoned or tragic cues, no people. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-65ec11b9-7f3b-4236-8e0a-eb71c4723d7b.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/journey-fork.png",
+      "export": "exports/scenes/journey-fork.webp",
+      "bytes": 297088,
+      "sha256": "f3b79a523d163eb9dce85195fe6ed788bdc66e1df10aae0978138f6225de6e3b"
+    },
+    {
+      "id": "herb-estate",
+      "name": "药庄·旧药圃",
+      "kind": "scenes",
+      "phase": 3,
+      "detail": "Old Chinese medicinal herb estate, terraced plant beds, damaged small irrigation channel and hand-operated wooden sluice, work shed, practical herb racks, visible repairable blockage, no palace or fantasy factory.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Old Chinese medicinal herb estate, terraced plant beds, damaged small irrigation channel and hand-operated wooden sluice, work shed, practical herb racks, visible repairable blockage, no palace or fantasy factory. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-0eea4648-1d37-4776-9e25-24c40cfef31e.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/herb-estate.png",
+      "export": "exports/scenes/herb-estate.webp",
+      "bytes": 279034,
+      "sha256": "e004858d01ce697037601118d3ddbfa1c69fceb91f34de3f3026863045c879eb"
+    },
+    {
+      "id": "snow-gates",
+      "name": "雪线·主门与西门",
+      "kind": "scenes",
+      "phase": 3,
+      "detail": "Ancient Chinese mountain sect pass in snowfall, sturdy main gate and visibly separate small west side gate, worn formation-stone socket near side gate, snow slope above and sheltered inner courtyard. Clear spatial relationship, no corpses or supernatural victims.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Ancient Chinese mountain sect pass in snowfall, sturdy main gate and visibly separate small west side gate, worn formation-stone socket near side gate, snow slope above and sheltered inner courtyard. Clear spatial relationship, no corpses or supernatural victims. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-7c816846-2cbd-41ab-905d-22bc6b30756c.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/snow-gates.png",
+      "export": "exports/scenes/snow-gates.webp",
+      "bytes": 253958,
+      "sha256": "a1c5af26a1dec68406d0f37bc99ff3c96926f31579fcae4adae4d70941e2c44c"
+    },
+    {
+      "id": "roadside-pavilion",
+      "name": "灯与面·歇脚小亭",
+      "kind": "scenes",
+      "phase": 3,
+      "detail": "Modest Chinese roadside inn and open rain pavilion, repaired corner of tiled roof, small warm wooden lamp, dry straw mat and tiny ordinary mountain birds nesting under eaves, noodle stall in distance, no people and no magical birds.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Modest Chinese roadside inn and open rain pavilion, repaired corner of tiled roof, small warm wooden lamp, dry straw mat and tiny ordinary mountain birds nesting under eaves, noodle stall in distance, no people and no magical birds. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-80c729c4-16de-4a90-b3fc-ad649609a322.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/roadside-pavilion.png",
+      "export": "exports/scenes/roadside-pavilion.webp",
+      "bytes": 261678,
+      "sha256": "29285dba762321ace1db9f35d817c87168b4d5a598f1b06de6cd2b13ebefdc62"
+    },
+    {
+      "id": "farewell-garden",
+      "name": "告别与纪念·无名场所",
+      "kind": "scenes",
+      "phase": 3,
+      "detail": "Quiet Chinese mountain remembrance garden, simple uninscribed upright weathered stone and a low offering ledge with a plain cup, falling leaves, dignified soft daylight, no portrait, no name, no visible grave inscription or confirmed body.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Quiet Chinese mountain remembrance garden, simple uninscribed upright weathered stone and a low offering ledge with a plain cup, falling leaves, dignified soft daylight, no portrait, no name, no visible grave inscription or confirmed body. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-536aeb82-cd1c-4bfb-a1b1-2233f1347f5c.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/farewell-garden.png",
+      "export": "exports/scenes/farewell-garden.webp",
+      "bytes": 262406,
+      "sha256": "c29b5a2c852f13749cad1645d6cfd1bfdc9eeb4ecd170ad8e8cf2dea64312a42"
+    },
+    {
+      "id": "frontier-valley",
+      "name": "远行·新地域候选",
+      "kind": "scenes",
+      "phase": 4,
+      "detail": "Expansive Chinese mountain river valley with stone ferry town, terraced road leading to distant high crags, a modest waystation, several possible routes visible, mineral green ink landscape. No place names or realm symbols.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Expansive Chinese mountain river valley with stone ferry town, terraced road leading to distant high crags, a modest waystation, several possible routes visible, mineral green ink landscape. No place names or realm symbols. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-bfdc0a73-16f1-4271-9854-ab6eeaaadeb4.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/frontier-valley.png",
+      "export": "exports/scenes/frontier-valley.webp",
+      "bytes": 265972,
+      "sha256": "40c22e94d39005c299077edabffed540339efdba3613b8c195c28995b807c006"
+    },
+    {
+      "id": "signal-refuge",
+      "name": "断讯·内部避险处",
+      "kind": "scenes",
+      "phase": 4,
+      "detail": "Stable dry rock alcove along a Chinese ancient mountain road cut off by a shifted stone wall, packed provisions, rope, blank route markers and a small signal lantern, visible protected exit niche. No prisoner chains, no blood, no dead bodies.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Stable dry rock alcove along a Chinese ancient mountain road cut off by a shifted stone wall, packed provisions, rope, blank route markers and a small signal lantern, visible protected exit niche. No prisoner chains, no blood, no dead bodies. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-89ae04a8-e9f5-49df-86b9-cff3c916bb07.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/signal-refuge.png",
+      "export": "exports/scenes/signal-refuge.webp",
+      "bytes": 253380,
+      "sha256": "37034c16dcaa3441c4f2917d68d6e57a659f7c2bb36a4485675ac5279c9d47bc"
+    },
+    {
+      "id": "outer-rescue",
+      "name": "接应·外部通路",
+      "kind": "scenes",
+      "phase": 4,
+      "detail": "Ancient Chinese mountain gorge footbridge with a damaged span, safe outer ledge, rope anchor, small bronze signal node and narrow route around collapse, far ledge visible, no people, no impossible gulf.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Ancient Chinese mountain gorge footbridge with a damaged span, safe outer ledge, rope anchor, small bronze signal node and narrow route around collapse, far ledge visible, no people, no impossible gulf. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-29eb9c1a-964c-4a4d-8793-e8f1b8c3850b.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/outer-rescue.png",
+      "export": "exports/scenes/outer-rescue.webp",
+      "bytes": 236460,
+      "sha256": "e9a0504674cf5cdcc0c549f2a4fee27b6fff3c7ff316d7a0f2e6ece05147c6aa"
+    },
+    {
+      "id": "rescue-open",
+      "name": "双向救援·通路接通",
+      "kind": "scenes",
+      "phase": 4,
+      "detail": "Chinese gorge passage with two aligned small lanterns on opposite ledges, repaired temporary rope-and-board walkway, clear safe path toward dawn, both sides actively prepared but no people, no compulsory victory symbols.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Chinese gorge passage with two aligned small lanterns on opposite ledges, repaired temporary rope-and-board walkway, clear safe path toward dawn, both sides actively prepared but no people, no compulsory victory symbols. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-b471e55e-8a8d-44d9-adf1-cbeb1ccd24af.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/rescue-open.png",
+      "export": "exports/scenes/rescue-open.webp",
+      "bytes": 235240,
+      "sha256": "340e4ff74728f6fe65d01981d3cfb4d48dfcf9c81c7c332cca0032679d60025e"
+    },
+    {
+      "id": "recovery-stop",
+      "name": "脱险后·恢复与交代",
+      "kind": "scenes",
+      "phase": 4,
+      "detail": "Sheltered Chinese roadside recovery station in calm morning, two empty bedrolls, tea kettle, sealed medicine bottles, repaired packs and a worktable for letters, open door onto ordinary road, no medical machines.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Sheltered Chinese roadside recovery station in calm morning, two empty bedrolls, tea kettle, sealed medicine bottles, repaired packs and a worktable for letters, open door onto ordinary road, no medical machines. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-23f3ab3f-f8f2-48ec-b310-be30cb250149.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "alphaRange": null,
+      "original": "originals/scenes/recovery-stop.png",
+      "export": "exports/scenes/recovery-stop.webp",
+      "bytes": 184714,
+      "sha256": "9af739155c20b7950ca3a56e687191b8afc218e239aa04878c7b7af36d8cb442"
+    },
+    {
+      "id": "pinhole-paper",
+      "name": "药纸·三针孔",
+      "kind": "items",
+      "phase": 1,
+      "detail": "Single folded Chinese herbal wrapping paper with three clearly visible small needle holes grouped near one folded corner, plain blank paper no funeral text, subtle reused fiber. Close view, holes legible at small size.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Single folded Chinese herbal wrapping paper with three clearly visible small needle holes grouped near one folded corner, plain blank paper no funeral text, subtle reused fiber. Close view, holes legible at small size. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-97b37691-0d6f-43b5-ab3a-92e21d9d4c32.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1322,
+        1190
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/pinhole-paper.png",
+      "export": "exports/items/pinhole-paper.webp",
+      "bytes": 27142,
+      "sha256": "9f9b0e8539544d863c680d8723125e9ab520f0ce1ec84570a09b2688456f0bc1"
+    },
+    {
+      "id": "navigation-token",
+      "name": "引路木符",
+      "kind": "items",
+      "phase": 1,
+      "detail": "Single worn Chinese rectangular wooden route talisman with abstract shallow carved lines and small knotted cord, plain uninscribed reverse edge, no readable characters or magical ranks.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Single worn Chinese rectangular wooden route talisman with abstract shallow carved lines and small knotted cord, plain uninscribed reverse edge, no readable characters or magical ranks. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-b3d77708-8f53-4978-b196-5191029785d8.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1328,
+        1184
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/items/navigation-token.png",
+      "export": "exports/items/navigation-token.webp",
+      "bytes": 29510,
+      "sha256": "26001a33064492e2b1b0586cba002cca8f01432e70ee0f7977d6974407e71498"
+    },
+    {
+      "id": "survey-kit",
+      "name": "绘图工具",
+      "kind": "items",
+      "phase": 1,
+      "detail": "Compact Chinese cartographer kit: rolled blank route paper, ink brush protected in bamboo tube and coiled measuring cord, unified small group, no readable map addresses.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Compact Chinese cartographer kit: rolled blank route paper, ink brush protected in bamboo tube and coiled measuring cord, unified small group, no readable map addresses. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-315b98ad-272e-4b5a-96ba-f46fc3accd8a.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1312,
+        1199
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/survey-kit.png",
+      "export": "exports/items/survey-kit.webp",
+      "bytes": 38224,
+      "sha256": "0e4cce6680db5dc4cc100c9841f683723c76c53c3ff73b88b4036772ee8f119a"
+    },
+    {
+      "id": "relay-kit",
+      "name": "修阵与交接工具",
+      "kind": "items",
+      "phase": 1,
+      "detail": "Compact ancient Chinese navigation repair kit, small bronze disk, fitted wooden pegs, tied spare stone and simple wooden blank handover tally, no gears or modern tools.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Compact ancient Chinese navigation repair kit, small bronze disk, fitted wooden pegs, tied spare stone and simple wooden blank handover tally, no gears or modern tools. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-853cf649-f977-409a-a2c8-0f99df880f8a.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1310,
+        1200
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/relay-kit.png",
+      "export": "exports/items/relay-kit.webp",
+      "bytes": 36060,
+      "sha256": "46c653eb018a28598e1a88ac5722eb72ce82ae91f5cd7dd7be34602c33899b8d"
+    },
+    {
+      "id": "vow-tokens",
+      "name": "结契物件候选",
+      "kind": "items",
+      "phase": 2,
+      "detail": "Two equal simple uninscribed jade pendants, pale green and ivory, laid side by side with separate understated knotted silk cords, neither dominant, no names or permanent wedding symbols.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Two equal simple uninscribed jade pendants, pale green and ivory, laid side by side with separate understated knotted silk cords, neither dominant, no names or permanent wedding symbols. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-4d530a6b-f4ad-4c86-a826-bbfbec89d811.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1374,
+        1145
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/vow-tokens.png",
+      "export": "exports/items/vow-tokens.webp",
+      "bytes": 36584,
+      "sha256": "64fe2426ef87b8a1c2673fa6b18f877faffe640f6109db8a630624dc5ffbfc88"
+    },
+    {
+      "id": "revised-map",
+      "name": "修订路线图",
+      "kind": "items",
+      "phase": 2,
+      "detail": "Folded Chinese ink route map with a clear continuous main route, a dotted detour and one intentionally blank masked area, abstract map only, no writing, no personal house locations.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Folded Chinese ink route map with a clear continuous main route, a dotted detour and one intentionally blank masked area, abstract map only, no writing, no personal house locations. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-04cbd36c-f5cc-4efd-b2b0-ea3968eb8ac5.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/items/revised-map.png",
+      "export": "exports/items/revised-map.webp",
+      "bytes": 30828,
+      "sha256": "79fca27c609a32ac44517ef3fd1f305bdf0e0352c4faf940619484bbddd6c1bd"
+    },
+    {
+      "id": "travel-letter",
+      "name": "途中来信与未寄信",
+      "kind": "items",
+      "phase": 2,
+      "detail": "Plain Chinese paper letter folded partly open with blank writing area, simple woven cord, small travel-worn envelope, no text, no death or romance seal.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Plain Chinese paper letter folded partly open with blank writing area, simple woven cord, small travel-worn envelope, no text, no death or romance seal. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-98a0a64d-48da-4b36-8910-c737a6e21095.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1402,
+        1122
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/travel-letter.png",
+      "export": "exports/items/travel-letter.webp",
+      "bytes": 21480,
+      "sha256": "68a17300dbcad42366febe03f7bc45eeb829841c33cd137c53516be04ff0805f"
+    },
+    {
+      "id": "testament-pages",
+      "name": "族谱与账页候选",
+      "kind": "items",
+      "phase": 3,
+      "detail": "Small stack of Chinese stitched ledger pages, one naturally charred outer edge, two separate plain sheets and a wooden seal beside them, absolutely no legible text or accusations.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Small stack of Chinese stitched ledger pages, one naturally charred outer edge, two separate plain sheets and a wooden seal beside them, absolutely no legible text or accusations. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-dced3827-d55a-4134-9baa-49a81848b89f.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/testament-pages.png",
+      "export": "exports/items/testament-pages.webp",
+      "bytes": 35380,
+      "sha256": "dd74718cdcd739c08ec0cd23dcdc71197f2997f4e3c78c7fa8ef451f8a4dfdaa"
+    },
+    {
+      "id": "gate-relic",
+      "name": "门闩与半枚药签",
+      "kind": "items",
+      "phase": 3,
+      "detail": "Weathered wooden gate bolt with half of a small bamboo medicine tag trapped in a crack, snowmelt stains, no text, no blood; an evidence object not a weapon.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Weathered wooden gate bolt with half of a small bamboo medicine tag trapped in a crack, snowmelt stains, no text, no blood; an evidence object not a weapon. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-72d4bb22-50f6-4636-83e2-bba1a5cc3222.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1312,
+        1199
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/gate-relic.png",
+      "export": "exports/items/gate-relic.webp",
+      "bytes": 29724,
+      "sha256": "84a992e41d0804b6ff49c37fe1bce83076ffb69df6f9ab81b999d418c4d9db9c"
+    },
+    {
+      "id": "inheritance-case",
+      "name": "传承载体候选",
+      "kind": "items",
+      "phase": 1,
+      "detail": "Simple ancient Chinese stone-lined wooden case containing a plain jade slip and rolled cloth exercise diagram, muted jade and bronze, no realm rank labels, no explicit powers, not a treasure loot chest.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Simple ancient Chinese stone-lined wooden case containing a plain jade slip and rolled cloth exercise diagram, muted jade and bronze, no realm rank labels, no explicit powers, not a treasure loot chest. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-ac58612f-ffd8-4060-9cbc-44b9ba344240.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/items/inheritance-case.png",
+      "export": "exports/items/inheritance-case.webp",
+      "bytes": 22056,
+      "sha256": "e572a2c815f38fc52d060020cb3aac92423f70d644011913a52aad73695e8e3a"
+    },
+    {
+      "id": "signal-pair",
+      "name": "内外应答灯",
+      "kind": "items",
+      "phase": 4,
+      "detail": "Two small matching practical Chinese wooden signal lanterns, one lit softly amber and one unlit, simple lattice and paper shades, separate unobstructed silhouettes, no text.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Two small matching practical Chinese wooden signal lanterns, one lit softly amber and one unlit, simple lattice and paper shades, separate unobstructed silhouettes, no text. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-a04e8890-4ee1-4f01-aeb3-5e01a99a953b.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1456,
+        1080
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/signal-pair.png",
+      "export": "exports/items/signal-pair.webp",
+      "bytes": 33170,
+      "sha256": "297f461dab442bc3fff9978d5a0e50e8dc17b09ceba72741b8ee804a806eaf3e"
+    },
+    {
+      "id": "keepsake-bundle",
+      "name": "旧人物件与遗物候选",
+      "kind": "items",
+      "phase": 3,
+      "detail": "A respectfully wrapped small plain cloth bundle with a worn uninscribed wooden token and folded blank letter resting on top, no portrait, no death marking, no blood, suitable for a living person's belongings or remembrance only after story confirmation.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: A respectfully wrapped small plain cloth bundle with a worn uninscribed wooden token and folded blank letter resting on top, no portrait, no death marking, no blood, suitable for a living person's belongings or remembrance only after story confirmation. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-294ff279-3a00-4c00-aba1-da0d53e99009.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1330,
+        1182
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/keepsake-bundle.png",
+      "export": "exports/items/keepsake-bundle.webp",
+      "bytes": 31988,
+      "sha256": "0c253c5a72f974c98710853e18dc3f20349c11223b21c49c2042bb5f104a5c66"
+    },
+    {
+      "id": "array-response",
+      "name": "阵纹应答静态层",
+      "kind": "effects",
+      "phase": 4,
+      "detail": "A restrained flat Chinese circular formation glyph made of warm amber arcs and four simple directional node marks, no letters, no eye, no science-fiction HUD. Isolated transparent overlay, no scenery.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game effects. Primary request: A restrained flat Chinese circular formation glyph made of warm amber arcs and four simple directional node marks, no letters, no eye, no science-fiction HUD. Isolated transparent overlay, no scenery. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-a58a52e9-5cf0-4102-bcef-ff9247c69c70.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1295,
+        1214
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/effects/array-response.png",
+      "export": "exports/effects/array-response.webp",
+      "bytes": 48638,
+      "sha256": "144bb782626011d61b5793831f7768b4c5063f651873b7353a796792bd26e575"
+    },
+    {
+      "id": "route-mark",
+      "name": "绘图路标静态层",
+      "kind": "effects",
+      "phase": 4,
+      "detail": "Three simple painterly white chalk trail chevrons and one muted red cloth knot, coherent route marker overlay, no words, no actual landscape, clearly distinguishable shapes on transparent background.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game effects. Primary request: Three simple painterly white chalk trail chevrons and one muted red cloth knot, coherent route marker overlay, no words, no actual landscape, clearly distinguishable shapes on transparent background. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-ec6e46bf-155e-42ed-af40-54448c233873.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/effects/route-mark.png",
+      "export": "exports/effects/route-mark.webp",
+      "bytes": 31914,
+      "sha256": "1e08bfb66702442b5b2dcdef628b3d87c9e96da2f7901d7b49f754067351e7e2"
+    },
+    {
+      "id": "returned-proof",
+      "name": "退回刻样",
+      "detail": "A small Chinese woodblock printing proof showing abstract mountain path strokes with one section crossed out and blank margin for corrections, a simple carved wooden printing block beneath it. No readable text.",
+      "kind": "items",
+      "phase": 1,
+      "refs": [],
+      "gate": "ORIGIN候选；关键条件由UI提供，不代表已相识或恋爱",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: A small Chinese woodblock printing proof showing abstract mountain path strokes with one section crossed out and blank margin for corrections, a simple carved wooden printing block beneath it. No readable text. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9d2af1b4-8820-4349-9a26-b68ea6587b2a.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/returned-proof.png",
+      "export": "exports/items/returned-proof.webp",
+      "bytes": 37472,
+      "sha256": "ed7cf7c2254bc25c02e734107b8392722f3c43bc2b06548f5e19cd4c214fd8ce"
+    },
+    {
+      "id": "lamp-work-order",
+      "name": "修灯工单",
+      "detail": "A plain Chinese folded paper maintenance work order with blank ruled rows, tied beside a small worn wooden navigation lamp housing. No readable text, no romantic symbols.",
+      "kind": "items",
+      "phase": 1,
+      "refs": [],
+      "gate": "ORIGIN候选；关键条件由UI提供，不代表已相识或恋爱",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: A plain Chinese folded paper maintenance work order with blank ruled rows, tied beside a small worn wooden navigation lamp housing. No readable text, no romantic symbols. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-3bc829b2-1e48-4739-8794-a6761f95bb3b.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/lamp-work-order.png",
+      "export": "exports/items/lamp-work-order.webp",
+      "bytes": 35746,
+      "sha256": "819c88169e4f1d652972a87661ba0f03a57e78e90125a929ff1f52226b276637"
+    },
+    {
+      "id": "ordinary-spares",
+      "name": "普通备用件",
+      "detail": "A neatly cord-bound group of ordinary Chinese lamp repair parts: small wooden pegs, spare bronze ring and plain smooth formation stone. No glowing treasure, no modern parts.",
+      "kind": "items",
+      "phase": 1,
+      "refs": [],
+      "gate": "ORIGIN候选；关键条件由UI提供，不代表已相识或恋爱",
+      "status": "reviewed-candidate",
+      "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: A neatly cord-bound group of ordinary Chinese lamp repair parts: small wooden pegs, spare bronze ring and plain smooth formation stone. No glowing treasure, no modern parts. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-0e21aa74-5647-4174-9209-373f08efadcc.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "original": "originals/items/ordinary-spares.png",
+      "export": "exports/items/ordinary-spares.webp",
+      "bytes": 37306,
+      "sha256": "2caec061069f75d62362a3d285fc3e233b13bd3a91a87cfedec52e09e359d339"
+    },
+    {
+      "id": "shentinglan-simple",
+      "name": "沈听澜·简约服饰定稿候选",
+      "kind": "characters",
+      "phase": 1,
+      "refs": [
+        "public/characters/shentinglan.png"
+      ],
+      "detail": "成年道侣，简约无袖交领裙、收腰与开衩；沿用脸型长辫青灰配色。",
+      "gate": "成年沈听澜；不是玩家女角色；不预设恋爱成立",
+      "status": "reviewed-candidate",
+      "prompt": "Design revision for a Chinese fantasy game character, Shen Tinglan, an adult woman age 24 and professional cartographer. Use the reference only to preserve her face, thick dark side braid, Chinese appearance, and blue-grey ivory palette. Simplify her complex outfit: a clean sleeveless Chinese crossover-neck dress with a fitted waist, a single plain sash, bare arms and shoulders, a knee-high side opening for walking, and simple flat calf boots. Opaque fabric, practical coverage, elegant mature fashion. Keep neckline modest. Remove backpack, ragged cloth, cape, repeated belts, dangling ropes and elaborate embroidery. One small rolled map held in one hand. Confident upright relaxed standing pose. Refined Chinese ink and mineral watercolor illustration, accurate full-body anatomy. Entire person including boots within the frame and generous empty margin. Standalone transparent cutout, no scenery, no vignette, no text. The image is a costume design sheet with a single character, not a scene.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "../../../public/characters/shentinglan.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-simple.png",
+      "export": "exports/characters/shentinglan-simple.webp",
+      "bytes": 57316,
+      "sha256": "b4c3965a3e7306b72f80dcd9596040eb4ef26e77ab99a30ce0be485a0a9f4c1b"
+    },
+    {
+      "id": "shentinglan-outfit-courtyard",
+      "name": "沈听澜·庭院便装",
+      "detail": "Soft pale sage Chinese ruqun ensemble with opaque straight-neck fitted bodice and simple flowing ivory skirt, light open short robe resting on upper arms, bare shoulders and forearms, flat silk slippers. Modest full chest coverage. Gentle relaxed standing pose, one small teacup in hand, no background.",
+      "kind": "characters",
+      "phase": 2,
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "prompt": "Use case: identity-preserve. Adult Chinese woman Shen Tinglan age24, same face and long thick dark braid as reference. New distinct alternate outfit for this SAME character: Soft pale sage Chinese ruqun ensemble with opaque straight-neck fitted bodice and simple flowing ivory skirt, light open short robe resting on upper arms, bare shoulders and forearms, flat silk slippers. Modest full chest coverage. Gentle relaxed standing pose, one small teacup in hand, no background. Refined Chinese ink and mineral watercolor game illustration, natural realistic anatomy. Simplify clothes, two layers maximum, no ragged fabric, no multiple belts, no hanging ropes, no big cape. Entire full body and feet visible with ample margin. Single character, real transparent background, no vignette, no scenery, no text. Opaque practical clothing, fashion design.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-63132591-59ab-42fa-bb60-c740a942d9b5.png",
+      "gate": "成年沈听澜场合换装；不是已接入的换装系统",
+      "status": "reviewed-candidate",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-outfit-courtyard.png",
+      "export": "exports/characters/shentinglan-outfit-courtyard.webp",
+      "bytes": 43570,
+      "sha256": "45fc0d3f0ed592144b9973666e57d50044081f52f3b1b24afb69fd05ff57aaae"
+    },
+    {
+      "id": "shentinglan-outfit-date",
+      "name": "沈听澜·月下相约装",
+      "detail": "Deep muted plum elegant Chinese sleeveless wrap dress, modest crossover neckline, fitted waist with one thin antique-gold sash, tasteful knee-high side slit, simple matching low shoes. Bare arms and collarbones, one small jade hairpin, no busy embroidery or jewellery. Warm confident smile, relaxed standing pose. Refined mature fashion.",
+      "kind": "characters",
+      "phase": 2,
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "prompt": "Use case: identity-preserve. Adult Chinese woman Shen Tinglan age24, same face and long thick dark braid as reference. New distinct alternate outfit for this SAME character: Deep muted plum elegant Chinese sleeveless wrap dress, modest crossover neckline, fitted waist with one thin antique-gold sash, tasteful knee-high side slit, simple matching low shoes. Bare arms and collarbones, one small jade hairpin, no busy embroidery or jewellery. Warm confident smile, relaxed standing pose. Refined mature fashion. Refined Chinese ink and mineral watercolor game illustration, natural realistic anatomy. Simplify clothes, two layers maximum, no ragged fabric, no multiple belts, no hanging ropes, no big cape. Entire full body and feet visible with ample margin. Single character, real transparent background, no vignette, no scenery, no text. Opaque practical clothing, fashion design.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2a293653-53bb-4522-aeb8-0e7ca20993ad.png",
+      "gate": "成年沈听澜场合换装；不是已接入的换装系统",
+      "status": "reviewed-candidate",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-outfit-date.png",
+      "export": "exports/characters/shentinglan-outfit-date.webp",
+      "bytes": 48940,
+      "sha256": "5bfa59226d62f09a771b296c081dbd1ebe65730d6d3ab1d39e85d9ef485f6eb7"
+    },
+    {
+      "id": "shentinglan-outfit-travel",
+      "name": "沈听澜·出行装",
+      "detail": "Muted teal short sleeveless crossover tunic, narrow single leather belt, dark fitted knee-length trousers, simple calf boots, bare arms. Tiny map tube at hip, no backpack. Upright confident walking-ready pose. Practical clean athletic silhouette.",
+      "kind": "characters",
+      "phase": 2,
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "prompt": "Use case: identity-preserve. Adult Chinese woman Shen Tinglan age24, same face and long thick dark braid as reference. New distinct alternate outfit for this SAME character: Muted teal short sleeveless crossover tunic, narrow single leather belt, dark fitted knee-length trousers, simple calf boots, bare arms. Tiny map tube at hip, no backpack. Upright confident walking-ready pose. Practical clean athletic silhouette. Refined Chinese ink and mineral watercolor game illustration, natural realistic anatomy. Simplify clothes, two layers maximum, no ragged fabric, no multiple belts, no hanging ropes, no big cape. Entire full body and feet visible with ample margin. Single character, real transparent background, no vignette, no scenery, no text. Opaque practical clothing, fashion design.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-febe81be-c3f5-4980-8438-659ca5337d63.png",
+      "gate": "成年沈听澜场合换装；不是已接入的换装系统",
+      "status": "reviewed-candidate",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-outfit-travel.png",
+      "export": "exports/characters/shentinglan-outfit-travel.webp",
+      "bytes": 52892,
+      "sha256": "e0b1c66848bc13ed5934113a6d1590eb06fc7e11a012af4abec58d569e2950c9"
+    },
+    {
+      "id": "shentinglan-outfit-work",
+      "name": "沈听澜·绘图工作装",
+      "detail": "Warm ivory fitted short-sleeved wrap blouse, dusty russet high-waisted simple skirt opening below knee, flat cloth shoes, bare forearms. One small brush tucked in plain sash, holding a blank folded paper. Clean workwear, no armor or apron layers. Focused friendly face.",
+      "kind": "characters",
+      "phase": 2,
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "prompt": "Use case: identity-preserve. Adult Chinese woman Shen Tinglan age24, same face and long thick dark braid as reference. New distinct alternate outfit for this SAME character: Warm ivory fitted short-sleeved wrap blouse, dusty russet high-waisted simple skirt opening below knee, flat cloth shoes, bare forearms. One small brush tucked in plain sash, holding a blank folded paper. Clean workwear, no armor or apron layers. Focused friendly face. Refined Chinese ink and mineral watercolor game illustration, natural realistic anatomy. Simplify clothes, two layers maximum, no ragged fabric, no multiple belts, no hanging ropes, no big cape. Entire full body and feet visible with ample margin. Single character, real transparent background, no vignette, no scenery, no text. Opaque practical clothing, fashion design.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2c4a6216-6b76-41c6-a2f1-7384774f1a53.png",
+      "gate": "成年沈听澜场合换装；不是已接入的换装系统",
+      "status": "reviewed-candidate",
+      "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+      "referenceAsset": "originals/characters/shentinglan-simple.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "original": "originals/characters/shentinglan-outfit-work.png",
+      "export": "exports/characters/shentinglan-outfit-work.webp",
+      "bytes": 50992,
+      "sha256": "86448e51a06418939372e5e85070f13fce5aeec3408c0f88b2e6a4478c7a405c"
+    }
+  ]
+}

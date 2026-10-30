@@ -1,0 +1,13 @@
+{
+  "id": "pinhole-paper",
+  "name": "药纸·三针孔",
+  "kind": "items",
+  "phase": 1,
+  "detail": "Single folded Chinese herbal wrapping paper with three clearly visible small needle holes grouped near one folded corner, plain blank paper no funeral text, subtle reused fiber. Close view, holes legible at small size.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Single folded Chinese herbal wrapping paper with three clearly visible small needle holes grouped near one folded corner, plain blank paper no funeral text, subtle reused fiber. Close view, holes legible at small size. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-97b37691-0d6f-43b5-ab3a-92e21d9d4c32.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

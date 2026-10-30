@@ -1,0 +1,13 @@
+{
+  "id": "roadside-pavilion",
+  "name": "灯与面·歇脚小亭",
+  "kind": "scenes",
+  "phase": 3,
+  "detail": "Modest Chinese roadside inn and open rain pavilion, repaired corner of tiled roof, small warm wooden lamp, dry straw mat and tiny ordinary mountain birds nesting under eaves, noodle stall in distance, no people and no magical birds.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Modest Chinese roadside inn and open rain pavilion, repaired corner of tiled roof, small warm wooden lamp, dry straw mat and tiny ordinary mountain birds nesting under eaves, noodle stall in distance, no people and no magical birds. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-80c729c4-16de-4a90-b3fc-ad649609a322.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "frontier-mentor",
+  "name": "远行高手候选",
+  "kind": "characters",
+  "phase": 3,
+  "detail": "Older Chinese female cultivation mentor, grey hair in simple high knot, weathered calm face, austere dark jade robe, plain walking staff and small scroll bag, poised quietly without glowing halo or rank marks.",
+  "refs": [],
+  "gate": "NAR-04世界扩展；无名候选，境界能力待定",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Older Chinese female cultivation mentor, grey hair in simple high knot, weathered calm face, austere dark jade robe, plain walking staff and small scroll bag, poised quietly without glowing halo or rank marks. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-41eff422-7567-4fdd-a626-dd723ebb0ae4.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

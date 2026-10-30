@@ -1,0 +1,13 @@
+{
+  "id": "lamp-room",
+  "name": "守灯·共同守夜与交班",
+  "kind": "scenes",
+  "phase": 1,
+  "detail": "Chinese riverside navigation lamp room open toward a rough-water channel, large wooden lantern, bronze wind gauge, spare formation stone, simple duty board with blank rows, two small bowls on workbench, night with clear visual signal lamps. No people.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Chinese riverside navigation lamp room open toward a rough-water channel, large wooden lantern, bronze wind gauge, spare formation stone, simple duty board with blank rows, two small bowls on workbench, night with clear visual signal lamps. No people. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-77178956-3ce3-4feb-ad11-2c99cb69611b.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

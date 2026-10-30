@@ -1,0 +1,13 @@
+{
+  "id": "badger-atuan",
+  "name": "阿团·灵兽獾",
+  "kind": "characters",
+  "phase": 3,
+  "detail": "A small stocky Chinese mountain badger, natural short legs and black white face stripes, brown-grey fur, carrying a tiny Chinese wooden lantern gently by its handle in mouth. Friendly ordinary animal anatomy, no horns or magical armor.",
+  "refs": [],
+  "gate": "NAR-05；生活支线，不升格神兽",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: A small stocky Chinese mountain badger, natural short legs and black white face stripes, brown-grey fur, carrying a tiny Chinese wooden lantern gently by its handle in mouth. Friendly ordinary animal anatomy, no horns or magical armor. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-82feed22-83e2-4c38-979d-09780811a673.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

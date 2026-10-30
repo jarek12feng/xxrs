@@ -1,0 +1,13 @@
+{
+  "id": "outer-training",
+  "name": "外府修行院·挑战",
+  "kind": "scenes",
+  "phase": 1,
+  "detail": "Ancient Chinese cultivation training courtyard under the river bed, partially roofed stone hall, raised dry fighting platform centered, water flowing in perimeter channels, two clearly visible exits, weathered bronze formation nodes. No people or monsters baked in, no sci-fi technology.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Ancient Chinese cultivation training courtyard under the river bed, partially roofed stone hall, raised dry fighting platform centered, water flowing in perimeter channels, two clearly visible exits, weathered bronze formation nodes. No people or monsters baked in, no sci-fi technology. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-d9e21860-5643-4b6e-8d9d-759cd7586aa3.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

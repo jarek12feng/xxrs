@@ -1,0 +1,13 @@
+{
+  "id": "lamp-work-order",
+  "name": "修灯工单",
+  "detail": "A plain Chinese folded paper maintenance work order with blank ruled rows, tied beside a small worn wooden navigation lamp housing. No readable text, no romantic symbols.",
+  "kind": "items",
+  "phase": 1,
+  "refs": [],
+  "gate": "ORIGIN候选；关键条件由UI提供，不代表已相识或恋爱",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: A plain Chinese folded paper maintenance work order with blank ruled rows, tied beside a small worn wooden navigation lamp housing. No readable text, no romantic symbols. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-3bc829b2-1e48-4739-8794-a6761f95bb3b.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

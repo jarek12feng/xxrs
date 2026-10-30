@@ -1,0 +1,15 @@
+{
+  "id": "yinzhaochuan-growth",
+  "name": "尹照川·独立成长",
+  "kind": "characters",
+  "phase": 2,
+  "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. same face and signature clothing neatly repaired, a practical weather cloak and more organized tools, confident posture, no new realm symbols or crown.",
+  "refs": [
+    "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+  ],
+  "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. same face and signature clothing neatly repaired, a practical weather cloak and more organized tools, confident posture, no new realm symbols or crown. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. Reference preserves EXACT recognizable adult face, hair, wardrobe palette and identity.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-67ed0d6a-0f9e-4032-b1c5-d89692132424.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

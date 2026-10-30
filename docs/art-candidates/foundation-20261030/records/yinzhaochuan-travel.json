@@ -1,0 +1,15 @@
+{
+  "id": "yinzhaochuan-travel",
+  "name": "尹照川·同行与分别",
+  "kind": "characters",
+  "phase": 1,
+  "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. standing ready to walk with compact travel pack, neutral attentive expression.",
+  "refs": [
+    "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+  ],
+  "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: identity-preserve. Asset type: standalone full-body Chinese xianxia game character. Reference image preserves EXACT face, hair, clothing palette and identity, remove its background entirely. Primary request: Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. standing ready to walk with compact travel pack, neutral attentive expression. Style: refined mineral watercolor and Chinese ink, muted natural colors, believable anatomy. Single complete character head to both feet with all props visible and 12 percent transparent margin, no landscape, no text, no cast shadow rectangle, no aura. Real transparent background.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-f0887500-cf89-4cb5-b140-f8f7359c61c8.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}
