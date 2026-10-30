@@ -595,7 +595,7 @@ function download(value: unknown, suffix = "") {
   );
   const a = document.createElement("a");
   a.href = url;
-  a.download = "问道听松" + suffix + ".json";
+  a.download = "长生未央" + suffix + ".json";
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -854,7 +854,7 @@ onUnmounted(() => {
           ></span
         >
       </button>
-      <span v-else class="brand">问道听松</span>
+      <span v-else class="brand">长生未央</span>
       <button
         class="sound-toggle"
         :aria-pressed="soundPrefs.enabled"
@@ -886,8 +886,11 @@ onUnmounted(() => {
     </header>
     <main v-if="ready && titleScreen && !creating" class="title-screen">
       <p class="eyebrow">青玄界 · 听松山</p>
-      <h1>问道听松</h1>
-      <p>从听松山出发，修一身本领，留一段归路。</p>
+      <h1>长生未央</h1>
+      <p>
+        听松问道，云外求长生。<br />
+        仙途渺渺，或遇知己，结契同行。
+      </p>
       <button v-if="game" class="primary" @click="resumeGame">
         继续游戏<small
           >{{ game.name }} · {{ game.realm ? "筑基" : "炼气" }} · 第
@@ -910,7 +913,8 @@ onUnmounted(() => {
           <span class="eyebrow">筑基篇 / 初入仙途</span>
           <h1>初入听松山</h1>
           <p>
-            练成自己的法门，走出第一段仙途。<br />途中相遇的人，会记住你的选择。
+            山下药路上，一名药工迟迟未归。<br />
+            你的第一段历练，就从寻人入山开始。
           </p>
         </div>
       </div>

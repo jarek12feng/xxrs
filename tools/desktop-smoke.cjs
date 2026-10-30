@@ -33,7 +33,7 @@ app.whenReady().then(async () => {
         return { title: document.title, text: document.body.innerText, node: typeof require, images: [...document.images].map(i=>({src:i.src, ok:i.complete && i.naturalWidth>0})) };
       })()`,
     );
-    if (!ready.text.includes("问道听松") || ready.node !== "undefined")
+    if (!ready.text.includes("长生未央") || ready.node !== "undefined")
       throw new Error("Renderer failed or Node exposed");
     if (phase !== "write" && !ready.text.includes("桌面存档验收"))
       throw new Error("App UI did not restore the character");
