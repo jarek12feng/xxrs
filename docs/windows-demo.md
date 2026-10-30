@@ -1,6 +1,8 @@
 # Windows 试玩版
 
-目标为 Windows 10/11 x64。本地单机，不需要 Node、浏览器服务器或联网；没有 Steam SDK、账号、自动更新或付费功能。玩法与网页版一致；当前源码 v0.12.0 使用存档 v11，兼容旧 v10。下文安装包记录属于历史版本，本轮未重新打包 Windows 安装器。
+当前冻结试玩候选为 `playtest-20261029-A`（应用 v0.14.0、存档 v14），目标 Windows 10/11 x64。本地单机，无需 Node、浏览器服务器或联网；没有 Steam SDK、账号、自动更新或付费功能。
+
+本轮打包记录见 [冻结版 Windows 交付记录](playtest-windows-package.md)。给玩家的简短附件见 [试玩说明](playtest-kit/试玩说明.txt) 与 [反馈表](playtest-kit/反馈表.txt)；观察者使用 [完整试玩流程](first-30-min-playtest.md)。下文 0.10/0.11 等记录属于历史版本，不作为本轮 Windows 实机验收凭据。
 
 ## 构建与检查
 

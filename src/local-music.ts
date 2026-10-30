@@ -1,13 +1,14 @@
-// Loaded only by the explicitly opted-in local audition build.
+// Original file score, loaded after app mount; mute/gesture/visibility gates apply.
 export type MusicCue = "home" | "trial" | "journey" | "vista" | "mystery";
 export const musicNames: Record<MusicCue, string> = {
-  home: "新桃旧符 · 归家与坊市",
-  trial: "破阵乐 · 阵前关口",
-  journey: "少年游 · 山外同行",
-  vista: "御剑江湖 · 云海远望",
-  mystery: "悬疑1 · 旧阵疑云",
+  home: "听松入定 · 洞府与归家",
+  trial: "护路破阵 · 交锋",
+  journey: "青山同行 · 山外行路",
+  vista: "云海归灯 · 远望",
+  mystery: "渡口未寄 · 雨夜与旧阵",
 };
-export function sceneMusic(name: string): MusicCue {
+export function sceneMusic(name: string, shrineRelit = false): MusicCue {
+  if (name === "再见那座山祠" && shrineRelit) return "home";
   const cues: Record<string, MusicCue> = {
     雨夜渡口: "mystery",
     一封求助信: "mystery",
@@ -25,6 +26,7 @@ export function sceneMusic(name: string): MusicCue {
     无人的废驿: "mystery",
     灯还在等人: "mystery",
     再见那座山祠: "mystery",
+    有人等你归来: "home",
   };
   return cues[name] ?? "home";
 }
@@ -57,7 +59,9 @@ export function createMusicPlayer(
       [...voices].some((v) => v.cue === selected)
     )
       return;
-    const audio = factory(`/__local-music/${selected}.wav`);
+    const audio = factory(
+      `${import.meta.env.BASE_URL}audio/original-v1/${selected}.wav`,
+    );
     const voice: Voice = { audio, cue: selected, gain: 0, pending: true };
     audio.loop = true;
     audio.preload = "auto";
@@ -67,7 +71,7 @@ export function createMusicPlayer(
       if (!voices.has(voice)) return;
       failed = voice.cue;
       remove(voice);
-      report("本地配乐暂不能播放，请检查试听素材或再次点击开启声音。");
+      report("配乐暂不能播放，请再次点击开启声音。");
     };
     audio.onerror = fail;
     play(voice, fail);

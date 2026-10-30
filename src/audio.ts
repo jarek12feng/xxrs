@@ -1,3 +1,4 @@
+import type { createFileEffects } from "./file-effects";
 import { soundCues, type SoundCue } from "./sound-cues";
 // Procedural local soundscape. This module never reads or writes game state/RNG.
 export type SoundMood = "rain" | "mist" | "warm" | "moon";
@@ -30,6 +31,7 @@ export function soundSettings(raw: string | null): SoundSettings {
 }
 export function createSoundscape(
   factory: () => AudioContext = () => new AudioContext(),
+  files?: ReturnType<typeof createFileEffects>,
 ) {
   let ctx: AudioContext | undefined, bed: AudioBufferSourceNode | undefined;
   let filter: BiquadFilterNode | undefined, ambientGain: GainNode | undefined;
@@ -109,6 +111,7 @@ export function createSoundscape(
       try {
         ctx ??= factory();
         unlocked = true;
+        files?.unlock();
         await sync();
         return ctx.state === "running";
       } catch {
@@ -117,6 +120,7 @@ export function createSoundscape(
       }
     },
     settings(next: SoundSettings) {
+      files?.settings(next.enabled, next.effects);
       enabled = next.enabled;
       ambience = next.ambience;
       effects = next.effects;
@@ -140,10 +144,15 @@ export function createSoundscape(
     },
     hidden(value: boolean) {
       hidden = value;
+      files?.hidden(value);
       void sync();
     },
     cue(kind: SoundCue) {
       if (!available() || !ctx || effects === 0 || voices.size > 8) return;
+      if (files) {
+        files.cue(kind);
+        return;
+      }
       const { notes, wave, duration, spacing } = soundCues[kind];
       notes.forEach((frequency, i) => {
         const c = ctx!,
@@ -169,6 +178,7 @@ export function createSoundscape(
     },
     dispose() {
       disposed = true;
+      files?.dispose();
       silence();
       void ctx?.close().catch(() => {});
     },

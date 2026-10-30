@@ -6,3 +6,5 @@ import "./scene.css";
 createApp(App).use(createPinia()).mount("#app");
 
 import "./immersive.css";
+
+import "./readability.css";

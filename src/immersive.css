@@ -854,3 +854,81 @@
     min-width: 0;
   }
 }
+
+/* Combat controls own their hover/focus contrast inside the dark panel. */
+.modal[data-panel] .stance-options button {
+  background: #233b31;
+  color: #f4e6c1;
+  margin: 0;
+}
+.modal[data-panel]
+  .stance-options
+  button:is(:hover, :focus-visible):not(:disabled) {
+  background: #365448;
+  color: #fff2cd;
+  border-color: #e8cd8b;
+}
+.modal[data-panel] .stance-options button:focus-visible {
+  outline: 2px solid #e8cd8b;
+  outline-offset: 2px;
+}
+.modal[data-panel] .stance-options button:disabled {
+  opacity: 1;
+  background: #27342e;
+  color: #b4b8ac;
+  border-color: #697467;
+}
+.modal[data-panel] .stance-options button :is(strong, small, span) {
+  color: inherit;
+}
+.combat-numbers {
+  font-variant-numeric: tabular-nums;
+}
+.combat-numbers span {
+  display: block;
+}
+@media (max-width: 480px) {
+  .modal[data-panel] .duel-board {
+    padding: 12px;
+  }
+  .modal[data-panel] .stance-options {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .modal[data-panel] .stance-options button {
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .modal[data-panel] .stance-options .combat-numbers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 6px;
+    margin-top: 2px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .combat-numbers .combat-heal {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal[data-panel] .duel-board .stance-options button {
+    min-height: 52px;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 6px;
+    align-items: center;
+    padding: 7px 8px;
+  }
+  .modal[data-panel] .stance-options button strong {
+    font-size: 13px;
+  }
+  .modal[data-panel] .duel-board h3 {
+    margin: 8px 0;
+  }
+  .modal[data-panel] .duel-board .combat-receipt {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}

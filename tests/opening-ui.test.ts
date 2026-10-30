@@ -129,9 +129,13 @@ it("exposes independent sound controls without touching game saves", async () =>
   const sliders = document.querySelectorAll<HTMLInputElement>(
     'input[type="range"]',
   );
-  expect(sliders).toHaveLength(2);
-  sliders[0]!.value = "0";
+  expect(sliders).toHaveLength(3);
+  sliders[0]!.value = "0.2";
   sliders[0]!.dispatchEvent(new Event("input", { bubbles: true }));
+  await flush();
+  expect(localStorage.getItem("xxrs-local-music-volume")).toBe("0.2");
+  sliders[1]!.value = "0";
+  sliders[1]!.dispatchEvent(new Event("input", { bubbles: true }));
   await flush();
   expect(audio.settings).toHaveBeenLastCalledWith(
     expect.objectContaining({ ambience: 0 }),
@@ -239,13 +243,39 @@ it("plays the corresponding cultivation figure only after persistence succeeds, 
   expect(
     document.querySelector(".practice-stage")?.getAttribute("data-playing"),
   ).toBe("true");
-  expect(document.querySelector(".practice-stage .character-sprite img")?.getAttribute("src")).toContain("/art/characters/hero-male.webp");
-  expect(document.querySelector(".practice-stage .practice-prop img")?.getAttribute("src")).toContain("/art/items/herbs.webp");
+  expect(
+    document
+      .querySelector(".practice-stage .character-sprite img")
+      ?.getAttribute("src"),
+  ).toContain("/art/characters/hero-male.webp");
+  expect(
+    document
+      .querySelector(".practice-stage .practice-prop img")
+      ?.getAttribute("src"),
+  ).toContain("/art/items/herbs.webp");
   await vi.advanceTimersByTimeAsync(3600);
   await flush();
   expect(
     document.querySelector(".practice-stage")?.getAttribute("data-playing"),
   ).toBe("false");
+});
+it("automatic work emits a single death cue rather than a routine work cue", async () => {
+  const s = home();
+  s.age = s.limit - 1;
+  await mount(s);
+  button("洞府修行").click();
+  await flush();
+  button("劳作").click();
+  await flush();
+  audio.cue.mockClear();
+  button("自动行动").click();
+  await flush();
+  await vi.advanceTimersByTimeAsync(900);
+  await flush();
+  expect(audio.cue).toHaveBeenCalledWith("death");
+  expect(audio.cue).toHaveBeenCalledTimes(1);
+  await vi.advanceTimersByTimeAsync(1600);
+  expect(audio.cue).toHaveBeenCalledTimes(1);
 });
 
 it("returns from the cave to the unfinished expedition after breakthrough without spending resources", async () => {
