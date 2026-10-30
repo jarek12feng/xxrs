@@ -211,7 +211,7 @@ export function enrichReceipt(
     unlocked(
       a.step === "done",
       b.step === "done",
-      "第一卷完成 · 航图之外已开启",
+      "入山营救完成 · 青嶂行路已开启",
     );
     unlocked(a.road.map, b.road.map, "航图补全 · 青嶂关已开放");
     unlocked(a.road.ally, b.road.ally, "郁青已答应同行");

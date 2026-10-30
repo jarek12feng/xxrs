@@ -1,0 +1,1488 @@
+{
+  "note": "References locate evidence, not a legal license approval. Review generator account terms and any reference images before publishing.",
+  "assets": [
+    {
+      "path": "public/art/characters/golem-attack.webp",
+      "bytes": 107270,
+      "sha256": "379b9cada9eb2422f4acc90423c9915ac87755b07a070694ae2bad9a27fb18d9",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-candidates/v2/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/golem-hurt.webp",
+      "bytes": 94848,
+      "sha256": "b8378f05bff2ce77f5fcb665b7e71056b55c8d2242daab90cb6f807073dd0d15",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-candidates/v2/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/golem.webp",
+      "bytes": 101448,
+      "sha256": "17051456d63792f2aa555ab7303f22e206f46011db4f911cfd71fdbb16472e59",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-candidates/v2/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/gongyan.webp",
+      "bytes": 46422,
+      "sha256": "70111877a61f4f21d5e480f85ff88f5d5ea08ada88b05e776d8b369524cdf51f",
+      "references": [
+        "docs/art-candidates/v2/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/hero-female-attack.webp",
+      "bytes": 88718,
+      "sha256": "d86987d81886415423f4737c98ab86ac177e9d1e64bbcc56f757df690cc57b51",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/hero-female-meditate.webp",
+      "bytes": 82612,
+      "sha256": "769ee90d48c1d5a533a77de2b1f0c82daff433a0db87cb235da353851e06280e",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/hero-female.webp",
+      "bytes": 71326,
+      "sha256": "83fbecc9c51f32cb81aa7cf797ce2a3c11a0b926549f6c177716ce93d02d4774",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/hero-male-attack.webp",
+      "bytes": 90186,
+      "sha256": "cfdfd6917f8d303c6b1007b576a52b134f441d7639c925a686e4ee0252ee1970",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/hero-male-meditate.webp",
+      "bytes": 86562,
+      "sha256": "7d33db7607ac30c6c24643675b287a87f3145bbbcb0be2e79570e036146481c6",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/hero-male.webp",
+      "bytes": 76260,
+      "sha256": "19a21a9bacac18d4814d1b383be7aa01dc99a4e465e69088366ce586f324af8f",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/luchi.webp",
+      "bytes": 65144,
+      "sha256": "99a930319f5055b87a3f5db6ea8b74b4b36206a250302482e7adab0fa18b0384",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/peizhufeng.webp",
+      "bytes": 65754,
+      "sha256": "6324deaf9d11e672e92705ebaed8208fedbeeb400cb28d65fa62cab7a06fd569",
+      "references": [
+        "docs/art-candidates/v2/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/qingzhang.webp",
+      "bytes": 79082,
+      "sha256": "1646de069ccf9a8d4a8166fbe4681826e869fa254385de13064d720c304d603b",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/qiuxingluo.webp",
+      "bytes": 63768,
+      "sha256": "18f7fa86d21116a7a11399a65bde63a790d8f65654f82f7297055c51282554b7",
+      "references": [
+        "docs/art-candidates/v2/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/raider-attack.webp",
+      "bytes": 101974,
+      "sha256": "d83a3051b0a00fa3f57a8325a5f402167ca83bf6e9b8a457e59d5c2c664fdf6d",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/raider-hurt.webp",
+      "bytes": 99482,
+      "sha256": "00a43d8090685d0aaba302618dc9cfb6f7490e7459383bf1c3f10814e47849b7",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/raider.webp",
+      "bytes": 85816,
+      "sha256": "6f021d79a900470f2c72130f1175bc8bfb764cc9c56fca34cb5369c5c4eebf5b",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/characters/yuqing.webp",
+      "bytes": 65658,
+      "sha256": "3e1599693713397883d08ff04034c8423553dc515a0507d169911b5d7b2e3860",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/companionship/lamp-room.webp",
+      "bytes": 156170,
+      "sha256": "9a6db25ea0f2bcde0bd6e7a68ac1953e1f03898d7dab6abf390a63b74960ec78",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/companionship/print-workshop.webp",
+      "bytes": 173628,
+      "sha256": "2545ea71fb0e5a8a45cc51000c1a2db145dff7dd866178d62363636ead17a1cc",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/companionship/shentinglan-disagree.webp",
+      "bytes": 68294,
+      "sha256": "26d2c767ebfbaab8dcbb572063f54f76ec2fdf4821f510b954c6b6c188179aae",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/companionship/shentinglan-travel.webp",
+      "bytes": 62454,
+      "sha256": "ffc68a54ab16ee5d04802f2baf555c6e17867576cfe3536bed218323d7fd20c5",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/companionship/shentinglan-work.webp",
+      "bytes": 60090,
+      "sha256": "0022b3736069c8a8b7b57390053d2f361e6f266a5200a1cf0165cf36f676f8da",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/companionship/survey-shelter.webp",
+      "bytes": 249650,
+      "sha256": "05401eb083e6f317cb9ad2e241d17af8e5fb7873fa54f6d0a54c1b5d94a5dff0",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/companionship/yinzhaochuan-disagree.webp",
+      "bytes": 99874,
+      "sha256": "86df25287546654fe9949b74a301ba4cf9721714ab1cf1e5a6e550e0c45bb831",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/companionship/yinzhaochuan-travel.webp",
+      "bytes": 93690,
+      "sha256": "aad5a84c8ed0da463166987f16d6b6efe8b5a9021d6b2e56e8c89de3991239c8",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/companionship/yinzhaochuan-work.webp",
+      "bytes": 104366,
+      "sha256": "8a3d9de164b21b769ec4c08bff33ad2c3ae80484097cf2e6ff359da46360fe00",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/ferry-guard.webp",
+      "bytes": 52130,
+      "sha256": "48812443070705a32839708a82e2c64c1bcbdc63a0c996dcbef199c77c0b360f",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/ferry-return.webp",
+      "bytes": 251082,
+      "sha256": "0c49d7d5fe182b933ccd254d89c37959ca05fadd5acf28bf3bed595cc2b8a7d2",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/frontier-boatman.webp",
+      "bytes": 83578,
+      "sha256": "ba3e093d4c1f3a101ffeb0994dd6ea5cfb7c8076854fc59374a5d59c41efc566",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/frontier-mentor.webp",
+      "bytes": 66598,
+      "sha256": "e9ccf59d519c04a0ddc327a5a356ac4357f9ca9fcbf24aaeb4a41905972e34d3",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/frontier-valley.webp",
+      "bytes": 265972,
+      "sha256": "40c22e94d39005c299077edabffed540339efdba3613b8c195c28995b807c006",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/healer-sister.webp",
+      "bytes": 52354,
+      "sha256": "f40c5589c213e47194baa9d6aed3cba043f3ea1f41133a02563cb9007bbbec8b",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/herb-estate.webp",
+      "bytes": 279034,
+      "sha256": "e004858d01ce697037601118d3ddbfa1c69fceb91f34de3f3026863045c879eb",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/inheritance-room.webp",
+      "bytes": 212134,
+      "sha256": "6571fa680c7bec77936e5f0511032f5fd7816a6680292e776f525ba45752d43d",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/journey-fork.webp",
+      "bytes": 297088,
+      "sha256": "f3b79a523d163eb9dce85195fe6ed788bdc66e1df10aae0978138f6225de6e3b",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/outer-rescue.webp",
+      "bytes": 236460,
+      "sha256": "e9a0504674cf5cdcc0c549f2a4fee27b6fff3c7ff316d7a0f2e6ece05147c6aa",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/qu-heir.webp",
+      "bytes": 45258,
+      "sha256": "c6e4f892ac86cca5a33f86970f635757db469442a6b19e02ef7f5301df9964e7",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/rank-jiangwenhe.webp",
+      "bytes": 69326,
+      "sha256": "eb6a93629a8b37df8ef841253f0b00e3c449e4cf6b06e3e0d6310d0e1fc29658",
+      "references": [
+        "docs/art-candidates/foundation-board-20261030/README.md",
+        "docs/art-candidates/foundation-board-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/rank-luoli.webp",
+      "bytes": 68376,
+      "sha256": "fc8d777e5e66fadcff53263751f4dfbcc57fe3728618ff59968b399dc058cbc9",
+      "references": [
+        "docs/art-candidates/foundation-board-20261030/README.md",
+        "docs/art-candidates/foundation-board-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/rank-mengzhaoye.webp",
+      "bytes": 52650,
+      "sha256": "9034e215992627a7d081e00b2eb6ba64ab2f2f214fd6b81af64b703fea1389b8",
+      "references": [
+        "docs/art-candidates/foundation-board-20261030/README.md",
+        "docs/art-candidates/foundation-board-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/rank-zhouyanhui.webp",
+      "bytes": 84700,
+      "sha256": "9c352f1a9115165dad32574eebe0aadc9e09544ba59556d6d603d96fa9f137fa",
+      "references": [
+        "docs/art-candidates/foundation-board-20261030/README.md",
+        "docs/art-candidates/foundation-board-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/recovery-stop.webp",
+      "bytes": 184714,
+      "sha256": "9af739155c20b7950ca3a56e687191b8afc218e239aa04878c7b7af36d8cb442",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/reunion-courtyard.webp",
+      "bytes": 260310,
+      "sha256": "8df0b88249191c671a360c68ae9f563e9247ed674c9e8e9ce90ac39e9c5e3e02",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/roadside-pavilion.webp",
+      "bytes": 261678,
+      "sha256": "29285dba762321ace1db9f35d817c87168b4d5a598f1b06de6cd2b13ebefdc62",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/shentinglan-growth.webp",
+      "bytes": 64882,
+      "sha256": "cc4067c7a21b8a53c4acf2ce028308fc1072ace3bf3637eb2a307bafadf6ee8c",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/shentinglan-reunion.webp",
+      "bytes": 55490,
+      "sha256": "1ab1db7c468212c7b58c3b51238c91c48bac7dad0f8605a0a6777b2f6f59741e",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/shentinglan-vow.webp",
+      "bytes": 56628,
+      "sha256": "dbc4de4acc07c45b9a65580c2a65a28f1b97851ebcc0c28510d9b389db79a4ef",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/signal-refuge.webp",
+      "bytes": 253380,
+      "sha256": "37034c16dcaa3441c4f2917d68d6e57a659f7c2bb36a4485675ac5279c9d47bc",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/snow-gates.webp",
+      "bytes": 253958,
+      "sha256": "a1c5af26a1dec68406d0f37bc99ff3c96926f31579fcae4adae4d70941e2c44c",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/sunken-entry.webp",
+      "bytes": 269778,
+      "sha256": "90a74760dafd50df493c24ae26d6ebc6f7c03171a6f50377eaa1c0a1c2e959f1",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/vow-terrace.webp",
+      "bytes": 191976,
+      "sha256": "cf7f862a066f59055d1a74ec3625ffa2fdf8bd632eec33e8e502bcc7eb625b27",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/wuming-ferry.webp",
+      "bytes": 187866,
+      "sha256": "bb55bd80ace5a7ac7306be10c790f232dbfa2a09128e4bc2b8ced5b7d25e9deb",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/yinzhaochuan-growth.webp",
+      "bytes": 91666,
+      "sha256": "2e490f2c972f20a5ad2a316a25add560688527d219d5d1044ece5c9aaea76cf7",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/yinzhaochuan-reunion.webp",
+      "bytes": 81072,
+      "sha256": "92044dc831bb13859a256de490dcd3b6fae40798420ff2b24f08d8cb4d6f9c5a",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/foundation-journey/yinzhaochuan-vow.webp",
+      "bytes": 71584,
+      "sha256": "00b5fc21e3c7030ab56ccf56967e44b1ae00181b5016cfa126b70ec2b98e88ab",
+      "references": [
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/art/items/clarity-pill.webp",
+      "bytes": 6636,
+      "sha256": "54fb5941cb48273fcdea15446582b3d18187192f015def79d389319a77765c64",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-candidates/v2/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/family-letter.webp",
+      "bytes": 11288,
+      "sha256": "b74578052d1849852745a3e60cac8b49309a79d3e74783050fc05200afe7e5ec",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/foundation-pill.webp",
+      "bytes": 10168,
+      "sha256": "b0c55dc5f489f4535ab1e534bb8f0a2ee5056afb464137c13dd7bb5ea7324ce8",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-candidates/v2/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/healing-powder.webp",
+      "bytes": 10428,
+      "sha256": "0ce17862181f99bab38a1e74db246dec7f246e0b00cf5a8d674d6844908bd443",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-candidates/v2/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/herbs.webp",
+      "bytes": 17670,
+      "sha256": "f7d4b356d18bf0ab9c18b0eb43bee0f26c226db5907bfa4cce3c2ee7503a2221",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/manual-blade.webp",
+      "bytes": 11558,
+      "sha256": "55e8811b7a34fa18e33e5b998c7284b17584c3cd927dec407991ff6e407e13c0",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/manual-breath.webp",
+      "bytes": 12796,
+      "sha256": "d97bbb6d9b834648518af5d694c49350d9ceea8f131bf8fd2bf6d17b61c847a1",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/manual-guard.webp",
+      "bytes": 10074,
+      "sha256": "660b7bec83ed3fab5d0b2cc6a11f56bc39a02abc4fb81995cd6687a1b6dc51aa",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/manual-herb.webp",
+      "bytes": 11430,
+      "sha256": "04716b219a4881e49a74c96489fa59a98af34d7053340a8511c9a2665b2b9996",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/manual-lantern.webp",
+      "bytes": 10108,
+      "sha256": "94f985fd1c72e5eb9678ae3cc98ad3c65b4a8f623c93006c15208f5406aa6a33",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/manual-spring.webp",
+      "bytes": 14284,
+      "sha256": "0c630698f242209b4ffe9c95660476ef7adcb9215e4885c6979489884baa5c6b",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/medicine-tag.webp",
+      "bytes": 10382,
+      "sha256": "627e241499ca1976eec5b44d0d0fe6346cf6aaa03f2c02473f5485a5e1a38bba",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/route-map.webp",
+      "bytes": 11626,
+      "sha256": "970bdc14d1bbaf9acb646b550b66470de27b9a8e23458b4e6ce256c96b6bc98d",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/spirit-lantern.webp",
+      "bytes": 10704,
+      "sha256": "a804f99cef82f0cad7df96acf23d4ee004a05bb10627c851d15a907fb35ad48f",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/spirit-stone.webp",
+      "bytes": 9802,
+      "sha256": "e1de1a05de00d6058cf0f15fc0f2f61537270b84d9bdabb527877bc6f0adf820",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/sword-refined.webp",
+      "bytes": 5744,
+      "sha256": "4e388c46c89289988487c2c092d7dbf8133411fa22c23c6a359b3a63ab6be0b2",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/sword.webp",
+      "bytes": 5926,
+      "sha256": "d8331fc9f7b73a695ec785adcc2185a07ab9a0d0b0a1b7c3fd2b0a7a0c6c7b95",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/vial-refined.webp",
+      "bytes": 10050,
+      "sha256": "9f80620f6d93d54cc6919298830042cfa36d1e5cab1b0aa0c2a8a59ff57cccd7",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/art/items/vial.webp",
+      "bytes": 9674,
+      "sha256": "6700d2767f3ca5f4b21c6e6567d81c1fcd22a2d4b9879821b5c6295704fca59f",
+      "references": [
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-integration.md"
+      ],
+      "review": "source-png-reference-and-webp-integration-record"
+    },
+    {
+      "path": "public/audio/foundation-v2/array-open.wav",
+      "bytes": 512044,
+      "sha256": "878fa1ee266bcd1596b58f24e71d58507d1e511cafc9f5a8102113aeb772f4ae",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/boat-step.wav",
+      "bytes": 512044,
+      "sha256": "03809b54aba18af3ddcaf2fa4d86db1457bb595a5e927c09102f9ab7f8472eec",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/farewell.wav",
+      "bytes": 512044,
+      "sha256": "2217296d974774f3ccb8fc40751402d608b7db5cfb90452bb4841461f8b85fda",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/foundation.wav",
+      "bytes": 6144044,
+      "sha256": "1602cd826d9a24260dd38b399ffb69f4be3c08e2229af32f321bb7157391399e",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/frontier.wav",
+      "bytes": 5120044,
+      "sha256": "d80d023b0bfd1a2f67f846cccad37fc228b74394aeffb48d98c0ff947b954ea6",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/handover.wav",
+      "bytes": 512044,
+      "sha256": "25d1bf210e755d62892951c336436ed680f358ac14da245b529478ff9880e634",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/inheritance.wav",
+      "bytes": 512044,
+      "sha256": "9efed0ae9a5f7694ccf4b7d9375a86bba0ab1931535b58e813393911c7d074b1",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/lamp-align.wav",
+      "bytes": 512044,
+      "sha256": "62038606b7854cef5bac21d6de3b8d4d8398de9ade02f7aba907fc181aa1034c",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/lamps.wav",
+      "bytes": 6826712,
+      "sha256": "7e5cf437e17934b78cf532cca0ad0dc14e444c1bc3a8b4d10fcb9ae495590798",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/memorial.wav",
+      "bytes": 512044,
+      "sha256": "ce31414458313de07e84b73e65f991df0c4a9ac482f240b4f7f9b4f824290c57",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/parting.wav",
+      "bytes": 7228280,
+      "sha256": "e5ce91364e4375657d267a829776588b947cdea34b75c2583de7fb110caec033",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/rain-shelter.wav",
+      "bytes": 3072044,
+      "sha256": "9c7eac056bc540cc3cd843e500eab2a646c07fe2d8b1045c792221db8742e0fc",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/rescue-clear.wav",
+      "bytes": 512044,
+      "sha256": "3eceeaa65edf22320e2623069762070e09f669d74108ea2134979285dbe087a9",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/return.wav",
+      "bytes": 6467412,
+      "sha256": "a46544f6c4f3a16738706ceebe2906d43bd1d70688759e7b6c79bda070e09c4d",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/route-mark.wav",
+      "bytes": 512044,
+      "sha256": "e7a823dfc7a89efcbc11e527dd0e78542222cb5394d60c50341f6aeb06d99656",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/signal-reply.wav",
+      "bytes": 512044,
+      "sha256": "697c7893c91fe4c012726e46d2793dd34b901a8b4344d7d3ba15a01832f738a6",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/signal-send.wav",
+      "bytes": 512044,
+      "sha256": "a036dc6527601d88d1314bf5690081803acdeaebe06f246c591ccc6e66c46c89",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/snow-wind.wav",
+      "bytes": 3072044,
+      "sha256": "5d5d75a4921935307b5a6c28732c5fd7a5aad5f0f8cb5b6ecc753b92c7f4ff0a",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/sunken.wav",
+      "bytes": 8192044,
+      "sha256": "dc33794b057635185123d6399b9dad05701cebb2be67b009e8d5a6a20ce39e3f",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/survey.wav",
+      "bytes": 5851472,
+      "sha256": "405b05e8c5450fc1b0666b6b88cc8629d346e759006268385dc62072ede69cde",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/vow.wav",
+      "bytes": 512044,
+      "sha256": "eed51bc07367e122cd9547574e4a17db15ce1889d45e899f7763c70661285a3e",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/ward-learn.wav",
+      "bytes": 512044,
+      "sha256": "ccdaa0205bd9c8d250d127a4b9086c9f0afd523d7497130b69f42c8c21b4c73b",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/ward-test.wav",
+      "bytes": 512044,
+      "sha256": "2deffded2069206f163a6ef5047c1f1f35097dc45ba2b0669ef7e7ae9275d890",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/waterside.wav",
+      "bytes": 3072044,
+      "sha256": "ed236743f5aa4a06ebd77b85f02e96e8f9e1e8aeb6fae3f4017ddb5509f65bef",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/foundation-v2/wind-chimes.wav",
+      "bytes": 3072044,
+      "sha256": "c5a21da58c45e5ca2b3f4680e9201895d61c68d45fdd856b5d491dc228eeae58",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/breakthrough.wav",
+      "bytes": 882044,
+      "sha256": "0db6bb7d3b9ce6679295f70c93f53f3abd0fbb8c8ee549b019a85969a69d24db",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/choice.wav",
+      "bytes": 282284,
+      "sha256": "309972dacb809121d7d97d02e466376bc82908d5e829ac77d5307ad188b3a59d",
+      "references": [
+        "docs/audio-candidates/20261029/README.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/closure.wav",
+      "bytes": 705644,
+      "sha256": "c751ea757dac6677ece56f6a042ea23fb5f3d6c7db88e53e3e6cd236fd1d84d0",
+      "references": [
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/cultivate.wav",
+      "bytes": 388124,
+      "sha256": "1a24ac113e18390354461a7f32cd4a1150032c70c224ae7eaf18ef6728bb50eb",
+      "references": [
+        "docs/audio-candidates/20261029/README.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/death.wav",
+      "bytes": 793844,
+      "sha256": "ecf664b3ddf5df9644ae5fe88145f1a4bb9b974bc91eca04e4e12f8ab842e6a2",
+      "references": [
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/discern.wav",
+      "bytes": 229364,
+      "sha256": "35b77a5b0c2581555ad399ad3000175bbefa5a06ec470d1d5439c6b9353d91e9",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/discovery.wav",
+      "bytes": 335204,
+      "sha256": "120d7538ab2a5e1073952ca4fc51c2b122acf8780aa6a807244bcc17140b5fe1",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/failure.wav",
+      "bytes": 352844,
+      "sha256": "72624d678dd95dad0d454e151dc4cca3c0477544817c0bd81e44d4e150d8260b",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/audio-candidates/20261029/render.py"
+      ],
+      "review": "program-synthesis-collection-record"
+    },
+    {
+      "path": "public/audio/original-v1/gather.wav",
+      "bytes": 202904,
+      "sha256": "d3c13107c2c4084c6e65f2685f4e1eb4cea688e903d4cc778158775905c28c43",
+      "references": [
+        "docs/audio-candidates/20261029/README.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/guard.wav",
+      "bytes": 176444,
+      "sha256": "58a59b39d7ba36892e56698a28efb7dc08ec7c118ba9a713ecd54241a343a298",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/home.wav",
+      "bytes": 9961456,
+      "sha256": "4039e75fa8c8ede741c35440a6057ce0f5c9e0e9fa9330a3552928d6b07c987e",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/hurt.wav",
+      "bytes": 114704,
+      "sha256": "bdb67a2377626fdf5da62ce3805582ed46d2f3bf9200ccf0a0f4fee64854806c",
+      "references": [
+        "docs/audio-candidates/20261029/README.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/journey.wav",
+      "bytes": 8064044,
+      "sha256": "4978ecb0b47c84c0ecf308bdd8cf0363f7d2b236c116eb4ee8a24ff23c5fb8a7",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/medicine.wav",
+      "bytes": 317564,
+      "sha256": "9f33798c0001d32b39e3ec384e29b07aba6df3b75b498cc7bf5147671d32e62f",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/meditate.wav",
+      "bytes": 317564,
+      "sha256": "6fcc3b7ffc183bc6be831f8a9eb29e65be85d8cf650823b6af5c0a0e52ac9679",
+      "references": [
+        "docs/audio-candidates/20261029/README.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/mystery.wav",
+      "bytes": 12096044,
+      "sha256": "6773de51a1b292e7b664ee137c300b93758de61ca6edf519af6c96ac4515257a",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/promotion.wav",
+      "bytes": 758564,
+      "sha256": "54bf88026197e8913b9e4f8a609281533267339cd058d563577ea71892edd9ac",
+      "references": [
+        "docs/audio-candidates/20261029/README.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/rebirth.wav",
+      "bytes": 846764,
+      "sha256": "212968079d1d23e34b8b9632f26b837dc81bc8a2aacf38f33245061e04444502",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/audio-candidates/20261029/render.py"
+      ],
+      "review": "program-synthesis-collection-record"
+    },
+    {
+      "path": "public/audio/original-v1/rest.wav",
+      "bytes": 352844,
+      "sha256": "ef0f4d5ee87d1369a3d9dd753f5d9c118a3a02efaaa5499035f8af1921c02b91",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/reunion.wav",
+      "bytes": 617444,
+      "sha256": "b037b9a8bfabd4488530eb4aac871d648011b2fae9496e057c34e769d2a20289",
+      "references": [
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/step.wav",
+      "bytes": 56492,
+      "sha256": "36c870d62ddfc39a4aa12854e22d1a4b0adf9b219c9bff97eb0e7a6e3c81c5c2",
+      "references": [
+        "docs/audio-candidates/20261030/README.md",
+        "docs/audio-candidates/20261029/README.md",
+        "docs/audio-candidates/20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/strike.wav",
+      "bytes": 114704,
+      "sha256": "f7defb850085a6e1aa8564fca1f4e258cd1a43c1edbdea7492b21610a3e78697",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/study.wav",
+      "bytes": 149984,
+      "sha256": "bae1601d666c2f306f7ce7c00eb8201d0465b1aa1bcf81bb1be13afee08f9604",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/trial.wav",
+      "bytes": 6773804,
+      "sha256": "3387b8996e911506a4e6cc866f8c31c41c99d109c0453c0e7e8123784986d800",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/upgrade.wav",
+      "bytes": 493964,
+      "sha256": "71ffb1115fd1ed527c89e9d5da2c41cccb51ba6d0d6e1dbaa25c4cc8b32aab7c",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/victory.wav",
+      "bytes": 564524,
+      "sha256": "bd416940f484cf83cc13211fd508b80e7cc4ef0ed31eabd7f5962bf1befc2c39",
+      "references": [
+        "docs/audio-candidates/20261029/README.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/vista.wav",
+      "bytes": 10584044,
+      "sha256": "0e75649d67b9d25c174a7ba1b16467a755ebeea8ad69d5cdc89b139b28ee9c4b",
+      "references": [
+        "docs/audio-candidates/20261029/README.md",
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/audio/original-v1/work.wav",
+      "bytes": 114704,
+      "sha256": "91864007d1ba8882cf4b0923de3bd387ba59ee392c75c94abeb30171b7408c0d",
+      "references": [
+        "docs/art-candidates/foundation-20261030/audio.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/jiheng.png",
+      "bytes": 3460549,
+      "sha256": "30a68f16fca7f379f0fd72d609c09a283c9a1a706f4e0a579abb85c6a7dacbae",
+      "references": [
+        "docs/v4-character-assets.md",
+        "docs/playtest-freeze-manifest.md",
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/luchi-base.png",
+      "bytes": 3188650,
+      "sha256": "06d2e5e9923fab0f0ac12bf732c69aad851c8cd644fc13731b88d969ab661878",
+      "references": [
+        "docs/character-assets.md",
+        "docs/v4-character-assets.md",
+        "docs/playtest-freeze-manifest.md",
+        "docs/art-candidates/prompts.md",
+        "docs/art-candidates/v1/source-manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/luchi-ferry.png",
+      "bytes": 3418259,
+      "sha256": "0ab0064cf90ba474e11d017d57ea37c9426e789c49742bd54ac6c3c1da382298",
+      "references": [
+        "docs/character-assets.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/luchi-foundation.png",
+      "bytes": 2813902,
+      "sha256": "52439815aa3afceaaa7e3210a9dcf6bbb6da3adc7a5e15c0db8fc27dab98d1e6",
+      "references": [
+        "docs/character-assets.md",
+        "docs/playtest-freeze-manifest.md",
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/luchi-injured.png",
+      "bytes": 3038032,
+      "sha256": "e00c0d2177047ed73d2ce733cfce8e19f3e95d9ff746d258426ea14e54c84ce8",
+      "references": [
+        "docs/character-assets.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/luchi-relic.png",
+      "bytes": 3272384,
+      "sha256": "84b277502c1789cc7ddd92556b576305611ac613eac08f80fb0489f5ebd2e86b",
+      "references": [
+        "docs/v9-mist-letter.md",
+        "docs/character-assets.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/luchi-relieved.png",
+      "bytes": 3005286,
+      "sha256": "c5abaa64f63921128a4168d8cc3cf5d0d81878f400120990fda80cdaf400b523",
+      "references": [
+        "docs/character-assets.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/qingzhang.jpg",
+      "bytes": 223832,
+      "sha256": "f47e43c39dd58bd62eb5bca6f529a8b0dd6ceb60e1cefe4fa94d50a357dc1e80",
+      "references": [
+        "docs/v8-investigations.md",
+        "docs/playtest-freeze-manifest.md",
+        "docs/art-candidates/v1/source-manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/shentinglan.png",
+      "bytes": 3273766,
+      "sha256": "99e2439031a6d59050909781da254f5da831103357fb20d140dd8159c6fd1947",
+      "references": [
+        "docs/v5-social-scenes.md",
+        "docs/playtest-freeze-manifest.md",
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/wenheng.png",
+      "bytes": 3189789,
+      "sha256": "1b6bddc936d9d11036d16cac5faabf4d312a9e959e7d8e7e7f879c9f6f227719",
+      "references": [
+        "docs/v4-character-assets.md",
+        "docs/playtest-freeze-manifest.md",
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/yinzhaochuan.png",
+      "bytes": 3280803,
+      "sha256": "1fa4b10fdd148d9ee944f514075e5a093b44c4ed043a861ad4be57af3299623f",
+      "references": [
+        "docs/v5-social-scenes.md",
+        "docs/playtest-freeze-manifest.md",
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/characters/yuqing.jpg",
+      "bytes": 243688,
+      "sha256": "7d9809bb447bc61b232dca572e83e8f537a7c2415dc468a07a20e7c6f8c6b0d6",
+      "references": [
+        "docs/v8-investigations.md",
+        "docs/playtest-freeze-manifest.md",
+        "docs/art-candidates/v1/source-manifest.json",
+        "docs/art-candidates/foundation-20261030/manifest.json"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/mountains.svg",
+      "bytes": 2434,
+      "sha256": "37d50aaa8bd027a4c9632922da13d25955f7cfc4e7914df778b282493b86f3ab",
+      "references": [
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/scenes/apothecary.jpg",
+      "bytes": 618858,
+      "sha256": "50b582c93c397676bf1b73b037a63d81161dc0013959abbe8e4870b504df03c8",
+      "references": [
+        "docs/v6-scene-first.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/scenes/cloud-frontier.jpg",
+      "bytes": 702414,
+      "sha256": "69aa35b947bc28f720d02a9d074c87669fbf0b8b027706bcaf95755b3bea1f5a",
+      "references": [
+        "docs/v7-cloud-road.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/scenes/cultivation-world-atlas.png",
+      "bytes": 3521717,
+      "sha256": "4755cadf337a73dfb6564ad354ba496f8ee668b09e9a8cb2f99e9023b9bea5d8",
+      "references": [
+        "docs/implementation.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/scenes/mist-courier-station.jpg",
+      "bytes": 560530,
+      "sha256": "16f31da2d4ceee5b857c2123256634cc89701cc57e17de27db26ef8857947519",
+      "references": [
+        "docs/v9-mist-letter.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/scenes/mist-herb-garden.jpg",
+      "bytes": 650761,
+      "sha256": "11e3c6f0ae78beacb981e65213a05c1c640fe3a8f2bf18dd357e852b19164c7a",
+      "references": [
+        "docs/v9-mist-letter.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/scenes/mist-path.jpg",
+      "bytes": 738054,
+      "sha256": "db38ce0d9fdf966b366bc29148b12a7bfa82d65d166f08f055506e6320009cb5",
+      "references": [
+        "docs/v6-scene-first.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/scenes/moon-terrace.png",
+      "bytes": 3245102,
+      "sha256": "7ca696d42befc508410637457c85389af763d23ed42977e259ad7862a24ed092",
+      "references": [
+        "docs/v5-social-scenes.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/scenes/mountain-market.jpg",
+      "bytes": 784381,
+      "sha256": "4d75c869ecdc9916d475822e76c7aeb798bc41b20c53686b170d8a3f95218c3c",
+      "references": [
+        "docs/v7-cloud-road.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/scenes/sect-arena.png",
+      "bytes": 3294835,
+      "sha256": "71084cb4b27f4ee3094a594a79a48043fb82b69712173d997c088fbf3c68604b",
+      "references": [
+        "docs/v5-social-scenes.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    },
+    {
+      "path": "public/scenes/shrine-relit.jpg",
+      "bytes": 853515,
+      "sha256": "44e69e5b399bc7249949f868844c5e574780d2d9d0ce4cb60cec3adab6ef767e",
+      "references": [
+        "docs/v9-mist-letter.md",
+        "docs/playtest-freeze-manifest.md"
+      ],
+      "review": "source-reference-found"
+    }
+  ]
+}

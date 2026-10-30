@@ -9,8 +9,12 @@ import {
   watch,
   nextTick,
 } from "vue";
-const playtestEnabled =
-  new URLSearchParams(window.location.search).get("playtest") === "1";
+const playtestEnabled = ref(
+  new URLSearchParams(window.location.search).get("playtest") === "1",
+);
+import FeedbackPanel from "./feedback/FeedbackPanel.vue";
+import GameHelp from "./feedback/GameHelp.vue";
+import { build, playableScope } from "./feedback/build";
 const PlaytestRecorder = defineAsyncComponent(
   () => import("./playtest/PlaytestRecorder.vue"),
 );
@@ -188,6 +192,8 @@ const panelTitles: Record<string, string> = {
   queue: "修行安排",
   journal: "任务与见闻",
   system: "系统菜单",
+  feedback: "版本与反馈",
+  help: "玩法说明",
   saves: "保存与读取",
   backup: "备份与迁移",
   settings: "显示与声音",
@@ -262,7 +268,7 @@ function openPanel(id: string) {
   if (ui.busy || receiptExpanded.value) return;
   if (
     game.value?.expedition.duel &&
-    !["system", "saves", "settings", "backup"].includes(id)
+    !["system", "saves", "settings", "backup", "feedback", "help"].includes(id)
   )
     return;
   ui.running = false;
@@ -391,7 +397,9 @@ const soloRelic = computed(
 );
 const event = computed(() => (game.value ? eventView(game.value) : null));
 const systemOverlay = computed(() =>
-  ["system", "saves", "settings", "backup"].includes(dialog.value),
+  ["system", "saves", "settings", "backup", "feedback", "help"].includes(
+    dialog.value,
+  ),
 );
 const desktopRuntime = window.location.protocol === "xxrs:";
 function quitGame() {
@@ -903,6 +911,8 @@ onUnmounted(() => {
     <main v-if="ready && titleScreen && !creating" class="title-screen">
       <p class="eyebrow">青玄界 · 听松山</p>
       <h1>长生未央</h1>
+      <p>{{ playableScope }}</p>
+      <small>版本 {{ build.version }} · {{ build.id }}</small>
       <p>
         听松问道，云外求长生。<br />
         仙途渺渺，或遇知己，结契同行。
@@ -926,7 +936,7 @@ onUnmounted(() => {
       <div class="creation-art">
         <img src="/mountains.svg" alt="云海中的听松山" />
         <div class="art-copy">
-          <span class="eyebrow">筑基篇 / 初入仙途</span>
+          <span class="eyebrow">炼气篇 / 初入仙途</span>
           <h1>初入听松山</h1>
           <p>
             山下药路上，一名药工迟迟未归。<br />
@@ -1616,13 +1626,25 @@ onUnmounted(() => {
           </p>
           <p v-if="soundNotice" role="status">{{ soundNotice }}</p></template
         >
+        <GameHelp v-else-if="dialog === 'help'" :game="game" />
+        <FeedbackPanel
+          v-else-if="dialog === 'feedback'"
+          :game="game"
+          @recording="
+            playtestEnabled = true;
+            dialog = '';
+          "
+        />
         <div v-else class="system-options">
+          <p>{{ playableScope }}</p>
+          <small>版本 {{ build.version }} · {{ build.id }}</small>
           <button v-if="game" @click="dialog = 'saves'">
             保存游戏 / 读取进度</button
           ><button v-else @click="dialog = 'saves'">读取进度</button
           ><button v-if="desktopRuntime" :disabled="ui.busy" @click="quitGame">
             退出游戏</button
           ><button @click="dialog = 'settings'">显示与声音</button
+          ><button @click="dialog = 'feedback'">版本与反馈</button
           ><button @click="dialog = 'help'">玩法说明</button
           ><button @click="dialog = 'backup'">备份与迁移</button
           ><button
@@ -1869,19 +1891,6 @@ onUnmounted(() => {
         </p>
         <button class="primary full" @click="dialog = ''">合上档案</button>
       </template>
-      <template v-else
-        ><h2 id="modal-title" tabindex="-1">如何写下这段旅程</h2>
-        <p class="event-body">
-          根骨提高吐纳速度，悟性影响研读和替代丹方，神识通过凝神成长并影响识阵与控火。三项资质不是简单的突破率加点。医道采药炼丹，剑道历练争先。伤势可通过养伤消除；闭关固本提高突破把握，却可能错过第三十六个月的约定。陆迟事件链只在关键节点暂停，不会反复打断行动。
-        </p>
-        <p class="event-body">
-          修为达到 360
-          后主动突破。完成筑基篇后继续同一角色的修行与行旅，已学功法和人物关系保留。寿尽后可读取存档或新建角色；新角色不继承前一角色的奖励。宗门与散修都可获得功法；遇妖修或邪修挑战，可准备灵器、提升实力或请人护持。正常刷新会保留存档，清理浏览器数据、换设备或地址则可能丢失或不可见。每次行动先保存再显示；后台暂停，无离线收益。请定期导出备份，只使用一个标签页。
-        </p>
-        <button class="primary full" @click="dialog = ''">
-          我已知晓
-        </button></template
-      >
     </section>
   </div>
 </template>

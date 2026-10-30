@@ -79,7 +79,7 @@ const person = computed(() =>
       :key="game.adventure.step"
       :image="scene.image"
       :title="scene.name"
-      eyebrow="第一卷 · 雨中失踪的人"
+      eyebrow="炼气篇 · 雨中失踪的人"
       :body="scene.body"
       :speaker="person?.name"
       :portrait="person?.image"

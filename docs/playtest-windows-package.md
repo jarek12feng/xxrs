@@ -1,3 +1,7 @@
+# 历史交付记录：旧 A 版
+
+本文件记录 2026-10-29 的旧包，不是当前交付入口。请以 [Windows 免费试玩候选版](windows-demo.md) 和 [当前修复记录](steam-playtest-review/README.md) 为准。
+
 # 冻结版 Windows 试玩交付记录
 
 日期：2026-10-29。冻结编号 `playtest-20261029-A`，应用 v0.14.0，存档 v14。

@@ -1,0 +1,57 @@
+name: Windows demo
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:desktop
+      - run: npm run package:win
+      - name: Install and launch the built installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installer = (Get-ChildItem release/*Setup.exe).FullName
+          $target = Join-Path $env:RUNNER_TEMP 'XXRS Demo'
+          $install = Start-Process -FilePath $installer -ArgumentList '/S', "/D=$target" -Wait -PassThru
+          if ($install.ExitCode -ne 0) { throw "Installer failed: $($install.ExitCode)" }
+          $exe = Join-Path $target 'cultivation-life.exe'
+          if (!(Test-Path $exe)) { throw 'Installed executable missing' }
+          node tools/test-desktop.cjs "$target/resources/app.asar/desktop/main.cjs"
+          if ($LASTEXITCODE -ne 0) { throw 'Installed resources or save recovery failed' }
+          $game = Start-Process -FilePath $exe -PassThru
+          try {
+            $deadline = (Get-Date).AddSeconds(30)
+            do {
+              Start-Sleep -Milliseconds 500
+              $game.Refresh()
+              if ($game.HasExited) { throw 'Installed game exited before showing a window' }
+            } until ($game.MainWindowHandle -ne 0 -or (Get-Date) -gt $deadline)
+            if ($game.MainWindowHandle -eq 0) { throw 'Installed game window missing' }
+          } finally {
+            if (!$game.HasExited) {
+              $game.CloseMainWindow() | Out-Null
+              if (!$game.WaitForExit(10000)) { $game.Kill(); throw "Game did not exit cleanly" }
+              if ($game.ExitCode -ne 0) { throw "Game exit failed: $($game.ExitCode)" }
+            }
+          }
+      - run: node tools/package-playtest.mjs
+      - run: node tools/package-release-manifest.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Windows-demo-x64
+          path: |
+            release/*Setup.exe
+            release/*.zip
+            release/release-manifest.json
+            release/试玩说明.txt
+          retention-days: 14

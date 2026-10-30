@@ -1,0 +1,18 @@
+{
+  "version": "0.15.0",
+  "id": "playtest-bbca927c6148",
+  "sourceSha256": "bbca927c61487a10a287852aeb3aa1531661cb3ec19df8b6f9e04d98876b2b35",
+  "baseCommit": "0eed9bd4e9bb32323cb766172ce1b3ca4e409f52",
+  "createdAt": "2026-10-30T09:38:38.723Z",
+  "artifacts": [
+    {
+      "name": "ChangShengWeiYang-Demo-0.15.0-Windows-x64-Setup.exe",
+      "sha256": "8da2250f3accc6fedf01a8a0eea7581b5cfbf04d2ee4ee39c1113162bfc95d64"
+    },
+    {
+      "name": "ChangShengWeiYang-Demo-0.15.0-Windows-x64.zip",
+      "sha256": "5eac61ce8f837c62c0b9bfa147a0f2caea129d2b18400dc37bf665b06c02aa37"
+    }
+  ],
+  "acceptance": "candidate-only; see docs/steam-playtest-review/README.md"
+}

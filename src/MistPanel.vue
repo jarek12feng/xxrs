@@ -126,7 +126,7 @@ const choices = computed<Choice[]>(() => {
                     : "沿根脉疏通石渠",
               hint:
                 props.game.adventure.rescueChoice === "roots"
-                  ? "第一卷留下成株的回响；独自完成，不耗灵草"
+                  ? "入山时留下成株的回响；独自完成，不耗灵草"
                   : props.game.adventure.road.solution === "medicine"
                     ? "沿用青嶂关救草手法；可独自完成，不耗灵草"
                     : r.lamp
@@ -213,7 +213,7 @@ const choices = computed<Choice[]>(() => {
             {
               action: "home",
               label: "把墙后的誓言带回去",
-              hint: "第三卷已完成；可补探另一处证据或继续其他见闻",
+              hint: "雾海来信已完成；可补探另一处证据或继续其他见闻",
             },
           ]
         : [
@@ -327,7 +327,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
       :key="m.stage + String(m.revisited)"
       :image="scene.image"
       :title="scene.title"
-      eyebrow="第三卷 · 雾海来信"
+      eyebrow="筑基见闻 · 雾海来信"
       :body="scene.body"
       :speaker="person.name"
       :portrait="person.portrait"
@@ -340,7 +340,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
       />
     </SceneBackdrop>
     <section class="scene-controls" aria-label="雾海探索操作区">
-      <ol class="chapter-track" aria-label="第三卷进度">
+      <ol class="chapter-track" aria-label="雾海来信进度">
         <li class="passed">迟到的信</li>
         <li :class="{ passed: m.garden || m.station }">分路寻证</li>
         <li :class="{ passed: m.passed }">共渡雾海</li>
@@ -567,7 +567,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
           返回行营 · 调整准备或补探另一条路 →</button
         ><button @click="emit('cultivate')">
           查看完整修行、师门与人物关系 →</button
-        ><button @click="emit('road')">回看第二卷 · 坊市与云路 →</button>
+        ><button @click="emit('road')">回看青嶂行路 · 坊市与云路 →</button>
       </div>
       <p class="adventure-footnote">
         探索与入阵不耗月份，修行仍会推进时间；遇来信或赴约时暂停。进度自动保存。

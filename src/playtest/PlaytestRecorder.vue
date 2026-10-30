@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
+import { build as buildInfo } from "../feedback/build";
 import type { State } from "../world";
 import {
   startRecord,
@@ -11,7 +12,7 @@ const props = defineProps<{ game: State | null }>();
 const record = ref<PlaytestRecord | null>(null),
   active = ref(false),
   message = ref("");
-const build = ref("开发构建（不可用于冻结版盲测）");
+const build = ref(`${buildInfo.version} / ${buildInfo.id}`);
 function mark(kind: string) {
   if (record.value && active.value)
     appendRecord(record.value, kind, props.game, Date.now());
@@ -59,17 +60,6 @@ const beforeUnload = (e: BeforeUnloadEvent) => {
 onMounted(async () => {
   document.addEventListener("visibilitychange", visibility);
   window.addEventListener("beforeunload", beforeUnload);
-  try {
-    const response = await fetch(
-      `${import.meta.env.BASE_URL}playtest-build.json`,
-    );
-    if (response.ok) {
-      const data = await response.json();
-      if (typeof data.id === "string") build.value = data.id;
-    }
-  } catch {
-    /* A development preview has no manifest. */
-  }
 });
 onUnmounted(() => {
   document.removeEventListener("visibilitychange", visibility);

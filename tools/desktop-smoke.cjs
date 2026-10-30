@@ -51,7 +51,7 @@ app.whenReady().then(async () => {
         origin: window.webContents.getURL(),
         stateVersion: result.version,
         images: ready.images.length,
-        passed: true,
+        assertionsPassed: true, // Parent checks the process exit separately.
       }),
     );
     clearTimeout(timeout);

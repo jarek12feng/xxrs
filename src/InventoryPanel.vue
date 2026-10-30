@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { foundationGoal } from "./foundation";
 import ItemArt from "./presentation/ItemArt.vue";
 import SceneResponse from "./SceneResponse.vue";
 import type { ActionReceipt } from "./action-feedback";
@@ -171,13 +172,15 @@ const item = computed(
       </template>
       <button
         v-if="item.id === 'pills'"
-        :disabled="busy || game.realm > 0 || game.qi < 360"
+        :disabled="busy || game.realm > 0"
         @click="emit('breakthrough')"
       >
-        前往突破
+        查看筑基准备
       </button>
-      <p v-if="item.id === 'pills' && game.qi < 360">
-        修为达到 360 后可尝试筑基。
+      <p v-if="item.id === 'pills'">
+        炼气修为 360 与一枚筑基丹缺一不可；每次尝试都消耗丹药。{{
+          foundationGoal(game)
+        }}
       </p>
     </section>
   </div>

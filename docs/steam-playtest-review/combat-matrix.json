@@ -1,0 +1,7277 @@
+{
+  "method": "Equal-budget synthetic combat fixtures; 160-state bounded search, no player win rates or elapsed playtime",
+  "rows": [
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "culmination",
+      "plan": {
+        "turns": 8,
+        "hp": 22,
+        "grass": 4,
+        "moves": [
+          "guard",
+          "strike",
+          "guard",
+          "discern",
+          "guard",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "discern",
+            "discern",
+            "discern",
+            "strike",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "well",
+      "plan": {
+        "turns": 5,
+        "hp": 16,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 23,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 22,
+          "grass": 1,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "exit",
+      "plan": {
+        "turns": 6,
+        "hp": 16,
+        "grass": 3,
+        "moves": [
+          "guard",
+          "guard",
+          "discern",
+          "guard",
+          "strike",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 21,
+          "grass": 6,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 10,
+          "grass": 2,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "estate",
+      "plan": {
+        "turns": 5,
+        "hp": 23,
+        "grass": 1,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 18,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 13,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "snow",
+      "plan": {
+        "turns": 6,
+        "hp": 16,
+        "grass": 3,
+        "moves": [
+          "guard",
+          "strike",
+          "strike",
+          "guard",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 28,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 10,
+          "grass": 3,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "frontier",
+      "plan": {
+        "turns": 6,
+        "hp": 22,
+        "grass": 2,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 29,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 22,
+          "grass": 2,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "rescue",
+      "plan": {
+        "turns": 7,
+        "hp": 36,
+        "grass": 3,
+        "moves": [
+          "guard",
+          "discern",
+          "strike",
+          "guard",
+          "guard",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 36,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 36,
+          "grass": 3,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "rank1",
+      "plan": {
+        "turns": 6,
+        "hp": 24,
+        "grass": 3,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 28,
+          "grass": 7,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 20,
+          "grass": 2,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "rank2",
+      "plan": {
+        "turns": 6,
+        "hp": 13,
+        "grass": 3,
+        "moves": [
+          "guard",
+          "guard",
+          "guard",
+          "discern",
+          "strike",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 26,
+          "grass": 6,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 1,
+          "grass": 1,
+          "moves": [
+            "strike",
+            "guard",
+            "strike",
+            "discern",
+            "strike",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "rank3",
+      "plan": {
+        "turns": 6,
+        "hp": 22,
+        "grass": 2,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 29,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 22,
+          "grass": 2,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "rank4",
+      "plan": {
+        "turns": 7,
+        "hp": 29,
+        "grass": 3,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 29,
+          "grass": 3,
+          "moves": [
+            "guard",
+            "discern",
+            "guard",
+            "strike",
+            "guard",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "spring",
+      "id": "rank5",
+      "plan": {
+        "turns": 8,
+        "hp": 16,
+        "grass": 3,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 6,
+          "grass": 2,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "discern",
+            "strike",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "culmination",
+      "plan": {
+        "turns": 7,
+        "hp": 1,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "guard",
+          "discern",
+          "guard",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "discern",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "well",
+      "plan": {
+        "turns": 5,
+        "hp": 15,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 14,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "exit",
+      "plan": {
+        "turns": 5,
+        "hp": 6,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 6,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "estate",
+      "plan": {
+        "turns": 5,
+        "hp": 14,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 13,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "snow",
+      "plan": {
+        "turns": 5,
+        "hp": 2,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "frontier",
+      "plan": {
+        "turns": 5,
+        "hp": 9,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 4,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "rescue",
+      "plan": {
+        "turns": 7,
+        "hp": 11,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "strike",
+          "guard",
+          "guard",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 11,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "rank1",
+      "plan": {
+        "turns": 5,
+        "hp": 16,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 16,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "rank2",
+      "plan": {
+        "turns": 5,
+        "hp": 5,
+        "grass": 0,
+        "moves": [
+          "strike",
+          "guard",
+          "strike",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 5,
+          "grass": 0,
+          "moves": [
+            "strike",
+            "guard",
+            "strike",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "rank3",
+      "plan": {
+        "turns": 6,
+        "hp": 4,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 4,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "rank4",
+      "plan": {
+        "turns": 6,
+        "hp": 8,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 3,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "guard",
+            "strike",
+            "guard",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "blade",
+      "id": "rank5",
+      "plan": {
+        "turns": 7,
+        "hp": 2,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 2,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "culmination",
+      "plan": {
+        "turns": 7,
+        "hp": 12,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "discern",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "discern",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "well",
+      "plan": {
+        "turns": 4,
+        "hp": 12,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "discern",
+          "discern",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 12,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 20,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "exit",
+      "plan": {
+        "turns": 5,
+        "hp": 5,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "estate",
+      "plan": {
+        "turns": 4,
+        "hp": 30,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 2,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 30,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "snow",
+      "plan": {
+        "turns": 5,
+        "hp": 3,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "discern",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "frontier",
+      "plan": {
+        "turns": 5,
+        "hp": 6,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "discern",
+          "strike",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 4,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 12,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "rescue",
+      "plan": {
+        "turns": 6,
+        "hp": 23,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "discern",
+          "guard",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 19,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "rank1",
+      "plan": {
+        "turns": 5,
+        "hp": 20,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 20,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "rank2",
+      "plan": {
+        "turns": 5,
+        "hp": 9,
+        "grass": 0,
+        "moves": [
+          "strike",
+          "guard",
+          "strike",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 9,
+          "grass": 0,
+          "moves": [
+            "strike",
+            "guard",
+            "strike",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "rank3",
+      "plan": {
+        "turns": 5,
+        "hp": 17,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 4,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 12,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "rank4",
+      "plan": {
+        "turns": 7,
+        "hp": 11,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 11,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "guard",
+            "strike",
+            "guard",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "normal",
+      "technique": "breath",
+      "id": "rank5",
+      "plan": {
+        "turns": 7,
+        "hp": 14,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 14,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "culmination",
+      "plan": {
+        "turns": 7,
+        "hp": 37,
+        "grass": 3,
+        "moves": [
+          "guard",
+          "strike",
+          "guard",
+          "discern",
+          "guard",
+          "strike",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 22,
+          "grass": 4,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "discern",
+            "discern",
+            "discern",
+            "strike",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "well",
+      "plan": {
+        "turns": 5,
+        "hp": 36,
+        "grass": 1,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 56,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 8,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 28,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "exit",
+      "plan": {
+        "turns": 5,
+        "hp": 18,
+        "grass": 1,
+        "moves": [
+          "discern",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 33,
+          "grass": 6,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 22,
+          "grass": 2,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "estate",
+      "plan": {
+        "turns": 5,
+        "hp": 36,
+        "grass": 2,
+        "moves": [
+          "guard",
+          "guard",
+          "strike",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 52,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 25,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "snow",
+      "plan": {
+        "turns": 6,
+        "hp": 50,
+        "grass": 4,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "guard",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 40,
+          "grass": 7,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 20,
+          "grass": 3,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "frontier",
+      "plan": {
+        "turns": 6,
+        "hp": 46,
+        "grass": 3,
+        "moves": [
+          "discern",
+          "guard",
+          "guard",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 54,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 34,
+          "grass": 2,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "rescue",
+      "plan": {
+        "turns": 7,
+        "hp": 64,
+        "grass": 5,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "guard",
+          "guard",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 66,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 46,
+          "grass": 3,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "rank1",
+      "plan": {
+        "turns": 5,
+        "hp": 42,
+        "grass": 2,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 38,
+          "grass": 6,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 42,
+          "grass": 2,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "rank2",
+      "plan": {
+        "turns": 5,
+        "hp": 32,
+        "grass": 2,
+        "moves": [
+          "guard",
+          "guard",
+          "strike",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 37,
+          "grass": 5,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 26,
+          "grass": 1,
+          "moves": [
+            "strike",
+            "guard",
+            "strike",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "rank3",
+      "plan": {
+        "turns": 6,
+        "hp": 50,
+        "grass": 4,
+        "moves": [
+          "guard",
+          "guard",
+          "strike",
+          "guard",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 52,
+          "grass": 7,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 34,
+          "grass": 2,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "rank4",
+      "plan": {
+        "turns": 6,
+        "hp": 54,
+        "grass": 3,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 26,
+          "grass": 8,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 54,
+          "grass": 3,
+          "moves": [
+            "guard",
+            "discern",
+            "guard",
+            "strike",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "spring",
+      "id": "rank5",
+      "plan": {
+        "turns": 7,
+        "hp": 39,
+        "grass": 3,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 32,
+          "grass": 2,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "culmination",
+      "plan": {
+        "turns": 6,
+        "hp": 18,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "discern",
+            "discern",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "well",
+      "plan": {
+        "turns": 4,
+        "hp": 38,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 9,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 8,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 38,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "exit",
+      "plan": {
+        "turns": 4,
+        "hp": 26,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": true,
+          "hp": 5,
+          "grass": 0,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 18,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "estate",
+      "plan": {
+        "turns": 4,
+        "hp": 38,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 38,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "snow",
+      "plan": {
+        "turns": 5,
+        "hp": 24,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 15,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "frontier",
+      "plan": {
+        "turns": 5,
+        "hp": 22,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 16,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "rescue",
+      "plan": {
+        "turns": 6,
+        "hp": 35,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "strike",
+          "guard",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 23,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "rank1",
+      "plan": {
+        "turns": 4,
+        "hp": 33,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 11,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": true,
+          "hp": 8,
+          "grass": 0,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 28,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "rank2",
+      "plan": {
+        "turns": 4,
+        "hp": 30,
+        "grass": 0,
+        "moves": [
+          "strike",
+          "guard",
+          "strike",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": true,
+          "hp": 3,
+          "grass": 0,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 17,
+          "grass": 0,
+          "moves": [
+            "strike",
+            "guard",
+            "strike",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "rank3",
+      "plan": {
+        "turns": 5,
+        "hp": 22,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 16,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "rank4",
+      "plan": {
+        "turns": 5,
+        "hp": 15,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "strike",
+          "strike",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": true,
+          "hp": 2,
+          "grass": 0,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 28,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "guard",
+            "strike",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "blade",
+      "id": "rank5",
+      "plan": {
+        "turns": 6,
+        "hp": 23,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 7,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "strike",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "culmination",
+      "plan": {
+        "turns": 6,
+        "hp": 19,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "discern",
+            "discern",
+            "strike",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "well",
+      "plan": {
+        "turns": 4,
+        "hp": 42,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 9,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 22,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 42,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "exit",
+      "plan": {
+        "turns": 5,
+        "hp": 22,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 22,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "estate",
+      "plan": {
+        "turns": 4,
+        "hp": 40,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 21,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 40,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "snow",
+      "plan": {
+        "turns": 5,
+        "hp": 26,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 2,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 19,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "frontier",
+      "plan": {
+        "turns": 5,
+        "hp": 29,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 16,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 29,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "rescue",
+      "plan": {
+        "turns": 6,
+        "hp": 39,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "strike",
+          "guard",
+          "guard",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 39,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "rank1",
+      "plan": {
+        "turns": 5,
+        "hp": 32,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": true,
+          "hp": 11,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 4,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 32,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "rank2",
+      "plan": {
+        "turns": 5,
+        "hp": 21,
+        "grass": 0,
+        "moves": [
+          "strike",
+          "guard",
+          "strike",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 4,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 21,
+          "grass": 0,
+          "moves": [
+            "strike",
+            "guard",
+            "strike",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "rank3",
+      "plan": {
+        "turns": 5,
+        "hp": 29,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 16,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 29,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "rank4",
+      "plan": {
+        "turns": 6,
+        "hp": 32,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 32,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "guard",
+            "strike",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "strong",
+      "technique": "breath",
+      "id": "rank5",
+      "plan": {
+        "turns": 6,
+        "hp": 12,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "discern",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 15,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "strike",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "culmination",
+      "plan": {
+        "turns": 8,
+        "hp": 2,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "guard",
+          "discern",
+          "guard",
+          "discern",
+          "guard",
+          "strike",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "well",
+      "plan": {
+        "turns": 5,
+        "hp": 16,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 16,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "exit",
+      "plan": null,
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "estate",
+      "plan": {
+        "turns": 5,
+        "hp": 16,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 13,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "snow",
+      "plan": {
+        "turns": 6,
+        "hp": 10,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "guard",
+          "strike",
+          "guard",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "frontier",
+      "plan": {
+        "turns": 6,
+        "hp": 8,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 8,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "rescue",
+      "plan": {
+        "turns": 7,
+        "hp": 22,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "guard",
+          "guard",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 19,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "rank1",
+      "plan": {
+        "turns": 6,
+        "hp": 8,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 8,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "rank2",
+      "plan": null,
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "guard",
+            "strike",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "rank3",
+      "plan": {
+        "turns": 6,
+        "hp": 11,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 8,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "rank4",
+      "plan": {
+        "turns": 7,
+        "hp": 9,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 9,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "guard",
+            "strike",
+            "guard",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "spring",
+      "id": "rank5",
+      "plan": null,
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "culmination",
+      "plan": {
+        "turns": 7,
+        "hp": 1,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "guard",
+          "discern",
+          "guard",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "discern",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "well",
+      "plan": {
+        "turns": 5,
+        "hp": 15,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 14,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "exit",
+      "plan": {
+        "turns": 5,
+        "hp": 6,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 6,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "estate",
+      "plan": {
+        "turns": 5,
+        "hp": 14,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 13,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "snow",
+      "plan": {
+        "turns": 5,
+        "hp": 2,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "frontier",
+      "plan": {
+        "turns": 5,
+        "hp": 9,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 4,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "rescue",
+      "plan": {
+        "turns": 7,
+        "hp": 11,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "strike",
+          "guard",
+          "guard",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 11,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "rank1",
+      "plan": {
+        "turns": 5,
+        "hp": 16,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 16,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "rank2",
+      "plan": {
+        "turns": 5,
+        "hp": 5,
+        "grass": 0,
+        "moves": [
+          "strike",
+          "guard",
+          "strike",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 5,
+          "grass": 0,
+          "moves": [
+            "strike",
+            "guard",
+            "strike",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "rank3",
+      "plan": {
+        "turns": 6,
+        "hp": 4,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 4,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "rank4",
+      "plan": {
+        "turns": 6,
+        "hp": 8,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "guard",
+          "strike",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 3,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "guard",
+            "strike",
+            "guard",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "blade",
+      "id": "rank5",
+      "plan": {
+        "turns": 7,
+        "hp": 2,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 2,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "culmination",
+      "plan": {
+        "turns": 7,
+        "hp": 12,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "discern",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "discern",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "well",
+      "plan": {
+        "turns": 4,
+        "hp": 12,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "discern",
+          "discern",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 12,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 20,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "exit",
+      "plan": {
+        "turns": 5,
+        "hp": 5,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "estate",
+      "plan": {
+        "turns": 4,
+        "hp": 30,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 2,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 30,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "snow",
+      "plan": {
+        "turns": 5,
+        "hp": 3,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "discern",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "frontier",
+      "plan": {
+        "turns": 5,
+        "hp": 6,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "discern",
+          "strike",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 4,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 12,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "rescue",
+      "plan": {
+        "turns": 6,
+        "hp": 23,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "discern",
+          "guard",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 19,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "strike",
+            "guard",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "rank1",
+      "plan": {
+        "turns": 5,
+        "hp": 20,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 20,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "rank2",
+      "plan": {
+        "turns": 5,
+        "hp": 9,
+        "grass": 0,
+        "moves": [
+          "strike",
+          "guard",
+          "strike",
+          "discern",
+          "strike"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 9,
+          "grass": 0,
+          "moves": [
+            "strike",
+            "guard",
+            "strike",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "rank3",
+      "plan": {
+        "turns": 5,
+        "hp": 17,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "discern"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": true,
+          "hp": 4,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 12,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "strike"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "rank4",
+      "plan": {
+        "turns": 7,
+        "hp": 11,
+        "grass": 0,
+        "moves": [
+          "guard",
+          "discern",
+          "guard",
+          "strike",
+          "guard",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 11,
+          "grass": 0,
+          "moves": [
+            "guard",
+            "discern",
+            "guard",
+            "strike",
+            "guard",
+            "discern",
+            "guard"
+          ]
+        }
+      }
+    },
+    {
+      "preparation": "no-grass",
+      "technique": "breath",
+      "id": "rank5",
+      "plan": {
+        "turns": 7,
+        "hp": 14,
+        "grass": 0,
+        "moves": [
+          "discern",
+          "guard",
+          "strike",
+          "discern",
+          "guard",
+          "discern",
+          "guard"
+        ]
+      },
+      "baselines": {
+        "guard": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "guard",
+            "guard",
+            "guard",
+            "guard",
+            "guard"
+          ]
+        },
+        "strike": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "strike",
+            "strike",
+            "strike"
+          ]
+        },
+        "discern": {
+          "won": false,
+          "hp": 0,
+          "grass": null,
+          "moves": [
+            "discern",
+            "discern",
+            "discern",
+            "discern",
+            "discern"
+          ]
+        },
+        "read": {
+          "won": true,
+          "hp": 14,
+          "grass": 0,
+          "moves": [
+            "discern",
+            "guard",
+            "strike",
+            "discern",
+            "guard",
+            "discern",
+            "strike"
+          ]
+        }
+      }
+    }
+  ]
+}

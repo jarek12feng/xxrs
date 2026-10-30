@@ -119,11 +119,11 @@ function act(action: JourneyAction) {
           emit('act', {
             type: 'advance',
             activity: 'rest',
-            months: preparation.injury,
+            months: preparation.restMonths,
           })
         "
       >
-        免费静养 · 最多 {{ preparation.injury }} 月
+        免费静养 · 最多 {{ preparation.restMonths }} 月
       </button>
       <button
         v-if="preparation.needsFunds"

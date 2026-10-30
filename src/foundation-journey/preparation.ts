@@ -40,6 +40,7 @@ export function journeyPreparation(s: State, board = false) {
     gain: forecast.batchGain,
     forecast,
     injury: s.injury,
+    restMonths: Math.min(12, s.injury),
     needsFunds: s.stones < 4,
   };
 }

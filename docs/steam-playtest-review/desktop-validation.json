@@ -1,0 +1,122 @@
+{
+  "build": {
+    "version": "0.15.0",
+    "id": "playtest-bbca927c6148",
+    "sourceSha256": "bbca927c61487a10a287852aeb3aa1531661cb3ec19df8b6f9e04d98876b2b35",
+    "baseCommit": "0eed9bd4e9bb32323cb766172ce1b3ca4e409f52"
+  },
+  "scope": "macOS Electron only; external native-library crash remains reproducible in blank app",
+  "results": [
+    {
+      "phase": "write",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "phase": "read",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "phase": "corrupt",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "phase": "recovered",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "run": 1,
+      "phases": 4,
+      "assertionsAndProcessExitPassed": true
+    },
+    {
+      "phase": "write",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "phase": "read",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "phase": "corrupt",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "phase": "recovered",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "run": 2,
+      "phases": 4,
+      "assertionsAndProcessExitPassed": true
+    },
+    {
+      "phase": "write",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "phase": "read",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "phase": "corrupt",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "phase": "recovered",
+      "title": "长生未央",
+      "origin": "xxrs://game/",
+      "stateVersion": 18,
+      "images": 0,
+      "assertionsPassed": true
+    },
+    {
+      "run": 3,
+      "phases": 4,
+      "assertionsAndProcessExitPassed": true
+    }
+  ]
+}

@@ -886,7 +886,10 @@ export function dispatch(input: State, c: Command): State {
       if (
         !n.journey.queue[0].remaining ||
         (task.action === "rest" && n.injury === 0) ||
-        (task.action === "cultivate" && n.qi === 360)
+        (task.action === "cultivate" &&
+          (n.realm === 1
+            ? n.foundationJourney.cultivation >= 600
+            : n.qi >= 360))
       )
         n.journey.queue.shift();
       return n;

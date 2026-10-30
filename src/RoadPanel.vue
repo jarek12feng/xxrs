@@ -306,7 +306,7 @@ const person = computed(() =>
     aria-label="走出听松山主线"
   >
     <div class="road-toolbar">
-      <span>第二卷 · 行路</span>
+      <span>青嶂行路</span>
       <label
         >阅读字号
         <select v-model="readingSize" aria-label="阅读字号">
@@ -328,7 +328,7 @@ const person = computed(() =>
         :key="road.stage"
         :image="scene.image"
         :title="scene.name"
-        eyebrow="第二卷 · 航图之外"
+        eyebrow="青嶂行路 · 航图之外"
         :body="scene.body"
         :speaker="person.name"
         :portrait="person.image"
@@ -355,7 +355,7 @@ const person = computed(() =>
       <section class="scene-controls" aria-label="行路与准备操作区">
         <OriginNotes :game="game" :busy="busy" @act="emit('act', $event)" />
         <h3 class="controls-heading">行路与准备</h3>
-        <ol class="chapter-track" aria-label="第二卷进度">
+        <ol class="chapter-track" aria-label="青嶂行路进度">
           <li :class="{ passed: road.thanked }">归家回访</li>
           <li :class="{ passed: road.map }">坊市补图</li>
           <li :class="{ passed: road.obstacle !== 'none' }">看清险阻</li>
@@ -404,7 +404,7 @@ const person = computed(() =>
           回看青嶂关篇章结语
         </button>
         <section v-if="road.surveyed" class="mist-invitation">
-          <span class="eyebrow">第三卷 · 雾海来信</span>
+          <span class="eyebrow">筑基见闻 · 雾海来信</span>
           <h3>
             {{
               game.adventure.mist.stage === "dormant"
@@ -422,7 +422,7 @@ const person = computed(() =>
           <button class="primary full" :disabled="locked" @click="emit('mist')">
             {{
               game.adventure.mist.stage === "dormant"
-                ? "拆开来信 · 开启第三卷"
+                ? "拆开来信 · 前往雾海"
                 : "继续雾海来信"
             }}
             →
@@ -767,7 +767,10 @@ const person = computed(() =>
         </div>
         <p class="adventure-footnote">
           交谈、调查和实施解法不计修行月份；修炼按真实月份推进，遇剧情暂停。
-          三种解法满足条件后必定成功，这段旅程不能改选；也可沿旧路按把握过关。首次通过后可免费往返。
+          <span v-if="road.stage === 'pass' && !road.passed"
+            >三种解法满足条件后必定成功，实施后不能改选；也可沿旧路按把握过关。</span
+          >
+          <span v-if="road.passed">青嶂关已通，可免费往返。</span>
         </p>
       </section>
     </template>
