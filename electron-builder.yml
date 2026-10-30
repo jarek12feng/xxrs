@@ -1,7 +1,7 @@
 appId: com.xxrs.cultivationlife
-productName: 修仙人生试玩版
+productName: 问道听松试玩版
 asar: true
-artifactName: XiuXianRenSheng-Demo-${version}-Windows-${arch}.${ext}
+artifactName: WenDaoTingSong-Demo-${version}-Windows-${arch}.${ext}
 directories:
   output: release
 files:
@@ -17,11 +17,11 @@ win:
       arch: [x64]
   signAndEditExecutable: false
 nsis:
-  artifactName: XiuXianRenSheng-Demo-${version}-Windows-${arch}-Setup.${ext}
+  artifactName: WenDaoTingSong-Demo-${version}-Windows-${arch}-Setup.${ext}
   oneClick: true
   perMachine: false
   deleteAppDataOnUninstall: false
   createDesktopShortcut: true
-  shortcutName: 修仙人生试玩版
+  shortcutName: 问道听松试玩版
   runAfterFinish: false
   packElevateHelper: false

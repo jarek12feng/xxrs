@@ -586,7 +586,7 @@ function download(value: unknown, suffix = "") {
   );
   const a = document.createElement("a");
   a.href = url;
-  a.download = "修仙人生" + suffix + ".json";
+  a.download = "问道听松" + suffix + ".json";
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -841,7 +841,7 @@ onUnmounted(() => {
           ></span
         >
       </button>
-      <span v-else class="brand">修仙人生</span>
+      <span v-else class="brand">问道听松</span>
       <button
         class="sound-toggle"
         :aria-pressed="soundPrefs.enabled"
@@ -870,7 +870,7 @@ onUnmounted(() => {
     </header>
     <main v-if="ready && titleScreen && !creating" class="title-screen">
       <p class="eyebrow">一卷山海 · 几世修行</p>
-      <h1>修仙人生</h1>
+      <h1>问道听松</h1>
       <p>山关风起，故人待归。</p>
       <button v-if="game" class="primary" @click="resumeGame">
         继续游戏<small

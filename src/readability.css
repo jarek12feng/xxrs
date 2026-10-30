@@ -24,7 +24,7 @@
 }
 .immersive-shell .next-goal,
 .immersive-shell .sheltered-hint,
-.modal[data-panel] :is(.next-goal, .sheltered-hint, .pill-option) {
+.modal[data-panel] :is(.next-goal, .sheltered-hint, .pill-option, .next-life) {
   background: var(--read-surface);
   color: var(--read-text);
 }
@@ -106,4 +106,35 @@
 .modal[data-panel] .match-result {
   background: var(--read-surface);
   color: var(--read-text);
+}
+
+/* Creation uses paper, so it must not inherit the dark scene's muted ink. */
+.immersive-shell .creation {
+  --muted: #53624e;
+  background: #f1ebdc;
+}
+.immersive-shell .creation :is(.fineprint, .eyebrow, .path-card small, .path-symbol) {
+  color: #53624e;
+}
+.immersive-shell .creation .art-copy {
+  background: #edf0e2f5;
+}
+.immersive-shell .creation .art-copy p {
+  color: #435c4d;
+}
+/* Save feedback remains readable over both bright and dark scene artwork. */
+.immersive-shell .hud-save {
+  background: #10251e;
+  color: var(--read-text);
+  padding: 5px 8px;
+  border-radius: 4px;
+}
+.modal[data-panel] > .eyebrow,
+.modal[data-panel] .choice b {
+  color: var(--read-muted);
+}
+.modal[data-panel] .inheritance-list button.selected:not(:disabled) {
+  background: #365448;
+  color: #fff2cd;
+  border: 2px solid var(--read-gold);
 }

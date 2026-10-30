@@ -32,6 +32,6 @@
     "vue-tsc": "^3.1.1"
   },
   "main": "desktop/main.cjs",
-  "description": "修仙人生：本地单机修仙叙事试玩版",
+  "description": "问道听松：本地单机修仙叙事试玩版",
   "author": "XXRS"
 }

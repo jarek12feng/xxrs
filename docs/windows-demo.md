@@ -24,7 +24,7 @@ git diff --check
 
 ## 安装与存档
 
-双击 `XiuXianRenSheng-Demo-0.11.0-Windows-x64-Setup.exe` 安装到当前用户并创建桌面快捷方式。安装完成后从快捷方式启动。
+双击 `WenDaoTingSong-Demo-<版本号>-Windows-x64-Setup.exe` 安装到当前用户并创建桌面快捷方式。安装完成后从快捷方式启动。
 
 - 桌面档案目录固定为 `%APPDATA%\cultivation-life`；IndexedDB 位于其中的 `IndexedDB`。安装目录与存档目录分离。
 - 不改变 `com.xxrs.cultivationlife` 应用 ID、`cultivation-life` 数据目录或 `xxrs://game/` 来源，否则可能读不到已有档案。
