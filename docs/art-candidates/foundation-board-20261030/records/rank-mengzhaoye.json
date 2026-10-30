@@ -1,0 +1,23 @@
+{
+  "id": "rank-mengzhaoye",
+  "name": "孟照野·照石阵",
+  "detail": "Adult Chinese male formation practitioner about32, long angular face, clean shaven, calm analytical eyes, dark hair neat topknot with plain wooden pin. Lean medium-height build, simple slate green robe, short practical sleeves, one belt. Holding a small clearly stone-carved formation disk with the other hand indicating a measured step, observant grounded stance. No magic halo.",
+  "prompt": "Use case: stylized-concept. Create an ORIGINAL distinct named human rival for Chinese cultivation game, not a reskin of existing characters. Adult Chinese male formation practitioner about32, long angular face, clean shaven, calm analytical eyes, dark hair neat topknot with plain wooden pin. Lean medium-height build, simple slate green robe, short practical sleeves, one belt. Holding a small clearly stone-carved formation disk with the other hand indicating a measured step, observant grounded stance. No magic halo. Refined Chinese ink and mineral watercolor illustration with realistic natural anatomy and clean simple silhouette. Two clothing layers max, no elaborate armor, no ragged cape, no many hanging belts. Full body including all feet, hair and entire weapon visible, wide 12 percent margin. No scenic backdrop, no shadows or vignette, TRUE transparent cutout, no text, no watermark. Single character.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-361cf10e-8718-45f4-abe5-05b28d5676c7.png",
+  "tool": "builtin-imagegen",
+  "refs": [],
+  "status": "reviewed-candidate",
+  "dimensions": [
+    512,
+    768
+  ],
+  "alphaRange": [
+    0,
+    254
+  ],
+  "runtimePath": "public/art/foundation-journey/rank-mengzhaoye.webp",
+  "bytes": 52650,
+  "sha256": "9034e215992627a7d081e00b2eb6ba64ab2f2f214fd6b81af64b703fea1389b8",
+  "review": "已检查专属人族形象、道具、完整立绘；WebP高度768和透明通道通过。最终UI背景混合边缘待接入复查。",
+  "exportNote": "最终采用剧情接入 session 导出的 quality 88 WebP，未再次覆盖运行文件。"
+}

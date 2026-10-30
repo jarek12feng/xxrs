@@ -1,0 +1,23 @@
+{
+  "id": "rank-luoli",
+  "name": "罗砺·护舟刀",
+  "detail": "Adult Chinese man about38, broad square jaw, sun-tanned skin, close-cut moustache, stocky muscular build, dark hair in low practical knot. Steady boat-route escort, plain brown and muted navy fitted jacket with one belt, holding a single unornamented Chinese dao down at his side, protective grounded stance.",
+  "prompt": "Use case: stylized-concept. Create an ORIGINAL distinct named human rival for Chinese cultivation game, not a reskin of existing characters. Adult Chinese man about38, broad square jaw, sun-tanned skin, close-cut moustache, stocky muscular build, dark hair in low practical knot. Steady boat-route escort, plain brown and muted navy fitted jacket with one belt, holding a single unornamented Chinese dao down at his side, protective grounded stance. Refined Chinese ink and mineral watercolor illustration with realistic natural anatomy and clean simple silhouette. Two clothing layers max, no elaborate armor, no ragged cape, no many hanging belts. Full body including all feet, hair and entire weapon visible, wide 12 percent margin. No scenic backdrop, no shadows or vignette, TRUE transparent cutout, no text, no watermark. Single character.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-c23d39ea-a95b-4a8c-86ac-010f1063eb4e.png",
+  "tool": "builtin-imagegen",
+  "refs": [],
+  "status": "reviewed-candidate",
+  "dimensions": [
+    512,
+    768
+  ],
+  "alphaRange": [
+    0,
+    254
+  ],
+  "runtimePath": "public/art/foundation-journey/rank-luoli.webp",
+  "bytes": 68376,
+  "sha256": "fc8d777e5e66fadcff53263751f4dfbcc57fe3728618ff59968b399dc058cbc9",
+  "review": "已检查专属人族形象、道具、完整立绘；WebP高度768和透明通道通过。最终UI背景混合边缘待接入复查。",
+  "exportNote": "最终采用剧情接入 session 导出的 quality 88 WebP，未再次覆盖运行文件。"
+}
