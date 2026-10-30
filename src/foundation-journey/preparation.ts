@@ -14,6 +14,17 @@ export function journeyPreparation(s: State, board = false) {
   )
     return null;
   const nextRank = rankIds[q.board.wins.length];
+  const hasBattle = board
+    ? !!nextRank
+    : q.ferry === 1 ||
+      q.ferry === 2 ||
+      q.rescue === 2 ||
+      q.rescue === 3 ||
+      (q.condensation && !q.won.includes("culmination")) ||
+      (["estate", "snow"] as const).some(
+        (side) => q.location === side && q.sides[side].step === 1,
+      );
+  const needsHerbs = hasBattle && s.journey.main === "spring" && s.herbs < 4;
   const target = board
     ? nextRank
       ? challenges[nextRank].stage * 200
@@ -41,6 +52,7 @@ export function journeyPreparation(s: State, board = false) {
     forecast,
     injury: s.injury,
     restMonths: Math.min(12, s.injury),
-    needsFunds: s.stones < 4,
+    needsHerbs,
+    needsFunds: s.stones < (needsHerbs ? 12 : 4),
   };
 }

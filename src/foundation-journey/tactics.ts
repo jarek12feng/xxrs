@@ -65,6 +65,19 @@ export function tacticalAdjustment(s: State, move: Move) {
     incoming -= 5;
     note += "收势护脉：伤害 −3、承伤 −5。";
   }
+  if (
+    s.journey.main === "blade" &&
+    move === "strike" &&
+    (d.effect === "guard" || d.effect === "discern")
+  ) {
+    damage += 2;
+    incoming -= 5;
+    note += "剑经循隙：承接守势或辨影反击，伤害 +2、承伤 −5。";
+  }
+  if (s.journey.main === "spring" && move === "guard" && d.effect !== "guard") {
+    incoming -= 4;
+    note += "长春固护：转入守势承伤 −4；有草时仍可回春。";
+  }
   const same = d.effect === move;
   switch (d.id) {
     case "exit":

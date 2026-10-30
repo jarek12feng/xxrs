@@ -72,3 +72,7 @@ node /tmp/xxrs-numeric-recheck.mjs > /tmp/xxrs-numeric-recheck.json
 - 隔离验证首先发现遗漏的旧测试检查点仍沿用无丹突破，已将现有 `mist-checkpoint`、`road-preview`、`feedback-preview` 对第一卷规则的适配一并纳入，再跑全套通过。另剔除首胜装备提示的无关混合差异，使提交不依赖其他会话修改。
 
 提交必须包含尚未提交的第一卷丹药资格、丹方恢复、重返遗府及相应 UI/回归依赖，不能只提交本轮新增提示。`App.vue`、`action-feedback.ts`、`journey-feedback.ts` 和相关测试按内容挑选，未整体纳入并发的试剑榜/地图/未来剧情工作。提交阶段不修改这些留在工作区的内容。这里确认的是工程与固定策略验证；真人体验、Windows 实机和全局最优策略仍未验收。
+
+## 筑基构筑后续数值调整
+
+2026-10-30 后续用户授权已实施剑经、归元、长春的筑基战斗调整与补给入口，见 [筑基构筑数值修复](foundation-balance-review.md)。本文件前文是此前第一卷准备提示的交付记录，不覆盖这次新的规则调整。

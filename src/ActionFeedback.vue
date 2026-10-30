@@ -121,6 +121,7 @@ const ritualText = {
       <span class="eyebrow">{{
         playing ? "一念入境" : "行动结果 · 已自动保存"
       }}</span>
+      <slot name="combat" />
       <h2
         ref="heading"
         :id="expanded ? 'feedback-title' : undefined"

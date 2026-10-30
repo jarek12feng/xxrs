@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CombatFeedback } from "./foundation-journey/feedback";
 import { realmPressure, opponentRealmName } from "./realm-pressure";
 import FoundationPanel from "./foundation-journey/FoundationPanel.vue";
 import { companionPresent } from "./foundation-journey/progression";
@@ -25,6 +26,7 @@ import {
 } from "./core";
 const props = defineProps<{
   game: State;
+  combatFeedback?: CombatFeedback | null;
   busy: boolean;
   running: boolean;
   mode: "relationship" | "arena";
@@ -119,6 +121,7 @@ const intentText: Record<Stance, string> = {
       </button>
     </nav>
     <FoundationPanel
+      :combat-feedback="combatFeedback"
       v-if="mode === 'arena' && boardRealm === 'foundation'"
       mode="board"
       :game="game"
@@ -202,6 +205,7 @@ const intentText: Record<Stance, string> = {
         </h3>
         <template v-if="mode === 'relationship'">
           <FoundationPanel
+            :combat-feedback="combatFeedback"
             v-if="
               game.social.met &&
               game.realm >= 1 &&

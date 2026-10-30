@@ -201,7 +201,9 @@ it("snow outcomes unlock distinct aid only after the player returns", () => {
     const a = foundationExchange(before, move)!,
       b = foundationExchange(after, move)!;
     expect(b.damage - a.damage).toBe(outcome === "protect" ? 0 : 3);
-    expect(a.incoming - b.incoming).toBe(outcome === "protect" ? 3 : 0);
+    expect(a.incoming - b.incoming).toBe(
+      outcome === "protect" ? Math.min(3, a.incoming) : 0,
+    );
   }
 });
 it("preparation forecasts a safe same-stage alternative without imposing a battle gate", () => {

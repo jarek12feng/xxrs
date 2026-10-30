@@ -93,6 +93,10 @@ export function foundationMoveSetup(s: State, move: Move): string {
     if (move === "discern") hints.push("探阵：下合伤害 +6、承伤 −2");
   }
   if (d.ruleset === 2) {
+    if (s.journey.main === "blade" && (move === "guard" || move === "discern"))
+      hints.push("剑经循隙：下合反击另增伤 2、减伤 5");
+    if (s.journey.main === "spring" && move === "guard" && d.effect !== "guard")
+      hints.push("长春固护：转入守势另减伤 4，无草也生效");
     if (d.id === "exit" && move === "discern")
       hints.push("下合反击另增伤 12、减伤 4");
     if (d.id === "frontier" && move === "discern")

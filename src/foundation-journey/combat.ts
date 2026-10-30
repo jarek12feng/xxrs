@@ -72,6 +72,7 @@ export function foundationExchange(s: State, move: Move) {
     challenges[d.id].array,
     foundationPower(s),
     true,
+    d.ruleset === 2 ? 5 : 7,
   );
   if (!p) return null;
   const trained =

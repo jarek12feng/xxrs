@@ -441,6 +441,14 @@ it("foundation ranking shows actual reward after save, returns to its group and 
   await click(moves.guard);
   const result = document.querySelector('[role="dialog"]')?.textContent;
   expect(result).toContain("筑基试剑榜 · 第三十名");
+  expect(document.querySelector(".combat-summary")?.textContent).toContain(
+    "获胜，未受反击",
+  );
+  expect(
+    document
+      .querySelector(".combat-fill.enemy")
+      ?.parentElement?.getAttribute("aria-valuenow"),
+  ).toBe("0");
   expect(result).toContain("灵石");
   expect(result).toContain("未入榜 → 第三十");
   expect(result).toContain("周雁回");
@@ -456,4 +464,56 @@ it("foundation ranking shows actual reward after save, returns to its group and 
   expect(text()).toContain("首胜灵石 +14");
   expect(text()).toContain("已获胜");
   expect(save).toHaveBeenCalledTimes(1);
+});
+
+it("combat numbers wait for persistence and a failed save produces no result animation", async () => {
+  const { journeyCheckpoint, journeyPlayer } =
+    await import("../tools/foundation-journey-checkpoint");
+  const { moves } = await import("../src/expedition/content");
+  const p = journeyPlayer(journeyCheckpoint());
+  p.act({ kind: "battle", battle: "rank1" });
+  const hp = p.state.foundationJourney.duel!.hp;
+  await mount(p.state);
+  await click("听松擂台");
+  let reject!: (reason: Error) => void;
+  vi.mocked(save).mockImplementationOnce(
+    () =>
+      new Promise<void>((_, fail) => {
+        reject = fail;
+      }),
+  );
+  await click(moves.guard);
+  expect(document.querySelector(".combat-summary")).toBeNull();
+  expect(document.querySelector(".combat-float")).toBeNull();
+  expect(
+    document
+      .querySelector('[aria-label="你的气势"]')
+      ?.getAttribute("aria-valuenow"),
+  ).toBe(String(hp));
+  reject(new Error("模拟保存失败"));
+  await flush();
+  expect(document.querySelector(".combat-summary")).toBeNull();
+  expect(document.querySelector(".combat-float")).toBeNull();
+  let resolve!: () => void;
+  vi.mocked(save).mockImplementationOnce(
+    () =>
+      new Promise<void>((done) => {
+        resolve = done;
+      }),
+  );
+  await click(moves.guard);
+  expect(document.querySelector(".combat-summary")).toBeNull();
+  resolve();
+  await flush();
+  expect(document.querySelector(".combat-summary")?.textContent).toContain(
+    "第 1 合",
+  );
+  expect(
+    document
+      .querySelector('[aria-label="你的气势"]')
+      ?.getAttribute("aria-valuenow"),
+  ).toBe(
+    String(vi.mocked(save).mock.calls.at(-1)![0].foundationJourney.duel!.hp),
+  );
+  expect(save).toHaveBeenCalledTimes(2);
 });

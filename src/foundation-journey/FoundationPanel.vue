@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import CombatFeedbackView from "./CombatFeedback.vue";
+import type { CombatFeedback } from "./feedback";
 import { opponentRealmName } from "../realm-pressure";
 import type { State, Intent } from "../world";
 import type { JourneyAction } from "./state";
@@ -25,6 +27,7 @@ import CultivationOutlook from "../CultivationOutlook.vue";
 const props = withDefaults(
   defineProps<{
     game: State;
+    combatFeedback?: CombatFeedback | null;
     busy: boolean;
     mode?: "journey" | "board" | "relationship";
   }>(),
@@ -78,11 +81,19 @@ function act(action: JourneyAction) {
           : '筑基行旅'
     "
   >
+    <CombatFeedbackView
+      v-if="!q.duel && mode !== 'relationship'"
+      :game="game"
+      :result="combatFeedback"
+    />
     <aside
       v-if="
         preparation &&
         mode !== 'relationship' &&
-        (preparation.missing || preparation.injury || preparation.needsFunds)
+        (preparation.missing ||
+          preparation.injury ||
+          preparation.needsFunds ||
+          preparation.needsHerbs)
       "
       class="foundation-preparation"
       aria-label="当前挑战准备"
@@ -125,6 +136,18 @@ function act(action: JourneyAction) {
       >
         免费静养 · 最多 {{ preparation.restMonths }} 月
       </button>
+      <button
+        v-if="preparation.needsHerbs"
+        :disabled="busy || game.stones < 8"
+        @click="emit('act', { type: 'supplies' })"
+      >
+        购灵草 4 · 灵石 −8
+      </button>
+      <p v-if="preparation.needsHerbs">
+        长春首合守势或换招转入守势可额外减伤
+        4；受击后仍有气势时，每株灵草可回复最多 7 气势。 当前灵草
+        {{ game.herbs }}，建议备足 4 株，不是入场条件。
+      </p>
       <button
         v-if="preparation.needsFunds"
         :disabled="busy"
@@ -171,6 +194,7 @@ function act(action: JourneyAction) {
           </p>
         </div>
       </div>
+      <CombatFeedbackView :game="game" :result="combatFeedback" />
       <div class="foundation-options">
         <button
           v-for="m in moveOptions"

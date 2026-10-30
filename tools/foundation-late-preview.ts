@@ -1,5 +1,9 @@
 import { createApp, h, shallowRef, ref, watch } from "vue";
 import SocialPanel from "../src/SocialPanel.vue";
+import {
+  combatFeedback as projectCombatFeedback,
+  type CombatFeedback,
+} from "../src/foundation-journey/feedback";
 import FoundationPanel from "../src/foundation-journey/FoundationPanel.vue";
 import {
   journeyCheckpoint,
@@ -55,6 +59,7 @@ window.addEventListener(
   },
   { once: true },
 );
+const combatFeedback = shallowRef<CombatFeedback | null>(null);
 const game = shallowRef(journeyCheckpoint()),
   receipt = shallowRef<ActionReceipt | null>(null),
   narrow = ref(false),
@@ -69,6 +74,7 @@ function act(intent: Intent) {
   if (!validState(next)) throw new Error("Invalid state");
   lastCue.value = actionSound(game.value, next, intent);
   receipt.value = actionReceipt(game.value, next, intent);
+  combatFeedback.value = projectCombatFeedback(game.value, next, intent);
   game.value = migrateSave(JSON.parse(JSON.stringify(next)));
   sound.cue(lastCue.value as ReturnType<typeof actionSound>);
 }
@@ -118,6 +124,7 @@ createApp({
                 p.fight(id);
               game.value = p.state;
               receipt.value = null;
+              combatFeedback.value = null;
             },
           },
           "载入公开命令生成的争魁检查点",
@@ -129,6 +136,7 @@ createApp({
               game.value = journeyCheckpoint("male", true);
               mode.value = "journey";
               receipt.value = null;
+              combatFeedback.value = null;
             },
           },
           "载入圆满试炼检查点",
@@ -145,6 +153,7 @@ createApp({
               game.value = p.state;
               mode.value = "journey";
               receipt.value = null;
+              combatFeedback.value = null;
             },
           },
           "载入药庄共同契约回访",
@@ -160,6 +169,7 @@ createApp({
               game.value = p.state;
               mode.value = "journey";
               receipt.value = null;
+              combatFeedback.value = null;
             },
           },
           "载入归山尾声检查点",
@@ -206,6 +216,7 @@ createApp({
         mode.value === "board"
           ? h(SocialPanel, {
               game: game.value,
+              combatFeedback: combatFeedback.value,
               busy: false,
               running: false,
               mode: "arena",
@@ -213,6 +224,7 @@ createApp({
             })
           : h(FoundationPanel, {
               game: game.value,
+              combatFeedback: combatFeedback.value,
               busy: false,
               onAct: act,
               onEquipment: () => act({ type: "equip", technique: "spring" }),

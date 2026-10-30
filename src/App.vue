@@ -129,6 +129,12 @@ import {
   cultivationMonthlyGain,
 } from "./cultivation";
 import ActionFeedback from "./ActionFeedback.vue";
+import CombatFeedbackView from "./foundation-journey/CombatFeedback.vue";
+import {
+  combatFeedback as projectCombatFeedback,
+  type CombatFeedback,
+} from "./foundation-journey/feedback";
+const combatFeedback = shallowRef<CombatFeedback | null>(null);
 import SceneArrival from "./SceneArrival.vue";
 import { actionReceipt, type ActionReceipt } from "./action-feedback";
 const receipt = shallowRef<ActionReceipt | null>(null);
@@ -141,6 +147,7 @@ let practiceTimer: ReturnType<typeof setTimeout> | undefined;
 let receiptTimer: ReturnType<typeof setTimeout> | undefined;
 let actionOrigin: HTMLElement | null = null;
 async function closeReceipt() {
+  combatFeedback.value = null;
   const returnPanel = receipt.value?.returnTo;
   const returnToPerson = !!returnPanel || receipt.value?.ritual === "duel";
   receiptExpanded.value = false;
@@ -441,6 +448,7 @@ async function persist(s: State) {
   try {
     await save(s);
     game.value = s;
+    combatFeedback.value = null;
     saved.value = "已自动保存";
     notice.value = "";
     return true;
@@ -477,6 +485,7 @@ async function act(intent: Intent) {
   }
   const ok = await persist(n);
   if (ok) {
+    combatFeedback.value = projectCombatFeedback(old, n, intent);
     if (!automatic) pauseReason.value = null;
     const changedScene =
       old.adventure.step !== n.adventure.step ||
@@ -1347,7 +1356,13 @@ onUnmounted(() => {
       expanded
       @equip="closeReceipt().then(() => openPanel('skills'))"
       @close="closeReceipt"
-    />
+      ><template #combat
+        ><CombatFeedbackView
+          initial-playback
+          v-if="game && combatFeedback"
+          :game="game"
+          :result="combatFeedback" /></template
+    ></ActionFeedback>
   </div>
   <SceneArrival
     v-else-if="
@@ -1494,6 +1509,7 @@ onUnmounted(() => {
           @breakthrough="dialog = 'break'"
         />
         <WorldPanel
+          :combat-feedback="combatFeedback"
           @equipment="openPanel('skills')"
           v-else-if="worldTab && game"
           :key="worldTab"

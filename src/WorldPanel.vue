@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CombatFeedback } from "./foundation-journey/feedback";
 import FoundationPanel from "./foundation-journey/FoundationPanel.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import { familyQuestGoal } from "./expedition/progression";
@@ -38,6 +39,7 @@ import SceneResponse from "./SceneResponse.vue";
 import type { ActionReceipt } from "./action-feedback";
 const props = defineProps<{
   game: State;
+  combatFeedback?: CombatFeedback | null;
   busy: boolean;
   running: boolean;
   receipt?: ActionReceipt | null;
@@ -194,6 +196,7 @@ const mapImages = {
       :receipt="receipt"
     />
     <SocialPanel
+      :combat-feedback="combatFeedback"
       v-if="tab === 'relationship' || tab === 'arena'"
       :key="tab"
       :game="game"
@@ -205,6 +208,7 @@ const mapImages = {
     />
     <div v-else-if="tab === 'world'" class="world-content">
       <FoundationPanel
+        :combat-feedback="combatFeedback"
         v-if="game.realm >= 1"
         :game="game"
         :busy="busy || running"

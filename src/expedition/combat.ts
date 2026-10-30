@@ -73,6 +73,7 @@ export function tacticalExchange(
   arrayCore = false,
   power = readiness(s),
   deferLethal = false,
+  arrayDiscernBonus = 7,
 ) {
   if (!["guard", "strike", "discern"].includes(move)) return null;
   const correct = move === e.pattern[d.turn % e.pattern.length];
@@ -92,10 +93,10 @@ export function tacticalExchange(
     note = "长春守势收敛攻势，伤害 −2。";
   }
   if (s.journey.main === "breath" && move === "discern") {
-    damage += arrayCore ? 7 : 2;
+    damage += arrayCore ? arrayDiscernBonus : 2;
     incoming -= 2;
     note = arrayCore
-      ? "归元息照见阵核，伤害 +7、承伤 −2。"
+      ? `归元息照见阵核，伤害 +${arrayDiscernBonus}、承伤 −2。`
       : "归元息辨清身形，伤害 +2、承伤 −2。";
   }
   if (arrayCore) {
