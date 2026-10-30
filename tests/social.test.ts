@@ -24,6 +24,7 @@ function adult(gender: "male" | "female" = "male", seed = 1) {
   const s = createGame("试炼", "wood", seed, "insightful", gender);
   s.month = 25;
   s.age = 217;
+  s.realm = 1;
   s.stones = 100;
   s.herbs = 20;
   s.story.stage = "resolved";
@@ -106,6 +107,7 @@ describe("relationships and arena", () => {
     expect(act(s, { type: "arenaStart" })).toBe(s);
     s.injury = 0;
     s.social.arena.wins = 2;
+    s.realm = 0;
     s.social.arena.scouted.push(2);
     expect(act(s, { type: "arenaStart" })).toBe(s);
   });

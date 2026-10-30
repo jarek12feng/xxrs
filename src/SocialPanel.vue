@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import OriginNotes from "./OriginNotes.vue";
 import CharacterSprite from "./presentation/CharacterSprite.vue";
 import { heroArt, rivalArt } from "./presentation/art";
 import { computed, ref, watch, nextTick, onUnmounted } from "vue";
@@ -157,6 +158,12 @@ const intentText: Record<Stance, string> = {
       </h3>
       <template v-if="mode === 'relationship'">
         <p class="next-goal">{{ relationshipGoal(game) }}</p>
+        <OriginNotes
+          :game="game"
+          :busy="locked || !!duel"
+          journal
+          @act="emit('act', $event)"
+        />
         <div v-if="!game.social.gender" class="identity-choice">
           <p>
             旧档未设定角色性别。请选择后开启对应的异性人物线；本世确认后不再更换，不改变任何修行数值。
@@ -188,12 +195,18 @@ const intentText: Record<Stance, string> = {
           </article>
           <button
             v-if="!game.social.met"
-            :disabled="locked || !!duel || game.age < 216"
+            :disabled="locked || !!duel || game.age < 216 || game.realm < 1"
             @click="emit('act', { type: 'visit' })"
           >
-            去山门外相识 · 一月 / 年满十八岁开放
+            去山门外相识 · 一月 / 成年且筑基后开放
           </button>
           <div v-else class="relationship-steps">
+            <button
+              :disabled="locked || !!duel"
+              @click="emit('act', { type: 'background' })"
+            >
+              聊聊家人与学艺的经历 · 不耗月份
+            </button>
             <article
               v-for="(label, outing) in {
                 walk: '共勘旧路',

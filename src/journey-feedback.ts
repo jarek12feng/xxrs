@@ -1,3 +1,4 @@
+import { originNotes } from "./companion-origins";
 import { actionProcess } from "./action-process";
 import {
   adventureScenes,
@@ -316,8 +317,16 @@ export function enrichReceipt(
       name: who.name,
       portrait: who.portrait,
       response:
-        replies[before.social.scene.kind]?.[intent.option] ||
-        "这段同行的经历，我会记得。",
+        before.social.scene.kind === "meet" && intent.option === "recognize"
+          ? after.social.gender === "male"
+            ? "原来你读过那张图。溪边那段还要复测，背药篓的人走过，才知道我有没有漏看。"
+            : "那盏灯现在还亮着就好。你看过修单，下次若发现哪段偏暗，告诉收件处就行，不必等我。"
+          : before.social.scene.kind === "background"
+            ? after.social.gender === "male"
+              ? "等攒够路费，我想去旧图没画到的地方。你也有自己的去处，回头交换见闻。"
+              : "我得先教会接手的人，再去看远方的古阵。你也别耽误自己的修行。"
+            : replies[before.social.scene.kind]?.[intent.option] ||
+              "这段同行的经历，我会记得。",
       relation:
         relationship(before) === relationship(after)
           ? relationship(after)
@@ -360,6 +369,14 @@ export function enrichReceipt(
             ? "已成为听松试剑魁首。装配所得功法，把这番成长带到山外的探索中。"
             : "功法与奖励已入囊。可以先装配新功法，再观摩下一位对手。"
           : "先养伤，再根据对手意图选择应对；凝神、固本和装备也会改变胜算。";
+  }
+  if (intent.type === "readOrigin") {
+    r.title = originNotes[intent.origin].title;
+    r.next = "见闻已记下，可以继续原来的行程；这还不算双方相识。";
+  }
+  if (intent.type === "choose" && before.social.scene?.kind === "background") {
+    r.title = "听过来处，各有远方";
+    r.spotlight = false;
   }
   return r;
 }

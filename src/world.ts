@@ -167,7 +167,7 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 14;
+  version: 15;
   growth: Growth;
   expedition: Expedition;
   adventure: Adventure;
@@ -242,7 +242,7 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 14,
+    version: 15,
     growth: freshGrowth(),
     journey,
     social,
@@ -1015,9 +1015,12 @@ export function dispatch(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 14);
+  return validWorldState(x, 15);
 }
-function validWorldState(x: unknown, version: 10 | 11 | 12 | 13 | 14): boolean {
+function validWorldState(
+  x: unknown,
+  version: 10 | 11 | 12 | 13 | 14 | 15,
+): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
@@ -1100,9 +1103,20 @@ function validWorldState(x: unknown, version: 10 | 11 | 12 | 13 | 14): boolean {
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 14) {
+    if (!validWorldState(x, 14)) throw new Error("旧存档损坏，原档未修改。");
+    const old = structuredClone(x) as State;
+    const upgraded = {
+      ...old,
+      version: 15 as const,
+      social: { ...old.social, origins: [] },
+    };
+    if (validState(upgraded)) return upgraded;
+    throw new Error("旧存档损坏，原档未修改。");
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 13) {
     if (!validWorldState(x, 13)) throw new Error("旧存档损坏，原档未修改。");
-    return { ...(structuredClone(x) as State), version: 14 };
+    return migrateSave({ ...(structuredClone(x) as State), version: 14 });
   }
   if (x && typeof x === "object" && "version" in x && x.version === 12) {
     if (!validWorldState(x, 12)) throw new Error("旧存档损坏，原档未修改。");
@@ -1111,7 +1125,7 @@ export function migrateSave(x: unknown): State {
       version: 14,
       growth: freshGrowth(),
     };
-    if (validState(upgraded)) return upgraded;
+    if (validWorldState(upgraded, 14)) return migrateSave(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 11) {

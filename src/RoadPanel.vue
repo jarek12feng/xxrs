@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import OriginNotes from "./OriginNotes.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import { expeditionIntermission } from "./expedition/progression";
 import { computed, ref, watch, nextTick, onMounted } from "vue";
@@ -347,6 +348,7 @@ const person = computed(() =>
         />
       </SceneBackdrop>
       <section class="scene-controls" aria-label="行路与准备操作区">
+        <OriginNotes :game="game" :busy="busy" @act="emit('act', $event)" />
         <h3 class="controls-heading">行路与准备</h3>
         <ol class="chapter-track" aria-label="第二卷进度">
           <li :class="{ passed: road.thanked }">归家回访</li>

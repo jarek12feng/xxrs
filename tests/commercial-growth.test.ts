@@ -82,9 +82,9 @@ it("v13 mid-duel migration preserves resources, seed, turn and original; future 
   s = dispatch(s, { id: "start", type: "arenaStart" });
   const old = { ...s, version: 13 };
   const copy = structuredClone(old);
-  expect(migrateSave(old)).toEqual({ ...old, version: 14 });
+  expect(migrateSave(old)).toEqual({ ...old, version: 15 });
   expect(old).toEqual(copy);
-  expect(() => migrateSave({ ...old, version: 15 })).toThrow();
+  expect(() => migrateSave({ ...old, version: 16 })).toThrow();
   const invalid = structuredClone(old);
   invalid.social.arena.duel!.turn = 4;
   expect(() => migrateSave(invalid)).toThrow();

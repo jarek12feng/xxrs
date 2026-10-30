@@ -907,8 +907,8 @@ onUnmounted(() => {
         <h3>选择先天资质</h3>
         <label class="field-label"
           >角色性别<select v-model="gender">
-            <option value="male">男修 · 成年后可结识沈听澜</option>
-            <option value="female">女修 · 成年后可结识尹照川</option>
+            <option value="male">男修 · 成年筑基后可结识沈听澜</option>
+            <option value="female">女修 · 成年筑基后可结识尹照川</option>
           </select></label
         >
         <div class="aptitude-list">

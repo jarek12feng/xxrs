@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import OriginNotes from "./OriginNotes.vue";
 import { computed, ref, watch, nextTick, onMounted } from "vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 import SceneResponse from "./SceneResponse.vue";
@@ -92,6 +93,7 @@ const person = computed(() =>
     </SceneBackdrop>
     <section class="scene-controls" aria-label="冒险操作区">
       <h3 class="controls-heading">接下来，你来决定</h3>
+      <OriginNotes :game="game" :busy="busy" @act="emit('act', $event)" />
       <ol class="chapter-track" aria-label="主线进度">
         <li
           v-for="(chapter, i) in chapters"

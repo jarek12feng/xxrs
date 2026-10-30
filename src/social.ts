@@ -1,10 +1,17 @@
+import {
+  availableOrigins,
+  originNotes,
+  recognizedOrigin,
+  companionBackground,
+  type Origin,
+} from "./companion-origins";
 import { mainTraining, supportTraining } from "./growth";
 import type { State } from "./world";
 import type { EventView } from "./chapter";
 
 export type Gender = "male" | "female";
 export type Memory = "walk" | "night" | "watch";
-export type HeartScene = "meet" | Memory | "pledge";
+export type HeartScene = "meet" | Memory | "pledge" | "background";
 export type Stance = "break" | "endure" | "discern";
 export const stances: Record<Stance, string> = {
   break: "破势",
@@ -78,6 +85,7 @@ export interface Duel {
 }
 export interface SocialState {
   gender: Gender | null;
+  origins: Origin[];
   met: boolean;
   metMonth: number | null;
   affection: number;
@@ -96,7 +104,8 @@ export interface SocialState {
 }
 export type SocialCommand =
   | { id: string; type: "identity"; gender: Gender }
-  | { id: string; type: "visit" }
+  | { id: string; type: "visit" | "background" }
+  | { id: string; type: "readOrigin"; origin: Origin }
   | { id: string; type: "outing"; outing: Memory }
   | { id: string; type: "confess" }
   | { id: string; type: "arenaScout" | "arenaStart" | "arenaWithdraw" }
@@ -104,6 +113,8 @@ export type SocialCommand =
   | { id: string; type: "choose"; instanceId: string; option: string };
 export const socialCommands = [
   "identity",
+  "readOrigin",
+  "background",
   "visit",
   "outing",
   "confess",
@@ -115,6 +126,7 @@ export const socialCommands = [
 export function freshSocial(gender: Gender | null = null): SocialState {
   return {
     gender,
+    origins: [],
     met: false,
     metMonth: null,
     affection: 0,
@@ -150,7 +162,9 @@ export function relationshipGoal(s: State) {
   if (!s.social.gender)
     return "先补选角色性别。本版按角色性别安排异性恋爱对象，不影响战力。";
   if (s.age < 216)
-    return "年满十八岁后，在山门外结识新的同行者。先修行、赴陆迟的约。";
+    return "成年并筑基后，可在山门外结识新的同行者。眼下先走好自己的修行路。";
+  if (!s.social.met && s.realm < 1)
+    return "筑基后可前往山门外相识。路旁见闻可以随缘阅读，不影响突破。";
   if (!s.social.met) return "前往山门外，认识一个有自己心愿的人。";
   if (!s.social.memories.includes("walk"))
     return "对方想勘察一段旧路，邀你一起去看看。";
@@ -173,20 +187,56 @@ export function heartEvent(s: State): EventView | null {
   const kind = s.social.scene?.kind,
     who = companion(s);
   if (!kind || !who) return null;
+  if (kind === "background")
+    return {
+      title: companionBackground[s.social.gender!].title,
+      body: companionBackground[s.social.gender!].body,
+      options: [
+        {
+          id: "listen",
+          label: "记下这些话，各自继续修行",
+          hint: "不耗月份，不增加好感",
+        },
+      ],
+    };
   if (kind === "meet")
     return {
       title: `山门初逢 · ${who.name}`,
-      body: who.first,
+      body:
+        who.first +
+        (recognizedOrigin(s) === "route-map"
+          ? "你认出了图上划去近路的画法，药庐门旁那张旧图也是这样改的。她还不知道你曾读过。"
+          : recognizedOrigin(s) === "lamp-order"
+            ? "他的工具旁压着一张检修单，次序和坊市旧灯上那张相同。他还不知道你曾看过修单。"
+            : ""),
       options: [
+        ...(recognizedOrigin(s)
+          ? [
+              {
+                id: "recognize",
+                label:
+                  s.social.gender === "male"
+                    ? "说起药庐门旁那张改过的路图"
+                    : "说起坊市归途那盏修好的旧灯",
+                hint: "交流亲眼所见 · 无需资源，与倾听同样增进相识",
+              },
+            ]
+          : []),
         {
           id: "help",
-          label: "拿出灵草，一起辨认沿途药径",
+          label:
+            s.social.gender === "male"
+              ? "拿出灵草，一起辨认沿途药径"
+              : "拿出灵草，帮他处理修阵时划破的手",
           hint: "灵草 −2",
           disabled: s.herbs < 2 ? "需灵草 2" : undefined,
         },
         {
           id: "share",
-          label: "翻开旧卷，分享自己的识路心得",
+          label:
+            s.social.gender === "male"
+              ? "翻开旧卷，分享自己的识路心得"
+              : "翻开旧卷，一起核对引路阵的残纹",
           hint: "需心得 2，不消耗",
           disabled: s.study < 2 ? "需心得 2" : undefined,
         },
@@ -224,7 +274,7 @@ export function heartEvent(s: State): EventView | null {
   if (kind === "night")
     return {
       title: "灯下 · 各自的远方",
-      body: `${who.name}把${who.gender === "女" ? "一张被雨泡皱的路图" : "那枚裂开的引路阵盘"}推到灯下。${s.social.answers.walk === "care" ? "你那日留下照料伤者，让对方腾出手稳住归路。" : s.social.answers.walk === "mark" ? "你那日补下的标记还在，最后一个药工顺着它走出了雨幕。" : "你那日没催谁快走，一直陪到最后一个人回山。"}“我想${who.goal}可师门给了我一次闭关的机会，错过这轮灵潮，就要再等数年。”${who.pronoun}把手缩回袖里，袖口还留着那天替你挡石的裂痕。“你若也要去求自己的道，不必为了我留下。”说完这句，${who.pronoun}却没有收走你面前的茶。`,
+      body: `${who.name}把${who.gender === "女" ? "一张被雨泡皱的路图" : "那枚裂开的引路阵盘"}推到灯下。${s.social.answers.walk === "care" ? "你那日留下照料伤者，让对方腾出手稳住归路。" : s.social.answers.walk === "mark" ? "你那日补下的标记还在，最后一个药工顺着它走出了雨幕。" : "你那日没催谁快走，一直陪到最后一个人回山。"}“我想${who.goal}可我也要留些时间闭关修行，不能总靠眼前这点本事走远路。”${who.pronoun}把手缩回袖里，袖口还留着那天替你挡石的裂痕。“你若也要去求自己的道，不必为了我留下。”说完这句，${who.pronoun}却没有收走你面前的茶。`,
       options: [
         {
           id: "promise",
@@ -433,13 +483,28 @@ export function dispatchSocial(
     return !s.pending;
   };
   switch (c.type) {
+    case "readOrigin":
+      if (
+        !Object.hasOwn(originNotes, c.origin) ||
+        !availableOrigins(s).includes(c.origin) ||
+        s.social.origins.includes(c.origin)
+      )
+        return input;
+      s.social.origins.push(c.origin);
+      note(s, `${originNotes[c.origin].title}：${originNotes[c.origin].body}`);
+      return accept();
+    case "background":
+      if (!s.social.met || !s.social.gender || s.age < 216) return input;
+      open(s, "background");
+      return accept();
     case "identity":
       if (s.social.gender !== null || !["male", "female"].includes(c.gender))
         return input;
       s.social.gender = c.gender;
       return accept();
     case "visit":
-      if (!s.social.gender || s.social.met || s.age < 216) return input;
+      if (!s.social.gender || s.social.met || s.age < 216 || s.realm < 1)
+        return input;
       if (!travel()) return accept();
       open(s, "meet");
       return accept();
@@ -472,7 +537,9 @@ export function dispatchSocial(
       if (kind === "meet") {
         s.social.met = true;
         s.social.metMonth = s.month;
-        s.social.affection += c.option === "listen" ? 8 : 12;
+        s.social.affection += ["listen", "recognize"].includes(c.option)
+          ? 8
+          : 12;
         if (c.option === "help") s.herbs -= 2;
       }
       if (kind === "walk") {
@@ -493,7 +560,12 @@ export function dispatchSocial(
       }
       s.social.answers[kind] = c.option;
       s.social.scene = null;
-      if (kind !== "pledge")
+      if (kind === "background")
+        note(
+          s,
+          `你听${companion(s)!.name}讲起家人与学艺的经历。各自的远行，仍要自己准备。`,
+        );
+      if (kind !== "pledge" && kind !== "background")
         note(
           s,
           `与${companion(s)!.name}的共同经历：${option.label}。好感 ${s.social.affection}，关系：${relationship(s)}。`,
@@ -589,8 +661,22 @@ export function validSocial(s: State): boolean {
   )
     return false;
   if (r.bonded && (r.memories.length !== 3 || r.affection < 50)) return false;
+  if (
+    Number(s.version) >= 15 &&
+    (!Array.isArray(r.origins) ||
+      r.origins.length > 2 ||
+      new Set(r.origins).size !== r.origins.length ||
+      !r.origins.every((k) => Object.hasOwn(originNotes, k)))
+  )
+    return false;
   const allowed = {
-    meet: ["help", "share", "listen"],
+    meet: [
+      "help",
+      "share",
+      "listen",
+      ...(Number(s.version) >= 15 ? ["recognize"] : []),
+    ],
+    ...(Number(s.version) >= 15 ? { background: ["listen"] } : {}),
     walk: ["care", "mark", "stay"],
     night: ["promise", "honest"],
     watch: ["thanks", "learn"],
@@ -602,10 +688,13 @@ export function validSocial(s: State): boolean {
     Array.isArray(r.answers) ||
     !Object.entries(r.answers).every(
       ([k, v]) =>
-        Object.hasOwn(allowed, k) && allowed[k as HeartScene].includes(v),
+        Object.hasOwn(allowed, k) &&
+        allowed[k as keyof typeof allowed]?.includes(v),
     )
   )
     return false;
+  if (r.answers.meet === "recognize" && !recognizedOrigin(s)) return false;
+  if (r.answers.background && !r.met) return false;
   if (
     r.met !== !!r.answers.meet ||
     r.memories.some((m) => !r.answers[m]) ||

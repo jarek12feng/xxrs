@@ -55,6 +55,7 @@ it("opens a named defeat result on voluntary withdrawal without claiming new wou
 it("keeps an NPC response and relationship milestone after choosing", () => {
   const s = createGame("玩家", "wood", 42, "insightful", "male");
   s.age = 216;
+  s.realm = 1;
   s.month = 24;
   s.story.stage = "resolved";
   s.memories.letter = true;
