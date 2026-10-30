@@ -396,7 +396,7 @@ export function nextGoal(s: State) {
   if (s.realm === 0 || s.story.stage !== "resolved")
     return chapter.nextGoal(base(s));
   if (s.journey.maps.sea < 3) return familyQuestGoal(s);
-  return `家书已送达。${s.social.arena.wins < 3 ? "可前往听松擂台完成剩余对手；" : "听松擂台已完成；"}${!s.adventure.mist.garden || !s.adventure.mist.station ? "可补探药圃或废驿；" : ""}也可回看人物档案、封存本世。`;
+  return `家书已送达。${s.social.arena.wins < 3 ? "可前往听松擂台完成剩余对手；" : "听松擂台已完成；"}${!s.adventure.mist.garden || !s.adventure.mist.station ? "可补探药圃或废驿；" : ""}也可回看人物档案、回顾修行履历。`;
 }
 export function explorationError(s: State, p: Place) {
   if (!Object.hasOwn(places, p)) return "未知区域";
@@ -438,7 +438,7 @@ function normalize(n: State, old: State) {
     } else {
       log(
         n,
-        "筑基篇已记入传承，但人生仍在继续。山外的雾岭与孤灯，正等你探访。",
+        "筑基篇已记入修行履历，你的道途仍在继续。山外的雾岭与孤灯，正等你探访。",
       );
     }
     n.status = "alive";
@@ -602,6 +602,8 @@ export function dispatch(input: State, c: Command): State {
     const b = base(input),
       result = chapter.dispatch(b, command);
     if (result === b) return input;
+    if (c.type === "next")
+      return lift(result, fresh(), freshSocial(), freshAdventure());
     return normalize(
       lift(
         result,
@@ -1009,13 +1011,7 @@ export function dispatch(input: State, c: Command): State {
       if (!s.journey.settled || s.realm !== 1 || s.story.stage !== "resolved")
         return input;
       s.status = "complete";
-      for (const key of [
-        s.crafted > 0 ? "herbal" : null,
-        s.mastery >= 4 ? "sword" : null,
-      ] as const) {
-        if (key && !s.unlocked.includes(key)) s.unlocked.push(key);
-      }
-      log(s, "你主动封存这一世的卷宗，保留传承，准备另一种人生。");
+      log(s, "你收起这一程的卷宗。休整之后，仍可继续自己的道途。");
       return accept();
   }
   return input;

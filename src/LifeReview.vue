@@ -6,8 +6,8 @@ const props = defineProps<{ game: State }>();
 const review = computed(() => lifeReview(props.game));
 </script>
 <template>
-  <section class="life-summary" aria-label="本世经历回顾">
-    <h3>这一世，你做成了什么</h3>
+  <section class="life-summary" aria-label="修行履历">
+    <h3>一路走来，你做成了什么</h3>
     <ul>
       <li v-for="line in review.records" :key="line">{{ line }}</li>
     </ul>
@@ -17,11 +17,6 @@ const review = computed(() => lifeReview(props.game));
         <li v-for="line in review.unfinished" :key="line">{{ line }}</li>
       </ul>
     </details>
-    <h3>换一种人生，会有什么不同</h3>
-    <ul>
-      <li v-for="line in review.next" :key="line">{{ line }}</li>
-    </ul>
-    <p>这些尝试不要求现在重开；下一世从头修行，只携所选的一项已解锁传承。</p>
   </section>
 </template>
 <style scoped>

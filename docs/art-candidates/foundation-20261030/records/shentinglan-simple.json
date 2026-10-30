@@ -1,0 +1,16 @@
+{
+  "id": "shentinglan-simple",
+  "name": "沈听澜·简约服饰定稿候选",
+  "kind": "characters",
+  "phase": 1,
+  "refs": [
+    "public/characters/shentinglan.png"
+  ],
+  "detail": "成年道侣，简约无袖交领裙、收腰与开衩；沿用脸型长辫青灰配色。",
+  "gate": "成年沈听澜；不是玩家女角色；不预设恋爱成立",
+  "status": "reviewed-candidate",
+  "prompt": "Design revision for a Chinese fantasy game character, Shen Tinglan, an adult woman age 24 and professional cartographer. Use the reference only to preserve her face, thick dark side braid, Chinese appearance, and blue-grey ivory palette. Simplify her complex outfit: a clean sleeveless Chinese crossover-neck dress with a fitted waist, a single plain sash, bare arms and shoulders, a knee-high side opening for walking, and simple flat calf boots. Opaque fabric, practical coverage, elegant mature fashion. Keep neckline modest. Remove backpack, ragged cloth, cape, repeated belts, dangling ropes and elaborate embroidery. One small rolled map held in one hand. Confident upright relaxed standing pose. Refined Chinese ink and mineral watercolor illustration, accurate full-body anatomy. Entire person including boots within the frame and generous empty margin. Standalone transparent cutout, no scenery, no vignette, no text. The image is a costume design sheet with a single character, not a scene.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+  "referenceAsset": "../../../public/characters/shentinglan.png"
+}

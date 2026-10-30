@@ -23,7 +23,7 @@ export function openingGuide(s: State) {
       label: "回访药工，看看后来发生的事",
     };
   if (
-    !s.adventure.road.map &&
+    (!s.adventure.road.map || s.expedition.cleared === 1) &&
     !s.journey.main &&
     s.journey.known.some((t) => t === "blade" || t === "spring")
   )
@@ -32,6 +32,17 @@ export function openingGuide(s: State) {
       body: "药工的谢礼已收入功法页。装配主修会改变修行与战斗；以后可用灵草和灵石研修至熟练。",
       action: "skills" as const,
       label: "装配第一册功法",
+    };
+  if (
+    s.expedition.cleared === 1 &&
+    !s.journey.equipped &&
+    Object.values(s.journey.relics).some((level) => level > 0)
+  )
+    return {
+      title: "药队送来的灵器，还未装配",
+      body: "首胜奖励已经在行囊里。装配后再查看交锋准备，比较伤害或减伤变化；不用先花材料精炼。",
+      action: "gear" as const,
+      label: "查看并装配首件灵器",
     };
   const r = s.adventure.road,
     q = s.expedition;

@@ -1,0 +1,14 @@
+{
+  "id": "sunken-entry",
+  "name": "沉井遗府·浅层试探",
+  "kind": "scenes",
+  "phase": 1,
+  "detail": "Looking down a broad ancient stone well stair into a partially flooded Chinese cultivation courtyard, shallow water channels, clearly safe dry ledge at foreground left, exit stair visible, worn stone threshold and restrained bronze array channels. No figures, no treasure reward.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Looking down a broad ancient stone well stair into a partially flooded Chinese cultivation courtyard, shallow water channels, clearly safe dry ledge at foreground left, exit stair visible, worn stone threshold and restrained bronze array channels. No figures, no treasure reward. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9b6f47fd-202e-4496-8876-0991cada495a.png",
+  "revisionPrompt": "Precise object edit of this generated Chinese cultivation game background. Remove ONLY the faint tiny writing or watermark at bottom right. Replace it with uninterrupted natural stone texture. Preserve the entire courtyard, water, stairs, lighting and layout exactly. No letters or watermark anywhere.",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

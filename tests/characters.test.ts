@@ -134,7 +134,7 @@ describe("人物与资质", () => {
       expect(s.pending?.kind).toBe("relic");
     },
   );
-  it("self branch protects exactly one failure and unlocks a unique inheritance", () => {
+  it("self branch protects exactly one failure without a cross-character reward", () => {
     let s = until(start(), 36);
     s.qi = 180;
     s.study = 2;
@@ -160,14 +160,14 @@ describe("人物与资质", () => {
     s.seed = 1;
     s.pills = 1; // Isolate repeated failure protection from material acquisition.
     s = act(s, { type: "break", pill: true });
-    expect(s.unlocked).toContain("ember");
+    expect(s.unlocked).toEqual([]);
     const next = act(s, {
       type: "next",
       path: "sword",
-      inheritance: "ember",
+      inheritance: "none",
       aptitude: "perceptive",
     });
-    expect(next.ward).toBe(true);
+    expect(next.ward).toBe(false);
     expect(next.root).toBe(4);
     expect(next.sense).toBe(7);
     expect(next.study).toBe(0);

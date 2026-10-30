@@ -1,0 +1,13 @@
+{
+  "id": "keepsake-bundle",
+  "name": "旧人物件与遗物候选",
+  "kind": "items",
+  "phase": 3,
+  "detail": "A respectfully wrapped small plain cloth bundle with a worn uninscribed wooden token and folded blank letter resting on top, no portrait, no death marking, no blood, suitable for a living person's belongings or remembrance only after story confirmation.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: A respectfully wrapped small plain cloth bundle with a worn uninscribed wooden token and folded blank letter resting on top, no portrait, no death marking, no blood, suitable for a living person's belongings or remembrance only after story confirmation. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-294ff279-3a00-4c00-aba1-da0d53e99009.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

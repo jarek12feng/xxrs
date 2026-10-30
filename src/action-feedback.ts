@@ -1,3 +1,4 @@
+import { trialBoard } from "./world-ambition";
 import {
   queueActions,
   refineCost,
@@ -200,6 +201,10 @@ export function actionReceipt(
   ].includes(effective.type)
     ? growthComparison(before, after)
     : [];
+  if (after.social.arena.wins > before.social.arena.wins) {
+    title = trialBoard(after).title;
+    growthNotes.push(trialBoard(after).response);
+  }
   const cost =
     effective.type === "prepare"
       ? effective.kind === "refine"
@@ -234,7 +239,7 @@ export function actionReceipt(
       ...entries.slice(0, 4).map((entry) => entry.text),
     ],
     next: dead
-      ? "确认后回看此世，选择轮回传承。"
+      ? "确认后回看修行履历，可读取存档或另启新程。"
       : after.pending || after.social.scene
         ? "有新的剧情在等你，确认后继续回应。"
         : ritual === "break"

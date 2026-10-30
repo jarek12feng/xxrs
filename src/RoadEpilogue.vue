@@ -72,7 +72,7 @@ const ending = computed(() => {
     <ExpeditionResolution :game="game" />
     <LifeReview :game="game" />
     <p class="epilogue-note">
-      本篇完成不代表寿终，也不会开启下一世。归路与人物回应保留在本世存档中。
+      本篇完成后仍可继续修行，归路与人物回应保留在当前旅程中。
     </p>
     <div class="epilogue-actions">
       <button :disabled="locked" @click="$emit('return')">

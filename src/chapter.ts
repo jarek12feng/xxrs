@@ -285,11 +285,11 @@ export function refineCost(s: State) {
 export function replayHints(s: State) {
   const hints: string[] = [];
   if (s.memories.crossing !== "sense")
-    hints.push("下一世凝神至神识 8，可看见青石阵眼，另寻无伤通路。");
+    hints.push("凝神至神识 8，可看见青石阵眼，另寻无伤通路。");
   if (s.memories.crossing !== "decipher")
     hints.push("选择明心善悟并研读至心得 2，可读懂石门残诀。");
   if (s.story.choice !== "self")
-    hints.push("留下孤丹会得到一次护脉丹纹，并解锁另一份独行传承。");
+    hints.push("留下孤丹会得到一次护脉丹纹，帮助承受突破失败。");
   if (s.story.choice !== "gift")
     hints.push("赠丹后的故人，会以不同身份再次站在你身边。");
   if (!s.memories.confided)
@@ -297,7 +297,8 @@ export function replayHints(s: State) {
   return hints.slice(0, 3);
 }
 export function nextGoal(s: State) {
-  if (s.status !== "alive") return "此篇已落笔，选择传承与下一世路线。";
+  if (s.status !== "alive")
+    return "此篇已落笔，可回看履历、读取存档或新建角色。";
   if (s.pending) return "完成眼前的选择，时间已暂停。";
   if (s.story.stage === "unmet") return "第三个月，去渡口认识同行之人。";
   if (s.story.stage === "waiting" && !s.memories.letter && s.month < 12)
@@ -460,17 +461,9 @@ function finish(s: State, dead = false) {
   if (s.status !== "alive") return;
   s.status = dead ? "dead" : "complete";
   s.pending = null;
-  s.earned = 3 + (dead ? 0 : 2) + (s.story.choice === "gift" ? 1 : 0);
-  s.legacy += s.earned;
-  const unlock = (key: Inheritance) => {
-    if (!s.unlocked.includes(key)) s.unlocked.push(key);
-  };
-  if (s.crafted > 0) unlock("herbal");
-  if (s.mastery >= 4) unlock("sword");
-  if (s.story.choice === "gift") unlock("bond");
-  if (s.story.choice === "self") unlock("ember");
+  s.earned = 0;
   s.result = dead
-    ? "灯尽山中：你未能完成此篇，但修行所得仍可传给下一世。"
+    ? "灯尽山中：寿元已尽，你走过的路与结识的人留在修行履历中。"
     : s.story.choice === "gift"
       ? "双星照渡：你与陆迟都已筑基，今后可并肩而行。那句三年之约，终于有了回音。"
       : s.story.choice === "self"
@@ -537,8 +530,8 @@ export function travelMonth(input: State): State {
 export function actionError(s: State, activity: Activity) {
   if (activity === "meditate" && s.sense >= 12) return "神识已达本篇上限";
   if (activity === "study" && s.study >= 4) return "研读心得已满";
-  if (activity === "gather" && !canGather(s)) return "需长春医道或长春丹札传承";
-  if (activity === "train" && !canTrain(s)) return "需青锋剑道或青锋残谱传承";
+  if (activity === "gather" && !canGather(s)) return "需选择长春医道";
+  if (activity === "train" && !canTrain(s)) return "需选择青锋剑道";
   if (activity === "train" && s.mastery >= 12) return "剑意已满";
   if (activity === "rest" && s.injury === 0) return "当前无伤势";
   if (activity === "cultivate" && (s.qi >= MAX_QI || s.realm === 1))
@@ -588,29 +581,16 @@ export function dispatch(input: State, c: Command): State {
     return n;
   }
   if (c.type === "next") {
+    // Retained command name means a fresh character, never a reincarnation reward.
     if (
       !["complete", "dead"].includes(s.status) ||
       !Object.hasOwn(paths, c.path) ||
-      !Object.hasOwn(inheritances, c.inheritance) ||
-      (c.inheritance !== "none" && !s.unlocked.includes(c.inheritance))
+      c.inheritance !== "none"
     )
       return input;
     rng(s);
     const n = createGame(s.name, c.path, s.seed, c.aptitude);
-    n.life = s.life + 1;
-    n.legacy = s.legacy;
-    n.unlocked = [...s.unlocked];
-    n.archive = s.archive;
-    n.inherited = c.inheritance;
     n.seen = [c.id];
-    if (c.inheritance === "herbal") n.herbs = 4;
-    if (c.inheritance === "sword") n.mastery = 2;
-    if (c.inheritance === "ember") n.ward = true;
-    record(
-      n,
-      `第 ${n.life} 世，选择${paths[c.path].name}，带来「${inheritances[c.inheritance].name}」。传承每世只选一项，不叠加。`,
-      "major",
-    );
     return n;
   }
   if (s.status !== "alive") return input;
@@ -1044,7 +1024,7 @@ export function migrateSave(value: unknown): State {
       upgraded.unlocked.push("ember");
     record(
       upgraded,
-      "人物与资质版已接续旧进度：补入明心善悟资质。已经过去的相处节点不补发奖励；下一世可重新选择资质。",
+      "人物与资质版已接续旧进度：补入明心善悟资质。已经过去的相处节点不补发奖励；新建角色时可重新选择资质。",
     );
     return upgraded;
   }

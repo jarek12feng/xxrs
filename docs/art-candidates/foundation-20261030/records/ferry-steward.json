@@ -1,0 +1,13 @@
+{
+  "id": "ferry-steward",
+  "name": "渡口管事候选",
+  "kind": "characters",
+  "phase": 3,
+  "detail": "An adult middle-aged Chinese male ferry steward in restrained brown long robe and dark cap, holding closed document folio, composed watchful face. An ordinary human authority figure, no evil aura or monster features.",
+  "refs": [],
+  "gate": "NAR-01；祝庭候选，不凭外貌宣布全部罪行",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: An adult middle-aged Chinese male ferry steward in restrained brown long robe and dark cap, holding closed document folio, composed watchful face. An ordinary human authority figure, no evil aura or monster features. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-ec8def2a-9f63-4bde-b733-2354436864db.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

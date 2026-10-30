@@ -17,6 +17,7 @@ import { breakthroughError } from "./foundation";
 import PreparationValues from "./PreparationValues.vue";
 import LifeReview from "./LifeReview.vue";
 import { automaticPause, type PauseReason } from "./cultivation-feedback";
+import { journeyHorizon } from "./world-ambition";
 import { openingGuide } from "./opening-guide";
 import { expeditionGoal } from "./expedition/progression";
 import { createSoundscape, soundSettings, type SoundMood } from "./audio";
@@ -79,12 +80,10 @@ import {
   refineCost,
   growthGoals,
   mainTraining,
-  replayHints,
   type Aptitude,
   createGame,
   dispatch,
   paths,
-  inheritances,
   eventView,
   breakthroughDetails,
   nextGoal,
@@ -95,7 +94,6 @@ import {
   type State,
   type Path,
   type Activity,
-  type Inheritance,
   type Intent,
 } from "./core";
 import { luchiView } from "./characters";
@@ -211,6 +209,9 @@ const currentGoal = computed(() => {
   if (g.adventure.step === "done") return roadGoal(g);
   return adventureGoal(g.adventure);
 });
+const horizon = computed(() =>
+  game.value ? journeyHorizon(game.value) : null,
+);
 const opening = computed(() => (game.value ? openingGuide(game.value) : null));
 async function followOpening() {
   if (!opening.value || ui.busy || receiptExpanded.value) return;
@@ -232,6 +233,9 @@ async function followOpening() {
     case "skills":
       openPanel("skills");
       break;
+    case "gear":
+      openPanel("gear");
+      break;
     case "sect":
       openPanel("sect");
       break;
@@ -250,18 +254,30 @@ function openPanel(id: string) {
   ui.running = false;
   dialog.value = id;
 }
+function resetJourneyView() {
+  clearTimeout(receiptTimer);
+  clearTimeout(practiceTimer);
+  titleScreen.value = false;
+  creating.value = false;
+  ui.running = false;
+  ui.history = false;
+  queueMode.value = false;
+  pauseReason.value = null;
+  receipt.value = null;
+  receiptExpanded.value = false;
+  practice.value = null;
+  actionOrigin = null;
+  arrivalFinished.value = false;
+  dialog.value = "";
+  showRoad.value = false;
+  view.value = "story";
+  activity.value = "cultivate";
+  atlasMode.value = "story";
+  selectedPlace.value = "valley";
+  targetVisible.value = false;
+}
 async function restoreGame(state: State) {
-  if (await persist(state)) {
-    titleScreen.value = false;
-    creating.value = false;
-    pauseReason.value = null;
-    dialog.value = "";
-    receipt.value = null;
-    receiptExpanded.value = false;
-    showRoad.value = false;
-    view.value = "story";
-    ui.history = false;
-  }
+  if (await persist(state)) resetJourneyView();
 }
 async function beginNew() {
   if (ui.busy) return;
@@ -298,7 +314,6 @@ const ready = ref(false),
   path = ref<Path>("wood"),
   aptitude = ref<Aptitude>("insightful"),
   gender = ref<Gender>("male"),
-  inheritance = ref<Inheritance>("none"),
   activity = ref<Activity>("cultivate"),
   notice = ref(""),
   saved = ref(""),
@@ -517,8 +532,7 @@ async function start() {
         ),
       )
     ) {
-      titleScreen.value = false;
-      creating.value = false;
+      resetJourneyView();
     }
 }
 async function advance(months: number) {
@@ -573,20 +587,7 @@ function foundationCommand(intent: Intent) {
 async function commitBreak() {
   if (await act({ type: "break", pill: true })) dialog.value = "";
 }
-async function nextLife() {
-  if (
-    await act({
-      type: "next",
-      path: path.value,
-      inheritance: inheritance.value,
-      aptitude: aptitude.value,
-    })
-  ) {
-    activity.value = "cultivate";
-    pauseReason.value = null;
-    inheritance.value = "none";
-  }
-}
+
 function download(value: unknown, suffix = "") {
   const url = URL.createObjectURL(
     new Blob([JSON.stringify(value, null, 2)], { type: "application/json" }),
@@ -858,7 +859,10 @@ onUnmounted(() => {
       </button>
       <div class="location-entry" v-if="game && !titleScreen">
         <button @click="openPanel('world')">{{ currentScene.name }}</button
-        ><small>第 {{ game.life }} 世 · 第 {{ game.month }} 月</small>
+        ><small
+          >修行 {{ Math.floor(game.month / 12) }} 年
+          {{ game.month % 12 }} 月</small
+        >
       </div>
       <button
         class="system-entry"
@@ -876,9 +880,9 @@ onUnmounted(() => {
       />
     </header>
     <main v-if="ready && titleScreen && !creating" class="title-screen">
-      <p class="eyebrow">一卷山海 · 几世修行</p>
+      <p class="eyebrow">青玄界 · 听松山</p>
       <h1>问道听松</h1>
-      <p>山关风起，故人待归。</p>
+      <p>从听松山出发，修一身本领，留一段归路。</p>
       <button v-if="game" class="primary" @click="resumeGame">
         继续游戏<small
           >{{ game.name }} · {{ game.realm ? "筑基" : "炼气" }} · 第
@@ -908,7 +912,7 @@ onUnmounted(() => {
       <section class="creation-form">
         <button class="quiet" @click="creating = false">返回标题</button>
         <span class="eyebrow">十六岁 · 初入仙途</span>
-        <h2>写下这一世的名字</h2>
+        <h2>写下这段旅程的名字</h2>
         <label for="name">道号</label
         ><input id="name" v-model="name" maxlength="16" class="name-input" />
         <h3>选择先天资质</h3>
@@ -955,7 +959,7 @@ onUnmounted(() => {
           踏入仙途 →
         </button>
         <p class="fineprint">
-          本地单机 · 自动存档 · 无离线收益<br />旧版人生先封存，确认后进入新篇。
+          本地单机 · 自动存档 · 无离线收益<br />新角色独立开始，原旅程可在存档中读取。
         </p>
       </section>
     </main>
@@ -967,13 +971,29 @@ onUnmounted(() => {
       }"
     >
       <section class="journey">
+        <details
+          v-if="horizon && !ui.history"
+          class="opening-guide"
+          aria-label="行旅目标"
+        >
+          <summary>这一程 · {{ horizon.stage }}</summary>
+          <p>青玄界 · 听松山行旅</p>
+          <p><strong>本篇终点：</strong>{{ horizon.chapter }}</p>
+          <button
+            :disabled="ui.busy || receiptExpanded"
+            @click="openPanel('arena')"
+          >
+            可选志向 · 听松试剑榜
+          </button>
+          <small>十八岁后可登台；行路、救人与修行都不要求上榜。</small>
+        </details>
         <aside
           v-if="opening && !ui.history"
           class="opening-guide"
           aria-label="初入仙途指引"
         >
-          <details :open="!game.adventure.road.thanked">
-            <summary>{{ opening.title }}</summary>
+          <div>
+            <strong>{{ opening.title }}</strong>
             <p>{{ opening.body }}</p>
             <button
               :disabled="ui.busy || receiptExpanded"
@@ -981,7 +1001,7 @@ onUnmounted(() => {
             >
               {{ opening.label }}
             </button>
-          </details>
+          </div>
         </aside>
         <aside
           v-if="pauseReason && !ui.running"
@@ -1223,7 +1243,7 @@ onUnmounted(() => {
           <SceneBackdrop
             v-if="ui.history"
             image="/scenes/moon-terrace.png"
-            title="这一世的卷宗"
+            title="这段旅程的卷宗"
             eyebrow="灯下回望"
             body="摊开旧卷，走过的山路、赴过的约定与没说完的话，都还留在这里。"
             compact
@@ -1232,7 +1252,7 @@ onUnmounted(() => {
             <div class="panel-heading">
               <h2>人生卷宗</h2>
               <span class="muted">{{
-                ui.history ? "本世最近 180 条" : "近事三则"
+                ui.history ? "最近 180 条" : "近事三则"
               }}</span>
             </div>
             <article
@@ -1337,7 +1357,7 @@ onUnmounted(() => {
         <template v-if="dialog === 'character' && game">
           <div class="character-sheet">
             <div class="life-label">
-              第 {{ game.life }} 世 · 修行第 {{ game.month }} 月
+              修行 {{ Math.floor(game.month / 12) }} 年 {{ game.month % 12 }} 月
             </div>
             <div class="portrait">
               <span>{{ game.name.slice(0, 1) }}</span
@@ -1398,9 +1418,6 @@ onUnmounted(() => {
                   : ""
               }}
             </p>
-            <span class="eyebrow">今世传承</span>
-            <h3>{{ inheritances[game.inherited].name }}</h3>
-            <p class="muted">{{ inheritances[game.inherited].description }}</p>
             <p class="save-status">{{ saved }}</p>
             <button
               v-if="game.archive"
@@ -1633,8 +1650,7 @@ onUnmounted(() => {
         ><h2 id="modal-title" tabindex="-1">旧卷珍藏，新篇启程</h2>
         <p class="event-body">{{ game.result }}</p>
         <p>
-          旧档：{{ game.archive?.name }} · 第 {{ game.archive?.life }} 世 ·
-          原境界序号 {{ game.archive?.realm }}
+          旧档：{{ game.archive?.name }} · 原境界序号 {{ game.archive?.realm }}
         </p>
         <button
           class="secondary full"
@@ -1663,19 +1679,19 @@ onUnmounted(() => {
               : '/scenes/moon-terrace.png'
           "
           :title="game.status === 'complete' ? '筑基篇完成' : '灯尽，前缘未尽'"
-          :eyebrow="'第 ' + game.life + ' 世 · 此篇落笔'"
+          eyebrow="修行履历 · 此篇落笔"
           :body="game.result"
           heading-id="modal-title"
           compact
         />
-        <section class="scene-controls" aria-label="传承与轮回操作区">
-          <h3 class="controls-heading">留下此世，选择来路</h3>
+        <section class="scene-controls" aria-label="修行履历与旅程操作区">
+          <h3 class="controls-heading">回望来路</h3>
           <LifeReview :game="game" />
           <p class="muted">
             {{
               game.status === "complete"
-                ? "此篇已记入传承。可以继续此世探索山外，也可以选择另一种人生。"
-                : "寿元耗尽，已获得的传承仍可带走。"
+                ? "本卷告一段落。你的修为、关系和行旅记录都在，可以继续探索。"
+                : "寿元已尽，这段人生已经结束。可以读取此前存档，或新建独立角色。"
             }}
           </p>
           <button
@@ -1684,53 +1700,22 @@ onUnmounted(() => {
             :disabled="ui.busy"
             @click="act({ type: 'continue' })"
           >
-            继续此世 · 追寻山外故事
+            继续修行 · 追寻山外故事
           </button>
-          <p>
-            本篇所得 {{ game.earned }} · 累计阅历
-            {{ game.legacy }}（纪念分，不消耗）
-          </p>
           <details class="life-review">
-            <summary>回看此世卷宗</summary>
+            <summary>回看修行卷宗</summary>
             <p v-for="(entry, i) in game.log" :key="i">
               第 {{ entry.month }} 月 · {{ entry.text }}
             </p>
           </details>
-          <label class="field-label"
-            >下一世路线<select v-model="path">
-              <option v-for="(p, id) in paths" :key="id" :value="id">
-                {{ p.name }}
-              </option>
-            </select></label
-          >
-          <label class="field-label"
-            >下一世资质<select v-model="aptitude">
-              <option v-for="(a, id) in aptitudes" :key="id" :value="id">
-                {{ a.name }} · 根骨 {{ a.root }} / 悟性 {{ a.wisdom }} / 神识
-                {{ a.sense }}
-              </option>
-            </select></label
-          >
-          <section class="next-life">
-            <h3>下一世，你可以试试</h3>
-            <p v-for="hint in replayHints(game)" :key="hint">{{ hint }}</p>
-          </section>
-          <div class="inheritance-list">
-            <button
-              v-for="(item, id) in inheritances"
-              :key="id"
-              :class="{ selected: inheritance === id }"
-              :disabled="id !== 'none' && !game.unlocked.includes(id)"
-              @click="inheritance = id"
-            >
-              <strong>{{ item.name }}</strong
-              ><small>{{ item.description }}</small>
-            </button>
-          </div>
-          <button class="primary full" :disabled="ui.busy" @click="nextLife">
-            携一份传承，再入轮回 →</button
-          ><button class="quiet full" @click="download(game)">
-            导出本世存档
+          <button class="primary full" :disabled="ui.busy" @click="beginNew">
+            另启新程 · 新建角色
+          </button>
+          <button :disabled="ui.busy" @click="openPanel('saves')">
+            读取存档
+          </button>
+          <button class="quiet full" @click="download(game)">
+            导出旅程存档
           </button>
         </section></template
       >
@@ -1846,13 +1831,13 @@ onUnmounted(() => {
         <button class="primary full" @click="dialog = ''">合上档案</button>
       </template>
       <template v-else
-        ><h2 id="modal-title" tabindex="-1">如何写下这一世</h2>
+        ><h2 id="modal-title" tabindex="-1">如何写下这段旅程</h2>
         <p class="event-body">
           根骨提高吐纳速度，悟性影响研读和替代丹方，神识通过凝神成长并影响识阵与控火。三项资质不是简单的突破率加点。医道采药炼丹，剑道历练争先。伤势可通过养伤消除；闭关固本提高突破把握，却可能错过第三十六个月的约定。陆迟事件链只在关键节点暂停，不会反复打断行动。
         </p>
         <p class="event-body">
           修为达到 360
-          后主动突破。完成陆迟故事并筑基会记入传承，仍可继续山外寻人，或主动封存再轮回。宗门与散修都可获得功法；遇妖修或邪修挑战，可准备灵器、提升实力或请人护持。正常刷新会保留存档，清理浏览器数据、换设备或地址则可能丢失或不可见。每次行动先保存再显示；后台暂停，无离线收益。请定期导出备份，只使用一个标签页。
+          后主动突破。完成筑基篇后继续同一角色的修行与行旅，已学功法和人物关系保留。寿尽后可读取存档或新建角色；新角色不继承前一角色的奖励。宗门与散修都可获得功法；遇妖修或邪修挑战，可准备灵器、提升实力或请人护持。正常刷新会保留存档，清理浏览器数据、换设备或地址则可能丢失或不可见。每次行动先保存再显示；后台暂停，无离线收益。请定期导出备份，只使用一个标签页。
         </p>
         <button class="primary full" @click="dialog = ''">
           我已知晓

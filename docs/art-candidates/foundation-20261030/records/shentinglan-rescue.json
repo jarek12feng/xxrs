@@ -1,0 +1,16 @@
+{
+  "id": "shentinglan-rescue",
+  "name": "沈听澜·受困行动与接应",
+  "kind": "characters",
+  "phase": 4,
+  "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. actively signalling a safe route with a cloth marker, dusty clothes, alert composed face, not helpless or restrained.",
+  "refs": [
+    "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+  ],
+  "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: identity-preserve. Reference is the approved simpler costume of Shen Tinglan, ADULT Chinese woman age24. Preserve EXACT face, braid, bluegrey sleeveless crossover dress, plain sash, side opening and boots, and refined Chinese ink-watercolor style. Change only pose/expression: Alert composed face, practical stable standing stance, pointing a safe direction with one hand while holding a small route marker in the other, no injury or helpless pose. Full body all limbs and props within frame, generous clear margin, accurate hands. No backpack, extra layers, cape, dangling belts, jewellery, background or vignette. TRUE transparent cutout. Keep opaque practical clothing coverage and modest neckline. Single character.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-5c30f5f9-4ac9-45c5-9350-213530e39477.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+  "referenceAsset": "originals/characters/shentinglan-simple.png"
+}

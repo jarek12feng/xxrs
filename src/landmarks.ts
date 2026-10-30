@@ -14,6 +14,7 @@ import {
   type RoadAction,
   type MistAction,
 } from "./core";
+import { qingxuanLandmarks } from "./world-geography";
 import type { SoundMood } from "./audio";
 export interface Presence {
   detail: string;
@@ -159,6 +160,8 @@ export function currentLandmark(s: State): {
 }
 export interface RouteNode {
   key: string;
+  label?: string;
+  active?: boolean;
   title: string;
   image: string;
   x: number;
@@ -168,7 +171,8 @@ export interface RouteNode {
   intent?: Intent;
   condition: string;
 }
-export function routeNodes(s: State): RouteNode[] {
+type ActiveRouteNode = Omit<RouteNode, "x" | "y" | "label" | "active">;
+function activeRouteNodes(s: State): ActiveRouteNode[] {
   const current = currentLandmark(s);
   const keys =
     current.chapter === "adventure"
@@ -182,15 +186,8 @@ export function routeNodes(s: State): RouteNode[] {
             "lookout",
           ]
         : ["camp", "garden", "station", "gate", "home"];
-  const coords = [
-    [16, 75],
-    [32, 57],
-    [48, 72],
-    [64, 46],
-    [82, 64],
-  ];
   return keys
-    .map<RouteNode>((key, i) => {
+    .map<ActiveRouteNode>((key) => {
       let title: string,
         image: string,
         intent: Intent | undefined,
@@ -254,7 +251,8 @@ export function routeNodes(s: State): RouteNode[] {
         s.status !== "alive" ||
         s.pending ||
         s.social.scene ||
-        s.social.arena.duel
+        s.social.arena.duel ||
+        s.expedition.duel
       ) {
         intent = undefined;
         condition = "先处理眼前的事情，再继续前行。";
@@ -263,8 +261,6 @@ export function routeNodes(s: State): RouteNode[] {
         key,
         title,
         image,
-        x: coords[i][0],
-        y: coords[i][1],
         current: isCurrent,
         visited:
           current.chapter === "mist"
@@ -298,13 +294,78 @@ export function routeNodes(s: State): RouteNode[] {
               key: current.key,
               title: current.title,
               image: current.image,
-              x: 84,
-              y: 84,
               current: true,
               condition: current.goal,
             },
           ],
     );
+}
+
+function physicalKey(chapter: RouteChapter, key: string) {
+  if (chapter === "road")
+    return key === "home" ? "apothecary" : key === "beyond" ? "pass" : key;
+  if (chapter === "mist")
+    return key === "camp"
+      ? "mist-camp"
+      : key === "letter"
+        ? "lookout"
+        : key === "home"
+          ? "market"
+          : key;
+  return key;
+}
+export function routeNodes(s: State): RouteNode[] {
+  const current = currentLandmark(s);
+  const active = new Map(
+    activeRouteNodes(s).map((n) => [physicalKey(current.chapter, n.key), n]),
+  );
+  const a = s.adventure,
+    r = a.road,
+    m = a.mist;
+  const rescued = a.step === "done";
+  // Only existing durable facts imply a visit. Merely seeing a place on the map does not.
+  const visited: Record<string, boolean> = {
+    ferry: a.step !== "ferry",
+    apothecary: a.step !== "ferry",
+    forest: rescued || a.step === "home" || a.step === "shrine",
+    shrine: rescued || a.step === "home",
+    home: rescued,
+    market: r.met || m.settled,
+    camp: r.stage === "camp",
+    pass: r.obstacle !== "none" || r.passed,
+    lookout: r.surveyed,
+    "mist-camp": m.partner !== "none",
+    garden: m.garden,
+    station: m.station,
+    gate: m.passed,
+    archive: m.lamp,
+  };
+  return qingxuanLandmarks.map((place) => {
+    const node = active.get(place.key);
+    const image =
+      place.chapter === "adventure"
+        ? adventureScenes[place.scene].image
+        : place.chapter === "road"
+          ? roadScenes[place.scene].image
+          : mistScenes[place.scene].image;
+    return {
+      key: place.key,
+      title: node?.title ?? place.label,
+      label: place.label,
+      image: node?.image ?? image,
+      x: place.x,
+      y: place.y,
+      current: node?.current ?? false,
+      active: !!node,
+      visited: !!visited[place.key] || !!node?.visited,
+      intent: node?.intent,
+      condition:
+        node?.condition ??
+        (visited[place.key]
+          ? "这里留着你走过的足迹。当前没有直接前往的路线，可继续眼前的行程。"
+          : "本界已知地标。当前通路尚未开启，沿眼前的行程逐步探索。"),
+    };
+  });
 }
 
 export function landmarkLabel(title: string): string {

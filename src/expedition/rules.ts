@@ -40,7 +40,7 @@ export function expeditionError(s: State, a: ExpeditionAction): string {
     return q.accepted
       ? "已接取委托"
       : s.adventure.road.passed
-        ? "本世已过关，下世可接新委托"
+        ? "已完成此段委托，不重复领取"
         : "";
   if (!q.accepted || q.cleared === 3) return "当前没有待完成的关卡";
   if (q.duel)

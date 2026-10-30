@@ -1,0 +1,13 @@
+{
+  "id": "healer-sister",
+  "name": "姐姐·救治者候选",
+  "kind": "characters",
+  "phase": 3,
+  "detail": "An adult Chinese female field healer about 30, olive and ivory simple robes with rolled sleeves, dark hair braided into practical bun, small clean linen bandage in hands and ceramic medicine bottle at belt. Calm focused working posture. Name and kinship not printed; not a clone of male Yuqing.",
+  "refs": [],
+  "gate": "NAR-01；郁晚舟为拟名，姓名与服饰待定，未参与寻亲不可揭示身份",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: An adult Chinese female field healer about 30, olive and ivory simple robes with rolled sleeves, dark hair braided into practical bun, small clean linen bandage in hands and ceramic medicine bottle at belt. Calm focused working posture. Name and kinship not printed; not a clone of male Yuqing. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-7f682ee4-1f47-409f-b009-6df60f4946cb.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

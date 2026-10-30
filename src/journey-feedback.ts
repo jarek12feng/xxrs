@@ -1,5 +1,6 @@
 import { originNotes } from "./companion-origins";
 import { foundationPassageScene, foundationReunion } from "./foundation-scenes";
+import { trialBoard } from "./world-ambition";
 import { actionProcess } from "./action-process";
 import {
   adventureScenes,
@@ -395,7 +396,7 @@ export function enrichReceipt(
     r.ritual = "duel";
     r.tone = win ? "success" : "warning";
     r.title = win
-      ? `擂台获胜 · ${rivals[before.social.arena.duel.opponent].name}`
+      ? `${trialBoard(after).title} · 胜过${rivals[before.social.arena.duel.opponent].name}`
       : intent.type === "arenaWithdraw"
         ? "主动认负 · 留待再战"
         : "本场落败 · 整备再战";

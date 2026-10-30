@@ -1,0 +1,13 @@
+{
+  "id": "array-response",
+  "name": "阵纹应答静态层",
+  "kind": "effects",
+  "phase": 4,
+  "detail": "A restrained flat Chinese circular formation glyph made of warm amber arcs and four simple directional node marks, no letters, no eye, no science-fiction HUD. Isolated transparent overlay, no scenery.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game effects. Primary request: A restrained flat Chinese circular formation glyph made of warm amber arcs and four simple directional node marks, no letters, no eye, no science-fiction HUD. Isolated transparent overlay, no scenery. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-a58a52e9-5cf0-4102-bcef-ff9247c69c70.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "shentinglan-vow",
+  "name": "沈听澜·定情与结契",
+  "kind": "characters",
+  "phase": 2,
+  "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. calm sincere formal greeting with hands composed at waist holding a simple uninscribed jade token, same clothes clean, no wedding costume, no forced partner or embrace.",
+  "refs": [
+    "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+  ],
+  "gate": "仅成年且双方明确同意后的定情/结契；不能据图认定旧档已婚",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: identity-preserve. Reference is the approved simpler costume of Shen Tinglan, ADULT Chinese woman age24. Preserve EXACT face, braid, bluegrey sleeveless crossover dress, plain sash, side opening and boots, and refined Chinese ink-watercolor style. Change only pose/expression: Calm affectionate expression, holding one simple jade token with both hands in front of her waist, standing. No other person. Full body all limbs and props within frame, generous clear margin, accurate hands. No backpack, extra layers, cape, dangling belts, jewellery, background or vignette. TRUE transparent cutout. Keep opaque practical clothing coverage and modest neckline. Single character.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-8f66b957-87f2-4c80-b09a-4df5edc55bba.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+  "referenceAsset": "originals/characters/shentinglan-simple.png"
+}

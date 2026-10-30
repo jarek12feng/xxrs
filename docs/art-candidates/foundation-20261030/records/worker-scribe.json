@@ -1,0 +1,13 @@
+{
+  "id": "worker-scribe",
+  "name": "药工记账人候选",
+  "kind": "characters",
+  "phase": 3,
+  "detail": "Chinese adult woman about 30, sun-weathered face, simple linen brown-blue work clothes, ink-stained fingers holding narrow bamboo tally and notebook, direct confident expression.",
+  "refs": [],
+  "gate": "NAR-03；许芦拟名，性别衣装为候选",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Chinese adult woman about 30, sun-weathered face, simple linen brown-blue work clothes, ink-stained fingers holding narrow bamboo tally and notebook, direct confident expression. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-95e788ad-a536-4d0b-8485-8df42314e08d.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

@@ -114,7 +114,8 @@ it("restores choice consequences and contextual guidance without replaying rewar
     document.querySelector('[aria-label="初入仙途指引"]')?.textContent,
   ).toContain("护根");
   expect(
-    document.querySelector(".opening-guide details")?.hasAttribute("open"),
+    document.querySelector('[aria-label="初入仙途指引"] > div > strong')
+      ?.textContent === "第一段归路已完成",
   ).toBe(true);
   expect(save).not.toHaveBeenCalled();
   expect(audio.cue).not.toHaveBeenCalled();
@@ -299,4 +300,31 @@ it("returns from the cave to the unfinished expedition after breakthrough withou
   await flush();
   expect(document.body.textContent).toContain("蚀阵傀儡");
   expect(vi.mocked(save).mock.calls.length).toBe(savesBefore);
+});
+
+it("first relic coaching opens equipment and equips the earned item through a saved command", async () => {
+  const { expeditionSession } = await import("../tools/expedition-simulation");
+  const p = expeditionSession();
+  p.send({ type: "equip", technique: "spring" });
+  p.send({ type: "expedition", action: "accept" });
+  p.send({ type: "expedition", action: "enter" });
+  p.resolve();
+  if (!p.state.expedition.duel) p.send({ type: "expedition", action: "enter" });
+  p.fight();
+  expect(p.state.expedition.cleared).toBe(1);
+  expect(p.state.realm).toBe(0);
+  await mount(p.state);
+  button("查看并装配首件灵器").click();
+  await flush();
+  expect(
+    document.querySelector('[role="dialog"]')?.getAttribute("data-panel"),
+  ).toBe("gear");
+  const equip = [
+    ...document.querySelectorAll<HTMLButtonElement>("button"),
+  ].find((b) => b.textContent?.includes("装配灵器") && !b.disabled)!;
+  expect(equip).toBeDefined();
+  equip.click();
+  await flush();
+  expect(vi.mocked(save).mock.calls.at(-1)![0].journey.equipped).toBe("vial");
+  expect(document.body.textContent).not.toContain("药队送来的灵器，还未装配");
 });

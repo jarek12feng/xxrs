@@ -20,9 +20,9 @@ export function automaticPause(
 ): PauseReason | null {
   if (s.status !== "alive")
     return {
-      text: "本世修行已经停止，可回看经历与传承。",
+      text: "这段修行已经结束，可回看履历、读取存档或新建角色。",
       target: "story",
-      label: "回看此世",
+      label: "回看履历",
     };
   if (s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel)
     return {

@@ -1,0 +1,13 @@
+{
+  "id": "relay-kit",
+  "name": "修阵与交接工具",
+  "kind": "items",
+  "phase": 1,
+  "detail": "Compact ancient Chinese navigation repair kit, small bronze disk, fitted wooden pegs, tied spare stone and simple wooden blank handover tally, no gears or modern tools.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game items. Primary request: Compact ancient Chinese navigation repair kit, small bronze disk, fitted wooden pegs, tied spare stone and simple wooden blank handover tally, no gears or modern tools. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. One centered compact object group, readable at small icon size, 15 percent clear margin on all sides. Real transparent background, no scenery or cast backdrop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-853cf649-f977-409a-a2c8-0f99df880f8a.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

@@ -16,6 +16,7 @@ const meters = computed(() => battleMeters(props.game));
 const q = computed(() => props.game.expedition);
 const encounter = computed(() => encounters[Math.min(q.value.cleared, 2)]!);
 const power = computed(() => readiness(props.game));
+const beforeRealm = computed(() => readiness({ ...props.game, realm: 0 }));
 const actions = computed<
   { action: ExpeditionAction; label: string; hint?: string }[]
 >(() =>
@@ -119,8 +120,9 @@ const actions = computed<
           2。失败保留已过小关，伤势 +1。
         </p>
         <p v-if="game.realm === 1" class="muted">
-          筑基护体已生效：交锋气势上限 +8、基础伤害
-          +2，已计入当前能力；无需精炼灵器即可受益。
+          筑基护体已生效：相同准备下，基础伤害 {{ beforeRealm.damage }} →
+          {{ power.damage }}、护体减伤 {{ beforeRealm.armor }} →
+          {{ power.armor }}。无需精炼灵器即可受益。
         </p>
         <aside class="combat-style">
           <strong>{{ style.name }}</strong>

@@ -1,0 +1,810 @@
+{
+  "date": "2026-10-30",
+  "scope": "asset-only-not-runtime",
+  "sources": [
+    "docs/mainline.md",
+    "docs/foundation-volume.md",
+    "docs/narrative/01-wuming-ferry.md",
+    "docs/narrative/02-people-and-sects.md",
+    "docs/narrative/03-development-contract.md",
+    "docs/narrative/04-companions-and-world.md",
+    "docs/narrative/05-companion-origins.md"
+  ],
+  "jobs": [
+    {
+      "id": "shentinglan-travel",
+      "name": "沈听澜·同行与分别",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. standing ready to walk with compact travel pack, neutral attentive expression.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/shentinglan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "costumeRevision": "简约无袖交领裙；见 records 中实际制作提示词，覆盖早期繁复衣饰提示。"
+    },
+    {
+      "id": "shentinglan-work",
+      "name": "沈听澜·共同工作",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. surveying and drawing a folded map with a brush, independent expert cartographer.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/shentinglan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "costumeRevision": "简约无袖交领裙；见 records 中实际制作提示词，覆盖早期繁复衣饰提示。"
+    },
+    {
+      "id": "shentinglan-disagree",
+      "name": "沈听澜·分歧与商议",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. standing speaking seriously with restrained open hand, thoughtful disagreement, no anger caricature.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/shentinglan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "costumeRevision": "简约无袖交领裙；见 records 中实际制作提示词，覆盖早期繁复衣饰提示。"
+    },
+    {
+      "id": "shentinglan-reunion",
+      "name": "沈听澜·正常重逢",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. warm relieved small smile, open welcoming hand, holding their own work results, no touching unseen person.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/shentinglan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "costumeRevision": "简约无袖交领裙；见 records 中实际制作提示词，覆盖早期繁复衣饰提示。"
+    },
+    {
+      "id": "shentinglan-vow",
+      "name": "沈听澜·定情与结契",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. calm sincere formal greeting with hands composed at waist holding a simple uninscribed jade token, same clothes clean, no wedding costume, no forced partner or embrace.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/shentinglan.png"
+      ],
+      "gate": "仅成年且双方明确同意后的定情/结契；不能据图认定旧档已婚",
+      "status": "reviewed-candidate",
+      "costumeRevision": "简约无袖交领裙；见 records 中实际制作提示词，覆盖早期繁复衣饰提示。"
+    },
+    {
+      "id": "shentinglan-growth",
+      "name": "沈听澜·独立成长",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. same face and signature clothing neatly repaired, a practical weather cloak and more organized tools, confident posture, no new realm symbols or crown.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/shentinglan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "costumeRevision": "简约无袖交领裙；见 records 中实际制作提示词，覆盖早期繁复衣饰提示。"
+    },
+    {
+      "id": "shentinglan-rescue",
+      "name": "沈听澜·受困行动与接应",
+      "kind": "characters",
+      "phase": 4,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 24-year-old Chinese woman, long thick side braid, muted blue-grey and ivory cross-collar clothes, rolled map and practical satchel. actively signalling a safe route with a cloth marker, dusty clothes, alert composed face, not helpless or restrained.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/shentinglan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate",
+      "costumeRevision": "简约无袖交领裙；见 records 中实际制作提示词，覆盖早期繁复衣饰提示。"
+    },
+    {
+      "id": "yinzhaochuan-travel",
+      "name": "尹照川·同行与分别",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. standing ready to walk with compact travel pack, neutral attentive expression.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "yinzhaochuan-work",
+      "name": "尹照川·共同工作",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. checking a small wooden navigation talisman and bronze formation disk, competent array repair worker.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "yinzhaochuan-disagree",
+      "name": "尹照川·分歧与商议",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. standing speaking seriously with restrained open hand, thoughtful disagreement, no anger caricature.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "yinzhaochuan-reunion",
+      "name": "尹照川·正常重逢",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. warm relieved small smile, open welcoming hand, holding their own work results, no touching unseen person.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "yinzhaochuan-vow",
+      "name": "尹照川·定情与结契",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. calm sincere formal greeting with hands composed at waist holding a simple uninscribed jade token, same clothes clean, no wedding costume, no forced partner or embrace.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "仅成年且双方明确同意后的定情/结契；不能据图认定旧档已婚",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "yinzhaochuan-growth",
+      "name": "尹照川·独立成长",
+      "kind": "characters",
+      "phase": 2,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. same face and signature clothing neatly repaired, a practical weather cloak and more organized tools, confident posture, no new realm symbols or crown.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "yinzhaochuan-rescue",
+      "name": "尹照川·受困行动与接应",
+      "kind": "characters",
+      "phase": 4,
+      "detail": "Preserve the exact face, hairstyle and identity from reference. 26-year-old Chinese man, tied-up dark hair, indigo and ochre cross-collar work robes, small bronze compass and tool roll. actively stabilizing a portable formation node while signalling with the other hand, dusty clothes, focused composed face, not helpless or restrained.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yinzhaochuan.png"
+      ],
+      "gate": "对应实际同行、分别、重逢或救援阶段；不自动生成经历",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "luchi-grown",
+      "name": "陆迟·筑基后回访",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve reference identity, youthful Chinese man, blue grey clean repaired robe and familiar worn sheathed sword. Full body calm standing friendly greeting, no crown or new artifact.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/luchi-foundation.png"
+      ],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "yuqing-reunion",
+      "name": "郁青·关切重逢",
+      "kind": "characters",
+      "phase": 1,
+      "detail": "Preserve exact male reference identity, olive robe and ochre scarf. Full body turned slightly toward an unseen relative, hopeful restrained smile, map satchel. No tears or forced embrace.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/yuqing.jpg"
+      ],
+      "gate": "仅实际参加寻姐且见到本人之后",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "wenheng-care",
+      "name": "温蘅·诊治与传授",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Preserve exact reference woman's face and pale green ivory herbalist robes, hair ornament. Full body seated on a simple low stool, holding clean bandage and medicine bottle, composed compassionate expression.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/wenheng.png"
+      ],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "jiheng-guide",
+      "name": "季衡·护送与回望",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Preserve exact middle-aged male reference face, short beard, dark green robes, sheathed Chinese sword. Full body protective steady stance, weather cloak, sober reflective expression. No villain styling.",
+      "refs": [
+        "/Users/admin/Documents/ChatGPT/xxrs/public/characters/jiheng.png"
+      ],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "healer-sister",
+      "name": "姐姐·救治者候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "An adult Chinese female field healer about 30, olive and ivory simple robes with rolled sleeves, dark hair braided into practical bun, small clean linen bandage in hands and ceramic medicine bottle at belt. Calm focused working posture. Name and kinship not printed; not a clone of male Yuqing.",
+      "refs": [],
+      "gate": "NAR-01；郁晚舟为拟名，姓名与服饰待定，未参与寻亲不可揭示身份",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "ferry-steward",
+      "name": "渡口管事候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "An adult middle-aged Chinese male ferry steward in restrained brown long robe and dark cap, holding closed document folio, composed watchful face. An ordinary human authority figure, no evil aura or monster features.",
+      "refs": [],
+      "gate": "NAR-01；祝庭候选，不凭外貌宣布全部罪行",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "ferry-guard",
+      "name": "人族看守候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "An adult Chinese ferry guard in practical dark blue padded cloth vest and simple lamellar shoulder pieces, holding an unthreatening lowered wooden staff, cautious face. Human, not demonic; no European armor.",
+      "refs": [],
+      "gate": "NAR-01；区别人族看守与普通渡工",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "qu-heir",
+      "name": "药庄继承人候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Adult Chinese woman about 28, tidy muted plum and ivory cross-collar robes, hair in restrained bun, accounting brush and closed folio, determined tired face, practical proprietor.",
+      "refs": [],
+      "gate": "NAR-03；阙明棠拟名，不锁定继承结局",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "qu-elder",
+      "name": "药庄长辈候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Chinese male about 55, short greying beard, restrained ochre merchant scholar robe, holding a plain wooden seal box, composed calculating but not caricatured face.",
+      "refs": [],
+      "gate": "NAR-03；阙承礼拟名",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "worker-scribe",
+      "name": "药工记账人候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Chinese adult woman about 30, sun-weathered face, simple linen brown-blue work clothes, ink-stained fingers holding narrow bamboo tally and notebook, direct confident expression.",
+      "refs": [],
+      "gate": "NAR-03；许芦拟名，性别衣装为候选",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "old-steward",
+      "name": "旧任仓务执事候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Chinese adult man about 60, grey moustache, sober slate robe and simple cloth cap, keys tied at waist, closed inventory ledger, wary restrained expression, no villain aura.",
+      "refs": [],
+      "gate": "NAR-04；韩肃拟名",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "inn-elder",
+      "name": "守驿老妪候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Chinese elderly woman innkeeper, deeply kind weathered face, silver hair in simple bun, warm earth-coloured apron over indigo robe, holding a plain ceramic noodle bowl in both hands, standing steadily.",
+      "refs": [],
+      "gate": "NAR-05；普通人，无隐藏高手暗示",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "badger-atuan",
+      "name": "阿团·灵兽獾",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "A small stocky Chinese mountain badger, natural short legs and black white face stripes, brown-grey fur, carrying a tiny Chinese wooden lantern gently by its handle in mouth. Friendly ordinary animal anatomy, no horns or magical armor.",
+      "refs": [],
+      "gate": "NAR-05；生活支线，不升格神兽",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "frontier-peer",
+      "name": "远行同辈候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Adult Chinese female cultivator, athletic medium build, russet and grey travel robes, simple bamboo hat hanging behind, plain sheathed sword, carrying climbing rope and herb pouch, alert self-possessed face.",
+      "refs": [],
+      "gate": "NAR-04世界扩展；无名候选，身份地域待定",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "frontier-mentor",
+      "name": "远行高手候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Older Chinese female cultivation mentor, grey hair in simple high knot, weathered calm face, austere dark jade robe, plain walking staff and small scroll bag, poised quietly without glowing halo or rank marks.",
+      "refs": [],
+      "gate": "NAR-04世界扩展；无名候选，境界能力待定",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "frontier-boatman",
+      "name": "远行渡工候选",
+      "kind": "characters",
+      "phase": 3,
+      "detail": "Middle-aged Chinese male boat worker with sun-browned face, short beard, patched indigo hemp jacket, straw rain cape folded over shoulder, holding a wooden punt pole upright, knowledgeable steady expression.",
+      "refs": [],
+      "gate": "新地域普通人；无名候选，不预设伤亡或内幕",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "wuming-ferry",
+      "name": "无名渡·日常与入口",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "A modest ancient Chinese river ferry village built around an old stone well, wooden landing, moored medicine boat, drying bandages and a small apothecary awning, a visible checking gate with blank wooden plaques. Daily life evidence without identifiable people. Soft overcast river light.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "sunken-entry",
+      "name": "沉井遗府·浅层试探",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Looking down a broad ancient stone well stair into a partially flooded Chinese cultivation courtyard, shallow water channels, clearly safe dry ledge at foreground left, exit stair visible, worn stone threshold and restrained bronze array channels. No figures, no treasure reward.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "outer-training",
+      "name": "外府修行院·挑战",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Ancient Chinese cultivation training courtyard under the river bed, partially roofed stone hall, raised dry fighting platform centered, water flowing in perimeter channels, two clearly visible exits, weathered bronze formation nodes. No people or monsters baked in, no sci-fi technology.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "inheritance-room",
+      "name": "外府传承室",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Small ancient Chinese cultivation study chamber reached from damp stone passage, dry raised alcove with a low stone lectern and empty scroll recess, carved practice diagrams abstract without readable writing, warm reflected light, no guaranteed special treasure or new realm.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "side-courtyard",
+      "name": "侧院·救治与重逢",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Quiet modest Chinese courtyard with an open treatment alcove, low stool, folded clean bandages, ceramic medicine jars, basin and laundry, soft afternoon light, usable empty foreground for separate actors. Care ongoing, no blood, no bodies.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "return-seal",
+      "name": "归路·禁制启动",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Chinese ferry exit gate and narrow stone causeway, restrained amber geometric formation line across doorway, visible bronze control node beside wooden document cabinet, water in distance. Clear target and return route, no people, no magical text.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "ferry-return",
+      "name": "无名渡·通路回访",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Same kind of modest Chinese river ferry village, ordinary medicine-boat landing, open check gate with uninscribed blank passboard turned aside, repaired plank path and packed travel bundles, calm clear morning. No claim of all survivors settled.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "survey-shelter",
+      "name": "绘图·雨棚量路",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Chinese mountain trail with a simple timber rain shelter, low table with unmarked folded paper and measuring cord, uneven stone steps and distant bypass path, misty drizzle, no identifiable houses or published addresses.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "print-workshop",
+      "name": "绘图·刻板之夜",
+      "kind": "scenes",
+      "phase": 2,
+      "detail": "Small Chinese woodblock printing workshop at night, oil lamp, blank paper stacks, half-carved abstract route printing block, brushes and cloth, calm warm work table, no characters and no readable text.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "lamp-room",
+      "name": "守灯·共同守夜与交班",
+      "kind": "scenes",
+      "phase": 1,
+      "detail": "Chinese riverside navigation lamp room open toward a rough-water channel, large wooden lantern, bronze wind gauge, spare formation stone, simple duty board with blank rows, two small bowls on workbench, night with clear visual signal lamps. No people.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "reunion-courtyard",
+      "name": "共同生活·出关重逢",
+      "kind": "scenes",
+      "phase": 2,
+      "detail": "Modest Chinese cultivation dwelling courtyard at warm dawn, two simple tea cups on low table, open gate toward mountain trail, repaired travel cloak on peg, quiet everyday life not palatial luxury, no people.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "vow-terrace",
+      "name": "结契·相约同行",
+      "kind": "scenes",
+      "phase": 2,
+      "detail": "Quiet Chinese mountain terrace at dusk, low wooden table with two simple uninscribed jade tokens and two cups, two empty floor cushions, restrained warm lantern, open horizon, no red imperial wedding decor, no people.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "journey-fork",
+      "name": "分别·各自远行",
+      "kind": "scenes",
+      "phase": 2,
+      "detail": "Chinese mountain travel fork with two equally inviting paths, plain direction post without text, small stone resting bench, distant river road and mountain pass, morning light, no abandoned or tragic cues, no people.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "herb-estate",
+      "name": "药庄·旧药圃",
+      "kind": "scenes",
+      "phase": 3,
+      "detail": "Old Chinese medicinal herb estate, terraced plant beds, damaged small irrigation channel and hand-operated wooden sluice, work shed, practical herb racks, visible repairable blockage, no palace or fantasy factory.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "snow-gates",
+      "name": "雪线·主门与西门",
+      "kind": "scenes",
+      "phase": 3,
+      "detail": "Ancient Chinese mountain sect pass in snowfall, sturdy main gate and visibly separate small west side gate, worn formation-stone socket near side gate, snow slope above and sheltered inner courtyard. Clear spatial relationship, no corpses or supernatural victims.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "roadside-pavilion",
+      "name": "灯与面·歇脚小亭",
+      "kind": "scenes",
+      "phase": 3,
+      "detail": "Modest Chinese roadside inn and open rain pavilion, repaired corner of tiled roof, small warm wooden lamp, dry straw mat and tiny ordinary mountain birds nesting under eaves, noodle stall in distance, no people and no magical birds.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "farewell-garden",
+      "name": "告别与纪念·无名场所",
+      "kind": "scenes",
+      "phase": 3,
+      "detail": "Quiet Chinese mountain remembrance garden, simple uninscribed upright weathered stone and a low offering ledge with a plain cup, falling leaves, dignified soft daylight, no portrait, no name, no visible grave inscription or confirmed body.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "frontier-valley",
+      "name": "远行·新地域候选",
+      "kind": "scenes",
+      "phase": 4,
+      "detail": "Expansive Chinese mountain river valley with stone ferry town, terraced road leading to distant high crags, a modest waystation, several possible routes visible, mineral green ink landscape. No place names or realm symbols.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "signal-refuge",
+      "name": "断讯·内部避险处",
+      "kind": "scenes",
+      "phase": 4,
+      "detail": "Stable dry rock alcove along a Chinese ancient mountain road cut off by a shifted stone wall, packed provisions, rope, blank route markers and a small signal lantern, visible protected exit niche. No prisoner chains, no blood, no dead bodies.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "outer-rescue",
+      "name": "接应·外部通路",
+      "kind": "scenes",
+      "phase": 4,
+      "detail": "Ancient Chinese mountain gorge footbridge with a damaged span, safe outer ledge, rope anchor, small bronze signal node and narrow route around collapse, far ledge visible, no people, no impossible gulf.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "rescue-open",
+      "name": "双向救援·通路接通",
+      "kind": "scenes",
+      "phase": 4,
+      "detail": "Chinese gorge passage with two aligned small lanterns on opposite ledges, repaired temporary rope-and-board walkway, clear safe path toward dawn, both sides actively prepared but no people, no compulsory victory symbols.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "recovery-stop",
+      "name": "脱险后·恢复与交代",
+      "kind": "scenes",
+      "phase": 4,
+      "detail": "Sheltered Chinese roadside recovery station in calm morning, two empty bedrolls, tea kettle, sealed medicine bottles, repaired packs and a worktable for letters, open door onto ordinary road, no medical machines.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "pinhole-paper",
+      "name": "药纸·三针孔",
+      "kind": "items",
+      "phase": 1,
+      "detail": "Single folded Chinese herbal wrapping paper with three clearly visible small needle holes grouped near one folded corner, plain blank paper no funeral text, subtle reused fiber. Close view, holes legible at small size.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "navigation-token",
+      "name": "引路木符",
+      "kind": "items",
+      "phase": 1,
+      "detail": "Single worn Chinese rectangular wooden route talisman with abstract shallow carved lines and small knotted cord, plain uninscribed reverse edge, no readable characters or magical ranks.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "survey-kit",
+      "name": "绘图工具",
+      "kind": "items",
+      "phase": 1,
+      "detail": "Compact Chinese cartographer kit: rolled blank route paper, ink brush protected in bamboo tube and coiled measuring cord, unified small group, no readable map addresses.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "relay-kit",
+      "name": "修阵与交接工具",
+      "kind": "items",
+      "phase": 1,
+      "detail": "Compact ancient Chinese navigation repair kit, small bronze disk, fitted wooden pegs, tied spare stone and simple wooden blank handover tally, no gears or modern tools.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "vow-tokens",
+      "name": "结契物件候选",
+      "kind": "items",
+      "phase": 2,
+      "detail": "Two equal simple uninscribed jade pendants, pale green and ivory, laid side by side with separate understated knotted silk cords, neither dominant, no names or permanent wedding symbols.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "revised-map",
+      "name": "修订路线图",
+      "kind": "items",
+      "phase": 2,
+      "detail": "Folded Chinese ink route map with a clear continuous main route, a dotted detour and one intentionally blank masked area, abstract map only, no writing, no personal house locations.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "travel-letter",
+      "name": "途中来信与未寄信",
+      "kind": "items",
+      "phase": 2,
+      "detail": "Plain Chinese paper letter folded partly open with blank writing area, simple woven cord, small travel-worn envelope, no text, no death or romance seal.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "testament-pages",
+      "name": "族谱与账页候选",
+      "kind": "items",
+      "phase": 3,
+      "detail": "Small stack of Chinese stitched ledger pages, one naturally charred outer edge, two separate plain sheets and a wooden seal beside them, absolutely no legible text or accusations.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "gate-relic",
+      "name": "门闩与半枚药签",
+      "kind": "items",
+      "phase": 3,
+      "detail": "Weathered wooden gate bolt with half of a small bamboo medicine tag trapped in a crack, snowmelt stains, no text, no blood; an evidence object not a weapon.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "inheritance-case",
+      "name": "传承载体候选",
+      "kind": "items",
+      "phase": 1,
+      "detail": "Simple ancient Chinese stone-lined wooden case containing a plain jade slip and rolled cloth exercise diagram, muted jade and bronze, no realm rank labels, no explicit powers, not a treasure loot chest.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "signal-pair",
+      "name": "内外应答灯",
+      "kind": "items",
+      "phase": 4,
+      "detail": "Two small matching practical Chinese wooden signal lanterns, one lit softly amber and one unlit, simple lattice and paper shades, separate unobstructed silhouettes, no text.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "keepsake-bundle",
+      "name": "旧人物件与遗物候选",
+      "kind": "items",
+      "phase": 3,
+      "detail": "A respectfully wrapped small plain cloth bundle with a worn uninscribed wooden token and folded blank letter resting on top, no portrait, no death marking, no blood, suitable for a living person's belongings or remembrance only after story confirmation.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "array-response",
+      "name": "阵纹应答静态层",
+      "kind": "effects",
+      "phase": 4,
+      "detail": "A restrained flat Chinese circular formation glyph made of warm amber arcs and four simple directional node marks, no letters, no eye, no science-fiction HUD. Isolated transparent overlay, no scenery.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "route-mark",
+      "name": "绘图路标静态层",
+      "kind": "effects",
+      "phase": 4,
+      "detail": "Three simple painterly white chalk trail chevrons and one muted red cloth knot, coherent route marker overlay, no words, no actual landscape, clearly distinguishable shapes on transparent background.",
+      "refs": [],
+      "gate": "候选，须按真实剧情状态选用",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "returned-proof",
+      "name": "退回刻样",
+      "detail": "A small Chinese woodblock printing proof showing abstract mountain path strokes with one section crossed out and blank margin for corrections, a simple carved wooden printing block beneath it. No readable text.",
+      "kind": "items",
+      "phase": 1,
+      "refs": [],
+      "gate": "ORIGIN候选；关键条件由UI提供，不代表已相识或恋爱",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "lamp-work-order",
+      "name": "修灯工单",
+      "detail": "A plain Chinese folded paper maintenance work order with blank ruled rows, tied beside a small worn wooden navigation lamp housing. No readable text, no romantic symbols.",
+      "kind": "items",
+      "phase": 1,
+      "refs": [],
+      "gate": "ORIGIN候选；关键条件由UI提供，不代表已相识或恋爱",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "ordinary-spares",
+      "name": "普通备用件",
+      "detail": "A neatly cord-bound group of ordinary Chinese lamp repair parts: small wooden pegs, spare bronze ring and plain smooth formation stone. No glowing treasure, no modern parts.",
+      "kind": "items",
+      "phase": 1,
+      "refs": [],
+      "gate": "ORIGIN候选；关键条件由UI提供，不代表已相识或恋爱",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "shentinglan-simple",
+      "name": "沈听澜·简约服饰定稿候选",
+      "kind": "characters",
+      "phase": 1,
+      "refs": [
+        "public/characters/shentinglan.png"
+      ],
+      "detail": "成年道侣，简约无袖交领裙、收腰与开衩；沿用脸型长辫青灰配色。",
+      "gate": "成年沈听澜；不是玩家女角色；不预设恋爱成立",
+      "status": "reviewed-candidate",
+      "prompt": "Design revision for a Chinese fantasy game character, Shen Tinglan, an adult woman age 24 and professional cartographer. Use the reference only to preserve her face, thick dark side braid, Chinese appearance, and blue-grey ivory palette. Simplify her complex outfit: a clean sleeveless Chinese crossover-neck dress with a fitted waist, a single plain sash, bare arms and shoulders, a knee-high side opening for walking, and simple flat calf boots. Opaque fabric, practical coverage, elegant mature fashion. Keep neckline modest. Remove backpack, ragged cloth, cape, repeated belts, dangling ropes and elaborate embroidery. One small rolled map held in one hand. Confident upright relaxed standing pose. Refined Chinese ink and mineral watercolor illustration, accurate full-body anatomy. Entire person including boots within the frame and generous empty margin. Standalone transparent cutout, no scenery, no vignette, no text. The image is a costume design sheet with a single character, not a scene.",
+      "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+    },
+    {
+      "id": "shentinglan-outfit-courtyard",
+      "name": "沈听澜·庭院便装",
+      "detail": "Soft pale sage Chinese ruqun ensemble with opaque straight-neck fitted bodice and simple flowing ivory skirt, light open short robe resting on upper arms, bare shoulders and forearms, flat silk slippers. Modest full chest coverage. Gentle relaxed standing pose, one small teacup in hand, no background.",
+      "kind": "characters",
+      "phase": 2,
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "成年沈听澜场合换装；不是已接入的换装系统",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "shentinglan-outfit-date",
+      "name": "沈听澜·月下相约装",
+      "detail": "Deep muted plum elegant Chinese sleeveless wrap dress, modest crossover neckline, fitted waist with one thin antique-gold sash, tasteful knee-high side slit, simple matching low shoes. Bare arms and collarbones, one small jade hairpin, no busy embroidery or jewellery. Warm confident smile, relaxed standing pose. Refined mature fashion.",
+      "kind": "characters",
+      "phase": 2,
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "成年沈听澜场合换装；不是已接入的换装系统",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "shentinglan-outfit-travel",
+      "name": "沈听澜·出行装",
+      "detail": "Muted teal short sleeveless crossover tunic, narrow single leather belt, dark fitted knee-length trousers, simple calf boots, bare arms. Tiny map tube at hip, no backpack. Upright confident walking-ready pose. Practical clean athletic silhouette.",
+      "kind": "characters",
+      "phase": 2,
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "成年沈听澜场合换装；不是已接入的换装系统",
+      "status": "reviewed-candidate"
+    },
+    {
+      "id": "shentinglan-outfit-work",
+      "name": "沈听澜·绘图工作装",
+      "detail": "Warm ivory fitted short-sleeved wrap blouse, dusty russet high-waisted simple skirt opening below knee, flat cloth shoes, bare forearms. One small brush tucked in plain sash, holding a blank folded paper. Clean workwear, no armor or apron layers. Focused friendly face.",
+      "kind": "characters",
+      "phase": 2,
+      "refs": [
+        "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+      ],
+      "gate": "成年沈听澜场合换装；不是已接入的换装系统",
+      "status": "reviewed-candidate"
+    }
+  ]
+}

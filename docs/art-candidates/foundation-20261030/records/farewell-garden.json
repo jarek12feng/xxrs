@@ -1,0 +1,13 @@
+{
+  "id": "farewell-garden",
+  "name": "告别与纪念·无名场所",
+  "kind": "scenes",
+  "phase": 3,
+  "detail": "Quiet Chinese mountain remembrance garden, simple uninscribed upright weathered stone and a low offering ledge with a plain cup, falling leaves, dignified soft daylight, no portrait, no name, no visible grave inscription or confirmed body.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Quiet Chinese mountain remembrance garden, simple uninscribed upright weathered stone and a low offering ledge with a plain cup, falling leaves, dignified soft daylight, no portrait, no name, no visible grave inscription or confirmed body. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-536aeb82-cd1c-4bfb-a1b1-2233f1347f5c.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

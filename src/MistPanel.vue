@@ -543,7 +543,8 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
             m.ward ? "已有护归准备，再 +20（不叠加）。" : "可回营研究护归法。"
           }}
         </p>
-        <p v-if="m.lamp"><ItemArt id="lamp" />
+        <p v-if="m.lamp">
+          <ItemArt id="lamp" />
           探灵灯：照见旧山祠的隐藏灵痕，也能照出药圃根脉。不占战斗灵器槽。
         </p>
         <p v-if="m.settled">
@@ -569,7 +570,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
         ><button @click="emit('road')">回看第二卷 · 坊市与云路 →</button>
       </div>
       <p class="adventure-footnote">
-        本章入阵是根据证据与准备进行的一次探索判定，不是回合交锋。移动、调查和本章入阵不推进月份；修行按真实月份结算，遇事件暂停。线索、能力与关系自动存档，不因刷新丢失。探灵灯属于本世，轮回不会自动携带。
+        本章入阵是根据证据与准备进行的一次探索判定，不是回合交锋。移动、调查和本章入阵不推进月份；修行按真实月份结算，遇事件暂停。线索、能力与关系自动存档，不因刷新丢失。探灵灯留在当前角色的行囊中。
       </p>
     </section>
   </section>

@@ -146,11 +146,13 @@ const propItem = computed(() =>
     animation: none;
   }
 }
-.cultivation-room .practice-stage {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  flex: none;
+@media (min-width: 1100px) {
+  .cultivation-room .practice-stage {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    flex: none;
+  }
 }
 .practice-stage.art-paused * {
   animation-play-state: paused !important;

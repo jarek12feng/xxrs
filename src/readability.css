@@ -113,7 +113,9 @@
   --muted: #53624e;
   background: #f1ebdc;
 }
-.immersive-shell .creation :is(.fineprint, .eyebrow, .path-card small, .path-symbol) {
+.immersive-shell
+  .creation
+  :is(.fineprint, .eyebrow, .path-card small, .path-symbol) {
   color: #53624e;
 }
 .immersive-shell .creation .art-copy {
@@ -137,4 +139,25 @@
   background: #365448;
   color: #fff2cd;
   border: 2px solid var(--read-gold);
+}
+
+/* Goal actions sit outside scene-controls and need their own dark surface. */
+.immersive-shell .opening-guide button:not(:disabled) {
+  background: #294236;
+  color: #f4e6c1;
+  border: 1px solid #8c7953;
+  border-radius: 5px;
+  padding: 9px 12px;
+  margin: 6px 8px 6px 0;
+}
+.immersive-shell
+  .opening-guide
+  button:not(:disabled):is(:hover, :focus-visible) {
+  background: #365448;
+  color: #fff2cd;
+}
+@media (min-width: 1000px) {
+  .immersive-shell .opening-guide {
+    padding-right: 270px;
+  }
 }

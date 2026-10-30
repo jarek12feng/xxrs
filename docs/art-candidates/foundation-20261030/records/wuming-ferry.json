@@ -1,0 +1,13 @@
+{
+  "id": "wuming-ferry",
+  "name": "无名渡·日常与入口",
+  "kind": "scenes",
+  "phase": 1,
+  "detail": "A modest ancient Chinese river ferry village built around an old stone well, wooden landing, moored medicine boat, drying bandages and a small apothecary awning, a visible checking gate with blank wooden plaques. Daily life evidence without identifiable people. Soft overcast river light.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: A modest ancient Chinese river ferry village built around an old stone well, wooden landing, moored medicine boat, drying bandages and a small apothecary awning, a visible checking gate with blank wooden plaques. Daily life evidence without identifiable people. Soft overcast river light. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-bdbfbf26-6a3a-4300-9dc8-7a5144015d7e.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

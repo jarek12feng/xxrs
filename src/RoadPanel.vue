@@ -334,7 +334,12 @@ const person = computed(() =>
         :portrait="person.image"
         :quote="person.line"
       >
-        <div aria-hidden="true"><ItemArt v-if="road.thanked" id="map" /><ItemArt v-if="road.commission" id="tag" /></div>
+        <div aria-hidden="true">
+          <ItemArt v-if="road.thanked" id="map" /><ItemArt
+            v-if="road.commission"
+            id="tag"
+          />
+        </div>
         <SceneResponse
           v-if="receipt"
           :text="road.result"
@@ -436,7 +441,7 @@ const person = computed(() =>
             收起手记与旧路。
           </p>
           <p>
-            先观察，再决定。观察不扣资源，可以改看另一条路；真正实施后，本世的道路和人物回应会固定下来。满足条件即成功，不掷骰。
+            先观察，再决定。观察不扣资源，可以改看另一条路；真正实施后，这段旅程的道路和人物回应会固定下来。满足条件即成功，不掷骰。
           </p>
           <article
             v-for="key in solutionKeys"
@@ -485,7 +490,7 @@ const person = computed(() =>
                 {{ passSolutions[key].commit }}
                 <small>{{
                   roadError(game, passSolutions[key].finish) ||
-                  "按上述代价实施 · 本世无法改选"
+                  "按上述代价实施 · 这段旅程无法改选"
                 }}</small>
               </button>
             </template>
@@ -531,9 +536,9 @@ const person = computed(() =>
         <aside
           v-if="echo && road.solution !== 'none' && road.solution !== 'legacy'"
           class="road-plan"
-          aria-label="本世归路"
+          aria-label="这段旅程归路"
         >
-          <h3>{{ passSolutions[road.solution].name }} · 本世归路</h3>
+          <h3>{{ passSolutions[road.solution].name }} · 这段旅程归路</h3>
           <p>{{ passSolutions[road.solution].consequence }}</p>
         </aside>
         <button
@@ -611,8 +616,8 @@ const person = computed(() =>
               game.realm === 1
                 ? "你已经筑基。返回青嶂关观察一种解法，再按它的条件准备；不必练满神识、剑意或炼制全部灵器。"
                 : game.qi < 360
-                  ? "先用「修炼至下一段进展」积累修为，遇到陆迟的故事会自动停下。修为达到 360 后可查看突破；固本和丹药用于提高把握，不必把所有准备项做完。"
-                  : "修为已足，可以查看突破风险。若想提高把握，可闭关固本或准备筑基丹；突破成功后返回山口选择解法。"
+                  ? "先用「修炼至下一段进展」积累修为，遇到陆迟的故事会自动停下。修为达到 360 后可查看突破；筑基丹是必需品，固本与护法可进一步提高把握，不必把所有准备项做完。"
+                  : "修为已足，可以查看突破风险。先从遗府取得筑基丹，再按伤势与根基准备；突破成功后返回山口选择解法。"
             }}
           </p>
           <div class="road-preparations">
@@ -624,7 +629,7 @@ const person = computed(() =>
               炼制筑基丹 · 三月
               <small>{{
                 preparationError(game, "refine") ||
-                "提升突破把握；可先购药，突破前再决定是否服用"
+                "每次突破必需一枚，成败均会消耗；不足时可先购药补炼"
               }}</small>
             </button>
             <button
@@ -743,9 +748,9 @@ const person = computed(() =>
             ><small v-else-if="game.qi < 360"
               >修为 {{ game.qi }}/360；先修炼至 360，遇到剧情先处理。</small
             ><small v-else
-              >当前不服丹把握
+              >备齐必需筑基丹后的把握
               {{
-                breakthroughDetails(game, false).chance
+                breakthroughDetails(game, true).chance
               }}%；先确认风险再尝试</small
             >
           </button>
@@ -762,7 +767,7 @@ const person = computed(() =>
         </div>
         <p class="adventure-footnote">
           交谈、调查和实施解法不计修行月份；修炼按真实月份推进，遇剧情暂停。
-          三种解法满足条件后必定成功，本世不能改选；也可沿旧路按把握过关。首次通过后可免费往返。
+          三种解法满足条件后必定成功，这段旅程不能改选；也可沿旧路按把握过关。首次通过后可免费往返。
         </p>
       </section>
     </template>

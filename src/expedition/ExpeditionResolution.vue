@@ -11,8 +11,9 @@ const ending = computed(() => expeditionResolution(props.game));
     class="expedition-resolution"
     aria-label="名单真相与同行回应"
   >
-    <span class="eyebrow">守阵之后 · 灯下对簿</span>
+    <span class="eyebrow">筑基之后 · 旧路新行</span>
     <h3>{{ ending.title }}</h3>
+    <p>{{ ending.growth }}</p>
     <p>{{ ending.discovery }}</p>
     <p>{{ ending.evidence }}</p>
     <blockquote>{{ ending.response }}</blockquote>

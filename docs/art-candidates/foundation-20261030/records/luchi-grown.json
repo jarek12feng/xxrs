@@ -1,0 +1,15 @@
+{
+  "id": "luchi-grown",
+  "name": "陆迟·筑基后回访",
+  "kind": "characters",
+  "phase": 1,
+  "detail": "Preserve reference identity, youthful Chinese man, blue grey clean repaired robe and familiar worn sheathed sword. Full body calm standing friendly greeting, no crown or new artifact.",
+  "refs": [
+    "/Users/admin/Documents/ChatGPT/xxrs/public/characters/luchi-foundation.png"
+  ],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: identity-preserve. Asset type: standalone full-body Chinese xianxia game character. Reference image preserves EXACT face, hair, clothing palette and identity, remove its background entirely. Primary request: Preserve reference identity, youthful Chinese man, blue grey clean repaired robe and familiar worn sheathed sword. Full body calm standing friendly greeting, no crown or new artifact. Style: refined mineral watercolor and Chinese ink, muted natural colors, believable anatomy. Single complete character head to both feet with all props visible and 12 percent transparent margin, no landscape, no text, no cast shadow rectangle, no aura. Real transparent background.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-087576f3-f56d-46bf-9e46-410220dafbc1.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

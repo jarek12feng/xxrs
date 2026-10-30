@@ -66,7 +66,7 @@ describe("v4 world progression", () => {
     expect(s.foundation).toBe(24);
     s.crafted = 1;
     s = act(s, { type: "retire" });
-    expect(s.unlocked).toContain("herbal");
+    expect(s.unlocked).not.toContain("herbal");
   });
   it.each(["dan", "jian"] as const)(
     "earns %s promotion through experience and a mentor conversation",
@@ -213,7 +213,7 @@ describe("v4 world progression", () => {
       expect(s.journey.contribution).toBe(0);
     }
   });
-  it("retirement, continuation and later death never double legacy; next life resets world", () => {
+  it("review and continuation preserve progress; a fresh character has no accumulated rewards", () => {
     let s = settled();
     s = act(s, { type: "retire" });
     expect(s.status).toBe("complete");
@@ -224,10 +224,10 @@ describe("v4 world progression", () => {
     s = advance(s);
     expect(s.status).toBe("dead");
     expect(s.legacy).toBe(6);
-    s = act(s, { type: "next", path: "sword", inheritance: "bond" });
+    s = act(s, { type: "next", path: "sword", inheritance: "none" });
     expect(s.journey).toEqual(createGame("新", "sword").journey);
-    expect(s.life).toBe(2);
-    expect(s.legacy).toBe(6);
+    expect(s.life).toBe(1);
+    expect(s.legacy).toBe(0);
   });
   it("migrates completed v3 saves without changing RNG, resources or original object", () => {
     const old = v3Game("旧卷", "sword", 91);
@@ -393,7 +393,7 @@ describe("encounters and preparation", () => {
   });
 });
 
-it("replays 60 whole lives through new exploration and intentional reincarnation", () => {
+it("replays 60 journeys through exploration and independent fresh starts", () => {
   function play(
     seed: number,
     path: Path,
@@ -463,7 +463,7 @@ it("replays 60 whole lives through new exploration and intentional reincarnation
     send({ type: "retire" });
     expect(s.status).toBe("complete");
     send({ type: "next", path, aptitude, inheritance: "none" });
-    expect(s.life).toBe(2);
+    expect(s.life).toBe(1);
     expect(s.journey.maps.sea).toBe(0);
     return s;
   }

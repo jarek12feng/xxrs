@@ -1,0 +1,13 @@
+{
+  "id": "ferry-guard",
+  "name": "人族看守候选",
+  "kind": "characters",
+  "phase": 3,
+  "detail": "An adult Chinese ferry guard in practical dark blue padded cloth vest and simple lamellar shoulder pieces, holding an unthreatening lowered wooden staff, cautious face. Human, not demonic; no European armor.",
+  "refs": [],
+  "gate": "NAR-01；区别人族看守与普通渡工",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: An adult Chinese ferry guard in practical dark blue padded cloth vest and simple lamellar shoulder pieces, holding an unthreatening lowered wooden staff, cautious face. Human, not demonic; no European armor. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-f07af362-717f-4af5-ad0b-276e2e7927b2.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import OriginNotes from "./OriginNotes.vue";
+import { trialBoard } from "./world-ambition";
 import CharacterSprite from "./presentation/CharacterSprite.vue";
 import { heroArt, rivalArt } from "./presentation/art";
 import { computed, ref, watch, nextTick, onUnmounted } from "vue";
@@ -32,6 +33,7 @@ const stanceChoices = computed(() =>
     preview: turnPreview(props.game, stance),
   })),
 );
+const ranking = computed(() => trialBoard(props.game));
 const who = computed(() => companion(props.game));
 const patternLabel = (pattern: Stance[]) =>
   pattern.map((p) => stances[p]).join(" → ");
@@ -80,9 +82,9 @@ const backdrop = computed(() =>
       : "/scenes/mist-path.jpg",
 );
 const intentText: Record<Stance, string> = {
-  break: "对手沉肩收势，护住中路。寻找空隙，以破势击穿守势。",
-  endure: "对手气息上扬，准备连攻。守息稳住阵脚，等其换气。",
-  discern: "对手脚下阵纹游走，虚实难辨。先识阵眼，再出手。",
+  break: "对手沉肩收势，护住中路，正在等你先动。",
+  endure: "对手气息上扬，剑尖逼近，连攻后的换气很短。",
+  discern: "对手脚下阵纹游走，身形与影子错开了半步。",
 };
 </script>
 <template>
@@ -92,7 +94,7 @@ const intentText: Record<Stance, string> = {
       :image="backdrop"
       :title="
         mode === 'arena'
-          ? '听松试剑'
+          ? '听松试剑榜'
           : mood === 'moon'
             ? '灯下，有人等你'
             : '山路上的相逢'
@@ -166,7 +168,7 @@ const intentText: Record<Stance, string> = {
         />
         <div v-if="!game.social.gender" class="identity-choice">
           <p>
-            旧档未设定角色性别。请选择后开启对应的异性人物线；本世确认后不再更换，不改变任何修行数值。
+            旧档未设定角色性别。请选择后开启对应的异性人物线；此角色确认后不再更换，不改变任何修行数值。
           </p>
           <button
             :disabled="locked || !!duel"
@@ -296,6 +298,15 @@ const intentText: Record<Stance, string> = {
           4，最多交锋六合；第四合起对手承接上一轮招式、伤害
           +2。先将对手气势归零且自身仍站稳才获胜，同归或六合未破均判负。
         </p>
+        <section v-if="!duel" class="trial-board" aria-label="本届试剑榜">
+          <h3>{{ game.name }} · {{ ranking.title }}</h3>
+          <p>听松山本届试剑记名，只记本届三场实绩，不是青玄界总排名。</p>
+          <p>{{ ranking.response }}</p>
+          <p v-if="ranking.next">
+            下一位对手：{{ ranking.next }} · {{ ranking.requirement }}
+          </p>
+          <p v-else>{{ ranking.requirement }}</p>
+        </section>
         <p>
           胜场 {{ game.social.arena.wins }} / 3 · 败场
           {{ game.social.arena.losses }}

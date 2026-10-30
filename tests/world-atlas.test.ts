@@ -61,3 +61,47 @@ it("the compact landmark list selects the same place without travel or save muta
   expect(select).toHaveBeenCalledWith("peak");
   expect(game).toEqual(before);
 });
+
+it("reveals current-world geography without pretending distant lands are open or discovering another world", () => {
+  const game = createGame("初入山", "wood", 42);
+  const before = structuredClone(game);
+  const select = mount(game);
+  expect(document.querySelector("h3")?.textContent).toBe("青玄界 · 本界全图");
+  const catalogue = document.querySelector(".atlas-regions")!;
+  expect(catalogue.textContent).toContain("听松山及山下药路");
+  expect(catalogue.textContent).toContain("青嶂关与云栈");
+  expect(catalogue.textContent).toContain("雾岭与雾海");
+  expect(catalogue.querySelectorAll("article")).toHaveLength(6);
+  expect(catalogue.querySelectorAll("button")).toHaveLength(0);
+  expect(catalogue.textContent).toContain("仙境”是地名");
+  expect(document.querySelector(".atlas-boundary")?.textContent).toContain(
+    "发现新的界域",
+  );
+  expect(select).not.toHaveBeenCalled();
+  expect(game).toEqual(before);
+});
+
+it("story mode shows fixed future landmarks as selectable previews without inventing travel", async () => {
+  const game = createGame("地理", "wood", 42),
+    before = structuredClone(game);
+  const selectStory = vi.fn();
+  app = createApp(WorldAtlas, {
+    game,
+    selected: "valley",
+    story: true,
+    selectedStory: "ferry",
+    onSelectStory: selectStory,
+  });
+  app.mount(document.body.appendChild(document.createElement("div")));
+  const gate = [
+    ...document.querySelectorAll<HTMLButtonElement>("button.atlas-pin"),
+  ].find((b) => b.textContent?.includes("雾海回声阵"))!;
+  expect(gate.getAttribute("aria-label")).toContain("循线索开启");
+  gate.click();
+  await nextTick();
+  expect(selectStory).toHaveBeenCalledWith("gate");
+  expect(game).toEqual(before);
+  expect(
+    document.querySelectorAll(".story-atlas button.atlas-pin"),
+  ).toHaveLength(14);
+});

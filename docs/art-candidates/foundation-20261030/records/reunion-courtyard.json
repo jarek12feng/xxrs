@@ -1,0 +1,13 @@
+{
+  "id": "reunion-courtyard",
+  "name": "共同生活·出关重逢",
+  "kind": "scenes",
+  "phase": 2,
+  "detail": "Modest Chinese cultivation dwelling courtyard at warm dawn, two simple tea cups on low table, open gate toward mountain trail, repaired travel cloak on peg, quiet everyday life not palatial luxury, no people.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Modest Chinese cultivation dwelling courtyard at warm dawn, two simple tea cups on low table, open gate toward mountain trail, repaired travel cloak on peg, quiet everyday life not palatial luxury, no people. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-12d01ec9-cad6-4873-9a1d-ac6cd6fb3a9a.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

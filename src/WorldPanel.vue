@@ -55,17 +55,16 @@ const atlasMode = defineModel<"story" | "explore">("atlasMode", {
 });
 const familyGoal = computed(() => familyQuestGoal(props.game));
 const current = computed(() => currentLandmark(props.game));
-const selectedRoute = ref(current.value.key);
-watch(
-  () => current.value.key,
-  (key) => {
-    selectedRoute.value = key;
-  },
-);
+const nodes = computed(() => routeNodes(props.game));
+const currentRouteKey = computed(() => nodes.value.find((n) => n.current)!.key);
+const selectedRoute = ref(currentRouteKey.value);
+watch(currentRouteKey, (key) => {
+  selectedRoute.value = key;
+});
 const route = computed(
   () =>
-    routeNodes(props.game).find((n) => n.key === selectedRoute.value) ??
-    routeNodes(props.game).find((n) => n.current)!,
+    nodes.value.find((n) => n.key === selectedRoute.value) ??
+    nodes.value.find((n) => n.current)!,
 );
 const tab = ref<
   "world" | "sect" | "skills" | "queue" | "gear" | "relationship" | "arena"
@@ -244,7 +243,7 @@ const mapImages = {
           <span class="eyebrow">{{
             route.current ? "你在此处" : "地图上的远景"
           }}</span>
-          <h3>{{ landmarkLabel(route.title) }}</h3>
+          <h3>{{ route.label || landmarkLabel(route.title) }}</h3>
           <p>
             {{
               route.current
@@ -273,7 +272,7 @@ const mapImages = {
             :disabled="locked"
             @click="emit('travel', route.intent)"
           >
-            沿路前往 · {{ landmarkLabel(route.title) }}
+            沿路前往 · {{ route.label || landmarkLabel(route.title) }}
           </button>
           <button v-else :disabled="locked" @click="emit('resumeStory')">
             回到现场，继续追寻线索
@@ -373,12 +372,10 @@ const mapImages = {
         </article>
       </template>
       <details v-if="game.journey.settled" class="retirement">
-        <summary>另一种人生：主动轮回</summary>
-        <p>
-          不会强制结束此世。封存后仍可选择继续探索，或携一项传承重开；阅历不重复发放。
-        </p>
+        <summary>回顾本卷</summary>
+        <p>查看这段行旅的成果与未竟之事，之后可以继续当前角色的修行。</p>
         <button :disabled="locked" @click="emit('act', { type: 'retire' })">
-          封存此世，查看轮回选择
+          查看修行履历
         </button>
       </details>
     </div>
@@ -433,7 +430,7 @@ const mapImages = {
     <div v-else-if="tab === 'sect'" class="world-content">
       <p class="muted">
         宗门提供师承与通行资格，不是唯一道路。散修也可在坊市学同样的功法，以神识
-        8、心得 2 识路入山。每世暂可选择一个堂口。
+        8、心得 2 识路入山。当前角色暂可选择一个堂口。
       </p>
       <article
         v-for="(mentor, branch) in mentors"

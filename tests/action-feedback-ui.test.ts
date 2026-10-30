@@ -280,7 +280,7 @@ it("combat shows damage at the controls, gates rapid follow-up and keeps the fin
   expect(document.querySelector("[role=dialog]")).not.toBeNull();
   await click("跳过演出");
   expect(document.querySelector("[role=dialog]")?.textContent).toContain(
-    "擂台获胜",
+    "初登试剑榜",
   );
   expect(document.querySelector("[role=dialog]")?.textContent).toContain(
     "归元息",
@@ -330,7 +330,7 @@ it("cancels an appointment-crossing retreat without advancing time and explains 
   await click("暂不闭关 · 保留约定");
   expect(document.querySelector('[role="dialog"]')).toBeNull();
   expect(save).not.toHaveBeenCalled();
-  expect(text()).toContain("第 30 月");
+  expect(text()).toContain("修行 2 年 6 月");
 });
 it("opens character and inventory overlays without advancing the world", async () => {
   await mount();

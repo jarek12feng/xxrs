@@ -8,7 +8,7 @@ export function hasFoundationRecipe(s: State) {
   );
 }
 export function breakthroughError(s: State) {
-  if (s.status !== "alive") return "本世修行已经结束";
+  if (s.status !== "alive") return "这段修行已经结束";
   if (s.pending) return "先处理眼前的选择";
   if (s.realm) return "已经筑基";
   if (s.qi < 360) return `还差 ${360 - s.qi} 修为`;

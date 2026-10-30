@@ -1,0 +1,15 @@
+{
+  "id": "wenheng-care",
+  "name": "温蘅·诊治与传授",
+  "kind": "characters",
+  "phase": 3,
+  "detail": "Preserve exact reference woman's face and pale green ivory herbalist robes, hair ornament. Full body seated on a simple low stool, holding clean bandage and medicine bottle, composed compassionate expression.",
+  "refs": [
+    "/Users/admin/Documents/ChatGPT/xxrs/public/characters/wenheng.png"
+  ],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Preserve exact reference woman's face and pale green ivory herbalist robes, hair ornament. Full body seated on a simple low stool, holding clean bandage and medicine bottle, composed compassionate expression. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. Reference preserves EXACT recognizable adult face, hair, wardrobe palette and identity.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-e35ae66a-817e-4285-8f28-1eb3b9c2c4f2.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

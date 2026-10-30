@@ -53,3 +53,38 @@ it("points to the market after the thank-you conversation", () => {
     action: "market",
   });
 });
+
+it("keeps the same physical map across chapters and reuses locations for return scenes", () => {
+  const first = createGame("地图", "wood", 42),
+    later = mistCheckpoint();
+  const before = structuredClone(first);
+  const layout = (s: typeof first) =>
+    routeNodes(s).map(({ key, label, x, y }) => ({ key, label, x, y }));
+  expect(layout(later)).toEqual(layout(first));
+  expect(
+    routeNodes(first).find((n) => n.key === "gate")?.intent,
+  ).toBeUndefined();
+  expect(routeNodes(first).filter((n) => n.visited)).toHaveLength(0);
+  expect(first).toEqual(before);
+  const letter = dispatch(later, {
+    id: "fixed-letter",
+    type: "mist",
+    action: "receive",
+  });
+  expect(layout(letter)).toEqual(layout(first));
+  expect(routeNodes(letter).find((n) => n.current)?.key).toBe("lookout");
+  const camp = dispatch(letter, {
+    id: "fixed-accept",
+    type: "mist",
+    action: "accept",
+  });
+  expect(layout(camp)).toEqual(layout(first));
+  expect(routeNodes(camp).find((n) => n.current)?.key).toBe("mist-camp");
+  expect(routeNodes(camp).filter((n) => n.current)).toHaveLength(1);
+  expect(routeNodes(camp).find((n) => n.key === "shrine")?.visited).toBe(true);
+  expect(
+    routeNodes(camp).find((n) => n.key === "shrine")?.intent,
+  ).toBeUndefined();
+  camp.expedition.duel = {} as typeof camp.expedition.duel;
+  expect(routeNodes(camp).every((n) => !n.intent)).toBe(true);
+});

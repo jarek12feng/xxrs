@@ -18,6 +18,10 @@ it("introduces the small fight before requiring foundation preparation", () => {
   p.fight();
   expect(p.state.expedition.cleared).toBe(1);
   expect(p.state.realm).toBe(0);
+  expect(openingGuide(p.state)?.title).toContain("功法");
+  p.send({ type: "equip", technique: "spring" });
+  expect(openingGuide(p.state)?.title).toContain("灵器");
+  p.send({ type: "equipRelic", relic: "vial" });
   expect(openingGuide(p.state)?.title).toContain("两种准备");
 });
 it("suggests only relevant recovery steps and never mutates state", () => {

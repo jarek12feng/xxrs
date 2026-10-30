@@ -123,41 +123,34 @@ describe("筑基篇", () => {
     s.qi = 360;
     expect(advance(s, 3).month).toBe(6);
   });
-  it("death precedes rewards, and inheritance does not stack", () => {
+  it("death precedes rewards and a fresh start carries no inheritance", () => {
     const s = meeting();
     s.limit = s.age + 1;
     s.crafted = 1;
     const dead = advance(s);
     expect(dead.status).toBe("dead");
     expect(dead.stones).toBe(s.stones);
-    expect(dead.unlocked).toContain("herbal");
+    expect(dead.unlocked).toEqual([]);
     const next = run(dead, {
       type: "next",
       path: "sword",
-      inheritance: "herbal",
+      inheritance: "none",
     });
-    expect(next.herbs).toBe(4);
+    expect(next.herbs).toBe(createGame("新", "sword").herbs);
     expect(next.foundation).toBe(0);
-    expect(advance(next, 1, "gather").herbs).toBe(6);
+    expect(advance(next, 1, "gather")).toBe(next);
   });
-  it("bond unlock gives second-life exclusive options", () => {
+  it("rejects cross-character gifts and does not invent a previous acquaintance", () => {
     let s = choose(relic(), "gift");
-    s.qi = 360;
-    s.seed = 1;
-    s.herbs = 6;
-    s = run(s, { type: "prepare", kind: "refine" });
-    s = run(s, { type: "break", pill: true });
-    expect(s.status).toBe("complete");
-    expect(s.result).toContain("双星");
-    s = run(s, { type: "next", path: "sword", inheritance: "bond" });
+    s.status = "complete";
+    expect(run(s, { type: "next", path: "sword", inheritance: "bond" })).toBe(
+      s,
+    );
+    s = run(s, { type: "next", path: "sword", inheritance: "none" });
     s = advance(s, 3);
-    expect(eventView(s)?.options.some((o) => o.id === "remember")).toBe(true);
-    s = choose(s, "remember");
-    expect(s.story.trust).toBe(3);
-    while (s.month < 36) s = settleMid(advance(s, 12));
-    s = choose(s, "go");
-    s.qi = 180;
-    expect(choose(s, "memory").injury).toBe(0);
+    expect(eventView(s)?.options.some((o) => o.id === "remember")).toBe(false);
+    expect(s.unlocked).toEqual([]);
+    expect(s.legacy).toBe(0);
   });
   it("failure consumes a pill and retains 70% qi", () => {
     let s = meeting();

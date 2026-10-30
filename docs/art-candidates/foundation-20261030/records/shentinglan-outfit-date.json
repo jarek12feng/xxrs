@@ -1,0 +1,16 @@
+{
+  "id": "shentinglan-outfit-date",
+  "name": "沈听澜·月下相约装",
+  "detail": "Deep muted plum elegant Chinese sleeveless wrap dress, modest crossover neckline, fitted waist with one thin antique-gold sash, tasteful knee-high side slit, simple matching low shoes. Bare arms and collarbones, one small jade hairpin, no busy embroidery or jewellery. Warm confident smile, relaxed standing pose. Refined mature fashion.",
+  "kind": "characters",
+  "phase": 2,
+  "refs": [
+    "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-9034bad9-1975-4713-9147-084c28b97a61.png"
+  ],
+  "prompt": "Use case: identity-preserve. Adult Chinese woman Shen Tinglan age24, same face and long thick dark braid as reference. New distinct alternate outfit for this SAME character: Deep muted plum elegant Chinese sleeveless wrap dress, modest crossover neckline, fitted waist with one thin antique-gold sash, tasteful knee-high side slit, simple matching low shoes. Bare arms and collarbones, one small jade hairpin, no busy embroidery or jewellery. Warm confident smile, relaxed standing pose. Refined mature fashion. Refined Chinese ink and mineral watercolor game illustration, natural realistic anatomy. Simplify clothes, two layers maximum, no ragged fabric, no multiple belts, no hanging ropes, no big cape. Entire full body and feet visible with ample margin. Single character, real transparent background, no vignette, no scenery, no text. Opaque practical clothing, fashion design.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-2a293653-53bb-4522-aeb8-0e7ca20993ad.png",
+  "gate": "成年沈听澜场合换装；不是已接入的换装系统",
+  "status": "reviewed-candidate",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。",
+  "referenceAsset": "originals/characters/shentinglan-simple.png"
+}

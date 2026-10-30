@@ -1,0 +1,13 @@
+{
+  "id": "ferry-return",
+  "name": "无名渡·通路回访",
+  "kind": "scenes",
+  "phase": 1,
+  "detail": "Same kind of modest Chinese river ferry village, ordinary medicine-boat landing, open check gate with uninscribed blank passboard turned aside, repaired plank path and packed travel bundles, calm clear morning. No claim of all survivors settled.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Same kind of modest Chinese river ferry village, ordinary medicine-boat landing, open check gate with uninscribed blank passboard turned aside, repaired plank path and packed travel bundles, calm clear morning. No claim of all survivors settled. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-ba314a1d-5e3d-4f7b-8d00-46bc3c445fde.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

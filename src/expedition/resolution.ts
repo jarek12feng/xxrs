@@ -29,6 +29,8 @@ export function expeditionResolution(s: State) {
   }[s.adventure.road.solution];
   return {
     title: "名单上的人，原来还在等归途",
+    growth:
+      "从前你只能止步阵外，如今亲手断开了傀儡与旧阵的联系。青嶂收起封阵杖：“这次，不必替你拦着了。”你可以继续决定山路如何通行；郁青的寻亲去向，则由你选择是否追查。",
     discovery,
     evidence,
     response: rescue,

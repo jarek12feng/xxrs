@@ -1,0 +1,13 @@
+{
+  "id": "frontier-boatman",
+  "name": "远行渡工候选",
+  "kind": "characters",
+  "phase": 3,
+  "detail": "Middle-aged Chinese male boat worker with sun-browned face, short beard, patched indigo hemp jacket, straw rain cape folded over shoulder, holding a wooden punt pole upright, knowledgeable steady expression.",
+  "refs": [],
+  "gate": "新地域普通人；无名候选，不预设伤亡或内幕",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game characters. Primary request: Middle-aged Chinese male boat worker with sun-browned face, short beard, patched indigo hemp jacket, straw rain cape folded over shoulder, holding a wooden punt pole upright, knowledgeable steady expression. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Single complete full body figure, all hair hands boots and props inside frame with 12 percent clear margin. Simple practical clothing, max two layers, one belt, no excessive dangling cloth or ropes. Real transparent background, no scenery or painted glow. ",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-3173d5d3-96a8-43c5-8379-bd1f5d10e0e4.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

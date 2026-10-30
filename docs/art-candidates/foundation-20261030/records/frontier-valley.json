@@ -1,0 +1,13 @@
+{
+  "id": "frontier-valley",
+  "name": "远行·新地域候选",
+  "kind": "scenes",
+  "phase": 4,
+  "detail": "Expansive Chinese mountain river valley with stone ferry town, terraced road leading to distant high crags, a modest waystation, several possible routes visible, mineral green ink landscape. No place names or realm symbols.",
+  "refs": [],
+  "gate": "候选，须按真实剧情状态选用",
+  "status": "reviewed-candidate",
+  "prompt": "Use case: stylized-concept. Asset type: Chinese xianxia game scenes. Primary request: Expansive Chinese mountain river valley with stone ferry town, terraced road leading to distant high crags, a modest waystation, several possible routes visible, mineral green ink landscape. No place names or realm symbols. Style: refined Chinese ink and mineral watercolor, muted jade ochre indigo, realistic attractive proportions, clean simple silhouettes, restrained details. No text, no watermark, no western fantasy, no modern objects. Wide landscape composition, layered depth, useful empty foreground for separately composited actors. No people. Readable central mobile crop.",
+  "source": "/Users/admin/.codex/generated_images/01a1859c-e925-78c0-90eb-8078902a5c00/exec-bfdc0a73-16f1-4271-9854-ab6eeaaadeb4.png",
+  "review": "静态内容与人物身份检查；实际深浅背景混合边缘、移动端裁切待集成验收。"
+}

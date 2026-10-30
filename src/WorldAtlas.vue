@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { currentWorldMap as worldMap, qingxuanPaths } from "./world-geography";
 import { routeNodes, landmarkLabel } from "./landmarks";
 import { places, explorationError, type State, type Place } from "./core";
 const props = defineProps<{
@@ -9,6 +10,18 @@ const props = defineProps<{
   selectedStory?: string;
 }>();
 const routes = computed(() => routeNodes(props.game));
+const paths = computed(() => {
+  const byKey = new Map(routes.value.map((n) => [n.key, n]));
+  return qingxuanPaths.map(([from, to]) => {
+    const a = byKey.get(from)!,
+      b = byKey.get(to)!;
+    return {
+      key: from + to,
+      d: `M ${a.x * 10} ${a.y * 5.62} L ${b.x * 10} ${b.y * 5.62}`,
+      active: a.active && b.active,
+    };
+  });
+});
 const emit = defineEmits<{
   select: [place: Place];
   selectStory: [key: string];
@@ -18,22 +31,39 @@ const points: Record<Place, { x: number; y: number }> = {
   peak: { x: 49, y: 50 },
   sea: { x: 76, y: 64 },
 };
-const distant = [
-  { name: "昆仑雪域", x: 23, y: 22 },
-  { name: "太虚古墟", x: 53, y: 19 },
-  { name: "蓬莱仙境", x: 81, y: 25 },
-];
+const distant = worldMap.distant;
 </script>
 
 <template>
-  <section class="world-atlas" aria-label="修仙世界全景地图">
+  <section class="world-atlas" :aria-label="worldMap.name + '本界地图'">
     <header class="atlas-heading">
       <div>
         <span>山河万里 · 一念长生</span>
-        <h3>九州山海图</h3>
+        <h3>{{ worldMap.name }} · 本界全图</h3>
       </div>
-      <p>循一盏灯，见山外天地</p>
+      <p>所在界域 · {{ worldMap.name }}</p>
     </header>
+    <div class="atlas-scope">
+      <p>{{ worldMap.overview }}</p>
+      <p class="atlas-scope-note">
+        图上有名，不代表已经走过。当前行路仍须满足修为与剧情条件。
+      </p>
+      <details class="atlas-regions">
+        <summary>本界地域一览 · 听松山之外还有什么</summary>
+        <div class="atlas-region-grid">
+          <article v-for="region in worldMap.regions" :key="region.name">
+            <strong>{{ region.name }}</strong
+            ><small>{{ region.status }} · 按进展前往</small>
+            <p>{{ region.detail }}</p>
+          </article>
+          <article v-for="region in distant" :key="region.name">
+            <strong>{{ region.name }}</strong
+            ><small>本界远方 · 尚未开放</small>
+            <p>{{ region.detail }}</p>
+          </article>
+        </div>
+      </details>
+    </div>
     <nav class="atlas-list" aria-label="窄屏地标列表">
       <template v-if="story">
         <button
@@ -42,7 +72,7 @@ const distant = [
           :aria-pressed="selectedStory === node.key"
           @click="emit('selectStory', node.key)"
         >
-          {{ landmarkLabel(node.title)
+          {{ node.label || landmarkLabel(node.title)
           }}<small>{{
             node.current
               ? "你在此处"
@@ -75,16 +105,27 @@ const distant = [
       tabindex="0"
       aria-label="山海地图，可横向滚动查看"
     >
-      <div class="atlas-canvas">
+      <div class="atlas-canvas" :class="{ 'story-atlas': story }">
         <img
           class="atlas-landscape"
-          src="/scenes/cultivation-world-atlas.png"
-          alt="青绿山河全景：听松山下的药谷经雾岭通往东海，远方雪山、古墟与仙岛隐在云中"
+          :src="worldMap.image"
+          alt="青玄界山河示意：药路、雾岭与海岸，远方可见雪山、古墟和仙岛"
         />
         <svg class="atlas-path" viewBox="0 0 1000 562" aria-hidden="true">
-          <path d="M 145 460 Q 210 440 300 405 T 490 281 Q 620 300 760 360" />
+          <template v-if="story">
+            <path
+              v-for="path in paths"
+              :key="path.key"
+              :d="path.d"
+              :class="{ 'active-route': path.active }"
+            />
+          </template>
+          <path
+            v-else
+            d="M 145 460 Q 210 440 300 405 T 490 281 Q 620 300 760 360"
+          />
         </svg>
-        <span class="atlas-home" style="left: 14.5%; top: 82%"
+        <span v-if="!story" class="atlas-home" style="left: 14.5%; top: 82%"
           >听松山居<small>山门所在</small></span
         >
         <template v-if="!story">
@@ -134,11 +175,12 @@ const distant = [
             :class="{
               selected: selectedStory === node.key,
               sealed: !node.current && !node.intent,
+              inactive: !node.active,
             }"
             :style="{ left: node.x + '%', top: node.y + '%' }"
             :aria-pressed="selectedStory === node.key"
             :aria-label="
-              landmarkLabel(node.title) +
+              (node.label || landmarkLabel(node.title)) +
               '，' +
               (node.current
                 ? '你在此处'
@@ -153,7 +195,7 @@ const distant = [
             <span class="atlas-pin-dot" aria-hidden="true">{{
               node.current ? "◉" : "◇"
             }}</span
-            ><strong>{{ landmarkLabel(node.title) }}</strong
+            ><strong>{{ node.label || landmarkLabel(node.title) }}</strong
             ><small>{{
               node.current
                 ? "你在此处"
@@ -171,11 +213,11 @@ const distant = [
           class="atlas-pin distant"
           :style="{ left: place.x + '%', top: place.y + '%' }"
           role="img"
-          :aria-label="place.name + '，待探险，尚未开放'"
+          :aria-label="place.name + '，青玄界远方，尚未开放'"
         >
           <span class="atlas-pin-dot" aria-hidden="true">◇</span
           ><strong>{{ place.name }}</strong
-          ><small>待探险 · 尚未开放</small>
+          ><small>本界远方 · 尚未开放</small>
         </div>
         <span class="atlas-inscription">山海未尽，仙途方始</span>
       </div>
@@ -183,8 +225,11 @@ const distant = [
     <footer class="atlas-legend">
       <span>{{ story ? "◉ 你在此处 · ◆ 可前往" : "◆ 可探索" }}</span
       ><span>✓ 见闻已全</span><span class="unseen">◇ 待解锁 / 待探险</span
-      ><small>点选地标查看故事与入山条件</small>
+      ><small>点选地标查看条件 · 地标位置固定，亮线表示当前行程</small>
     </footer>
+    <p class="atlas-boundary">
+      界外的山河尚无图可循。待日后发现新的界域，再另展一卷地图。
+    </p>
   </section>
 </template>
 
@@ -402,6 +447,75 @@ const distant = [
   }
   .atlas-scroll {
     max-height: 200px;
+  }
+}
+</style>
+
+<style>
+.atlas-scope,
+.atlas-boundary {
+  padding: 0 18px 14px;
+  color: #eee2c5;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.atlas-scope p {
+  margin: 0 0 8px;
+}
+.atlas-scope .atlas-scope-note,
+.atlas-region-grid small {
+  color: #d0c4aa;
+}
+.atlas-regions summary {
+  cursor: pointer;
+  padding: 8px 0;
+  color: #f2daa2;
+}
+.atlas-region-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+.atlas-region-grid article {
+  background: #1b392e;
+  border: 1px solid #7d8b72;
+  border-radius: 6px;
+  padding: 10px;
+}
+.atlas-region-grid small {
+  display: block;
+  margin: 4px 0;
+}
+.atlas-boundary {
+  margin: 0;
+}
+@media (max-width: 650px) {
+  .atlas-region-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<style>
+.story-atlas {
+  min-width: 840px;
+}
+.story-atlas .atlas-path {
+  stroke: #294a3d;
+  opacity: 0.8;
+}
+.story-atlas .atlas-path .active-route {
+  stroke: #f9db89;
+  stroke-width: 3;
+}
+.world-atlas .atlas-pin.inactive {
+  background: #243b32ed;
+  border-style: dashed;
+}
+@media (max-width: 650px) {
+  .story-atlas {
+    min-width: 840px;
   }
 }
 </style>
