@@ -1,5 +1,5 @@
 import type { Option, State as ChapterState } from "./chapter";
-type State = Omit<ChapterState, "version">;
+type State = Omit<ChapterState, "version"> & { qiJourney?: { gates: number } };
 
 // Progress is derived from durable chapter outcomes; no second quest ledger.
 export function hasFoundationRecipe(s: State) {
@@ -11,6 +11,7 @@ export function breakthroughError(s: State) {
   if (s.status !== "alive") return "这段修行已经结束";
   if (s.pending) return "先处理眼前的选择";
   if (s.realm) return "已经筑基";
+  if(s.qiJourney && s.qiJourney.gates<2) return "先完成淬脉与内府凝元，取得圆满晋升资格";
   if (s.qi < 360) return `还差 ${360 - s.qi} 修为`;
   if (!s.pills)
     return hasFoundationRecipe(s)
@@ -27,6 +28,7 @@ export function relicJourneyError(s: State) {
 }
 export function foundationGoal(s: State) {
   if (s.realm) return "筑基已成：重返青嶂旧阵，尝试炼气时无法承受的交锋。";
+  if(s.qiJourney && s.qiJourney.gates<2) return s.qiJourney.gates===0 ? "炼气中期后，赴药谷淬脉泉取凝露草，炼化后突破后期瓶颈。" : "淬脉已成，修炼至后期；赴青石内府取凝元晶髓，炼化后准备圆满与筑基。";
   if (s.pills)
     return `筑基丹已备齐。${s.qi < 360 ? `还差 ${360 - s.qi} 修为；` : ""}疗伤与固本能提高把握，突破时必消耗一枚。`;
   if (hasFoundationRecipe(s))

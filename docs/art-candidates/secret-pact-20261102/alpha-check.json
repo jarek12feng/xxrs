@@ -1,0 +1,70 @@
+[
+  {
+    "file": "he-chong-dialogue.png",
+    "mode": "RGBA",
+    "size": [
+      1024,
+      1536
+    ],
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "transparent_fraction": 0.432,
+    "visible_bbox": [
+      79,
+      13,
+      959,
+      1536
+    ]
+  },
+  {
+    "file": "zhaoxuan-jade-slip.png",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "transparent_fraction": 0.6968,
+    "visible_bbox": [
+      64,
+      158,
+      1217,
+      1169
+    ]
+  },
+  {
+    "file": "he-chong-combat.png",
+    "mode": "RGBA",
+    "size": [
+      1024,
+      1536
+    ],
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "transparent_fraction": 0.5809,
+    "visible_bbox": [
+      37,
+      11,
+      993,
+      1526
+    ]
+  },
+  {
+    "file": "ye-zhao-dialogue.png",
+    "mode": "RGBA",
+    "size": [
+      1024,
+      1536
+    ],
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "transparent_fraction": 0.4433,
+    "visible_bbox": [
+      71,
+      5,
+      932,
+      1536
+    ]
+  }
+]

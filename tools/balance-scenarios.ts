@@ -38,6 +38,7 @@ export function balanceOpening(
     "return",
   ] as const)
     send({ type: "adventure", action });
+  send({ type: "learning", choice: path === "wood" ? "spring" : "blade" });
   send({ type: "equip", technique: path === "wood" ? "spring" : "blade" });
   return {
     get state() {
@@ -116,6 +117,7 @@ export function preparationBudget(
       policy !== "wait" &&
       s.qi >= 180 &&
       s.foundation < 12 &&
+      s.stones >= 8 &&
       s.month + 6 <= 35
     ) {
       c = { type: "prepare", kind: "retreat" };
@@ -143,7 +145,7 @@ export function preparationBudget(
     else
       c = {
         type: "advance",
-        activity: s.qi < 360 ? "cultivate" : "work",
+        activity: s.qi < 239 ? "cultivate" : "work",
         months: 1,
       };
     commands.push(c);

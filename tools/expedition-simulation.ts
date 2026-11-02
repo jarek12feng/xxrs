@@ -23,6 +23,9 @@ export function expeditionSession(
     state = dispatch(state, { ...intent, id: `expedition-sim-${id}` });
     if (!validState(state))
       throw Error(`Invalid state after ${JSON.stringify(intent)}`);
+    if (state.expedition.cleared > 0 && !state.expedition.duel && !state.pending && !state.journey.learning.relic) {
+      state = dispatch(state, { type: "learning", choice: path === "sword" ? "sword" : "vial", id: `expedition-gift-${++id}` });
+    }
     return state;
   }
   for (const action of [
@@ -36,6 +39,7 @@ export function expeditionSession(
     "return",
   ] as AdventureAction[])
     send({ type: "adventure", action });
+  send({ type: "learning", choice: path === "sword" ? "blade" : "spring" });
   // The opening medicine route is available to both paths through its own preparation.
   for (const action of ["thanks", "market", "talk", "accept"] as RoadAction[])
     send({ type: "road", action });
@@ -52,6 +56,7 @@ export function expeditionSession(
       send({ type: "advance", activity: "meditate", months: 1 });
     while (state.study < 2)
       send({ type: "advance", activity: "study", months: 1 });
+    while (state.stones < 80) send({type:"advance",activity:"work",months:12});
     while (state.foundation < 6) send({ type: "prepare", kind: "retreat" });
   }
   function fight(correct = true) {

@@ -306,7 +306,7 @@ export function roadError(s: State, action: RoadAction): string {
     return "先补全航图";
   if (action === "invite" && r.ally) return "郁青已经答应同行";
   if (action === "inspect" && r.obstacle !== "none")
-    return "已看清危险，不会刷新重抽";
+    return "险情已探明";
   if (r.passed && ["art", "relic", "friend"].includes(action))
     return "归路已经留下，无需重新准备";
   if (["art", "relic", "friend"].includes(action) && r.route === action)
@@ -314,7 +314,7 @@ export function roadError(s: State, action: RoadAction): string {
   if (action === "challenge" || action === "shelteredChallenge") {
     if (r.passed) return "已经过关";
     if (r.obstacle === "none") return "先观察山口";
-    if (s.realm !== 1) return "山风剥离护体，需先筑基；可回行营安排修行";
+    if (s.realm < 1) return "山风剥离护体，需先筑基；可回行营安排修行";
     if (s.injury >= 3) return "伤势过重，先养伤至 2 以下";
     if (r.route === "none") return "回行营选择一种准备方向";
     if (r.route === "art" && !s.journey.main && !s.journey.support)
@@ -475,7 +475,7 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
     case "back":
       r.stage = "camp";
       r.result =
-        "你记得回来的路。此后再过青嶂关不重复收费，也不会再次抽取胜负。";
+        "归路已通。此后再过青嶂关，无须缴费，也无须再闯阵。";
       break;
   }
   const echo = passEcho(s);
@@ -535,7 +535,7 @@ function validRoadProgress(r: Road, s: State): boolean {
         r.route !== "none" &&
         ((r.passed && r.solution === "legacy") || r.roll > r.chance)) &&
     (!r.passed ||
-      (s.realm === 1 &&
+      (s.realm >= 1 &&
         (r.solution !== "legacy" || (r.attempts > 0 && r.roll <= r.chance)))) &&
     (!["beyond", "lookout"].includes(r.stage) || r.passed) &&
     (!r.surveyed || r.passed)

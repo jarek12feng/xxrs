@@ -1,0 +1,312 @@
+[
+  {
+    "file": "tingsong-sect-tournament-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2830572,
+    "sha256": "025d5b61934d3be1afadf47ef1989b3d4a7b447464715e2def77c416490dc758",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-596e7ec3-415d-4543-a4f6-ee7b759b3387.png",
+    "crop_box": null
+  },
+  {
+    "file": "tingsong-sect-tournament-1600x900.webp",
+    "size": [
+      1600,
+      900
+    ],
+    "bytes": 247886,
+    "sha256": "4133eaca1f7a52276c9642062dbebc27fe687b9c9efdf21f49d207dc0d1da5d9",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-596e7ec3-415d-4543-a4f6-ee7b759b3387.png",
+    "crop_box": [
+      4,
+      2,
+      1668,
+      938
+    ]
+  },
+  {
+    "file": "qingxuan-outer-sea-ferry-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2565926,
+    "sha256": "6b4988887eba5175505201984da66a992ccadbf997cecb4d6881b5c655a00542",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-151e5ccf-da12-4fad-8596-d7a958541eaa.png",
+    "crop_box": null
+  },
+  {
+    "file": "qingxuan-outer-sea-ferry-1600x900.webp",
+    "size": [
+      1600,
+      900
+    ],
+    "bytes": 216428,
+    "sha256": "24010b1faa3694d92005ee00681e8257a1999e2494717769d9fffd0802d316a0",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-151e5ccf-da12-4fad-8596-d7a958541eaa.png",
+    "crop_box": [
+      4,
+      2,
+      1668,
+      938
+    ]
+  },
+  {
+    "file": "tingsong-mountain-panorama-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2898132,
+    "sha256": "3cd1810793b00a6f36c650d6e933771ddda64286ef20c2828c06d2200f4e7db1",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-490613f3-1daf-442a-afe9-141c6be3af55.png",
+    "crop_box": null,
+    "status": "selected original"
+  },
+  {
+    "file": "tingsong-mountain-panorama-1600x900.webp",
+    "size": [
+      1600,
+      900
+    ],
+    "bytes": 279174,
+    "sha256": "f4b3cd75f4b7bd602ec67f8732dcbed818a723ba7b36a263314d22a98cbd1a9c",
+    "source": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/golden-core-20261102/tingsong-mountain-panorama-original.png",
+    "crop_box": [
+      4,
+      2,
+      1668,
+      938
+    ],
+    "status": "candidate, not integrated"
+  },
+  {
+    "file": "chengyuan-tidal-sect-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2588611,
+    "sha256": "02d5dfd8d9900bf59d6cf32746fffb71ff8143f7e0fbec936c31d488e47182b3",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-93772b11-d774-495f-8831-467de98f40c8.png",
+    "crop_box": null,
+    "status": "selected original"
+  },
+  {
+    "file": "chengyuan-tidal-sect-1600x900.webp",
+    "size": [
+      1600,
+      900
+    ],
+    "bytes": 209084,
+    "sha256": "dfdacd94cdc05c7310683aaa077fa4a08875c1d8442e10d8f46138fde7ca7928",
+    "source": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/golden-core-20261102/chengyuan-tidal-sect-original.png",
+    "crop_box": [
+      4,
+      2,
+      1668,
+      938
+    ],
+    "status": "candidate, not integrated"
+  },
+  {
+    "file": "zhaoshuang-snow-sect-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2860044,
+    "sha256": "07891ead6a9c611d15e151d29261df4e664a28e39c5aeaaa328964c6f2c5ebf0",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-01ccf13e-6a71-40f9-b32b-f29806ec1983.png",
+    "crop_box": null,
+    "status": "selected original"
+  },
+  {
+    "file": "zhaoshuang-snow-sect-1600x900.webp",
+    "size": [
+      1600,
+      900
+    ],
+    "bytes": 270662,
+    "sha256": "d887eecac1db4f75b41ce4441977d70ce8946a7599f624bfaa6479ee14719090",
+    "source": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/golden-core-20261102/zhaoshuang-snow-sect-original.png",
+    "crop_box": [
+      4,
+      2,
+      1668,
+      938
+    ],
+    "status": "candidate, not integrated"
+  },
+  {
+    "file": "hengxuan-array-sect-draft-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2601387,
+    "sha256": "69fbe231cadf7d91d9fc1dca8610686cde3b334f3f7baa6e30aa4ac3195bb041",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-73d3b9cf-a248-4a50-beed-431d074860e7.png",
+    "crop_box": null,
+    "status": "superseded draft"
+  },
+  {
+    "file": "hengxuan-array-sect-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2517239,
+    "sha256": "c098b8624c78c36aa3fffb29033202145fc256dea90d8e4c9d8cd90e52b15264",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-cec2aa58-67ae-41f8-b8f1-3e595f2ce33e.png",
+    "crop_box": null,
+    "status": "selected original"
+  },
+  {
+    "file": "hengxuan-array-sect-1600x900.webp",
+    "size": [
+      1600,
+      900
+    ],
+    "bytes": 219446,
+    "sha256": "82ce8afc4362d1d941980d1dbbb0ad45aed12440a90350f3a444e5e453c8d67a",
+    "source": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/golden-core-20261102/hengxuan-array-sect-original.png",
+    "crop_box": [
+      4,
+      2,
+      1668,
+      938
+    ],
+    "status": "candidate, not integrated"
+  },
+  {
+    "file": "ebb-tide-seabed-ruins-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2761480,
+    "sha256": "3f335290c904d0f264eda8584506cdbc7550d2210751b44d8be5109c4b2011bd",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-3afad7bc-5ad0-46a5-9d42-64ae6b8ea59f.png",
+    "crop_box": null,
+    "status": "selected original"
+  },
+  {
+    "file": "ebb-tide-seabed-ruins-1600x900.webp",
+    "size": [
+      1600,
+      900
+    ],
+    "bytes": 259182,
+    "sha256": "ae87cfea9c1157d8c05f661ace4fb13d4892e34f6f5dc6a45e52113f72f5a23c",
+    "source": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/golden-core-20261102/ebb-tide-seabed-ruins-original.png",
+    "crop_box": [
+      4,
+      2,
+      1668,
+      938
+    ],
+    "status": "candidate, not integrated"
+  },
+  {
+    "file": "ancient-ruins-inner-court-draft-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 3049888,
+    "sha256": "f3a9ab7c0d94a11017161fcf4889ed7126ec0f2c318eec2e5138bf30964f1b58",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-8539a32a-e44a-4703-888b-94c638311312.png",
+    "crop_box": null,
+    "status": "superseded draft"
+  },
+  {
+    "file": "ancient-ruins-inner-court-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2906688,
+    "sha256": "47ff3a78fc79d070b49b2896cb76373c451c1a6b5b90f0d5b92ba9681bc43113",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-a0853424-7501-41c3-b58f-27b9d1c4582c.png",
+    "crop_box": null,
+    "status": "selected original"
+  },
+  {
+    "file": "ancient-ruins-inner-court-1600x900.webp",
+    "size": [
+      1600,
+      900
+    ],
+    "bytes": 291108,
+    "sha256": "44c4044a1534bf4324c353b13397def097b3eb90723bdd6945906e69dbbf455d",
+    "source": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/golden-core-20261102/ancient-ruins-inner-court-original.png",
+    "crop_box": [
+      4,
+      2,
+      1668,
+      938
+    ],
+    "status": "candidate, not integrated"
+  },
+  {
+    "file": "intersect-valley-tournament-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2909656,
+    "sha256": "01d79e65dc49fb97bb158d3913b3e6be637b178c9618d965965c78e418793892",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-c3b90008-6fc9-4ac2-9bc6-76b0e0ab345b.png",
+    "crop_box": null,
+    "status": "selected original"
+  },
+  {
+    "file": "intersect-valley-tournament-1600x900.webp",
+    "size": [
+      1600,
+      900
+    ],
+    "bytes": 269392,
+    "sha256": "082af3cc9be5fe79d0c630b26061f3b663cbe9b0c66047a1e52b1aa72fd88466",
+    "source": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/golden-core-20261102/intersect-valley-tournament-original.png",
+    "crop_box": [
+      4,
+      2,
+      1668,
+      938
+    ],
+    "status": "candidate, not integrated"
+  },
+  {
+    "file": "golden-core-auction-hall-original.png",
+    "size": [
+      1672,
+      941
+    ],
+    "bytes": 2274054,
+    "sha256": "f5f1e7cb220963e1313b4e28863a72d5e633dab71ab3f4087aa1946f141b7248",
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-38debb6c-0e55-4ff6-b80c-137bd3eb9cd8.png",
+    "crop_box": null,
+    "status": "selected original"
+  },
+  {
+    "file": "golden-core-auction-hall-1600x900.webp",
+    "size": [
+      1600,
+      900
+    ],
+    "bytes": 174680,
+    "sha256": "3c531424e99bd2ba17d92366de0d0771c0344c7acf2dbb8e85ddd69feda3abc9",
+    "source": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/golden-core-20261102/golden-core-auction-hall-original.png",
+    "crop_box": [
+      4,
+      2,
+      1668,
+      938
+    ],
+    "status": "candidate, not integrated"
+  }
+]

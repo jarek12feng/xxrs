@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { qiPeople, personReply } from "./qi-journey/people";
 import type { CombatFeedback } from "./foundation-journey/feedback";
 import { realmPressure, opponentRealmName } from "./realm-pressure";
 import FoundationPanel from "./foundation-journey/FoundationPanel.vue";
@@ -8,6 +9,7 @@ import OriginNotes from "./OriginNotes.vue";
 import { trialBoard } from "./world-ambition";
 import CharacterSprite from "./presentation/CharacterSprite.vue";
 import { heroArt, rivalArt } from "./presentation/art";
+import { mainlineRomanceReady } from "./foundation-journey/heroine";
 import { computed, ref, watch, nextTick, onUnmounted } from "vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 import {
@@ -130,7 +132,7 @@ const intentText: Record<Stance, string> = {
       @equipment="emit('equipment')"
     />
     <p v-else-if="mode === 'arena' && boardRealm === 'gold'">
-      金丹组尚未开放。未来按境界独立记名，现有炼气与筑基成绩分别保留。
+      炼气、筑基分榜记名。金丹组暂未开放。
     </p>
     <template v-else>
       <SceneBackdrop
@@ -204,6 +206,20 @@ const intentText: Record<Stance, string> = {
           {{ mode === "arena" ? "观摩与交锋" : "相识与相处" }}
         </h3>
         <template v-if="mode === 'relationship'">
+          <template v-for="(npc, key) in qiPeople" :key="key">
+            <details v-if="game.qiJourney.people[key]" class="qi-contact">
+              <summary>{{ npc.name }} · {{ npc.role }}</summary>
+              <img
+                :src="npc.image"
+                :alt="npc.name"
+                width="90"
+                height="120"
+                loading="lazy"
+              />
+              <p>{{ personReply(game, key) }}</p>
+              <p>前往洞府的“山下故人”，可练习或交付战利品。</p>
+            </details>
+          </template>
           <FoundationPanel
             :combat-feedback="combatFeedback"
             v-if="
@@ -221,7 +237,7 @@ const intentText: Record<Stance, string> = {
             {{ relationshipGoal(game) }}
           </p>
           <CompanionshipPanel
-            v-if="game.social.met && game.realm >= 1 && companionPresent(game)"
+            v-if="game.social.gender !== 'male' && game.social.met && game.realm >= 1 && companionPresent(game)"
             :game="game"
             :busy="locked || !!duel"
             @act="emit('act', $event)"
@@ -241,7 +257,7 @@ const intentText: Record<Stance, string> = {
               :disabled="locked || !!duel"
               @click="emit('act', { type: 'identity', gender: 'male' })"
             >
-              男修 · 结识沈听澜</button
+              男修 · 结识苏婉宁</button
             ><button
               :disabled="locked || !!duel"
               @click="emit('act', { type: 'identity', gender: 'female' })"
@@ -263,12 +279,13 @@ const intentText: Record<Stance, string> = {
               </p>
             </article>
             <button
-              v-if="!game.social.met"
+              v-if="!game.social.met && game.social.gender !== 'male'"
               :disabled="locked || !!duel || game.age < 216 || game.realm < 1"
               @click="emit('act', { type: 'visit' })"
             >
               去山门外相识 · 一月 / 成年且筑基后开放
             </button>
+            <p v-else-if="!game.social.met">筑基后沿山河地图的主线前往青嶂，和苏婉宁共同开路。</p>
             <div v-else class="relationship-steps">
               <button
                 :disabled="locked || !!duel"
@@ -309,8 +326,8 @@ const intentText: Record<Stance, string> = {
                 :disabled="
                   locked ||
                   !!duel ||
-                  game.social.memories.length !== 3 ||
-                  game.social.affection < 50 ||
+                  game.age < 216 ||
+                  (game.social.gender === 'male' ? !mainlineRomanceReady(game) : (game.social.memories.length !== 3 || game.social.affection < 50)) ||
                   game.social.bonded
                 "
                 @click="emit('act', { type: 'confess' })"
@@ -318,19 +335,19 @@ const intentText: Record<Stance, string> = {
                 {{
                   game.social.bonded
                     ? "两心相许 · 已定情"
-                    : "月下表明心意 · 三段经历 / 好感 50"
+                    : game.social.gender === "male" ? "表明心意 · 共同历险并重逢后，成年可选" : "月下表明心意 · 三段经历 / 好感 50"
                 }}
               </button>
             </div>
             <div v-if="game.social.bonded" class="keepsake">
               <h3>珍藏：{{ who.keepsake }}</h3>
-              <p>“愿与你同行，也愿我们都不辜负各自的远方。”</p>
+              <p>{{ game.social.gender === "male" ? "“下次出关，记得先来找我。”" : "“夜里回来也无妨，灯给你留着。”" }}</p>
               <p class="muted">
                 {{
                   game.foundationJourney.bond === "covenant"
                     ? "已结为道侣。"
-                    : "已定情；完成职业同行并商定联系后，可以另行商议结契。"
-                }}共同洞府与长期生活事件尚未开放。
+                    : "已定情；同行历险、约好联络后，可再商议结契。"
+                }}
               </p>
             </div>
             <details v-if="game.social.met" class="memory-review">
@@ -338,10 +355,11 @@ const intentText: Record<Stance, string> = {
               <p v-if="game.social.answers.meet">
                 山门初逢：{{
                   {
+                    bridge: "你与苏婉宁在青嶂共同开路，交换姓名。",
                     help: "你用灵草帮忙辨路。",
                     share: "你分享了识路心得。",
                     listen: "你认真听完了对方的故事。",
-                  }[game.social.answers.meet as "help" | "share" | "listen"]
+                  }[game.social.answers.meet as "bridge" | "help" | "share" | "listen"]
                 }}
               </p>
               <p v-if="game.social.answers.walk">
@@ -403,8 +421,8 @@ const intentText: Record<Stance, string> = {
               <div>
                 <CharacterSprite
                   style="height: 150px"
-                  :character="heroArt(game.social.gender)"
-                  pose="attack"
+                  :character="heroArt(game.social.gender, game.realm)"
+                  pose="idle"
                   :label="game.name"
                 /><span
                   >你的气势

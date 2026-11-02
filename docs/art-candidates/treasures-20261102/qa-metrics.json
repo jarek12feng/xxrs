@@ -1,0 +1,63 @@
+[
+  {
+    "name": "bell",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 46816,
+    "alphaZero": 153377,
+    "alphaPartial": 108767,
+    "alphaOpaque": 0,
+    "borderMaxAlpha": 0,
+    "sha256": "e0840684e33635928177530886d13ea66cad61481a99c9604f4ca39d20d32cb6"
+  },
+  {
+    "name": "mirror",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 34458,
+    "alphaZero": 191063,
+    "alphaPartial": 71081,
+    "alphaOpaque": 0,
+    "borderMaxAlpha": 3,
+    "sha256": "fe6d6406a81a7eb756efc221257873abaef18403fe8af4220f52c80632b9ef09"
+  },
+  {
+    "name": "cord",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 82490,
+    "alphaZero": 142214,
+    "alphaPartial": 119930,
+    "alphaOpaque": 0,
+    "borderMaxAlpha": 1,
+    "sha256": "5b2ebded9e85c861470729062b2b8a4163c10adae16bacf549d24951b16c0548"
+  },
+  {
+    "name": "seal",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 65048,
+    "alphaZero": 123107,
+    "alphaPartial": 139037,
+    "alphaOpaque": 0,
+    "borderMaxAlpha": 1,
+    "sha256": "447757e90f3484414153176458d9134ad5fa3e49fddde8bb055191c71b350d24"
+  },
+  {
+    "name": "auction-hall",
+    "size": [
+      1536,
+      1024
+    ],
+    "bytes": 213462,
+    "sha256": "500b0a3197804e6b0833d8f87f76f29f02319cb64d70c708cb94cff960cdbe2d"
+  }
+]

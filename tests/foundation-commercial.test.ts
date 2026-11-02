@@ -33,6 +33,7 @@ it.each(["spring", "blade", "breath"] as const)(
     p.fight("culmination");
     expect(p.state.foundationJourney.board.wins).toEqual([]);
     expect(p.state.foundationJourney.bond).toBe("none");
+    p.cultivate(600);
     const won = p.state;
     p.act({ kind: "epilogue" });
     expect(p.state).toBe(won); // Must actually return home.
@@ -42,7 +43,7 @@ it.each(["spring", "blade", "breath"] as const)(
     expect(p.state.foundationJourney.epilogue).toBe(true);
     expect(p.state.realm).toBe(1);
     expect(p.state.foundationJourney.last).toContain("闻岑");
-    expect(p.state.foundationJourney.last).not.toContain("沈听澜");
+    expect(p.state.foundationJourney.last).not.toContain("苏婉宁");
     expect(
       actionReceipt(home, p.state, {
         type: "foundationJourney",
@@ -89,7 +90,7 @@ it("changed tactics and cultivation ability match exact preview, including letha
   const p = journeyPlayer(journeyCheckpoint("male", true));
   p.act({ kind: "battle", battle: "culmination" });
   for (const grass of [0, 4])
-    for (const enemy of [1, 70, 150, 245])
+    for (const enemy of [1, 70, 150, 225])
       for (const move of ["guard", "strike", "discern"] as const) {
         const s = structuredClone(p.state);
         s.herbs = grass;
@@ -217,10 +218,17 @@ it("preparation forecasts a safe same-stage alternative without imposing a battl
   expect(prep.target).toBe(200);
   expect(prep.optionalBattle).toBe(true);
   expect(prep.months).toBeGreaterThan(0);
+  expect(prep.months).toBeLessThanOrEqual(24);
   p.send({ type: "advance", activity: "cultivate", months: prep.months });
-  expect(p.state.foundationJourney.cultivation).toBeGreaterThanOrEqual(200);
+  expect(p.state.foundationJourney.cultivation).toBe(160 + prep.gain);
+  for (let i = 0; i < 10; i++) {
+    const next = journeyPreparation(p.state)!;
+    if (!next.months) break;
+    p.send({ type: "advance", activity: "cultivate", months: next.months });
+  }
+  expect(p.state.foundationJourney.cultivation).toBe(199);
   expect(p.state.foundationJourney.cultivation).toBeLessThan(206);
-  expect(journeyPreparation(p.state)?.missing).toBe(0);
+  expect(journeyPreparation(p.state)?.months).toBe(0);
 });
 it("optional recording retains real timestamps and excludes names and save data", () => {
   const s = journeyCheckpoint();

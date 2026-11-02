@@ -4,7 +4,9 @@ import { actionReceipt } from "../src/action-feedback";
 const send = (s: State, c: Intent) =>
   dispatch(s, { ...c, id: `feedback-${s.seen.length}` });
 function met() {
-  let s = send(createGame("验丹", "wood", 42), {
+  const initial = createGame("验丹", "wood", 42);
+  initial.journey.known = ["herb"]; // Alchemy fixture has learned gathering.
+  let s = send(initial, {
     type: "advance",
     activity: "gather",
     months: 3,
@@ -16,7 +18,7 @@ function met() {
     option: "promise",
   });
 }
-it("reports actual alchemy gain, gross inputs and net stones including monthly income", () => {
+it("reports actual alchemy gain, gross inputs and net stones without passive income", () => {
   const s = met(),
     c = { type: "prepare", kind: "refine" } as const;
   const n = send(s, c),
@@ -26,8 +28,8 @@ it("reports actual alchemy gain, gross inputs and net stones including monthly i
   expect(r.months).toBe(3);
   expect(r.changes).toContainEqual({
     label: "灵石",
-    before: 28,
-    after: 19,
+    before: 12,
+    after: 0,
     good: false,
   });
   expect(r.changes).toContainEqual({
@@ -52,6 +54,7 @@ it("reports preparation caps instead of promising the nominal reward", () => {
   const s = met();
   s.foundation = 23;
   s.qi = 359;
+  s.qiJourney.gates = 2;
   const c = { type: "prepare", kind: "retreat" } as const;
   const r = actionReceipt(s, send(s, c), c)!;
   expect(r.changes.find((c) => c.label === "根基")?.after).toBe(24);
@@ -72,6 +75,7 @@ it("displays true seeded breakthrough successes and failures without changing st
     const s = met();
     s.seed = seed;
     s.qi = 360;
+  s.qiJourney.gates = 2;
     s.pills = 1;
     const c = { type: "break", pill: true } as const,
       n = send(s, c),

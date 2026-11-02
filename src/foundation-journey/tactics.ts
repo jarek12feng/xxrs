@@ -6,6 +6,7 @@ import { challenges } from "./content";
 export function expectedMove(s: State): Move {
   const d = s.foundationJourney.duel!;
   const e = challenges[d.id];
+  if(d.id === "application") return ({spring:["guard","guard","strike"],blade:["discern","strike","guard"],breath:["discern","strike","discern"]} as const)[s.foundationJourney.inheritance === "none" ? "breath" : s.foundationJourney.inheritance][d.turn%3]!;
   if (d.ruleset === 2 && d.id === "culmination")
     return d.enemy > (e.hp * 2) / 3
       ? "guard"
@@ -20,6 +21,11 @@ export function tacticalCue(s: State): string {
   const d = s.foundationJourney.duel;
   if (!d || d.ruleset !== 2) return "";
   switch (d.id) {
+    case "pactRival": return "贺崇剑势沉紧，换气时右腕微颤。护住正面，辨清虚招再反击。";
+    case "application": return "新法须亲手运转：长春护体时也须换招转气，剑经辨明窗口后出剑，归元辨出假阵眼再换招。";
+    case "salamander": return "水面鼓起先护住药床，水落时反击，回水交错时辨清落点；逼退即可取药。";
+    case "deer": return "蹄声停顿时辨清方向，霜角发亮时守住；追击会迎上冲撞。";
+    case "steady": return "护住经脉，再辨清逆流；连用同一招容易将灵力推回旧处。";
     case "exit":
       return "先辨清执卫换位，再反击，可打散前后接应。";
     case "rank2":
@@ -79,6 +85,11 @@ export function tacticalAdjustment(s: State, move: Move) {
     note += "长春固护：转入守势承伤 −4；有草时仍可回春。";
   }
   const same = d.effect === move;
+  if (same && move === "guard" && s.journey.main === "spring") {
+    damage -= 8;
+    incoming += 10;
+    note += "连守失去腾挪：伤害 −8、承伤 +10；换招后可重新稳住。";
+  }
   switch (d.id) {
     case "exit":
       if (d.effect === "discern" && move === "strike") {
@@ -138,6 +149,7 @@ export function tacticalAdjustment(s: State, move: Move) {
         note += "归绳稳住，内外应讯，伤害 +12、承伤 −4。";
       }
       break;
+    case "steady":
     case "rank5":
     case "culmination":
       if (same) {
@@ -151,6 +163,26 @@ export function tacticalAdjustment(s: State, move: Move) {
     damage += 5;
     incoming -= 2;
     note += "周天贯流：换招伤害 +5、承伤 −2。";
+  }
+  const growth=s.foundationJourney.growth;
+  if(growth.refined && s.foundationJourney.cultivation >= 400 && (d.id === "frontier" || d.id === "rescue") && d.turn < 2) {
+    incoming -= 3;
+    note += "凝练灵元抵住古道初涌：前两合承伤 −3。";
+  }
+  if(d.id === "deer") {
+    incoming += growth.routes.snow.choice === "careful" ? -2 : 2;
+    note += growth.routes.snow.choice === "careful" ? "缓坡落脚稳，承伤 −2。" : "风口抢行，承伤 +2。";
+    if(same && move === "strike") {incoming+=6;note+="追击撞上霜角，承伤 +6。";}
+  }
+  if (d.id === "salamander" && move === "discern" && expectedMove(s) === "discern") {
+    damage += 6;
+    incoming -= 4;
+    note += "辨清回水落点，伤害 +6、承伤 −4。";
+  }
+  if(d.id === "salamander" && d.effect === "guard" && move === "strike") {damage+=8;note+="水落借势，伤害 +8。";}
+  if(d.id === "rescue" && s.social.gender === "male") {
+    if(s.foundationJourney.heroine.map === "public" && move === "discern") {damage+=3;note+="公共干道标记回应，辨影伤害 +3。";}
+    if(s.foundationJourney.heroine.map === "detour" && d.effect === "guard") {incoming-=2;note+="备用路线卸去回流，承伤 −2。";}
   }
   // Optional earlier choices provide finite, situational help, never a mainline key.
   const q = s.foundationJourney;
@@ -173,6 +205,11 @@ export function tacticalAdjustment(s: State, move: Move) {
       damage += 3;
       note += "稳守破障，伤害 +3。";
     }
+  }
+  if(s.secretPact?.manual && d.effect === "guard" && move === "discern") {damage+=6;incoming-=3;note+="照玄护脉：守后识阵，伤害 +6、承伤 −3。";}
+  if(d.id === "pactRival" && d.turn === 0) {
+    if(s.secretPact.aggressor === "rival" && s.secretPact.preparation === "anchor") {incoming-=4;note+="叶照护住预留阵钉，首合承伤 −4。";}
+    if(s.secretPact.preparation === "light") {incoming+=3;note+="退路阵钉未稳，首合承伤 +3。";}
   }
   return { damage, incoming, note };
 }

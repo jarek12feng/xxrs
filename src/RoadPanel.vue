@@ -299,6 +299,7 @@ const person = computed(() =>
 <template>
   <section
     ref="panel"
+    tabindex="0"
     class="adventure-panel road-panel desktop-scene"
     :data-weather="scene.mood"
     :data-reading-size="readingSize"
@@ -437,12 +438,10 @@ const person = computed(() =>
         >
           <h3>你要留下怎样的归路？</h3>
           <p class="keyboard-hint">
-            在此面板内按 1 / 2 / 3 观察医道、剑道、识阵；实施请点击按钮。Esc
-            收起手记与旧路。
+            点击下方“观察”按钮比较三条路线。键盘操作：Tab 移入本面板后，按 1 / 2
+            / 3 切换观察。
           </p>
-          <p>
-            先观察，再决定。观察不扣资源，可以改看另一条路；真正实施后，这段旅程的道路和人物回应会固定下来。满足条件即成功，不掷骰。
-          </p>
+          <p>观察免费；筑基后备齐所需物资才能实施。满足条件即成功，不掷骰；归路建成后不能改选。</p>
           <article
             v-for="key in solutionKeys"
             :key="key"
@@ -467,7 +466,7 @@ const person = computed(() =>
                 })
               "
             >
-              {{ passSolutions[key].observe }}
+              观察：{{ passSolutions[key].observe }}
               <small>{{
                 roadError(game, passSolutions[key].prepare) ||
                 "只观察，暂不实施"
@@ -703,7 +702,7 @@ const person = computed(() =>
                 @click="emit('act', { type: 'learn', technique: 'herb' })"
               >
                 求教辨草录 · 灵石 20 / 心得 2<small
-                  >散修、剑修也可学会医道解法；医修无需另学</small
+                  >学会长春诀或辨草录，即可使用药理解法</small
                 >
               </button>
               <button

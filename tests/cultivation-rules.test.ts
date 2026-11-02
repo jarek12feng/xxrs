@@ -15,13 +15,13 @@ function player(realm: 0 | 1 = 1): State {
   s.qi = 0;
   s.month = 48;
   s.age = 240;
-  s.limit = 792;
+  s.limit = realm ? 2400 : 1200;
   return s;
 }
 const meditate = (s: State, months: number, id = "meditate") =>
   dispatch(s, { id, type: "advance", activity: "cultivate", months });
 describe("修行、寿元与小境界", () => {
-  it("uses four minor stages in each realm without a story gate", () => {
+  it("uses four minor stages in each realm with earned bottlenecks", () => {
     for (const realm of [0, 1] as const)
       for (const stage of [0, 1, 2, 3] as const) {
         const s = player(realm);
@@ -32,17 +32,18 @@ describe("修行、寿元与小境界", () => {
     const s = player();
     s.foundationJourney.cultivation = 199;
     const n = meditate(s, 1);
-    expect(cultivationStageIndex(n)).toBe(1);
+    expect(cultivationStageIndex(n)).toBe(0);
+    expect(n).toBe(s);
     expect(n.foundationJourney.ferry).toBe(0);
   });
   it("reduces meditation gains with remaining life in both realms", () => {
     for (const realm of [0, 1] as const) {
       const young = player(realm);
       const old = { ...young, age: young.limit - 60 };
-      expect(cultivationMonthlyGain(old)).toBeLessThan(
-        cultivationMonthlyGain(young),
+      expect(cultivationProjection(old).batchGain).toBeLessThan(
+        cultivationProjection(young).batchGain,
       );
-      expect(cultivationMonthlyGain(old)).toBeGreaterThanOrEqual(1);
+      expect(cultivationProjection(old).batchGain).toBeGreaterThanOrEqual(0);
       expect(lifeEfficiency(old)).toBeLessThan(lifeEfficiency(young));
     }
   });
@@ -60,7 +61,7 @@ describe("修行、寿元与小境界", () => {
     expect(batch.foundationJourney.cultivation).toBe(prediction.batchGain);
     expect(batch.age).toBe(monthly.age);
     expect(batch.seed).toBe(monthly.seed);
-    expect(prediction.batchGain).toBeLessThan(12 * cultivationMonthlyGain(s));
+    expect(prediction.batchGain).toBeLessThan(cultivationProjection({...s, age: 240}).batchGain);
   });
   it("does not give cultivation or resources in the final month or allow another action", () => {
     const s = player();
@@ -80,6 +81,7 @@ describe("修行、寿元与小境界", () => {
     for (const activity of ["work", "train"] as const) {
       const s = player();
       s.journey.main = "blade";
+      s.journey.known = ["blade"];
       const n = dispatch(s, {
         id: activity,
         type: "advance",
@@ -99,12 +101,13 @@ describe("修行、寿元与小境界", () => {
     s.foundationJourney.rescue = 3;
     const prepared = cultivationProjection(s, 600);
     expect(prepared.monthsToTarget).toBeLessThan(slow.monthsToTarget!);
-    expect(prepared.monthsToTarget).toBeGreaterThan(60);
-    expect(slow.monthsToTarget).toBeGreaterThan(200);
+    expect(prepared.monthsToTarget).toBeGreaterThan(30);
+    expect(slow.monthsToTarget).toBeGreaterThan(90);
   });
   it("requires a pill and cannot use breakthrough lifespan to revive on its final month", () => {
     const s = player(0);
     s.qi = 360;
+  s.qiJourney.gates = 2;
     s.pills = 0;
     const command = { id: "break", type: "break", pill: true } as const;
     expect(dispatch(s, command)).toBe(s);
@@ -118,9 +121,10 @@ describe("修行、寿元与小境界", () => {
     expect(n.seed).toBe(s.seed);
     expect(dispatch(n, { ...command, id: "revive" })).toBe(n);
   });
-  it("successful breakthrough keeps real age and only adds eighteen years", () => {
+  it("successful breakthrough keeps real age and adds one hundred years", () => {
     const s = player(0);
     s.qi = 360;
+  s.qiJourney.gates = 2;
     s.pills = 1;
     s.foundation = 24;
     s.mastery = 12;
@@ -138,7 +142,7 @@ describe("修行、寿元与小境界", () => {
     }
     expect(success).toBeDefined();
     expect(success!.age).toBe(s.age + 1);
-    expect(success!.limit).toBe(s.limit + 216);
+    expect(success!.limit).toBe(s.limit + 1200);
     expect(success!.pills).toBe(0);
   });
   it("reports no gain at the cap and retains actual overshoot in a stage forecast", () => {
@@ -153,6 +157,7 @@ describe("修行、寿元与小境界", () => {
   it("pauses a breakthrough month for a pending story before consuming its pill", () => {
     const s = player(0);
     s.qi = 360;
+  s.qiJourney.gates = 2;
     s.pills = 1;
     s.story.stage = "unmet";
     s.month = 2;

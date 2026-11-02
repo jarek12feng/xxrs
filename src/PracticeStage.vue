@@ -10,6 +10,7 @@ const props = defineProps<{
   activity: Activity;
   playing: boolean;
   gender?: string | null;
+  realm?: number;
 }>();
 const labels: Record<Activity, string> = {
   cultivate: "吐纳 · 周天行气",
@@ -52,7 +53,7 @@ const propItem = computed(() =>
     </div>
     <div class="practice-figure">
       <CharacterSprite
-        :character="heroArt(gender)"
+        :character="heroArt(gender, realm)"
         :pose="pose"
         :label="labels[activity] + '人物场景'"
       />

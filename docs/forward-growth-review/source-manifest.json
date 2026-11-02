@@ -1,0 +1,19 @@
+{
+  "scope": "v26 isolated review; excludes concurrent treasures v27 integration",
+  "snapshot": "/var/folders/7_/0wh4syys1ql7gpfhcm27rqj80000gn/T/xxrs-forward-review-m5fhjxd8",
+  "sourceSha256": {
+    "src/qi-journey/tactics.ts": "eb761b2a28d1ae2bc2df42dad00d3b8cd772e298e10492d125546bd77c07a019",
+    "src/qi-journey/rules.ts": "24aa3d30df69da88bf3a37019bf33224c707f4fc4ef3fccf85b7f1bd3583ca64",
+    "src/qi-journey/passage.ts": "1105621b9c3a20d28821eb6b31e6b2a6a3a4618f1a8330f6556c6a7482603fbd",
+    "src/qi-journey/content.ts": "07999fe6d648a867b34fb1a5f1809caa297c9cd4acbb05b14e2bc152f63d96b3",
+    "src/qi-journey/QiJourneyPanel.vue": "e2975eaa533dad36b880be074a0c80333b25ce4548b06c3e5770d09ebf83baa7",
+    "src/foundation-journey/growth.ts": "d75dc31fe1df7d9143b09f502dc12eca45e5ba07ad060d2c7925975335f1f3bb",
+    "src/foundation-journey/state.ts": "94df4982a5b98b97400d92e9cac517d216622be138d65496d6a50ac14e0e5e04",
+    "src/foundation-journey/tactics.ts": "c6a10044afe3e2a513b96933063026651c89f62f280d4b0b7e078619efa18056",
+    "src/foundation-journey/view.ts": "7b5efbc60e0583920a03d5c6b407b4199cde2f1e3d63cc643bc39595c5a579ab",
+    "tests/forward-growth.test.ts": "0d31b96ddce1cb2c3395266a8a14a25b86302b698c943b680af516a1b6d39c53",
+    "tests/forward-growth-ui.test.ts": "b8716e46d9c73301574cd4294b55099bddedbf3c10561a01c630d93280f44b17",
+    "tools/forward-growth-audit.ts": "55c7c402d459799fe8ac80710aa8c0ec60866a7444793d05949befbd4cd10360",
+    "tools/substitute-playtest.ts": "f36f753f645cb9327f5f57c62c13cde29b957014e79b45e519cccf3d97f106d5"
+  }
+}

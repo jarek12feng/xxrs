@@ -116,7 +116,7 @@ it("restores choice consequences and contextual guidance without replaying rewar
   ).toContain("护根");
   expect(
     document.querySelector('[aria-label="初入仙途指引"] > div > strong')
-      ?.textContent === "把第一册功法用起来",
+      ?.textContent === "挑选入门功法",
   ).toBe(true);
   expect(save).not.toHaveBeenCalled();
   expect(audio.cue).not.toHaveBeenCalled();
@@ -151,12 +151,15 @@ it("first guidance equips earned power before returning to the promised revisit"
     action: "return",
   });
   await mount(s);
-  button("装配第一册功法").click();
+  button("挑选第一册功法").click();
   await flush();
   expect(save).not.toHaveBeenCalled();
+  document.querySelector<HTMLButtonElement>('[role="dialog"] [aria-label="挑选入门功法"] button')!.click();
+  await flush();
+  expect(vi.mocked(save).mock.calls.at(-1)![0].journey.known).toContain("spring");
   button("装配长春诀").click();
   await flush();
-  expect(vi.mocked(save).mock.calls[0]![0].journey.main).toBe("spring");
+  expect(vi.mocked(save).mock.calls.at(-1)![0].journey.main).toBe("spring");
   document.querySelector<HTMLButtonElement>('[aria-label="关闭面板"]')!.click();
   await flush();
   button("回访药工，看看后来").click();
@@ -259,7 +262,7 @@ it("plays the corresponding cultivation figure only after persistence succeeds, 
     document
       .querySelector(".practice-stage .character-sprite img")
       ?.getAttribute("src"),
-  ).toContain("/art/characters/hero-male.webp");
+  ).toContain("/art/hero-male/qi-idle.webp");
   expect(
     document
       .querySelector(".practice-stage .practice-prop img")
@@ -341,7 +344,7 @@ it("first relic coaching opens equipment and equips the earned item through a sa
 });
 
 it("completes the companion field test through persisted UI commands and the actual skill panel", async () => {
-  await mount(mistCheckpoint(42, "wood", "male"));
+  await mount(mistCheckpoint(42, "wood", "female"));
   const relation = [
     ...document.querySelectorAll<HTMLButtonElement>("button"),
   ].find(
@@ -354,15 +357,15 @@ it("completes the companion field test through persisted UI commands and the act
   await flush();
   button("商量这次同行").click();
   await flush();
-  button("辨清稳固节点").click();
+  button("辨认回流阵眼").click();
   await flush();
-  button("先刻公共干道").click();
+  button("两名渡工轮流试灯").click();
   await flush();
   button("打开功法，装配护身诀").click();
   await flush();
   expect(document.querySelector('[data-panel="skills"]')).not.toBeNull();
   const guard = [...document.querySelectorAll("article")].find(
-    (a) => a.textContent?.includes("护身诀") && a.querySelector("button"),
+    (a) => a.querySelector("h3")?.textContent?.includes("护身诀") && a.querySelector("button"),
   );
   const equip = [...(guard?.querySelectorAll("button") || [])].find((b) =>
     b.textContent?.includes("装配"),
@@ -384,10 +387,10 @@ it("completes the companion field test through persisted UI commands and the act
   );
   reopen!.click();
   await flush();
-  button("亲自校验归路").click();
+  button("亲自试走归路").click();
   await flush();
   expect(vi.mocked(save).mock.calls.at(-1)![0].companionship.stage).toBe(
     "done",
   );
-  expect(document.body.textContent).toContain("岔路引导");
+  expect(document.body.textContent).toContain("一人报信，一人验船");
 });

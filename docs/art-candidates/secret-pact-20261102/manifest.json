@@ -1,0 +1,207 @@
+[
+  {
+    "name": "he-chong-dialogue",
+    "source": "exec-48ce9c19-d5c2-4600-ba5d-2cdf7a2b2d27.png",
+    "original": {
+      "format": "png",
+      "mediaType": "image/png",
+      "width": 1024,
+      "height": 1536,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "density": 72,
+      "isProgressive": false,
+      "isPalette": false,
+      "bitsPerSample": 8,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    "export": {
+      "format": "webp",
+      "mediaType": "image/webp",
+      "width": 512,
+      "height": 768,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "isProgressive": false,
+      "isPalette": false,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    "bytes": 66430
+  },
+  {
+    "name": "ye-zhao-dialogue",
+    "source": "exec-5a56c0da-d0a7-4ba1-a1d0-ccaf03908c4e.png",
+    "original": {
+      "format": "png",
+      "mediaType": "image/png",
+      "width": 1024,
+      "height": 1536,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "density": 72,
+      "isProgressive": false,
+      "isPalette": false,
+      "bitsPerSample": 8,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    "export": {
+      "format": "webp",
+      "mediaType": "image/webp",
+      "width": 512,
+      "height": 768,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "isProgressive": false,
+      "isPalette": false,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    "bytes": 67632
+  },
+  {
+    "name": "he-chong-combat",
+    "source": "exec-cb853169-3e44-4780-bcbf-c49a23bdc8ba.png",
+    "original": {
+      "format": "png",
+      "mediaType": "image/png",
+      "width": 1024,
+      "height": 1536,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "density": 72,
+      "isProgressive": false,
+      "isPalette": false,
+      "bitsPerSample": 8,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    "export": {
+      "format": "webp",
+      "mediaType": "image/webp",
+      "width": 640,
+      "height": 960,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "isProgressive": false,
+      "isPalette": false,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 640,
+        "height": 960
+      }
+    },
+    "bytes": 103902
+  },
+  {
+    "name": "zhaoxuan-chamber",
+    "source": "exec-30b33dbe-b3b0-4ef4-a851-6d4ac19b7d87.png",
+    "original": {
+      "format": "png",
+      "mediaType": "image/png",
+      "width": 1536,
+      "height": 1024,
+      "space": "srgb",
+      "channels": 3,
+      "depth": "uchar",
+      "density": 72,
+      "isProgressive": false,
+      "isPalette": false,
+      "bitsPerSample": 8,
+      "hasProfile": false,
+      "hasAlpha": false,
+      "autoOrient": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    "export": {
+      "format": "webp",
+      "mediaType": "image/webp",
+      "width": 1200,
+      "height": 800,
+      "space": "srgb",
+      "channels": 3,
+      "depth": "uchar",
+      "isProgressive": false,
+      "isPalette": false,
+      "hasProfile": false,
+      "hasAlpha": false,
+      "autoOrient": {
+        "width": 1200,
+        "height": 800
+      }
+    },
+    "bytes": 165098
+  },
+  {
+    "name": "zhaoxuan-jade-slip",
+    "source": "exec-d0fb0390-44b0-488b-9294-e2622a2107e1.png",
+    "original": {
+      "format": "png",
+      "mediaType": "image/png",
+      "width": 1254,
+      "height": 1254,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "density": 72,
+      "isProgressive": false,
+      "isPalette": false,
+      "bitsPerSample": 8,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    "export": {
+      "format": "webp",
+      "mediaType": "image/webp",
+      "width": 256,
+      "height": 256,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "isProgressive": false,
+      "isPalette": false,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 256,
+        "height": 256
+      }
+    },
+    "bytes": 7546
+  }
+]

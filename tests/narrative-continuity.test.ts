@@ -91,8 +91,8 @@ it("both companion voices recall only the selected shared experience without cha
           choice
         ],
       );
-      expect(text).toContain(gender === "male" ? "沈听澜" : "尹照川");
-      expect(text).not.toContain(gender === "male" ? "尹照川" : "沈听澜");
+      expect(text).toContain(gender === "male" ? "苏婉宁" : "尹照川");
+      expect(text).not.toContain(gender === "male" ? "尹照川" : "苏婉宁");
       expect(s).toEqual(before);
     }
   }

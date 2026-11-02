@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import { goldenGoal } from "./golden-core/rules";
+import OuterSeaPanel from "./outer-sea/OuterSeaPanel.vue";
+import {seaGoal} from "./outer-sea/rules";
+import GoldenCorePanel from "./golden-core/GoldenCorePanel.vue";
+import SectContestScene from "./sect-contest/SectContestScene.vue";
+import LearningChoices from "./LearningChoices.vue";
+import { techniques } from "./core";
+import GrowthPreview from "./GrowthPreview.vue";
+import InjuryImpact from "./InjuryImpact.vue";
+import { incidentalQiGain } from "./cultivation";
 import {
   ref,
   defineAsyncComponent,
@@ -21,8 +31,8 @@ const PlaytestRecorder = defineAsyncComponent(
 import { defineStore } from "pinia";
 import { presences } from "./landmarks";
 import { actionSound } from "./action-sound";
-import { foundationAudioScene } from "./audio-scene";
-import { createMusicPlayer, sceneMusic, musicNames } from "./local-music";
+import { gameAudioScene } from "./audio-scene";
+import { createMusicPlayer, musicNames } from "./local-music";
 import FoundationJourney from "./FoundationJourney.vue";
 import { breakthroughError } from "./foundation";
 import PreparationValues from "./PreparationValues.vue";
@@ -33,7 +43,7 @@ import { sisterNote } from "./foundation-journey/narrative";
 import { openingGuide } from "./opening-guide";
 import { expeditionGoal } from "./expedition/progression";
 import { createSoundscape, soundSettings, type SoundMood } from "./audio";
-// User-authorized audio revision; gameplay freeze remains in force.
+// Audio is presentation only; successful persisted outcomes trigger effects.
 const localMusicEnabled = true;
 let music:
   ReturnType<typeof import("./local-music").createMusicPlayer> | undefined;
@@ -94,7 +104,6 @@ import {
   type Aptitude,
   createGame,
   dispatch,
-  paths,
   eventView,
   breakthroughDetails,
   nextGoal,
@@ -103,7 +112,6 @@ import {
   migrateSave,
   MAX_QI,
   type State,
-  type Path,
   type Activity,
   type Intent,
 } from "./core";
@@ -122,6 +130,9 @@ import SceneBackdrop from "./SceneBackdrop.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import PracticeStage from "./PracticeStage.vue";
 import CultivationOutlook from "./CultivationOutlook.vue";
+import { retreatPlan } from "./retreat";
+import CultivationStatus from "./CultivationStatus.vue";
+import QiJourneyPanel from "./qi-journey/QiJourneyPanel.vue";
 import {
   realmStageLabel,
   remainingLifeMonths,
@@ -193,9 +204,9 @@ const panelTitles: Record<string, string> = {
   skills: "功法",
   world: "山河地图",
   relationship: "人物关系",
-  sect: "宗门师承",
+  sect: "师门与委托",
   arena: "听松擂台",
-  gear: "炼器与购药",
+  gear: "丹药与法器准备",
   queue: "修行安排",
   journal: "任务与见闻",
   system: "系统菜单",
@@ -216,10 +227,14 @@ const worldTabs = [
   "queue",
 ] as const;
 const worldTab = computed(() => worldTabs.find((t) => t === dialog.value));
+const atContest = computed(() => !!game.value && ["entered", "finished"].includes(game.value.sectContest.stage) && game.value.foundationJourney.location === "home");
 const currentScene = computed(() => {
   const g = game.value;
-  if (!g || titleScreen.value || view.value === "cultivation")
+  if (!g || titleScreen.value || (view.value === "cultivation" && g.outerSea.location === "home"))
     return { image: "/scenes/moon-terrace.png", name: "听松山居" };
+  if(g.realm===2 && g.outerSea.location!=="home") return {image:g.outerSea.location==="ruins" ? (g.outerSea.cleared?"/art/outer-sea/inner.webp":"/art/outer-sea/ruins.webp"):"/art/outer-sea/ferry.webp",name:g.outerSea.location==="ruins"?"退潮遗迹":"外海古渡"};
+  if(g.realm===2) return {image:"/scenes/moon-terrace.png",name:g.outerSea.met?"听松行前居":"云外石台"};
+  if (atContest.value) return { image: "/art/sect-contest/tingsong.webp", name: "听松山 · 松间石台" };
   if (!showRoad.value && g.adventure.mist.stage !== "dormant") {
     const x = mistScenes[g.adventure.mist.stage];
     return { image: x.image, name: x.title };
@@ -230,6 +245,9 @@ const currentScene = computed(() => {
 const currentGoal = computed(() => {
   const g = game.value;
   if (!g) return "";
+  if(g.realm===2 && g.goldenCore.farShore) return seaGoal(g);
+  if(g.realm === 2 || g.goldenCore.expedition !== "idle") return goldenGoal(g);
+  if (atContest.value && view.value === "story") return g.sectContest.stage === "finished" ? "内比已毕，领取新成绩奖励后与同门道别。" : "按来招斗法，场间可整备，也可交还赛签。";
   if (view.value === "cultivation") return nextGoal(g);
   if (!showRoad.value && g.adventure.mist.stage !== "dormant")
     return mistGoal(g);
@@ -338,7 +356,6 @@ const ui = useSession(),
 const ready = ref(false),
   loadError = ref(false),
   name = ref("沈青禾"),
-  path = ref<Path>("wood"),
   aptitude = ref<Aptitude>("insightful"),
   gender = ref<Gender>("male"),
   activity = ref<Activity>("cultivate"),
@@ -443,6 +460,7 @@ const activities: { id: Activity; name: string; hint: string }[] = [
   { id: "work", name: "劳作", hint: "每月共得 5 灵石" },
   { id: "rest", name: "养伤", hint: "每月伤势 −1" },
 ];
+const regularRetreat = computed(() => game.value ? retreatPlan(game.value) : null);
 async function persist(s: State) {
   ui.busy = true;
   try {
@@ -556,7 +574,7 @@ async function start() {
       await persist(
         createGame(
           name.value,
-          path.value,
+          "wood",
           crypto.getRandomValues(new Uint32Array(1))[0],
           aptitude.value,
           gender.value,
@@ -758,25 +776,18 @@ onMounted(async () => {
       watch(
         () => ({
           scene: currentScene.value,
-          foundation: !titleScreen.value
-            ? foundationAudioScene(game.value, dialog.value)
-            : null,
-          shrineRelit: game.value?.adventure.mist.revisited ?? false,
-          fighting: Boolean(
-            game.value?.social.arena.duel || game.value?.expedition.duel,
+          audio: gameAudioScene(
+            titleScreen.value ? null : game.value,
+            dialog.value,
+            currentScene.value.name,
           ),
         }),
-        ({ scene, fighting, shrineRelit, foundation }) => {
-          const cue = fighting
-            ? "trial"
-            : (foundation?.music ?? sceneMusic(scene.name, shrineRelit));
+        ({ scene, audio }) => {
+          const cue = audio.music;
           const mood =
             presences[scene.name]?.weather ??
             ("mood" in scene ? scene.mood : "moon");
-          sound.scene(
-            mood as SoundMood,
-            fighting ? null : (foundation?.ambient ?? null),
-          );
+          sound.scene(mood as SoundMood, audio.ambient);
           musicTitle.value = musicNames[cue];
           music?.scene(cue);
         },
@@ -857,7 +868,7 @@ onUnmounted(() => {
 </script>
 <template>
   <PlaytestRecorder v-if="playtestEnabled" :game="game" />
-  <div v-if="ui.busy" class="saving-pulse" role="status">正在结算并保存……</div>
+  <div v-if="ui.busy" class="saving-pulse" role="status">正在保存……</div>
   <div v-if="notice" class="notice" role="alert">{{ notice }}</div>
   <div
     class="shell immersive-shell"
@@ -880,9 +891,9 @@ onUnmounted(() => {
         ><span
           >{{ game.name
           }}<small
-            >{{ realmStageLabel(game) }} · {{ paths[game.path].name }} · 伤势
+            >{{ realmStageLabel(game) }} · {{ game.journey.main ? techniques[game.journey.main].name : "尚未选定主修" }} · 伤势
             {{ game.injury }}</small
-          ><small class="life-remaining"
+          ><CultivationStatus :game="game" /><small class="life-remaining"
             >余寿 {{ formatLifeMonths(remainingLifeMonths(game)) }}</small
           ></span
         >
@@ -923,7 +934,7 @@ onUnmounted(() => {
       <p>{{ playableScope }}</p>
       <small>版本 {{ build.version }} · {{ build.id }}</small>
       <p>
-        听松问道，云外求长生。<br />
+        听松问道，漫漫长生路。<br />
         仙途渺渺，或遇知己，结契同行。
       </p>
       <button v-if="game" class="primary" @click="resumeGame">
@@ -962,7 +973,7 @@ onUnmounted(() => {
         <h3>选择先天资质</h3>
         <label class="field-label"
           >角色性别<select v-model="gender">
-            <option value="male">男修 · 成年筑基后可结识沈听澜</option>
+            <option value="male">男修 · 筑基主线与苏婉宁同行</option>
             <option value="female">女修 · 成年筑基后可结识尹照川</option>
           </select></label
         >
@@ -982,20 +993,8 @@ onUnmounted(() => {
           三组初始属性总和均为
           15。根骨、悟性先天固定；神识可通过凝神成长。资质不锁定路线。
         </p>
-        <h3>选择修行之路</h3>
+        <p>入山后可学习功法与技艺，练剑、采药、炼丹可以兼修。</p>
         <button
-          v-for="(p, id) in paths"
-          :key="id"
-          class="path-card"
-          :class="{ selected: path === id }"
-          @click="path = id"
-        >
-          <span class="path-symbol">{{ id === "wood" ? "药" : "剑" }}</span
-          ><span
-            ><strong>{{ p.name }}</strong
-            ><small>{{ p.description }}</small></span
-          ></button
-        ><button
           class="primary start"
           :disabled="ui.busy || loadError"
           @click="start"
@@ -1015,8 +1014,16 @@ onUnmounted(() => {
       }"
     >
       <section class="journey">
+        <aside v-if="game.treasures.auction?.entered && !game.treasures.auction.closed" class="opening-guide" aria-label="拍卖正在进行">
+          <p>你还在拍卖会场。结束竞拍或离场后，再继续修行与行旅。</p>
+          <button @click="openPanel('inventory')">返回拍卖会 · 继续竞拍或离场</button>
+        </aside>
+        <OuterSeaPanel :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
+        <GoldenCorePanel v-if="game.realm < 2 || !game.goldenCore.farShore" :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
+        <SectContestScene :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
+        <LearningChoices :game="game" :busy="ui.busy" @act="worldAct" />
         <details
-          v-if="horizon && !ui.history"
+          v-if="horizon && game.realm < 2 && !ui.history"
           class="opening-guide"
           aria-label="行旅目标"
         >
@@ -1083,7 +1090,7 @@ onUnmounted(() => {
         </nav>
         <MistPanel
           v-if="
-            !ui.history &&
+            game.realm < 2 && game.goldenCore.expedition === 'idle' && !atContest && !ui.history &&
             view === 'story' &&
             !showRoad &&
             game.adventure.mist.stage !== 'dormant'
@@ -1097,7 +1104,7 @@ onUnmounted(() => {
         />
         <RoadPanel
           v-else-if="
-            !ui.history && view === 'story' && game.adventure.step === 'done'
+            game.realm < 2 && game.goldenCore.expedition === 'idle' && !atContest && !ui.history && view === 'story' && game.adventure.step === 'done'
           "
           :game="game"
           :receipt="receipt"
@@ -1109,7 +1116,7 @@ onUnmounted(() => {
           @breakthrough="dialog = 'break'"
         />
         <AdventurePanel
-          v-else-if="!ui.history && view === 'story'"
+          v-else-if="game.realm < 2 && game.goldenCore.expedition === 'idle' && !atContest && !ui.history && view === 'story'"
           :game="game"
           :receipt="receipt"
           :busy="ui.busy || ui.running"
@@ -1135,6 +1142,7 @@ onUnmounted(() => {
             <PracticeStage
               :key="practiceSerial"
               :gender="game.social.gender"
+              :realm="game.realm"
               :activity="practice ?? activity"
               :playing="!!practice && !modal"
             />
@@ -1148,15 +1156,16 @@ onUnmounted(() => {
               <h3 class="controls-heading">洞府修行 · 操作区</h3>
               <div class="progress-label">
                 <h2>
-                  {{ game.realm ? "筑基已成 · 构筑与历练" : "炼气 → 筑基" }}
+                  {{ game.realm === 2 ? "金丹初成 · 云壁之外" : game.realm ? "筑基已成 · 构筑与历练" : "炼气 → 筑基" }}
                 </h2>
                 <strong v-if="game.realm === 0"
                   >{{ game.qi }} / {{ MAX_QI }}</strong
                 >
-                <strong v-else
+                <strong v-else-if="game.realm === 1"
                   >筑基修行 {{ game.foundationJourney.cultivation }} /
                   600</strong
                 >
+                <strong v-else>金丹修行 {{ game.outerSea.cultivation }} / 299</strong>
               </div>
               <div v-if="game.realm === 0" class="qi-track">
                 <i :style="{ width: (game.qi / MAX_QI) * 100 + '%' }"></i>
@@ -1182,14 +1191,27 @@ onUnmounted(() => {
                     ? `还差 ${MAX_QI - game.qi} 修为可尝试筑基。`
                     : "修为已满，可查看把握后决定是否突破。"
                 }}
-                筑基丹是必需品；固本与护法可进一步提高把握，不要求全部完成。伤势会降低成功率，可先静养。
+                淬脉、凝元与筑基丹是必需准备；固本与护法可进一步提高把握，不要求全部完成。伤势会降低成功率，可先静养。
               </p>
-              <CultivationOutlook
+              <QiJourneyPanel
+                :game="game"
+                :busy="ui.busy || ui.running"
+                @act="act"
+                @facilities="openPanel('skills')"
+                @board="openPanel('arena')"
+                @gear="openPanel('gear')"
+                @sect="openPanel('sect')"
+                @inventory="openPanel('inventory')"
+              />
+              <CultivationOutlook @standing="openPanel('sect')"
                 v-if="activity === 'cultivate'"
                 :game="game"
                 :months="3"
                 automatic
+                :busy="ui.busy || ui.running"
+                @act="act"
               />
+              <InjuryImpact :game="game" :busy="ui.busy || ui.running" @act="act" />
               <div class="activity-grid">
                 <button
                   v-for="a in activities"
@@ -1203,15 +1225,15 @@ onUnmounted(() => {
                   ><small>{{
                     actionError(game, a.id) ||
                     (a.id === "cultivate"
-                      ? `下月${game.realm ? "筑基修行" : "修为"} +${cultivationMonthlyGain(game)}（已计寿元效率）`
+                      ? `常规闭关 ${formatLifeMonths(regularRetreat?.batchMonths ?? 0)} · 修为 +${regularRetreat?.batchGain ?? 0}`
                       : a.id === "train"
-                        ? `剑意 +1${game.realm ? "" : " · 修为 +" + (10 + (game.journey.main === "blade" ? 4 : 0) + mainTraining(game) * 2)}；${game.journey.support === "guard" ? "护身诀免历练伤势" : "每四重受伤"}`
+                        ? `剑意 +1${game.realm ? "" : " · 修为 +" + incidentalQiGain(game, "train")}；${game.journey.support === "guard" ? "护身诀免历练伤势" : "每四重受伤"}`
                         : a.id === "work"
-                          ? `每月灵石 +5${!game.realm && game.journey.main ? " · 修为 +" + ((game.journey.main === "breath" ? 4 : 0) + mainTraining(game) * 2) : ""}`
+                          ? `每月灵石 +5${!game.realm && game.journey.main ? " · 修为 +" + incidentalQiGain(game, "work") : ""}`
                           : a.id === "gather"
-                            ? `灵草 +${2 + (game.journey.support === "herb" ? 1 + game.growth.training.herb : 0)} · 修为 +${game.realm ? 0 : 3}`
+                            ? `灵草 +${2 + (game.journey.support === "herb" ? 1 + game.growth.training.herb : 0)} · 修为 +${incidentalQiGain(game, "gather")}`
                             : a.id === "meditate"
-                              ? `神识 +1${game.realm ? "" : " · 修为 +2"}；神识 8 可识阵、省炼丹灵石`
+                              ? `神识 +1${game.realm ? "" : " · 修为 +" + incidentalQiGain(game, "meditate")}；神识 8 可识阵、省炼丹灵石`
                               : a.hint)
                   }}</small>
                 </button>
@@ -1247,7 +1269,7 @@ onUnmounted(() => {
                 {{
                   game.realm === 1 && activity === "cultivate"
                     ? "筑基吐纳期间没有灵石收入。"
-                    : "每月收入 1 灵石。"
+                    : "劳作或完成委托赚取灵石；修炼不产生灵石。"
                 }}自动每 0.8 秒推进一月，遇关键剧情、修为满或切后台暂停。
               </p>
               <div class="preparations">
@@ -1278,7 +1300,7 @@ onUnmounted(() => {
               />
               <button
                 class="break-button full"
-                :disabled="ui.busy || game.realm === 1 || game.qi < MAX_QI"
+                :disabled="ui.busy || game.realm >= 1 || game.qi < MAX_QI"
                 @click="dialog = 'break'"
               >
                 叩问天关 · 尝试筑基 ↗
@@ -1287,8 +1309,8 @@ onUnmounted(() => {
             </fieldset>
           </section>
           <nav class="facility-actions" aria-label="山居设施">
-            <button @click="openPanel('sect')">拜访师门</button
-            ><button @click="openPanel('gear')">炼器与购药</button
+            <button @click="openPanel('sect')">师门与委托</button
+            ><button @click="openPanel('gear')">丹药与法器准备</button
             ><button @click="openPanel('arena')">听松擂台</button
             ><button @click="openPanel('queue')">修行安排</button>
           </nav>
@@ -1429,7 +1451,7 @@ onUnmounted(() => {
             <h1>{{ game.name }}</h1>
             <p class="realm-label">
               {{ realmStageLabel(game) }}
-              <span>{{ paths[game.path].name }}</span>
+              <span>{{ game.journey.main ? techniques[game.journey.main].name : "尚未选定主修" }}</span>
             </p>
             <div class="character-line"></div>
             <div class="stat">
@@ -1460,6 +1482,7 @@ onUnmounted(() => {
               <span>{{ label }}</span
               ><strong>{{ value }}</strong>
             </div>
+            <InjuryImpact :game="game" :busy="ui.busy || ui.running" @act="act" />
             <div class="character-line"></div>
             <span class="eyebrow"
               >资质 · {{ aptitudes[game.aptitude].name }}</span
@@ -1731,16 +1754,10 @@ onUnmounted(() => {
           @click="download(game.archive, '-旧版原档')"
         >
           导出完整旧版原档</button
-        ><label class="field-label"
-          >新篇路线<select v-model="path">
-            <option v-for="(p, id) in paths" :key="id" :value="id">
-              {{ p.name }}
-            </option>
-          </select></label
         ><button
           class="primary full"
           :disabled="ui.busy"
-          @click="act({ type: 'beginChapter', path, aptitude })"
+          @click="act({ type: 'beginChapter', path: 'wood', aptitude })"
         >
           保留旧档，以十六岁重新开篇（明心善悟）
         </button></template
@@ -1830,11 +1847,12 @@ onUnmounted(() => {
             @command="foundationCommand"
           />
           <PreparationValues :game="game" :pill="true" />
+          <GrowthPreview :game="game" :request="{ kind: 'break' }" />
           <p class="warning-text">
             本次突破耗时一月，剩余寿元
             {{
               formatLifeMonths(remainingLifeMonths(game))
-            }}；若当月寿尽，将先结束人生，不能靠突破延寿。成功延寿十八年。{{
+            }}；若当月寿尽，将先结束人生，不能靠突破延寿。成功增加一百年寿元上限。{{
               game.ward
                 ? "护脉丹纹生效：首次失败保留九成修为、不减寿，随后消耗；伤势仍 +2。"
                 : "失败保留七成修为、伤势 +2、寿元上限 −1 年。"

@@ -7,7 +7,7 @@ const choices = computed(() => preparationValues(props.game, props.pill));
 </script>
 <template>
   <details class="preparation-values">
-    <summary>继续准备，实际能增加多少把握？</summary>
+    <summary>再作准备，可增几分把握？</summary>
     <ul>
       <li v-for="choice in choices" :key="choice.key">
         <strong

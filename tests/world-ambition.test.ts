@@ -51,6 +51,7 @@ it("records an actual command-settled win in the receipt with no additional rewa
 it("keeps missed equipment actionable, and stops asking after equipping", () => {
   const s = createGame("药队", "wood");
   s.adventure.step = "done";
+  s.journey.learning.book = true;
   s.adventure.road.thanked = true;
   s.adventure.road.map = true;
   s.journey.known = ["spring"];
@@ -69,6 +70,7 @@ it("separates chapter completion from optional ranking and remembers noncombat c
   expect(journeyHorizon(s).stage).toContain("药工");
   expect(lifeReview(s).records.join()).not.toContain("成株");
   s.adventure.step = "done";
+  s.journey.learning.book = true;
   s.adventure.rescueChoice = "supplies";
   s.adventure.road.surveyed = true;
   expect(journeyHorizon(s).stage).toContain("无名渡");
@@ -80,6 +82,7 @@ it("separates chapter completion from optional ranking and remembers noncombat c
 it("keeps the horizon on the old-array objective before and after foundation", () => {
   const s = createGame("待战", "wood", 42);
   s.adventure.step = "done";
+  s.journey.learning.book = true;
   s.expedition.cleared = 2;
   expect(journeyHorizon(s).stage).toContain("筑基后重返");
   s.realm = 1;

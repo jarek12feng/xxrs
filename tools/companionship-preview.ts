@@ -36,7 +36,7 @@ createApp({
               game.value = mistCheckpoint(42, "wood", "male");
             },
           },
-          "沈听澜 · 重新验收",
+          "苏婉宁 · 重新验收",
         ),
         h(
           "button",

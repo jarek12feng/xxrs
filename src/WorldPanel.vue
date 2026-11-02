@@ -1,4 +1,11 @@
 <script setup lang="ts">
+import LearningChoices from "./LearningChoices.vue";
+import GrowthPreview from "./GrowthPreview.vue";
+import RecognitionPanel from "./recognition/RecognitionPanel.vue";
+import { identity, currentOffice, officeName } from "./recognition/rules";
+import { recognitionView } from "./recognition/view";
+import TreasurePanel from "./treasures/TreasurePanel.vue";
+import WorkshopPanel from "./workshop/WorkshopPanel.vue";
 import type { CombatFeedback } from "./foundation-journey/feedback";
 import FoundationPanel from "./foundation-journey/FoundationPanel.vue";
 import ItemArt from "./presentation/ItemArt.vue";
@@ -10,8 +17,6 @@ import {
   encounterDescription,
   opponents,
   techniques,
-  relics,
-  forgeError,
   explorationError,
   promotionError,
   queueActions,
@@ -122,7 +127,7 @@ const queueError = computed(() => {
 });
 const rooms = {
   gear: {
-    title: "灯下炼器",
+    title: "丹炉与器坊",
     image: "/scenes/apothecary.jpg",
     body: "炉火映着瓶身与剑纹。你把一路遇过的风瘴记在旁边，决定这一回要为哪一种险境准备。",
   },
@@ -209,7 +214,7 @@ const mapImages = {
     <div v-else-if="tab === 'world'" class="world-content">
       <FoundationPanel
         :combat-feedback="combatFeedback"
-        v-if="game.realm >= 1"
+        v-if="game.realm === 1"
         :game="game"
         :busy="busy || running"
         @act="emit('act', $event)"
@@ -398,50 +403,11 @@ const mapImages = {
       class="world-content scene-controls"
       aria-label="灵器操作区"
     >
-      <h3 class="controls-heading">炼制与装配</h3>
-      <p>
-        当前灵器：{{
-          game.journey.equipped ? relics[game.journey.equipped].name : "未装配"
-        }}
-      </p>
-      <p class="muted">
-        灵器可炼制、装配，筑基后可精炼一次。普通灵器闯关 +10%，精炼
-        +32%；针对不同敌人另有作用。一次只装配一件。
-      </p>
-      <article v-for="(r, id) in relics" :key="id" class="map-card">
-        <h3>
-          <ItemArt :id="id" :tier="game.journey.relics[id]" />
-          {{ r.name }} ·
-          {{ ["未炼制", "灵器", "精炼灵器"][game.journey.relics[id]] }}
-        </h3>
-        <p>{{ r.hint }}</p>
-        <p class="muted">
-          {{
-            forgeError(game, id) || "本次炼制消耗灵石 24、灵草 4；需心得 2。"
-          }}
-        </p>
-        <button
-          :disabled="locked || !!forgeError(game, id)"
-          @click="emit('act', { type: 'forge', relic: id })"
-        >
-          {{ game.journey.relics[id] ? "精炼" : "炼制" }} · 灵石 24 / 灵草 4</button
-        ><button
-          :disabled="
-            locked || !game.journey.relics[id] || game.journey.equipped === id
-          "
-          @click="emit('act', { type: 'equipRelic', relic: id })"
-        >
-          {{ game.journey.equipped === id ? "已装配" : "装配灵器" }}
-        </button>
-      </article>
-      <button
-        :disabled="locked || game.stones < 8"
-        @click="emit('act', { type: 'supplies' })"
-      >
-        坊市购药 · 灵石 −8 / 灵草 +4
-      </button>
+      <TreasurePanel :game="game" :busy="busy || running" @act="emit('act', $event)" />
+      <WorkshopPanel :game="game" :busy="busy || running" @act="emit('act', $event)" />
     </div>
     <div v-else-if="tab === 'sect'" class="world-content">
+      <RecognitionPanel :game="game" :busy="locked" @act="emit('act', $event)" />
       <p class="muted">
         宗门提供师承与通行资格，不是唯一道路。散修也可在坊市学同样的功法，以神识
         8、心得 2 识路入山。可选择一个堂口拜师。
@@ -465,7 +431,7 @@ const mapImages = {
           :body="mentor.story"
           :portrait="mentor.image"
           :speaker="mentor.name"
-          :quote="mentor.quote"
+          :quote="game.journey.branch === branch ? recognitionView(game).quote : mentor.quote"
           compact
         />
         <div class="scene-controls" :aria-label="mentor.hall + '拜师操作区'">
@@ -487,30 +453,32 @@ const mapImages = {
       >
         <h3 class="controls-heading">宗门事务与晋升</h3>
         <p>
-          身份：{{ game.journey.rank ? "外门弟子" : "记名弟子" }} · 贡献
+          身份：{{ identity(game) }} · {{ officeName(game) }} · 贡献
           {{ game.journey.contribution }} · 亲历事务
           {{ game.journey.duties }} 次
         </p>
+        <details :open="!currentOffice(game)"><summary>寻常师门事务</summary>
         <div class="world-actions">
           <button
             :disabled="locked || game.herbs < 2"
             @click="emit('act', { type: 'duty', duty: 'herbs' })"
           >
-            送药济人<small>一月 / 灵草 −2 / 根基 +1 / 贡献 +2</small>
+            送药济人<small>一月 / 灵草 −2 / 灵石 +10 / 根基 +1 / 贡献 +2</small>
           </button>
           <button
-            :disabled="locked"
+            :disabled="locked || game.injury >= 3"
             @click="emit('act', { type: 'duty', duty: 'watch' })"
           >
-            守护夜路<small>一月 / 伤势 +1 / 炼气修为 +8 / 贡献 +2</small>
+            守护夜路<small>一月 / 灵石 +8 / 伤势 +1 / 炼气修为 +8 / 贡献 +2</small>
           </button>
           <button
             :disabled="locked || game.stones < 3"
             @click="emit('act', { type: 'duty', duty: 'copy' })"
           >
-            整理旧卷<small>一月 / 灵石 −3 / 心得 +1 / 贡献 +2</small>
+            整理旧卷<small>一月 / 灵石先付 3、完工收 6 / 心得 +1 / 贡献 +2</small>
           </button>
         </div>
+        </details>
         <div
           v-if="game.journey.duties >= 3 && !game.journey.mentor"
           class="mentor-question"
@@ -548,6 +516,7 @@ const mapImages = {
       aria-label="功法操作区"
     >
       <h3 class="controls-heading">功法研习与装配</h3>
+      <LearningChoices :game="game" :busy="busy" @act="emit('act', $event)" />
       <p>
         主修：{{
           game.journey.main ? techniques[game.journey.main].name : "未装配"
@@ -570,12 +539,15 @@ const mapImages = {
             <small>{{ t.slot === "main" ? "主修" : "辅修" }}</small>
           </h3>
           <p>{{ t.hint }}</p>
+          <p v-if="game.journey[t.slot] !== id">{{ game.journey.known.includes(id) ? '已习得，尚未装配' : '尚未习得；求教后须装配才生效' }}</p>
+          <GrowthPreview :game="game" :request="{ kind: 'technique', id }" compact />
+          <GrowthPreview v-if="game.journey.known.includes(id) && game.growth.training[id] < (game.realm ? 2 : 1)" :game="game" :request="{ kind: 'training', id }" compact />
           <p v-if="game.journey.known.includes(id)">
             研修层级：{{
               ["入门", "熟练", "通达"][game.growth.training[id]]
             }}。{{
               t.slot === "main"
-                ? "每阶：吐纳、历练、劳作修为 +2，交锋伤害 +2。"
+                ? "每阶：交锋伤害 +2，并提高修行效率；积累速度随境界、瓶颈与寿元变化。"
                 : id === "herb"
                   ? "每阶：交锋减伤 +1，采药额外 +1。"
                   : "每阶：交锋减伤 +1。"

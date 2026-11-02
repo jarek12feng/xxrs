@@ -1,3 +1,5 @@
+import type { PreparationRoute } from "../src/qi-journey/preparation";
+import { qiJourneyStep } from "./qi-journey-policy";
 import {
   eventView,
   hasFoundationRecipe,
@@ -7,7 +9,11 @@ import {
 } from "../src/core";
 
 // A public-command player policy for reproducible journey regressions, never edits saves.
-export function foundationStep(s: State, gift = true): Intent {
+export function foundationStep(
+  s: State,
+  gift = true,
+  route: PreparationRoute = "wander",
+): Intent {
   if (s.pending) {
     const choices = {
       meeting: "promise",
@@ -26,6 +32,32 @@ export function foundationStep(s: State, gift = true): Intent {
       option = "self";
     return { type: "choose", instanceId: s.pending.id, option };
   }
+  if (s.adventure.step !== "done") {
+    const a = s.adventure;
+    const action =
+      a.step === "ferry"
+        ? a.clue
+          ? "depart"
+          : "inspect"
+        : a.step === "apothecary"
+          ? a.method === "none"
+            ? "medicine"
+            : !a.ready
+              ? "prepare"
+              : "depart"
+          : a.step === "forest"
+            ? "trail"
+            : a.step === "shrine"
+              ? a.ready
+                ? "challenge"
+                : "retreat"
+              : a.step === "home"
+                ? "return"
+                : "enter";
+    return { type: "adventure", action };
+  }
+  if (!s.journey.learning.book) return { type: "learning", choice: s.path === "sword" ? "blade" : "spring" };
+  if (s.qiJourney.node) return qiJourneyStep(s, route)!;
   if (s.injury) return { type: "advance", activity: "rest", months: 3 };
   if (!hasFoundationRecipe(s) && !s.pills) {
     if (s.qi < 180)
@@ -42,7 +74,7 @@ export function foundationStep(s: State, gift = true): Intent {
       return { type: "revisitRelic" };
     return {
       type: "advance",
-      activity: s.qi < 360 ? "cultivate" : "work",
+      activity: s.qi < 239 ? "cultivate" : "work",
       months: 12,
     };
   }
@@ -53,6 +85,8 @@ export function foundationStep(s: State, gift = true): Intent {
     if (s.herbs < cost.herbs) return { type: "supplies" };
     return { type: "prepare", kind: "refine" };
   }
+  const progression = qiJourneyStep(s, route);
+  if (progression) return progression;
   if (s.qi < 360) return { type: "advance", activity: "cultivate", months: 12 };
   return { type: "break", pill: true };
 }

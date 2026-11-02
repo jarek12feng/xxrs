@@ -65,3 +65,15 @@ it("Escape closes reading disclosures without dispatching a game command", async
   expect(details.open).toBe(false);
   expect(act).not.toHaveBeenCalled();
 });
+it("route preview has a real keyboard focus entry", async () => {
+  app = createApp(RoadPanel, {
+    game: mistCheckpoint(42, "wood", "male", true),
+    busy: false,
+  });
+  app.mount(document.body.appendChild(document.createElement("div")));
+  await nextTick();
+  const panel = document.querySelector<HTMLElement>(".road-panel")!;
+  expect(panel.tabIndex).toBeGreaterThanOrEqual(0);
+  panel.focus();
+  expect(document.activeElement).toBe(panel);
+});

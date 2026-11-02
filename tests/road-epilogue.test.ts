@@ -35,7 +35,7 @@ it.each(["medicine", "sword", "array", "legacy"] as const)(
       solution === "legacy" ? "沿旧路过关" : passSolutions[solution].name,
     );
     if (solution === "legacy")
-      expect(html).toContain("没有获得医道、剑道或识阵的专属后续解法");
+      expect(html).toContain("未得医道、剑道或识阵的破关之法");
     else expect(html).toContain(passSolutions[solution].consequence);
     expect(html.match(/disabled/g)).toHaveLength(2);
   },

@@ -1,7 +1,11 @@
+import { freshHeroine, type HeroineJourney } from "./heroine";
+import { freshFoundationGrowth, type FoundationGrowth } from "./growth-state";
 import type { Move } from "../expedition/content";
 export type Destination =
   "home" | "ferry" | "estate" | "snow" | "inn" | "frontier";
 export type BattleId =
+  | "pactRival"
+  | "application" | "salamander" | "deer" | "steady"
   | "culmination"
   | "well"
   | "exit"
@@ -16,6 +20,8 @@ export type BattleId =
   | "rank5";
 export type Side = "estate" | "snow" | "inn";
 export interface FoundationJourney {
+  growth: FoundationGrowth;
+  heroine: HeroineJourney;
   epilogue: boolean;
   aftermath: Record<Side, boolean>;
   sharedMoment: boolean;
@@ -57,6 +63,8 @@ export interface FoundationJourney {
   last: string;
 }
 export const freshFoundationJourney = (): FoundationJourney => ({
+  growth: freshFoundationGrowth(),
+  heroine: freshHeroine(),
   epilogue: false,
   aftermath: { estate: false, snow: false, inn: false },
   sharedMoment: false,
@@ -89,6 +97,18 @@ export const freshFoundationJourney = (): FoundationJourney => ({
   last: "",
 });
 export type JourneyAction =
+  | {kind:"meetHeroine"; method: import("../companionship/rules").Method}
+  | {kind:"journeyPurpose"; purpose:"longevity"|"strength"|"private"}
+  | {kind:"mapPlan"; plan:"public"|"detour"}
+  | {kind:"expeditionPlan"}
+
+  | {kind:"routePrepare"; route: import("./growth-state").ResourceRoute; method:"supplies"|"service"|"relic"|"training"}
+  | {kind:"routeChoose"; route: import("./growth-state").ResourceRoute; choice:"careful"|"swift"}
+  | {kind:"routeProcess"; route: import("./growth-state").ResourceRoute; method:"self"|"service"|"sect"}
+  | {kind:"routeRevisit"; route: import("./growth-state").ResourceRoute}
+  | {kind:"steadyStudy"; method:"medicine"|"practice"}
+  | {kind:"rankGift"; reward:"medicine"|"supplies"}
+
   | { kind: "revisit"; side: Side }
   | { kind: "sharedMoment" | "epilogue" }
   | { kind: "travel"; destination: Destination }

@@ -3,12 +3,12 @@ import { cultivationStageIndex } from "./cultivation";
 import { mainTraining } from "./growth";
 
 export interface OpponentRealm {
-  realm: 0 | 1;
+  realm: 0 | 1 | 2;
   stage: number;
 }
 const stages = ["前期", "中期", "后期", "圆满"];
 export const opponentRealmName = (enemy: OpponentRealm) =>
-  `${enemy.realm === 1 ? "筑基" : "炼气"}${stages[enemy.stage]}`;
+  `${enemy.realm === 2 ? "金丹" : enemy.realm === 1 ? "筑基" : "炼气"}${stages[enemy.stage]}`;
 
 // These are earned capabilities, not extra rewards or a random chance to ignore a realm.
 export function realmPressure(
@@ -40,8 +40,8 @@ export function realmPressure(
     gap,
     methods,
     uncovered,
-    damageFactor: Math.pow(0.45, uncovered),
-    incomingExtra: uncovered * 12,
-    description: `${opponentRealmName(enemy)}。${gap ? `高出${enemy.realm > s.realm ? "一个大境界" : `${gap}个小境界`}；${methods.length ? methods.join("、") + "支撑越阶" : "尚无越阶机缘"}。${uncovered ? `尚有境界压制：伤害降至 ${Math.round(Math.pow(0.45, uncovered) * 100)}%，承伤 +${uncovered * 12}。` : "已能抵住境界压制，仍须应对招式。"}` : "没有境界压制，胜负取决于构筑与应对。"}`,
+    damageFactor: Math.pow(0.65, uncovered),
+    incomingExtra: uncovered * 8,
+    description: `${opponentRealmName(enemy)}。${gap ? `高出${enemy.realm > s.realm ? "一个大境界" : `${gap}个小境界`}；${methods.length ? methods.join("、") + "支撑越阶" : "尚无越阶机缘"}。${uncovered ? `尚有境界压制：伤害降至 ${Math.round(Math.pow(0.65, uncovered) * 100)}%，承伤 +${uncovered * 8}。` : "已能抵住境界压制，仍须应对招式。"}` : "没有境界压制，胜负取决于构筑与应对。"}`,
   };
 }

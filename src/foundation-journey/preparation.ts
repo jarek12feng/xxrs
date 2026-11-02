@@ -1,5 +1,5 @@
 import type { State } from "../world";
-import { cultivationProjection } from "../cultivation";
+import { retreatPlan } from "../retreat";
 import { challenges, rankIds } from "./content";
 export function journeyPreparation(s: State, board = false) {
   const q = s.foundationJourney;
@@ -41,7 +41,7 @@ export function journeyPreparation(s: State, board = false) {
               : 0
         : 0;
   const missing = Math.max(0, target - q.cultivation);
-  const forecast = cultivationProjection(s, target);
+  const forecast = retreatPlan(s, "regular", target);
   const months = forecast.batchMonths;
   return {
     optionalBattle: board || q.ferry === 2 || q.rescue === 3,

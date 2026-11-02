@@ -78,7 +78,7 @@ const cost = computed(() => refineCost(props.game));
         {{ plan.next.label }}
       </button>
       <p class="fineprint">
-        逐月结算，遇人物来信、赴约或修为已满即停，不替你选择。可随时改用洞府的一月行动。
+        每次修行一月；遇来信、赴约或修为已满即停。也可回洞府逐月修行。
       </p>
     </template>
     <button

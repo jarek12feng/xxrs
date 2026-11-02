@@ -192,7 +192,7 @@ it("requires actual medical knowledge, sword skill or equipment, and both array 
   p.road("diagnoseRoots");
   expect(roadError(p.state, "healPass")).toContain("辨草录");
   p.road("markCut");
-  expect(roadError({ ...p.state, mastery: 0 }, "cutPass")).toContain("剑意");
+  expect(roadError({ ...p.state, mastery: 0, journey: {...p.state.journey, equipped:null} }, "cutPass")).toContain("剑意");
   expect(roadError(p.state, "traceArray")).toContain("账册");
 });
 it.each(keys)(
@@ -261,14 +261,9 @@ it("migrates unfinished and completed v9 without assigning a new life choice", (
       version: 9,
       adventure: { ...current.adventure, road },
     };
-    const copy = structuredClone(old),
-      next = migrateSave(old);
+    const copy = structuredClone(old);
+    expect(() => migrateSave(old)).toThrow();
     expect(old).toEqual(copy);
-    expect(next.adventure.road.solution).toBe(road.passed ? "legacy" : "none");
-    expect(next.adventure.road.roll).toBe(road.roll);
-    expect(next.seed).toBe(old.seed);
-    expect(next.stones).toBe(old.stones);
-    expect(next.adventure.mist).toEqual(old.adventure.mist);
     expect(() =>
       migrateSave({
         ...old,

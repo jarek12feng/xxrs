@@ -130,6 +130,7 @@ it("rejects missing or premature choice fields and preserves completed v10 as le
   const upgraded = migrateSave(old);
   expect(upgraded).toEqual({
     ...current,
+    journey: { ...current.journey, learning: { book: true, relic: false } },
     adventure: { ...adventure, rescueChoice: "legacy" },
   });
   expect(old).toEqual(frozen);
@@ -143,7 +144,7 @@ it("rejects missing or premature choice fields and preserves completed v10 as le
     }),
   ).toBe(false);
   expect(
-    validState({ ...rescue(), adventure: current.adventure, version: 19 }),
+    validState({ ...rescue(), adventure: current.adventure, version: 999 }),
   ).toBe(false);
   const start = createGame("客", "wood");
   expect(
@@ -162,7 +163,7 @@ it("shows relevant guidance without changing state or forcing a play duration", 
   expect(openingGuide(s)?.body).toContain("护根");
   s = dispatch(s, { id: "thanks", type: "road", action: "thanks" });
   expect(openingGuide(s)?.action).toBe("skills");
-  expect(openingGuide(s)?.body).toContain("装配主修");
+  expect(openingGuide(s)?.body).toContain("挑选一册功法");
   const before = structuredClone(s);
   openingGuide(s);
   expect(s).toEqual(before);

@@ -1,0 +1,11 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>宝物与拍卖 · 开发验收</title><body><div id="app"></div><script type="module">
+import {createApp,h,shallowRef} from '/node_modules/.vite/deps/vue.js';
+import TreasurePanel from '/src/treasures/TreasurePanel.vue';
+import {createGame,dispatch} from '/src/core.ts';
+import '/src/style.css';
+import '/src/readability.css';
+if(new URLSearchParams(location.search).has('narrow')) document.body.style.maxWidth='390px';
+const s=createGame('宝物验收','wood',44);s.month=4;s.age=196;s.story.stage='waiting';s.qi=120;s.stones=200;
+const state=shallowRef(s);let serial=0;
+createApp({render:()=>h(TreasurePanel,{game:state.value,busy:false,onAct:(intent)=>{state.value=dispatch(state.value,{...intent,id:`preview-${++serial}`});}})}).mount('#app');
+</script><style>body{padding:20px;max-width:1000px;margin:auto;background:#142326;color:#f5e9d1}button,input{padding:10px}button:disabled{opacity:1}</style></body></html>

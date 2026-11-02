@@ -36,7 +36,7 @@ it("foundation grants immediate combat power without changing save structure", (
 });
 
 it.each([1, 42, 9087])(
-  "clears the old array with ordinary first-tier equipment after breakthrough, seed %i",
+  "clears the old array with earned training and first-tier equipment after breakthrough, seed %i",
   (seed) => {
     for (const path of ["wood", "sword"] as const) {
       const play = () => {
@@ -57,7 +57,7 @@ it.each([1, 42, 9087])(
         p.send({ type: "expedition", action: "studyArray" });
         expect(p.state.expedition.cleared).toBe(2);
         expect(p.state.journey.relics[p.state.journey.equipped!]).toBe(1);
-        expect(p.state.growth.training[p.state.journey.main!]).toBe(0);
+        expect(p.state.growth.training[p.state.journey.main!]).toBe(1);
         p.send({ type: "expedition", action: "enter" });
         p.fight();
         expect(p.state.expedition.cleared).toBe(3);

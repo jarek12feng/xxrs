@@ -1,3 +1,4 @@
+import { foundationCost } from "./workshop/catalog";
 import { cultivationGainAtAge, cultivationMonthlyGain } from "./cultivation";
 import {
   hasFoundationRecipe,
@@ -109,7 +110,7 @@ export interface State {
   month: number;
   age: number;
   limit: number;
-  realm: 0 | 1;
+  realm: 0 | 1 | 2;
   qi: number;
   stones: number;
   herbs: number;
@@ -194,10 +195,10 @@ export function createGame(
     life: 1,
     month: 0,
     age: 192,
-    limit: (path === "wood" ? 60 : 48) * 12,
+    limit: 100 * 12,
     realm: 0,
     qi: 0,
-    stones: 25,
+    stones: 12,
     herbs: 0,
     pills: 0,
     foundation: 0,
@@ -250,6 +251,9 @@ export function canGather(s: State) {
 export function canTrain(s: State) {
   return s.path === "sword" || s.inherited === "sword";
 }
+export function breakthroughSuccess(s: Pick<State, "limit">) {
+  return { realm: 1 as const, qi: 0, limit: s.limit + 100 * 12 };
+}
 export function breakthroughDetails(s: State, pill = false) {
   const parts = [
     { label: "炼气基础", value: 45 },
@@ -277,12 +281,7 @@ export function breakthroughDetails(s: State, pill = false) {
 export function cultivationGain(s: State) {
   return cultivationMonthlyGain(s);
 }
-export function refineCost(s: State) {
-  return {
-    herbs: s.wisdom >= 8 && s.study >= 2 ? 4 : 6,
-    stones: s.sense >= 8 ? 8 : 12,
-  };
-}
+export const refineCost = foundationCost;
 export function replayHints(s: State) {
   const hints: string[] = [];
   if (s.memories.crossing !== "sense")
@@ -309,7 +308,7 @@ export function nextGoal(s: State) {
   if (s.story.stage === "waiting")
     return `第三十六个月与陆迟会合，还剩 ${Math.max(0, 36 - s.month)} 个月。闭关六个月若跨过约期，将失约。`;
   if (s.realm === 0) return foundationGoal(s);
-  return "筑基篇即将结算。";
+  return "此段修行将告一段落。";
 }
 export function eventView(s: State): EventView | null {
   if (!s.pending) return null;
@@ -380,7 +379,7 @@ export function eventView(s: State): EventView | null {
     case "departure":
       return {
         title: "三年之约",
-        body: `陆迟已经在渡口等你。${s.realm === 1 ? "你已筑基，可以从容护送他越过遗府石阵。" : "你尚在炼气。遗府有石阵与毒瘴，准备的灵草或剑意将派上用场。"}现在出发，往返需三个月；留下会失去同行与护法，但此后仍可独自探府。`,
+        body: `陆迟已经在渡口等你。${s.realm >= 1 ? "你已筑基，可以从容护送他越过遗府石阵。" : "你尚在炼气。遗府有石阵与毒瘴，准备的灵草或剑意将派上用场。"}现在出发，往返需三个月；留下会失去同行与护法，但此后仍可独自探府。`,
         options: [
           o(
             "go",
@@ -432,13 +431,13 @@ export function eventView(s: State): EventView | null {
         };
       return {
         title:
-          s.realm === 1
+          s.realm >= 1
             ? "故人的天关"
             : s.pills > 0
               ? "丹药有余，归途同行"
               : "一丹，两条仙途",
         body:
-          s.realm === 1
+          s.realm >= 1
             ? "石匣里只有一枚筑基丹。你已筑基，陆迟却仍困在天关之前。将丹药赠他，可以让故人与你并肩；也可以留下丹药，各赴前程。"
             : s.pills > 0
               ? `你摸到行囊里已有的 ${s.pills} 枚筑基丹。这枚遗府丹不再是你唯一的机会。陆迟看见你的丹瓶，松开了紧握石匣的手：“若你愿意，我想先过天关，再护你一程。”你可以把它交给他，或留作自己再试的储备。`
@@ -475,7 +474,7 @@ function finish(s: State, dead = false) {
   record(s, s.result, "major");
 }
 function maybeFinish(s: State) {
-  if (s.realm === 1 && s.story.stage === "resolved") finish(s);
+  if (s.realm >= 1 && s.story.stage === "resolved") finish(s);
 }
 function missed(s: State) {
   s.story.stage = "resolved";
@@ -496,7 +495,6 @@ function month(s: State) {
     finish(s, true);
     return false;
   }
-  s.stones++;
   return true;
 }
 function hooks(s: State) {
@@ -517,25 +515,25 @@ function hooks(s: State) {
   if (s.month >= 24 && !s.memories.visit) decision(s, "visit");
 }
 // Shared adventure clock: consumes lifespan and processes appointments, without work income.
-export function travelMonth(input: State): State {
+export function travelMonth(input: State, activity = "行路准备"): State {
   if (input.status !== "alive" || input.pending) return input;
   const s = structuredClone(input);
   const stones = s.stones;
   if (month(s)) {
     s.stones = stones;
-    record(s, "行路准备耗时一月，寿元随之流逝。");
+    record(s, `${activity}耗时一月，寿元随之流逝。`);
     hooks(s);
   }
   return s;
 }
-export function actionError(s: State, activity: Activity) {
+export function actionError(s: State, activity: Activity, learnedAccess = false) {
   if (activity === "meditate" && s.sense >= 12) return "神识已达本篇上限";
   if (activity === "study" && s.study >= 4) return "研读心得已满";
-  if (activity === "gather" && !canGather(s)) return "需选择长春医道";
-  if (activity === "train" && !canTrain(s)) return "需选择青锋剑道";
   if (activity === "train" && s.mastery >= 12) return "剑意已满";
+  if (!learnedAccess && activity === "gather" && !canGather(s)) return "需选择长春医道";
+  if (!learnedAccess && activity === "train" && !canTrain(s)) return "需选择青锋剑道";
   if (activity === "rest" && s.injury === 0) return "当前无伤势";
-  if (activity === "cultivate" && (s.qi >= MAX_QI || s.realm === 1))
+  if (activity === "cultivate" && (s.qi >= MAX_QI || s.realm >= 1))
     return "修为已满，可准备突破或做其他行动";
   return "";
 }
@@ -557,7 +555,7 @@ export function preparationError(s: State, kind: "refine" | "retreat") {
   }
   return "";
 }
-export function dispatch(input: State, c: Command): State {
+export function dispatch(input: State, c: Command, learnedAccess = false): State {
   if (!c.id || input.seen.includes(c.id)) return input;
   if (
     (c.type === "next" || c.type === "beginChapter") &&
@@ -744,13 +742,13 @@ export function dispatch(input: State, c: Command): State {
       ].includes(c.activity) ||
       !Number.isInteger(c.months) ||
       c.months < 1 ||
-      c.months > 12 ||
-      actionError(s, c.activity)
+      c.months > (c.activity === "cultivate" ? 120 : 12) ||
+      actionError(s, c.activity, learnedAccess)
     )
       return input;
     for (let i = 0; i < c.months; i++) {
       const previousQi = s.qi;
-      if (actionError(s, c.activity) || !month(s)) break;
+      if (actionError(s, c.activity, learnedAccess) || !month(s)) break;
       if (c.activity === "cultivate")
         s.qi = Math.min(MAX_QI, s.qi + cultivationGainAtAge(s));
       if (c.activity === "gather") {
@@ -768,12 +766,12 @@ export function dispatch(input: State, c: Command): State {
       }
       if (c.activity === "study")
         s.study = Math.min(4, s.study + (s.wisdom >= 8 ? 2 : 1));
-      if (c.activity === "work") s.stones += 4;
+      if (c.activity === "work") s.stones += 5;
       if (c.activity === "rest") s.injury = Math.max(0, s.injury - 1);
       if (c.activity !== "cultivate")
         record(
           s,
-          `${{ meditate: "凝神内观，神识 +1（上限 12）、修为 +2", study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: "山下劳作，额外灵石 +4", rest: "静养经脉，伤势 −1" }[c.activity]}。`,
+          `${{ meditate: "凝神内观，神识 +1（上限 12）、修为 +2", study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: "山下劳作，灵石 +5", rest: "静养经脉，伤势 −1" }[c.activity]}。`,
         );
       hooks(s);
       if (
@@ -827,10 +825,8 @@ export function dispatch(input: State, c: Command): State {
       roll = Math.floor(rng(s) * 100) + 1;
     if (c.pill) s.pills--;
     if (roll <= chance) {
-      s.realm = 1;
-      s.qi = 0;
-      s.limit += 216;
-      s.result = `筑基成功：判定 ${roll}/100，成功率 ${chance}%。寿元 +18 年。`;
+      Object.assign(s, breakthroughSuccess(s));
+      s.result = `筑基成功：判定 ${roll}/100，成功率 ${chance}%。寿元 +100 年。`;
       record(s, s.result, "major");
       maybeFinish(s);
     } else {
@@ -908,7 +904,7 @@ export function validState(x: unknown): x is State {
   )
     return false;
   if (
-    !int(s.realm, 0, 1) ||
+    !int(s.realm, 0, 2) ||
     !int(s.qi, 0, 360) ||
     !int(s.foundation, 0, 24) ||
     !int(s.mastery, 0, 12) ||
@@ -960,7 +956,7 @@ export function validState(x: unknown): x is State {
   if (s.status === "alive" && s.age >= s.limit) return false;
   if (
     s.status === "complete" &&
-    (s.realm !== 1 || s.story.stage !== "resolved")
+    (s.realm < 1 || s.story.stage !== "resolved")
   )
     return false;
   if (s.pending !== null) {

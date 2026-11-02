@@ -1,0 +1,88 @@
+[
+  {
+    "name": "meridian-pill",
+    "source": {
+      "format": "png",
+      "mediaType": "image/png",
+      "width": 1254,
+      "height": 1254,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "density": 72,
+      "isProgressive": false,
+      "isPalette": false,
+      "bitsPerSample": 8,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    "output": {
+      "format": "webp",
+      "mediaType": "image/webp",
+      "width": 256,
+      "height": 256,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "isProgressive": false,
+      "isPalette": false,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 256,
+        "height": 256
+      }
+    },
+    "bytes": 12998,
+    "transparentPixels": 33311,
+    "partialAlphaPixels": 31749,
+    "outerEdgeMaxAlpha": 0
+  },
+  {
+    "name": "spirit-iron",
+    "source": {
+      "format": "png",
+      "mediaType": "image/png",
+      "width": 1254,
+      "height": 1254,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "density": 72,
+      "isProgressive": false,
+      "isPalette": false,
+      "bitsPerSample": 8,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    "output": {
+      "format": "webp",
+      "mediaType": "image/webp",
+      "width": 256,
+      "height": 256,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "isProgressive": false,
+      "isPalette": false,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 256,
+        "height": 256
+      }
+    },
+    "bytes": 22176,
+    "transparentPixels": 31597,
+    "partialAlphaPixels": 33456,
+    "outerEdgeMaxAlpha": 0
+  }
+]

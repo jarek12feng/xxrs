@@ -1,0 +1,106 @@
+{
+  "kind": "controlled fixtures; bounded search, not player rates",
+  "rows": [
+    {
+      "main": "spring",
+      "route": "medicine",
+      "passage": "ward",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "guard",
+        "ward",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike",
+        "guard"
+      ],
+      "herbsSpent": 8,
+      "wardSpent": 1,
+      "entryStones": 6
+    },
+    {
+      "main": "spring",
+      "route": "sword",
+      "passage": "relic",
+      "won": false
+    },
+    {
+      "main": "spring",
+      "route": "array",
+      "passage": "sense",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "sense",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "discern"
+      ],
+      "herbsSpent": 3,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "blade",
+      "route": "medicine",
+      "passage": "ward",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "ward",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike"
+      ],
+      "herbsSpent": 4,
+      "wardSpent": 1,
+      "entryStones": 6
+    },
+    {
+      "main": "blade",
+      "route": "sword",
+      "passage": "relic",
+      "won": false
+    },
+    {
+      "main": "blade",
+      "route": "array",
+      "passage": "sense",
+      "won": false
+    },
+    {
+      "main": "breath",
+      "route": "medicine",
+      "passage": "ward",
+      "won": false
+    },
+    {
+      "main": "breath",
+      "route": "sword",
+      "passage": "relic",
+      "won": false
+    },
+    {
+      "main": "breath",
+      "route": "array",
+      "passage": "sense",
+      "won": false
+    }
+  ]
+}

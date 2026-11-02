@@ -181,6 +181,7 @@ describe("passage scenes preserve actual preparation and companion presence", ()
 it("successful gift breakthrough acknowledges mutual growth, without inventing a reunion for other branches", () => {
   let s = crossing();
   s.qi = 360;
+  s.qiJourney.gates = 2;
   s = send(s, choose(s, "sense"));
   s = send(s, choose(s, "gift"));
   s.herbs = 6;
@@ -273,6 +274,7 @@ it("timing and capped preparation gains reflect the actual stage and inventory",
 it("training projection includes injury penalty and equipped guard protection", () => {
   const s = waiting();
   s.mastery = 3;
+  s.journey.known = ["blade"];
   expect(foundationPreparation(s).trainingHint).toContain(
     "伤势 +1；当前把握净变化 -4",
   );

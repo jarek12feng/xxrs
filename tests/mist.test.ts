@@ -1,3 +1,4 @@
+import { freshQiJourney } from "../src/qi-journey/state";
 import { freshFoundationJourney } from "../src/foundation-journey/state";
 import { expect, it } from "vitest";
 import {
@@ -106,7 +107,7 @@ it("gives both routes different entry requirements and supports route changes", 
   initial.herbs = 0;
   const p = camp("solo", initial);
   p.act("garden");
-  expect(mistError(p.state, "attune")).toContain("医道");
+  expect(mistError(p.state, "attune")).toContain("药理功法");
   expect(mistError(p.state, "tend")).toContain("灵草");
   p.act("camp");
   p.act("luchi");
@@ -128,7 +129,7 @@ it.each(["male", "female"] as const)(
   (gender) => {
     const p = camp("companion", mistCheckpoint(42, "wood", gender));
     expect(mistPartner(p.state).name).toBe(
-      gender === "male" ? "沈听澜" : "尹照川",
+      gender === "male" ? "苏婉宁" : "尹照川",
     );
     p.act("station");
     p.act("decode");
@@ -144,12 +145,13 @@ it.each(["male", "female"] as const)(
     const shared = p.state;
     expect(p.act("share")).toBe(shared);
     p.act("camp");
-    expect(mistError(p.state, "solo")).toContain("写入故事");
+    expect(mistError(p.state, "solo")).toContain("此行已经走过");
   },
 );
 it("does not invite strangers or minors into the romance companion slot", () => {
   const initial = mistCheckpoint();
   initial.social = { ...createGame("客", "wood").social };
+  initial.foundationJourney.heroine.meeting="none";
   const p = camp("solo", initial);
   expect(mistError(p.state, "companion")).toContain("成年");
 });
@@ -261,11 +263,7 @@ it("migrates real v8 progress without touching existing story, RNG or discoverie
   const { mist: _, ...adventure } = s.adventure;
   const old = { ...s, version: 8, adventure },
     before = structuredClone(old);
-  expect(migrateSave(old)).toEqual({
-    ...s,
-    adventure: { ...s.adventure, rescueChoice: "legacy" },
-    foundationJourney: freshFoundationJourney(),
-  });
+  expect(() => migrateSave(old)).toThrow();
   expect(old).toEqual(before);
   expect(() => migrateSave({ ...old, stones: -1 })).toThrow();
   for (const patch of [

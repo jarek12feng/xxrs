@@ -1,3 +1,6 @@
+import { treasures, treasureIds } from "./treasures/catalog";
+import { pactView } from "./secret-pact/view";
+import { recognitionView, advancementChanges } from "./recognition/view";
 import { foundationGoal } from "./foundation-journey/progression";
 import { foundationBoard } from "./foundation-journey/view";
 import { trialBoard } from "./world-ambition";
@@ -22,7 +25,7 @@ export interface ActionReceipt {
     "break" | "refine" | "retreat" | "challenge" | "forge" | "duel" | null;
   unlocks?: string[];
   spotlight?: boolean;
-  returnTo?: "relationship" | "world" | "gear" | "arena";
+  returnTo?: "relationship" | "world" | "gear" | "arena" | "sect";
   scene?: {
     from: string;
     to: string;
@@ -60,6 +63,7 @@ export function actionReceipt(
   )
     return null;
   if (
+    (intent.type === "outerSea" && !!after.outerSea.duel) ||
     (intent.type === "foundationJourney" && !!after.foundationJourney.duel) ||
     (intent.type === "arenaTurn" && after.social.arena.duel) ||
     (intent.type === "arenaStart" && after.social.arena.duel)
@@ -118,6 +122,7 @@ export function actionReceipt(
     before.foundationJourney.cultivation,
     after.foundationJourney.cultivation,
   );
+  add("金丹修行", before.outerSea.cultivation, after.outerSea.cultivation);
   add("道友信任", before.story.trust, after.story.trust);
   add("好感", before.social.affection, after.social.affection);
   add("宗门贡献", before.journey.contribution, after.journey.contribution);
@@ -131,6 +136,9 @@ export function actionReceipt(
     before.growth.medicines.clarity,
     after.growth.medicines.clarity,
   );
+  add("护脉丹", before.workshop.ward, after.workshop.ward);
+  add("玄铁料", before.workshop.iron, after.workshop.iron);
+  for (const id of treasureIds) add(treasures[id].name, before.treasures.owned[id], after.treasures.owned[id]);
   add("灵瓶品阶", before.journey.relics.vial, after.journey.relics.vial);
   add("灵剑品阶", before.journey.relics.sword, after.journey.relics.sword);
   // Find the retained log suffix even when the 180-entry ring is full.
@@ -173,7 +181,7 @@ export function actionReceipt(
   if (ritual === "refine")
     title = after.pills > before.pills ? "丹成 · 筑基丹入囊" : "炼丹中断";
   if (ritual === "retreat") title = "出关 · 根基渐稳";
-  if (ritual === "forge") title = "灵器炼成";
+  if (ritual === "forge") title = failed ? "炼器中断" : "灵器炼成";
   if (ritual === "challenge")
     title = failed ? "暂退一步 · 整备再来" : "闯关告捷";
   if (dead) title = "寿元已尽 · 此行止步";
@@ -192,6 +200,8 @@ export function actionReceipt(
   };
   if (!ritual && !dead && labels[effective.type])
     title = labels[effective.type]!;
+  if (effective.type === "workshop" && !dead)
+    title = failed ? "制作中断 · 未扣材料" : "丹药与法器 · 准备完成";
   if (effective.type === "promote") title = "晋升外门 · 师门谢礼";
   if (after.realm > before.realm) {
     const qi = changes.find((c) => c.label === "修为");
@@ -202,13 +212,29 @@ export function actionReceipt(
   }
   if (effective.type === "trainTechnique") title = "功法研修完成";
   const growthNotes = [
+    "outerSea",
     "equip",
     "equipRelic",
     "trainTechnique",
     "forge",
-  ].includes(effective.type)
+    "workshop",
+  ].includes(effective.type) || before.injury !== after.injury || before.realm !== after.realm || before.foundationJourney.cultivation !== after.foundationJourney.cultivation
     ? growthComparison(before, after)
     : [];
+  const newlyKnown = after.journey.known.filter((id) => !before.journey.known.includes(id));
+  if (newlyKnown.some((id) => after.journey.main !== id && after.journey.support !== id))
+    growthNotes.push("新功法已习得；尚未装配的功法不会改变当前能力，可到功法页比较后装配。");
+  if ((["vial", "sword"] as const).some((id) => after.journey.relics[id] > before.journey.relics[id] && after.journey.equipped !== id))
+    growthNotes.push("新灵器或品阶已入袋；尚未装备，不提供装备加成。可到储物袋比较后装备。");
+  const advancement = advancementChanges(before, after);
+  if (advancement.length) {
+    if (before.realm === after.realm && !dead) title = advancement[0]!;
+    growthNotes.push(...advancement);
+  }
+  if (effective.type === "outerSea" && !dead) {title=after.outerSea.cleared>before.outerSea.cleared?"遗迹告捷 · 机缘入手":"外海行旅";growthNotes.push(after.outerSea.last);}
+  if (effective.type === "treasure" && !dead) { title = failed ? "宝物行程中断" : "宝物与拍卖会"; growthNotes.push(after.treasures.last); }
+  if (effective.type === "secretPact" && !dead) title = "照玄之约";
+  if (effective.type === "recognition" && !dead) title = effective.action.kind === "inner" ? "回山受录" : effective.action.kind === "appoint" ? "受托任职" : effective.action.kind === "resign" ? "交还行牌" : effective.action.kind === "defer" ? "暂缓任用" : "委托归来";
   if (after.social.arena.wins > before.social.arena.wins) {
     title = trialBoard(after).title;
     growthNotes.push(trialBoard(after).response);
@@ -242,14 +268,14 @@ export function actionReceipt(
   const cost =
     effective.type === "prepare"
       ? effective.kind === "refine"
-        ? `投炉消耗：灵草 −${refineCost(before).herbs}，灵石 −${refineCost(before).stones}。下方为含月收入的实际净变化。`
-        : "闭关消耗：灵石 −8。下方为含月收入的实际净变化。"
-      : "下方为本次行动的实际净变化。";
+        ? `投炉消耗：灵草 −${refineCost(before).herbs}，灵石 −${refineCost(before).stones}。所得所耗见下方。`
+        : "闭关消耗：灵石 −8。所得所耗见下方。"
+      : "本次得失";
   const payoff = routePayoff(before, after, intent);
   return enrichReceipt(before, after, intent, {
     title,
     returnTo:
-      effective.type === "foundationJourney"
+      effective.type === "secretPact" ? "world" : effective.type === "recognition" ? "sect" : effective.type === "foundationJourney"
         ? before.foundationJourney.duel?.id.startsWith("rank")
           ? "arena"
           : "world"
@@ -260,6 +286,8 @@ export function actionReceipt(
       inherited ||
       ranked ||
       journeyWin ||
+      effective.type === "secretPact" ||
+      effective.type === "recognition" ||
       effective.type === "promote" ||
       (effective.type === "choose" &&
         (before.pending?.kind === "relic" || !!before.social.scene)) ||
@@ -288,7 +316,7 @@ export function actionReceipt(
       ...growthNotes,
       ...entries.slice(0, 4).map((entry) => entry.text),
     ],
-    next: ranked
+    next: effective.type === "secretPact" && !dead ? pactView(after).next : effective.type === "recognition" && !dead ? recognitionView(after).next : ranked
       ? foundationBoard(after).next
       : effective.type === "foundationJourney" && !dead
         ? foundationGoal(after)
@@ -301,7 +329,9 @@ export function actionReceipt(
                 ? `境界已从炼气晋升筑基，炼气修为已转化为新境界（归零并非损失）。${expeditionGoal(after) || "功法通达与灵器精炼已开放，回到当前行路查看后续目标。"}`
                 : "先养伤、补回修为，再炼丹或闭关固本；准备好后可以再次突破。"
               : ritual === "refine"
-                ? "丹药已收入行囊。修为满 360 后可叩关，每次必消耗一枚；失败后可依丹方补炼。"
+                ? failed
+                  ? "材料仍在，处理眼前事件后可重新安排炼制。"
+                  : "丹药已收入行囊。修为满 360 后可叩关，每次必消耗一枚；失败后可依丹方补炼。"
                 : ritual === "challenge" && failed
                   ? "线索仍在。查看当前挑战提示，提升实力或寻求帮助后再来。"
                   : "成果已自动保存，可以继续行动。",

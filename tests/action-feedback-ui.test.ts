@@ -24,7 +24,9 @@ async function click(label: string) {
   await flush();
 }
 function state() {
-  let s = dispatch(createGame("验丹", "wood", 42), {
+  const initial = createGame("验丹", "wood", 42);
+  initial.journey.known = ["herb"]; // Alchemy fixture has learned gathering.
+  let s = dispatch(initial, {
     type: "advance",
     activity: "gather",
     months: 3,
@@ -66,7 +68,7 @@ it("shows an alchemy transition, then actual costs and reward without opening th
   const result = document.querySelector('[role="dialog"]')?.textContent;
   expect(result).toContain("丹成");
   expect(result).toContain("灵石 −12");
-  expect(result).toContain("28 → 19");
+  expect(result).toContain("12 → 0");
   expect(result).toContain("0 → 1");
   await click("知晓结果");
   expect(document.querySelector('[role="dialog"]')).toBeNull();
@@ -83,7 +85,7 @@ it("blocks duplicate clicks while saving and while the result is open", async ()
   refine.click();
   await flush();
   expect(save).toHaveBeenCalledTimes(1);
-  expect(text()).toContain("正在结算并保存");
+  expect(text()).toContain("正在保存");
   finish();
   await flush();
   refine.click();
@@ -106,6 +108,7 @@ it.each([1, 123456])(
     const s = state();
     s.seed = seed;
     s.qi = 360;
+  s.qiJourney.gates = 2;
     s.pills = 1;
     const expected = dispatch(s, { type: "break", pill: true, id: "expected" });
     await mount(s);
@@ -119,7 +122,7 @@ it.each([1, 123456])(
     expect(save).toHaveBeenCalledTimes(1);
   },
 );
-it("shows alchemy results before the pending letter and never advances that story automatically", async () => {
+it("shows interrupted alchemy before the pending letter and never advances that story automatically", async () => {
   const s = state();
   s.month = 10;
   s.age = 202;
@@ -128,8 +131,10 @@ it("shows alchemy results before the pending letter and never advances that stor
   await click("跳过演出");
   expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(1);
   expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
-    "丹成",
+    "炼丹中断",
   );
+  expect((vi.mocked(save).mock.calls[0][0] as State).pills).toBe(s.pills);
+  expect((vi.mocked(save).mock.calls[0][0] as State).stones).toBe(s.stones);
   await click("知晓结果");
   expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
     "未寄",
@@ -231,7 +236,7 @@ it("NPC choices have a named response, affection and memory before returning to 
   await click("用研读所得标出安全通路");
   expect(document.querySelector(".action-feedback.playing")).toBeNull();
   const dialog = document.querySelector("[role=dialog]");
-  expect(dialog?.textContent).toContain("沈听澜");
+  expect(dialog?.textContent).toContain("苏婉宁");
   expect(dialog?.textContent).toContain("共同记忆 · 共勘旧路");
   expect(dialog?.textContent).toContain("+16");
   expect(dialog?.querySelector(".reply-person")).not.toBeNull();
@@ -354,7 +359,7 @@ it("opens character and inventory overlays without advancing the world", async (
 
 it("shows routine sect work in place and offers equipment immediately after promotion", async () => {
   await mount(state());
-  await click("拜访师门");
+  await click("师门与委托");
   await click("拜入丹堂");
   await click("整理旧卷");
   expect(
@@ -423,22 +428,19 @@ it("returns to the selected exploration place after a modal result", async () =>
 it("foundation ranking shows actual reward after save, returns to its group and retains the receipt", async () => {
   const { journeyCheckpoint, journeyPlayer } =
     await import("../tools/foundation-journey-checkpoint");
-  const { foundationExchange } =
-    await import("../src/foundation-journey/combat");
   const { moves } = await import("../src/expedition/content");
   const p = journeyPlayer(journeyCheckpoint());
   p.act({ kind: "battle", battle: "rank1" });
-  while (
-    p.state.foundationJourney.duel &&
-    foundationExchange(p.state, "guard")!.damage <
-      p.state.foundationJourney.duel.enemy
-  )
-    p.act({ kind: "move", move: "guard" });
+  const {findCombatRoute} = await import("../tools/foundation-tactics-audit");
+  const plan = findCombatRoute(p.state)!;
+  expect(plan).not.toBeNull();
+  for (const move of plan.moves.slice(0, -1)) p.act({kind:"move",move});
+  const finalMove = plan.moves.at(-1)!;
   expect(p.state.foundationJourney.duel).not.toBeNull();
   const before = p.state.stones;
   await mount(p.state);
   await click("听松擂台");
-  await click(moves.guard);
+  await click(moves[finalMove]);
   const result = document.querySelector('[role="dialog"]')?.textContent;
   expect(result).toContain("筑基试剑榜 · 第三十名");
   expect(document.querySelector(".combat-summary")?.textContent).toContain(
@@ -459,7 +461,7 @@ it("foundation ranking shows actual reward after save, returns to its group and 
   expect(text()).toContain("听松试剑榜 · 筑基组");
   expect(text()).toContain("奖励已入袋");
   await click("金丹组");
-  expect(text()).toContain("金丹组尚未开放");
+  expect(text()).toContain("金丹组暂未开放");
   await click("筑基组");
   expect(text()).toContain("首胜灵石 +14");
   expect(text()).toContain("已获胜");

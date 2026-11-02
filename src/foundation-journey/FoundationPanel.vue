@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import SecretPactPanel from "../secret-pact/SecretPactPanel.vue";
+import { foundationCap, foundationBlock } from "./growth-state";
+import CharacterSprite from "../presentation/CharacterSprite.vue";
+import { heroArt, heroBattlePose } from "../presentation/art";
 import { computed } from "vue";
 import CombatFeedbackView from "./CombatFeedback.vue";
 import type { CombatFeedback } from "./feedback";
@@ -21,6 +25,7 @@ import { foundationBoard, journeyOptions, journeyPresentation } from "./view";
 import JourneyResult from "./JourneyResult.vue";
 import { chapterEnding } from "./aftermath";
 import { journeyPreparation } from "./preparation";
+import { formatLifeMonths } from "../cultivation";
 import { foundationBattleCue, foundationMoveSetup } from "./battle-cues";
 import SceneBackdrop from "../SceneBackdrop.vue";
 import CultivationOutlook from "../CultivationOutlook.vue";
@@ -81,6 +86,7 @@ function act(action: JourneyAction) {
           : '筑基行旅'
     "
   >
+    <SecretPactPanel v-if="mode === 'journey' && !q.duel" :game="game" :busy="busy" @act="emit('act', $event)" />
     <CombatFeedbackView
       v-if="!q.duel && mode !== 'relationship'"
       :game="game"
@@ -102,7 +108,7 @@ function act(action: JourneyAction) {
         {{ preparation.optionalBattle ? "同阶应战参考修行" : "下一段需要修行" }}
         {{ preparation.target }}，还差 {{ preparation.missing }}。{{
           preparation.optionalBattle ? "也可凭机缘直接越阶挑战。" : ""
-        }}本次最多吐纳 {{ preparation.months }} 月，剧情出现时会停下。
+        }}本次最多吐纳 {{ formatLifeMonths(preparation.months) }}，剧情出现时会停下。
       </p>
       <CultivationOutlook
         v-if="preparation.missing"
@@ -121,7 +127,7 @@ function act(action: JourneyAction) {
           })
         "
       >
-        积累修行 · 最多 {{ preparation.months }} 月
+        积累修行 · 最多 {{ formatLifeMonths(preparation.months) }}
       </button>
       <button
         v-if="preparation.injury"
@@ -167,12 +173,19 @@ function act(action: JourneyAction) {
       <h2>{{ ending[0] }}</h2>
       <p v-for="line in ending.slice(1)" :key="line">{{ line }}</p>
       <p class="ending-scope">
-        本篇到此完成，角色与存档继续保留。可自由回访、补完支线和榜单；金丹突破与后续篇章尚未开放。
+        筑基篇终。可继续修行、回访故人或再赴试剑榜。可在凝丹筹备中争取主药、炼丹并叩关。
       </p>
     </article>
     <template v-if="q.duel && foe">
       <div class="foundation-duel">
-        <img :src="foe.image" :alt="foe.foe" />
+        <div class="combat-figures">
+          <CharacterSprite
+            :character="heroArt(game.social.gender, game.realm)"
+            :pose="heroBattlePose(q.duel.effect)"
+            :label="game.name"
+          />
+          <img v-if="foe.image" :src="foe.image" :alt="foe.foe" />
+        </div>
         <div>
           <small>第 {{ q.duel.turn + 1 }} 合 / 最多 12 合</small>
           <h3>{{ foe.name }}</h3>
@@ -229,7 +242,7 @@ function act(action: JourneyAction) {
         </p>
       </details>
       <p>
-        来招提示与连招收益需一起权衡。伤害、承伤已计入本合效果；连招不会自动替你出招。
+        留意来招，再接上合余势。下方伤害、承伤已计入本合效果。
       </p>
       <p role="status" class="foundation-result">{{ q.last }}</p>
     </template>
@@ -267,9 +280,9 @@ function act(action: JourneyAction) {
           </p>
           <p>
             首胜奖励：灵石 {{ row.prize }}、筑基修行
-            {{ Math.min(40, 600 - q.cultivation) }}（至多 600）{{
+            {{ Math.max(0, Math.min(40, foundationCap(game) - q.cultivation)) }}（当前上限 {{ foundationCap(game) }}）{{
               row.extra ? `、${row.extra}` : ""
-            }}。每场只结算一次。
+            }}。每场首胜可获报酬。
           </p>
           <p v-if="row.won">已获胜 · {{ row.turns }} 合 · 奖励已入袋</p>
           <template v-else-if="row.current"
@@ -287,14 +300,20 @@ function act(action: JourneyAction) {
               挑战{{ row.foe }}
             </button></template
           >
-          <small v-else>先击败前一位对手；需修行 {{ row.cultivation }}</small>
+          <small v-else>先击败前一位对手；同阶参考修行 {{ row.stage * 200 }}</small>
         </li>
       </ol>
     </template>
     <template v-else>
       <template v-if="mode === 'journey'">
         <h3>筑基行旅 · 青玄界</h3>
-        <p>{{ cultivationStage(game) }} · 修行 {{ q.cultivation }}/600</p>
+        <p>{{ cultivationStage(game) }} · 修行 {{ q.cultivation }}/600 · 当前可积累至 {{ foundationCap(game) }}</p>
+        <p>{{ foundationBlock(game) }}</p>
+        <aside v-if="q.cultivation === 600" aria-label="凝丹筹备">
+          <h4>凝丹筹备 · 两路争取主药</h4>
+          <p>圆满积累与归流成果已成。内比两胜或凝露药圃可得主药，炼成凝丹丹药、备好灵地后可叩关。</p>
+          <p>护脉辅药可在工坊自炼或购置；伤势 {{ game.injury }}，先静养调息。</p>
+        </aside>
         <p class="next-goal">{{ foundationGoal(game) }}</p>
         <nav aria-label="筑基行旅地点">
           <button
@@ -322,7 +341,7 @@ function act(action: JourneyAction) {
           :speaker="presentation.speaker"
           compact
         />
-        <p>行旅之外，可随时回洞府修行；支线标有“可选”。</p>
+        <p>行旅途中，也可随时回洞府修行。</p>
         <button :disabled="busy" @click="emit('equipment')">
           装配传承与功法
         </button>
@@ -501,6 +520,9 @@ function act(action: JourneyAction) {
   width: 100%;
   max-height: 280px;
   object-fit: contain;
+}
+.combat-figures :deep(.character-sprite) {
+  height: 160px;
 }
 @media (max-width: 550px) {
   .foundation-duel {

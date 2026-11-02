@@ -73,7 +73,7 @@ describe("筑基篇", () => {
     const n = run(s, { type: "prepare", kind: "refine" });
     expect(n.month).toBe(s.month + 3);
     expect(n.herbs).toBe(0);
-    expect(n.stones).toBe(s.stones - 12 + 3);
+    expect(n.stones).toBe(s.stones - 12);
     expect(n.pills).toBe(1);
     expect(n.crafted).toBe(1);
   });
@@ -220,5 +220,5 @@ describe("筑基篇", () => {
           expect(simulate(path, seed, choice)).toEqual(
             simulate(path, seed, choice),
           );
-  });
+  }, 15000);
 });

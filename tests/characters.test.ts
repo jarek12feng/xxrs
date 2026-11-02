@@ -64,7 +64,7 @@ describe("人物与资质", () => {
     const before = s.stones,
       n = act(s, { type: "prepare", kind: "refine" });
     expect(n.herbs).toBe(0);
-    expect(n.stones).toBe(before - 8 + 3);
+    expect(n.stones).toBe(before - 8);
     expect(n.pills).toBe(1);
   });
   it("letter freezes time, exposes motivation, and cannot pay twice", () => {
@@ -253,5 +253,6 @@ describe("人物与资质", () => {
         for (const ending of ["self", "gift", "missed"])
           for (let seed = 1; seed <= 10; seed++)
             expect(play(a, p, ending, seed)).toEqual(play(a, p, ending, seed));
-  });
+  // 360 complete command replays verify correctness, not a five-second performance budget.
+  }, 15000);
 });

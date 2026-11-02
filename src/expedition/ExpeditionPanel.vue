@@ -58,6 +58,7 @@ const actions = computed<
       </header>
       <BattleStage
         :gender="game.social.gender"
+        :realm="game.realm"
         :quest="q"
         :foe="encounter.foe"
         :player-max="meters.playerMax"
@@ -157,6 +158,7 @@ const actions = computed<
         </p>
         <BattleStage
           :gender="game.social.gender"
+          :realm="game.realm"
           v-if="q.cleared !== 1 && q.effect !== 'win'"
           :quest="q"
           :foe="encounter.foe"
@@ -166,6 +168,7 @@ const actions = computed<
       </template>
       <BattleStage
         :gender="game.social.gender"
+        :realm="game.realm"
         v-if="q.effect === 'win' && !q.duel && q.cleared !== 2"
         :quest="q"
         :foe="encounters[Math.max(0, q.cleared - 1)]!.foe"

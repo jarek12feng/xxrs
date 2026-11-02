@@ -31,16 +31,16 @@ it("the same stronger enemy defeats ordinary preparation but earned inheritance 
   expect(foundationBattleReadiness(trained, "exit").methods).toContain(
     "沉井传承与主修相合",
   );
-  // The actual first-clear reward is unchanged, and it cannot be claimed twice.
+  // The actual first-clear reward follows the revised budget, and it cannot be claimed twice.
   const route = findCombatRoute(trained)!;
   const player = journeyPlayer(trained),
     stones = trained.stones;
   for (const move of route.moves) player.act({ kind: "move", move });
   expect(player.state.stones).toBe(stones + challenges.exit.prize);
   expect(player.state.foundationJourney.cultivation).toBe(
-    trained.foundationJourney.cultivation + 40,
+    trained.foundationJourney.cultivation + 16,
   );
-  expect(battleError(player.state, "exit")).toContain("不重复发奖");
+  expect(battleError(player.state, "exit")).toContain("奖赏已领");
 });
 it("a second-tier equipped relic is an independent earned route past the same pressure", () => {
   const s = duel();
@@ -65,9 +65,13 @@ it("earned methods stack across minor realms but never erase a major realm gap",
 });
 it("cooperation has actual exchange effects, needs the companion present and never enters solo trials", () => {
   const s = duel();
+  s.foundation=0;
+  s.journey.support=null;
+  s.journey.equipped=null;
   s.foundationJourney.bond = "covenant";
   s.foundationJourney.reunion = true;
   s.companionship.stage = "done";
+  s.foundationJourney.heroine.map = "public";
   s.foundationJourney.duel!.aid = true;
   const together = foundationExchange(s, "guard")!;
   expect(foundationBattleReadiness(s, "exit").cooperation).toBe(true);
