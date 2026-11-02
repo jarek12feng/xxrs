@@ -1,3 +1,4 @@
+import { pactFightError } from "../secret-pact/rules";
 import { heroineGoal, isHeroineAction, heroineError, maleMainline, sharedJourneyDone } from "./heroine";
 import { foundationCap, foundationBlock, hasSteady } from "./growth-state";
 import { isGrowthAction, growthQuote, routeForBattle } from "./growth";
@@ -46,6 +47,7 @@ export function battleError(s: State, id: BattleId) {
   if (rankIds.includes(id) && s.age < 216) return "年满十八岁后可参加";
   if (rankIds.includes(id))
     return rankIds[q.board.wins.length] === id ? "" : "先击败本组前一位对手";
+  if (id === "pactRival") return pactFightError(s);
   if (id === "application") return q.location === "ferry" && q.inheritance !== "none" && s.journey.main === q.inheritance ? "" : "到无名渡装配已得沉井传承，再试运新法";
   if (id === "steady") return q.growth.steadyStudy !== "none" && !hasSteady(q) && q.location === (q.growth.steadyStudy === "medicine" ? "estate" : "frontier") ? "" : "先在药庄备好行功疗程，或在古道研习调息记录";
   if (id === "frontier" && q.location === "frontier" && q.rescue === 2) return "";

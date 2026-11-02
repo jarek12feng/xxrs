@@ -5,6 +5,11 @@ import { passSolutions } from "./pass-solutions";
 
 export function lifeReview(s: State) {
   const records: string[] = [];
+  const pact=s.secretPact;
+  if(pact.promisedMonth!==null)records.push(`修行第 ${pact.promisedMonth} 月，与贺崇、叶照约定中期同探照玄遗府。`);
+  if(pact.stage==='resolved')records.push(pact.last);
+  if(pact.aggressor==='player')records.push('照玄府中，你先毁约夺简，叶照不再应邀同行。');
+  if(pact.aggressor==='rival')records.push(pact.settled?'与贺崇的夺宝旧怨已传信了结。':'贺崇毁约夺简，旧怨未了。');
   const r = s.recognition;
   if (r.innerMonth !== null) records.push(`修行第 ${r.innerMonth} 月，凭青嶂亲历受录内门。`);
   for (const a of r.appointments) records.push(`修行第 ${a.month} 月，受任${a.tier === 1 ? '领队' : a.affiliation === 'dan' ? '丹房主事' : a.affiliation === 'jian' ? '护路执事' : '药队客卿'}。`);

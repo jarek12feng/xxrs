@@ -1,3 +1,5 @@
+import { freshSecretPact, validSecretPact, type SecretPact } from "./secret-pact/state";
+import { runPact, type PactAction } from "./secret-pact/rules";
 import { freshRecognition, validRecognition, type Recognition } from "./recognition/state";
 import { runRecognition, type RecognitionAction } from "./recognition/rules";
 import { cultivationMonth, incidentalQiGain } from "./cultivation";
@@ -209,7 +211,8 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 24;
+  version: 25;
+  secretPact: SecretPact;
   recognition: Recognition;
   cultivationRemainder: number;
   workshop: Workshop;
@@ -223,6 +226,7 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | {id:string; type:"secretPact"; action:PactAction}
   | { id: string; type: "recognition"; action: RecognitionAction }
   | { id: string; type: "qiJourney"; action: QiAction }
   | { id: string; type: "foundationJourney"; action: JourneyAction }
@@ -289,6 +293,7 @@ function base(s: State): chapter.State {
     workshop: _________,
     cultivationRemainder: __________,
     recognition: ___________,
+    secretPact: ____________,
     ...rest
   } = s;
   return { ...rest, version: 3 };
@@ -301,7 +306,8 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 24,
+    version: 25,
+    secretPact: freshSecretPact(),
     recognition: freshRecognition(),
     cultivationRemainder: 0,
     workshop: freshWorkshop(),
@@ -504,6 +510,7 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.secretPact = n.life === old.life ? structuredClone(old.secretPact) : freshSecretPact();
   n.recognition = n.life === old.life ? structuredClone(old.recognition) : freshRecognition();
   n.cultivationRemainder = n.life === old.life && n.realm === old.realm ? old.cultivationRemainder : 0;
   n.qiJourney =
@@ -568,6 +575,7 @@ export function dispatch(input: State, c: Command): State {
 }
 function dispatchCommand(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (c.type === "secretPact") return runPact(input,c.action,c.id,(s) => normalize(lift(chapter.travelMonth(base(s),"秘境赴约"),structuredClone(s.journey),structuredClone(s.social),structuredClone(s.adventure)),s));
   if (c.type === "recognition") return runRecognition(input, c.action, c.id, (s) =>
     normalize(lift(chapter.travelMonth(base(s), "领队行程"), structuredClone(s.journey), structuredClone(s.social), structuredClone(s.adventure)), s));
   if (c.type === "qiJourney")
@@ -1189,11 +1197,11 @@ function dispatchCommand(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 24);
+  return validWorldState(x, 25);
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
@@ -1201,6 +1209,7 @@ function validWorldState(
   if (
     (x as { version: unknown }).version !== version ||
     (version >= 23 && (!Number.isInteger(s.cultivationRemainder) || s.cultivationRemainder < 0 || s.cultivationRemainder >= 240)) ||
+    (version >= 25 && !validSecretPact(s.secretPact,s.month,s.realm,s.foundationJourney?.won ?? [],s.foundationJourney?.duel?.id)) ||
     (version >= 24 && !validRecognition(s.recognition, s.month, s.realm, s.journey?.branch)) ||
     !j ||
     !chapter.validState(base(s)) ||
@@ -1283,9 +1292,15 @@ function validWorldState(
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 24) {
+    if (!validWorldState(x,24)) throw new Error("旧存档损坏，原档未修改。");
+    const upgraded={...structuredClone(x) as State,version:25 as const,secretPact:freshSecretPact()};
+    if(!validState(upgraded))throw new Error("旧存档含无法承接的秘境记录，原档未修改。");
+    return upgraded;
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 23) {
     if (!validWorldState(x, 23)) throw new Error("旧存档损坏，原档未修改。");
-    return { ...structuredClone(x) as State, version: 24, recognition: freshRecognition() };
+    return migrateSave({ ...structuredClone(x) as State, version: 24, recognition: freshRecognition() });
   }
   if (x && typeof x === "object" && "version" in x && x.version === 22) {
     if (!validWorldState(x, 22)) throw new Error("旧存档损坏，原档未修改。");
@@ -1296,7 +1311,8 @@ export function migrateSave(x: unknown): State {
     const n = structuredClone(x) as State;
     // No invented milestones: earlier foundation runs must start a new character.
     if (n.realm === 1) throw new Error("筑基成长规则已重构，请备份原档并新建角色；原档未修改。");
-    n.version = 24;
+    n.version = 25;
+    n.secretPact = freshSecretPact();
     n.recognition = freshRecognition();
     n.cultivationRemainder = 0;
     n.foundationJourney.growth = freshFoundationGrowth();

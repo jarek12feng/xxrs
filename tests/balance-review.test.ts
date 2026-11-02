@@ -123,7 +123,7 @@ it("v22 migration starts only fractional bookkeeping, preserves the original and
   expect(n).toEqual(s);
   for (const value of [-1, 240, 0.5, NaN, undefined])
     expect(validState({ ...s, cultivationRemainder: value })).toBe(false);
-  expect(() => migrateSave({ ...s, version: 25 })).toThrow();
+  expect(() => migrateSave({ ...s, version: 26 })).toThrow();
 });
 it("same-stage second-rank upgrades buy real attack and armor, with craft cheaper than commission", () => {
   const s = resting();

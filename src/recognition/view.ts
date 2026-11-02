@@ -1,3 +1,4 @@
+import { pactEarnedTrust } from "../secret-pact/rules";
 import type { State } from "../world";
 import { cultivationStageIndex, realmStageLabel } from "../cultivation";
 import {
@@ -27,10 +28,10 @@ export function recognitionView(s: State) {
       s.journey.branch !== "none" && r.innerMonth === null
         ? "青嶂旧路已通，回师门受录内门，再主持一次药运。"
         : "旧阵再挡不住你的脚步，可以主持一次药运；办成后开放熟路差事。";
-  if (r.deeds.some((d) => d.tier === 1))
+  if (r.deeds.some((d) => d.tier === 1) || pactEarnedTrust(s))
     next =
       eligibleOffice(s) === 2
-        ? "已有主持药运的实绩，又亲自取材炼元，可接受更高任用。"
+        ? pactEarnedTrust(s) ? "照玄府一行，你守住了分取之约；取材炼元也已办成，可受更高任用。" : "已有主持药运的实绩，又亲自取材炼元，可接受更高任用。"
         : "筑基中期亲自取材炼元后，可受托主持远路。";
   if (currentOffice(s) === 2)
     next = "可主持远路、循熟路办差，也可交还行牌，专心闭关。";
@@ -74,7 +75,7 @@ export function advancementPromise(s: State) {
     : s.foundationJourney.cultivation < 400
       ? "下一境 · 筑基后期：可学稳脉、深入古道接应，逐步贯通周天。"
       : s.foundationJourney.cultivation < 600
-        ? "下一境 · 筑基圆满：独过长风归流，回山与故人相见。金丹篇暂未开放。"
+        ? "下一境 · 筑基圆满：先贯通周天、闯过长风归流，再积累至圆满，归山与故人相见。金丹篇暂未开放。"
         : "筑基圆满：可访友、主持远路或交还职务，继续同一段人生。金丹篇暂未开放。";
 }
 export function advancementChanges(before: State, after: State) {
@@ -97,6 +98,6 @@ export function advancementChanges(before: State, after: State) {
               ? "三地取材已可择路前往。主持过筑基委托、亲自取材炼元后，可受任主事、执事或药队客卿。"
               : after.foundationJourney.cultivation < 600
                 ? "可研习稳脉之法，深入古道接应，筹备周天贯流。"
-                : "修为已至筑基圆满。筹备周天贯流，亲自闯过长风归流，完成这一程道途。",
+                : "修为已至筑基圆满，长风归流已过。回听松行前居归山叙旧，也可完成尚未尽兴的行旅与试剑。",
   ];
 }

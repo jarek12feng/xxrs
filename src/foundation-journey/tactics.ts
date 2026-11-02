@@ -21,6 +21,7 @@ export function tacticalCue(s: State): string {
   const d = s.foundationJourney.duel;
   if (!d || d.ruleset !== 2) return "";
   switch (d.id) {
+    case "pactRival": return "贺崇剑势沉紧，换气时右腕微颤。护住正面，辨清虚招再反击。";
     case "application": return "新法须亲手运转：长春护体时也须换招转气，剑经辨明窗口后出剑，归元辨出假阵眼再换招。";
     case "salamander": return "水面鼓起先护住药床，水落时反击，回水交错时辨清落点；逼退即可取药。";
     case "deer": return "蹄声停顿时辨清方向，霜角发亮时守住；追击会迎上冲撞。";
@@ -200,6 +201,11 @@ export function tacticalAdjustment(s: State, move: Move) {
       damage += 3;
       note += "稳守破障，伤害 +3。";
     }
+  }
+  if(s.secretPact?.manual && d.effect === "guard" && move === "discern") {damage+=2;note+="照玄护脉：守后识阵，伤害 +2。";}
+  if(d.id === "pactRival" && d.turn === 0) {
+    if(s.secretPact.aggressor === "rival" && s.secretPact.preparation === "anchor") {incoming-=4;note+="叶照护住预留阵钉，首合承伤 −4。";}
+    if(s.secretPact.preparation === "light") {incoming+=3;note+="退路阵钉未稳，首合承伤 +3。";}
   }
   return { damage, incoming, note };
 }

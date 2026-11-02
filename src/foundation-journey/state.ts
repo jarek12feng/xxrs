@@ -4,6 +4,7 @@ import type { Move } from "../expedition/content";
 export type Destination =
   "home" | "ferry" | "estate" | "snow" | "inn" | "frontier";
 export type BattleId =
+  | "pactRival"
   | "application" | "salamander" | "deer" | "steady"
   | "culmination"
   | "well"

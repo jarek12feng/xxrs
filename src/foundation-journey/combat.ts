@@ -1,3 +1,4 @@
+import { resolvePactBattle } from "../secret-pact/rules";
 import { sharedJourneyDone } from "./heroine";
 import { foundationCap, hasSteady } from "./growth-state";
 import { realmPressure } from "../realm-pressure";
@@ -139,6 +140,7 @@ export function completeChallenge(s: State) {
     d = q.duel!,
     e = challenges[d.id];
   q.won.push(d.id);
+  if(d.id === "pactRival") { q.last="贺崇收剑退开。";resolvePactBattle(s,true);q.duel=null;return; }
   s.stones += e.prize;
   if(d.id === "steady")q.growth.steady = q.growth.steadyStudy === "medicine" ? "medicine" : "practice";
   const gain = Math.max(0, Math.min(d.id === "application" || d.id === "steady" ? 0 : victoryCultivation, foundationCap(s) - q.cultivation));

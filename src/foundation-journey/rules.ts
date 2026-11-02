@@ -1,3 +1,4 @@
+import { resolvePactBattle } from "../secret-pact/rules";
 import { foundationCap, resourceRoutes } from "./growth-state";
 import { growthQuote, applyGrowth, isGrowthAction, routeInfo } from "./growth";
 import { isHeroineAction, applyHeroine, sharedJourneyDone, maleMainline } from "./heroine";
@@ -47,10 +48,12 @@ export function runFoundationJourney(
     q.aid = false;
     q.last = `${e.purpose} 行前一月、灵石 −${cost}。最多交锋 12 合，失败新增伤势 2；主动撤退不新增伤势，已用时间与补给不退。`;
   } else if (action.kind === "withdraw") {
+    const pactDuel = q.duel!.id === "pactRival";
     const ranked = rankIds.includes(q.duel!.id);
     q.duel = null;
     q.last =
       "你按原定退路撤回，没有新增伤势；已用补给不退，传承、线索与已完成的小关保留。";
+    if (pactDuel) resolvePactBattle(s,false);
     if (ranked) q.board.last = q.last + "既有名次与首胜奖励保留。";
   } else if (action.kind === "move") {
     const d = q.duel!,
@@ -70,6 +73,7 @@ export function runFoundationJourney(
         q.duel = null;
         q.last +=
           "本场败退，伤势 +2；免费静养、调整功法灵器后可再来。线索、已得传承与既有排名保留，不判人物死亡。";
+        if(d.id === "pactRival") resolvePactBattle(s,false);
         if (rankIds.includes(d.id)) q.board.last = q.last;
       }
     }

@@ -1,3 +1,4 @@
+import { pactView } from "./secret-pact/view";
 import { recognitionView, advancementChanges } from "./recognition/view";
 import { foundationGoal } from "./foundation-journey/progression";
 import { foundationBoard } from "./foundation-journey/view";
@@ -225,6 +226,7 @@ export function actionReceipt(
     if (before.realm === after.realm && !dead) title = advancement[0]!;
     growthNotes.push(...advancement);
   }
+  if (effective.type === "secretPact" && !dead) title = "照玄之约";
   if (effective.type === "recognition" && !dead) title = effective.action.kind === "inner" ? "回山受录" : effective.action.kind === "appoint" ? "受托任职" : effective.action.kind === "resign" ? "交还行牌" : effective.action.kind === "defer" ? "暂缓任用" : "委托归来";
   if (after.social.arena.wins > before.social.arena.wins) {
     title = trialBoard(after).title;
@@ -266,7 +268,7 @@ export function actionReceipt(
   return enrichReceipt(before, after, intent, {
     title,
     returnTo:
-      effective.type === "recognition" ? "sect" : effective.type === "foundationJourney"
+      effective.type === "secretPact" ? "world" : effective.type === "recognition" ? "sect" : effective.type === "foundationJourney"
         ? before.foundationJourney.duel?.id.startsWith("rank")
           ? "arena"
           : "world"
@@ -277,6 +279,7 @@ export function actionReceipt(
       inherited ||
       ranked ||
       journeyWin ||
+      effective.type === "secretPact" ||
       effective.type === "recognition" ||
       effective.type === "promote" ||
       (effective.type === "choose" &&
@@ -306,7 +309,7 @@ export function actionReceipt(
       ...growthNotes,
       ...entries.slice(0, 4).map((entry) => entry.text),
     ],
-    next: effective.type === "recognition" && !dead ? recognitionView(after).next : ranked
+    next: effective.type === "secretPact" && !dead ? pactView(after).next : effective.type === "recognition" && !dead ? recognitionView(after).next : ranked
       ? foundationBoard(after).next
       : effective.type === "foundationJourney" && !dead
         ? foundationGoal(after)

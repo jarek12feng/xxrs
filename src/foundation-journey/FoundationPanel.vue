@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SecretPactPanel from "../secret-pact/SecretPactPanel.vue";
 import { foundationCap, foundationBlock } from "./growth-state";
 import CharacterSprite from "../presentation/CharacterSprite.vue";
 import { heroArt, heroBattlePose } from "../presentation/art";
@@ -85,6 +86,7 @@ function act(action: JourneyAction) {
           : '筑基行旅'
     "
   >
+    <SecretPactPanel v-if="mode === 'journey' && !q.duel" :game="game" :busy="busy" @act="emit('act', $event)" />
     <CombatFeedbackView
       v-if="!q.duel && mode !== 'relationship'"
       :game="game"
@@ -182,7 +184,7 @@ function act(action: JourneyAction) {
             :pose="heroBattlePose(q.duel.effect)"
             :label="game.name"
           />
-          <img :src="foe.image" :alt="foe.foe" />
+          <img v-if="foe.image" :src="foe.image" :alt="foe.foe" />
         </div>
         <div>
           <small>第 {{ q.duel.turn + 1 }} 合 / 最多 12 合</small>

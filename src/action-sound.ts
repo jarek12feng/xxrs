@@ -174,6 +174,12 @@ export function actionSound(
       return intent.action;
     return "choice";
   }
+  if (intent.type === "secretPact") {
+    if(after.secretPact.manual && !before.secretPact.manual)return "inheritance";
+    if(after.secretPact.stage === "inside" && before.secretPact.stage !== "inside")return "discovery";
+    if(after.secretPact.supplies && !before.secretPact.supplies)return "handover";
+    return "choice";
+  }
   if (intent.type === "foundationJourney") {
     const old = before.foundationJourney,
       now = after.foundationJourney;

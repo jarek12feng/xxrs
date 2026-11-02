@@ -1,3 +1,4 @@
+import { pactEarnedTrust } from "../secret-pact/rules";
 import type { State } from "../world";
 import { cultivationStageIndex } from "../cultivation";
 import { workshopLock } from "../workshop/rules";
@@ -17,7 +18,7 @@ export function eligibleOffice(s: State): Office {
     s.realm === 1 &&
     s.foundationJourney.cultivation >= 200 &&
     s.foundationJourney.growth.refined &&
-    s.recognition.deeds.some((d) => d.tier === 1)
+    (s.recognition.deeds.some((d) => d.tier === 1) || pactEarnedTrust(s))
   )
     return 2;
   return (s.realm === 1 || cultivationStageIndex(s) >= 1) && hasExperience(s)
