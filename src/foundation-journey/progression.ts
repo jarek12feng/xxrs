@@ -35,7 +35,7 @@ export function foundationGoal(s: State) {
   if (!q.won.includes("culmination")) return "到古道独自完成长风归流；已学贯流在换招时增伤减伤。";
   if (q.cultivation < 600) return `归流已通，再积累 ${600-q.cultivation} 点修行至圆满。`;
   if (!q.epilogue) return "回听松行前居，收束筑基篇，查看凝丹筹备缺口。";
-  return "筑基篇已完成。可以继续原角色，回访故人或挑战尚未完成的榜单。后续金丹篇尚未开放。";
+  return "筑基篇已完成。可以继续原角色，回访故人或挑战尚未完成的榜单。也可筹备凝丹主药、丹药与灵地，叩关金丹。";
 }
 export function battleError(s: State, id: BattleId) {
   const q = s.foundationJourney,

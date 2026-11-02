@@ -7,7 +7,7 @@ import {
 } from "../src/retreat";
 import { journeyCheckpoint } from "../tools/foundation-journey-checkpoint";
 
-it("scales player choices by realm and stage without opening golden core", () => {
+it("scales player choices by realm and stage including golden early practice", () => {
   const s = createGame("闭关", "wood");
   expect(retreatDurations(s).map((x) => x.months)).toEqual([1, 3, 6]);
   s.qi = 120;
@@ -16,7 +16,7 @@ it("scales player choices by realm and stage without opening golden core", () =>
   expect(retreatDurations(s).map((x) => x.months)).toEqual([6, 24, 60]);
   s.foundationJourney.cultivation = 200;
   expect(retreatDurations(s).map((x) => x.months)).toEqual([12, 36, 120]);
-  expect(retreatDurations({ ...s, realm: 2 })).toEqual([]);
+  expect(retreatDurations({ ...s, realm: 2 }).map(x=>x.months)).toEqual([12,60,120]);
 });
 it("shortens to the earned cap and reports actual exit age without spending the unused years", () => {
   const s = journeyCheckpoint();

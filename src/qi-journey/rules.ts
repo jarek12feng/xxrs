@@ -1,4 +1,5 @@
 import { passageIds, passagePlan, settlePassage, type Passage } from "./passage";
+import { medicineOpening, qiExpectedMove, qiTacticalCue } from "./tactics";
 import { runWorkshop, workshopQuote } from "../workshop/rules";
 import { isPersonAction, personError, settlePerson } from "./people";
 import {
@@ -135,26 +136,30 @@ export function qiPreview(s: State, move: Move) {
   const q = s.qiJourney,
     e = qiEnemy(s);
   if (!q.duel || !e) return null;
+  const expected = qiExpectedMove(s, e.identity, e.pattern);
   const p = qiPower(s);
+  // Against beasts, guarding is a real defensive choice even outside the ideal tell.
+  // Constructs already apply their own guard tradeoff in tacticalExchange.
+  if (e.kind === "妖兽" && move === "guard") { p.damage -= 3; p.armor += 4; }
   if (q.route === "sword") p.armor -= 1;
   if (
     q.route === "array" &&
     move === "discern" &&
-    e.pattern[q.duel.turn % e.pattern.length] === move
+    expected === move
   ) {
     p.damage += 3;
     p.armor += 2;
   }
-  const correct = e.pattern[q.duel.turn % e.pattern.length] === move;
+  const correct = expected === move;
   if (
     e.identity === "redback-badger" &&
     move === "strike" &&
-    e.pattern[q.duel.turn % e.pattern.length] !== "strike"
+    expected !== "strike"
   )
     p.damage -= 4;
   if (
     e.identity === "spring-python" &&
-    e.pattern[q.duel.turn % e.pattern.length] === "discern" &&
+    expected === "discern" &&
     move !== "discern"
   )
     p.armor -= 3;
@@ -166,15 +171,24 @@ export function qiPreview(s: State, move: Move) {
       (e.kind === "傀儡" && q.people.constructLesson && move === "discern"))
   )
     p.armor += 2;
-  return tacticalExchange(
+  if (medicineOpening(s, e.identity)) p.armor += 4;
+  const result = tacticalExchange(
     s,
     move,
-    e,
+    { ...e, pattern: Array<Move>(e.pattern.length).fill(expected) },
     q.duel,
     q.duel.effect,
     e.kind === "傀儡",
     p,
   );
+  if (result && medicineOpening(s, e.identity)) result.note += "药气诱开蛇首，本合承伤 −4。";
+  if (result && e.kind === "妖兽" && move === "guard") result.note += "收势护身：伤害 −3、承伤 −4。";
+  return result;
+}
+export function qiEnemyTell(s: State) {
+  const e = qiEnemy(s), d = s.qiJourney.duel;
+  if (!e || !d) return "";
+  return medicineOpening(s, e.identity) ? qiTacticalCue(s, e.identity) : e.tells[d.turn % e.pattern.length];
 }
 export function runQiJourney(
   input: State,
@@ -256,7 +270,7 @@ export function runQiJourney(
         q.node = 2;
         q.duel = null;
         q.last +=
-          "路口已清。前方灵流逆涌：用草药护脉、辨阵绕行，或承受反震强行通过。";
+          "路口已清。前方灵流逆涌，可用药调息，也可凭灵器或所学穿过；先看余下气势，再决定是否消耗补给。";
       } else {
         q.node = 0;
         q.duel = null;
@@ -295,7 +309,7 @@ export function runQiJourney(
     s.foundation = Math.min(24, s.foundation + (q.gates === 1 ? 3 : 4));
     q.last =
       q.gates === 1
-        ? "凝露草药力入脉，后期瓶颈已开。根基 +3；继续积累到 240 修为晋入后期，准备内府取髓。"
+        ? "凝露草药力入脉，后期瓶颈已开。根基 +3；修至 240 后进入凝元内府，途中可凭淬脉后的经脉直接行气穿过逆流，不再耗药护脉。"
         : "凝元晶髓炼入气海，圆满瓶颈已开。根基 +4；积累到 360 修为后，可持筑基丹叩关。";
   }
   s.log.unshift({ month: s.month, kind: "major", text: q.last });

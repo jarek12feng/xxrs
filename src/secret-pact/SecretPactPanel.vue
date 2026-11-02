@@ -50,6 +50,12 @@ const fightError = computed(() =>
       </figure>
     </div>
     <p>{{ view.next }}</p>
+    <details v-if="!game.secretPact.manual && (game.secretPact.stage !== 'resolved' || view.fight)" class="pact-readiness" :open="game.secretPact.stage === 'promised'">
+      <summary>争宝前看一看</summary>
+      <p>贺崇 · 筑基中期：气势 {{ view.rival.hp }}，攻势 {{ view.rival.attack }}。你：气势 {{ view.power.hp }}，攻势 {{ view.power.damage }}，护持 {{ view.power.armor }}。</p>
+      <p>入府不等于得宝。胜负还看功法与临阵应对；败退伤势 +2，已用月份与补给不退。</p>
+      <ul><li v-for="hint in view.preparation" :key="hint">{{ hint }}</li></ul>
+    </details>
     <p v-if="game.secretPact.last" role="status">{{ game.secretPact.last }}</p>
     <p v-if="game.secretPact.manual">
       <img
@@ -58,7 +64,7 @@ const fightError = computed(() =>
         alt="照玄玉简"
         loading="lazy"
       />
-      已得照玄护脉法：筑基交锋中，守势后接识阵额外伤敌 2。
+      已得照玄护脉法：筑基交锋中，守势后接识阵，伤害 +6、承伤 −3。
     </p>
     <div class="pact-actions">
       <button

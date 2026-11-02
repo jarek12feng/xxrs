@@ -87,6 +87,10 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
       if(!p.prepared) {
         add(`${info.name}：自备护脉丹 1、灵草 ${route === "estate" ? 3 : 2}、灵石 2 · 一月`,{kind:"routePrepare",route,method:"supplies"});
         add(`${info.name}：租用阵具并购补给 · 灵石 ${route === "estate" ? 32 : 30}、一月`,{kind:"routePrepare",route,method:"service"});
+        if(route === "snow") {
+          add("灵器隔寒 · 已装配二阶灵器，灵石 2、一月；省下药物",{kind:"routePrepare",route,method:"relic"});
+          add("行功御寒 · 已装配通达主修，灵石 2、六月；省下药物",{kind:"routePrepare",route,method:"training"});
+        }
       } else if(!p.choice) {
         add(info.careful,{kind:"routeChoose",route,choice:"careful"});
         add(info.swift,{kind:"routeChoose",route,choice:"swift"});

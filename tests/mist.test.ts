@@ -107,7 +107,7 @@ it("gives both routes different entry requirements and supports route changes", 
   initial.herbs = 0;
   const p = camp("solo", initial);
   p.act("garden");
-  expect(mistError(p.state, "attune")).toContain("医道");
+  expect(mistError(p.state, "attune")).toContain("药理功法");
   expect(mistError(p.state, "tend")).toContain("灵草");
   p.act("camp");
   p.act("luchi");

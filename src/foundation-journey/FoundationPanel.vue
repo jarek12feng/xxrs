@@ -173,7 +173,7 @@ function act(action: JourneyAction) {
       <h2>{{ ending[0] }}</h2>
       <p v-for="line in ending.slice(1)" :key="line">{{ line }}</p>
       <p class="ending-scope">
-        筑基篇终。可继续修行、回访故人或再赴试剑榜。金丹篇暂未开放。
+        筑基篇终。可继续修行、回访故人或再赴试剑榜。可在凝丹筹备中争取主药、炼丹并叩关。
       </p>
     </article>
     <template v-if="q.duel && foe">
@@ -310,8 +310,8 @@ function act(action: JourneyAction) {
         <p>{{ cultivationStage(game) }} · 修行 {{ q.cultivation }}/600 · 当前可积累至 {{ foundationCap(game) }}</p>
         <p>{{ foundationBlock(game) }}</p>
         <aside v-if="q.cultivation === 600" aria-label="凝丹筹备">
-          <h4>凝丹筹备 · 金丹篇尚未开放</h4>
-          <p>圆满积累与归流成果已成。后续尚需凝丹主药及闭关灵地；当前不可取得或突破。</p>
+          <h4>凝丹筹备 · 两路争取主药</h4>
+          <p>圆满积累与归流成果已成。内比两胜或凝露药圃可得主药，炼成凝丹丹药、备好灵地后可叩关。</p>
           <p>护脉辅药可在工坊自炼或购置；伤势 {{ game.injury }}，先静养调息。</p>
         </aside>
         <p class="next-goal">{{ foundationGoal(game) }}</p>

@@ -92,7 +92,7 @@ export const qiSites = [
 export const qiRoutes = {
   medicine: {
     name: "药理护身",
-    hint: "灵草 4；入内耗草，气势上限 +12，阵地处可再用药恢复。",
+    hint: "灵草 4；气势上限 +12。对护泉青蟒守住一合，可诱出下合鳞缝并减轻来势。",
   },
   sword: { name: "剑意开路", hint: "剑意 4；伤害 +3，承伤 +1，适合速战。" },
   array: {
@@ -117,6 +117,8 @@ export type QiAction =
   | "sense"
   | "force"
   | "ward"
+  | "relic"
+  | "meridian"
   | "refine"
   | "mentor"
   | "artisan"

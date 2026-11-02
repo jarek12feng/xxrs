@@ -1,0 +1,12 @@
+fatal: not a git repository (or any of the parent directories): .git
+
+ RUN  v5.0.5 /private/var/folders/7_/0wh4syys1ql7gpfhcm27rqj80000gn/T/xxrs-forward-review-m5fhjxd8
+
+
+ Test Files  5 passed (5)
+      Tests  54 passed (54)
+   Start at  15:51:02
+   Duration  2.28s (transform 41%, tests 25%, environment 20%, import 14%)
+
+    Isolate  5 workers spawned · ~220ms startup each (spawn + environment, per file)
+             at least ~330ms faster with isolate: false — reuses workers across files instead of one per file

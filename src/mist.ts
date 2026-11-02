@@ -346,7 +346,7 @@ export function mistError(s: State, action: MistAction): string {
     s.social.arena.duel
   )
     return "先处理眼前的事情";
-  if (!s.adventure.road.surveyed || s.realm !== 1)
+  if (!s.adventure.road.surveyed || s.realm < 1)
     return "先筑基越关，并在云栈旅亭留下归路";
   if (!Object.hasOwn(allowed, action) || !allowed[action].includes(m.stage))
     return "不在对应地点";
@@ -372,10 +372,10 @@ export function mistError(s: State, action: MistAction): string {
     !m.lamp &&
     s.adventure.rescueChoice !== "roots" &&
     s.adventure.road.solution !== "medicine" &&
-    !(s.path === "wood" && s.study >= 2) &&
+    !(s.journey.known.some(t => t === "spring" || t === "herb") && s.study >= 2) &&
     m.partner !== "luchi"
   )
-    return "需要护根手法、医道心得 2、陆迟同行，或探灵灯";
+    return "需要护根手法、药理功法与心得 2、陆迟同行，或探灵灯";
   if (action === "decode") {
     if (m.station) return "已经读懂旧阵";
     if (
@@ -564,7 +564,7 @@ export function validMist(s: State): boolean {
     Number.isSafeInteger(x) && Number(x) >= 0 && Number(x) <= max;
   return (
     s.adventure.road.surveyed &&
-    s.realm === 1 &&
+    s.realm >= 1 &&
     ["none", "solo", "luchi", "companion"].includes(m.partner) &&
     ["none", "garden", "station"].includes(m.firstRoute) &&
     ["none", "echo", "wind"].includes(m.hazard) &&

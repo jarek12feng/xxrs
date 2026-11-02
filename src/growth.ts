@@ -96,7 +96,7 @@ export function validGrowth(s: State) {
     techniqueIds.every(
       (t) =>
         int(g.training[t], 2) &&
-        (g.training[t] < 2 || s.realm === 1) &&
+        (g.training[t] < 2 || s.realm >= 1) &&
         (g.training[t] === 0 || s.journey.known.includes(t)),
     ) &&
     !!g.medicines &&
@@ -127,6 +127,7 @@ export function growthGoals(s: State): string[] {
     goals.push(
       `境界：修为 ${s.qi}/360；先闯遗府备齐筑基丹，再以固本与疗伤提高把握。`,
     );
+  else if(s.realm === 2) goals.push("境界：金丹已成，可在凝丹机缘中越过云壁，试用丹元护体。");
   else {
     const remaining = [
       s.expedition.accepted && s.expedition.cleared < 3 ? "守阵交锋" : "",
@@ -134,8 +135,8 @@ export function growthGoals(s: State): string[] {
     ].filter(Boolean);
     goals.push(
       remaining.length
-        ? `境界：筑基已成，可准备${remaining.join("、")}；金丹尚未开放。`
-        : "境界：旧阵与听松擂台已过，可继续行旅、回访故人；金丹尚未开放。",
+        ? `境界：筑基已成，可准备${remaining.join("、")}；可继续完成筑基修行，争取主药并筹备结丹。`
+        : "境界：旧阵与听松擂台已过，可继续行旅、回访故人；可继续完成筑基修行，争取主药并筹备结丹。",
     );
   }
   return goals;

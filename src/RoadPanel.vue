@@ -702,7 +702,7 @@ const person = computed(() =>
                 @click="emit('act', { type: 'learn', technique: 'herb' })"
               >
                 求教辨草录 · 灵石 20 / 心得 2<small
-                  >散修、剑修也可学会医道解法；医修无需另学</small
+                  >学会长春诀或辨草录，即可使用药理解法</small
                 >
               </button>
               <button

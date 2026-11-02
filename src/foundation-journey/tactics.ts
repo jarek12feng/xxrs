@@ -165,6 +165,10 @@ export function tacticalAdjustment(s: State, move: Move) {
     note += "周天贯流：换招伤害 +5、承伤 −2。";
   }
   const growth=s.foundationJourney.growth;
+  if(growth.refined && s.foundationJourney.cultivation >= 400 && (d.id === "frontier" || d.id === "rescue") && d.turn < 2) {
+    incoming -= 3;
+    note += "凝练灵元抵住古道初涌：前两合承伤 −3。";
+  }
   if(d.id === "deer") {
     incoming += growth.routes.snow.choice === "careful" ? -2 : 2;
     note += growth.routes.snow.choice === "careful" ? "缓坡落脚稳，承伤 −2。" : "风口抢行，承伤 +2。";
@@ -202,7 +206,7 @@ export function tacticalAdjustment(s: State, move: Move) {
       note += "稳守破障，伤害 +3。";
     }
   }
-  if(s.secretPact?.manual && d.effect === "guard" && move === "discern") {damage+=2;note+="照玄护脉：守后识阵，伤害 +2。";}
+  if(s.secretPact?.manual && d.effect === "guard" && move === "discern") {damage+=6;incoming-=3;note+="照玄护脉：守后识阵，伤害 +6、承伤 −3。";}
   if(d.id === "pactRival" && d.turn === 0) {
     if(s.secretPact.aggressor === "rival" && s.secretPact.preparation === "anchor") {incoming-=4;note+="叶照护住预留阵钉，首合承伤 −4。";}
     if(s.secretPact.preparation === "light") {incoming+=3;note+="退路阵钉未稳，首合承伤 +3。";}

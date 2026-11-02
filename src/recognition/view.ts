@@ -62,6 +62,7 @@ export function recognitionView(s: State) {
   };
 }
 export function advancementPromise(s: State) {
+  if(s.realm === 2) return "金丹初成：丹元护体已可穿过云壁，独自远行。";
   if (!s.realm)
     return cultivationStageIndex(s) === 0
       ? "下一境 · 炼气中期：可走药谷、宗门或散修历练；亲自闯关后，受邀领队，赚取护送报酬。"
@@ -75,8 +76,8 @@ export function advancementPromise(s: State) {
     : s.foundationJourney.cultivation < 400
       ? "下一境 · 筑基后期：可学稳脉、深入古道接应，逐步贯通周天。"
       : s.foundationJourney.cultivation < 600
-        ? "下一境 · 筑基圆满：先贯通周天、闯过长风归流，再积累至圆满，归山与故人相见。金丹篇暂未开放。"
-        : "筑基圆满：可访友、主持远路或交还职务，继续同一段人生。金丹篇暂未开放。";
+        ? "下一境 · 筑基圆满：先贯通周天、闯过长风归流，再积累至圆满，归山与故人相见。可通过内比或凝露药圃争取主药，为结丹准备。"
+        : "筑基圆满：可访友、主持远路或交还职务，继续同一段人生。可通过内比或凝露药圃争取主药，为结丹准备。";
 }
 export function advancementChanges(before: State, after: State) {
   if (

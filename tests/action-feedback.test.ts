@@ -4,7 +4,9 @@ import { actionReceipt } from "../src/action-feedback";
 const send = (s: State, c: Intent) =>
   dispatch(s, { ...c, id: `feedback-${s.seen.length}` });
 function met() {
-  let s = send(createGame("验丹", "wood", 42), {
+  const initial = createGame("验丹", "wood", 42);
+  initial.journey.known = ["herb"]; // Alchemy fixture has learned gathering.
+  let s = send(initial, {
     type: "advance",
     activity: "gather",
     months: 3,

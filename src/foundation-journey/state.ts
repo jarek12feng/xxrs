@@ -102,7 +102,7 @@ export type JourneyAction =
   | {kind:"mapPlan"; plan:"public"|"detour"}
   | {kind:"expeditionPlan"}
 
-  | {kind:"routePrepare"; route: import("./growth-state").ResourceRoute; method:"supplies"|"service"}
+  | {kind:"routePrepare"; route: import("./growth-state").ResourceRoute; method:"supplies"|"service"|"relic"|"training"}
   | {kind:"routeChoose"; route: import("./growth-state").ResourceRoute; choice:"careful"|"swift"}
   | {kind:"routeProcess"; route: import("./growth-state").ResourceRoute; method:"self"|"service"|"sect"}
   | {kind:"routeRevisit"; route: import("./growth-state").ResourceRoute}

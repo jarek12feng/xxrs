@@ -146,14 +146,7 @@ function complete(s: State) {
   q.effect = "win";
   q.last = `${e.name}完成：灵石 +${e.reward}、灵草 +2；本关不可重复领奖。`;
   if (q.cleared === 1) {
-    const relic = s.path === "sword" ? "sword" : "vial";
-    if (!s.journey.relics[relic]) {
-      s.journey.relics[relic] = 1;
-      q.last += `药队赠你${relic === "sword" ? "听松灵剑" : "归元灵瓶"}，请在储物袋装配，下一场交锋便能生效。`;
-    } else {
-      s.stones += 12;
-      q.last += "已有药队赠器，折为精炼资材：灵石 +12。";
-    }
+    q.last += "药队备下听松灵剑与归元灵瓶，请你择一作为谢礼。";
     s.growth.medicines.healing++;
     q.last +=
       "另获回春散一份，可在储物袋疗伤。药箱保住了，袭击者遗落的药签却印着旧阵的纹样。";
@@ -212,7 +205,7 @@ export function validExpedition(s: State): boolean {
     !s.social.scene &&
     !s.social.arena.duel &&
     ["pass", "camp"].includes(s.adventure.road.stage) &&
-    (q.cleared !== 2 || s.realm === 1) &&
+    (q.cleared !== 2 || s.realm >= 1) &&
     int(d.hp, 60) &&
     d.hp > 0 &&
     int(d.enemy, encounters[q.cleared]!.hp) &&

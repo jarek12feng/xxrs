@@ -9,18 +9,19 @@ export function readiness(s: State) {
     hp: Math.max(16, 36 + s.foundation - s.injury * 5),
     damage:
       5 +
-      (s.realm === 1 ? 2 : 0) +
+      (s.realm === 2 ? 12 : s.realm === 1 ? 2 : 0) +
       mainTraining(s) * 2 +
       Math.floor((s.sense + s.study * 2 + s.mastery + s.foundation) / 4) +
-      equipmentPower(s).damage,
+      equipmentPower(s).damage + (s.outerSea?.attuned ? 4 : 0) + (s.outerSea?.method === "continue" ? 3 : 0),
     armor:
-      (s.realm === 1 ? 2 : 0) +
+      (s.realm === 2 ? 12 : s.realm === 1 ? 2 : 0) +
       (s.journey.support === "guard" ? 2 : 0) +
       supportTraining(s) +
-      equipmentPower(s).armor,
+      equipmentPower(s).armor + (s.outerSea?.attuned ? 3 : 0) + (s.outerSea?.method === "clear" ? 4 : 0),
   };
 }
 export function combatStyle(s: State) {
+  if(s.outerSea?.method === "clear") return {name:"澄息篇 · 守中",description:"护体 +4，原主修招式暂不触发；既有功法与研修保留，可在安全处改回。"};
   if (s.journey.main === "blade")
     return {
       name: "听松剑经 · 抢攻",
@@ -47,7 +48,7 @@ export function combatStyle(s: State) {
 }
 // One calculation drives settlement and tests; no UI, time or random side effects.
 export interface CombatEncounter {
-  realm?: 0 | 1;
+  realm?: 0 | 1 | 2;
   stage?: number;
   hp: number;
   attack: number;
@@ -85,16 +86,16 @@ export function tacticalExchange(
       (s.journey.support === "lantern" && move === "discern" ? 3 : 0),
     incoming = Math.max(1, e.attack + (correct ? -5 : 3) - power.armor),
     note = "";
-  if (s.journey.main === "blade" && move === "strike") {
+  if (s.outerSea?.method !== "clear" && s.journey.main === "blade" && move === "strike") {
     damage += 8;
     incoming += 2;
     note = "剑经抢攻，伤害 +8，未击倒时承伤 +2。";
   }
-  if (s.journey.main === "spring" && move === "guard" && s.herbs > 0) {
+  if (s.outerSea?.method !== "clear" && s.journey.main === "spring" && move === "guard" && s.herbs > 0) {
     damage = Math.max(1, damage - 2);
     note = "长春守势收敛攻势，伤害 −2。";
   }
-  if (s.journey.main === "breath" && move === "discern") {
+  if (s.outerSea?.method !== "clear" && s.journey.main === "breath" && move === "discern") {
     damage += arrayCore ? arrayDiscernBonus : 2;
     incoming -= 2;
     note = arrayCore
@@ -150,6 +151,7 @@ export function tacticalExchange(
   incoming = !deferLethal && d.enemy <= damage ? 0 : Math.max(1, incoming);
   const remaining = d.hp - incoming;
   const healing =
+    s.outerSea?.method !== "clear" &&
     s.journey.main === "spring" &&
     move === "guard" &&
     s.herbs > 0 &&
@@ -181,13 +183,13 @@ export function moveHint(s: State, move: Move) {
         : p.note || (p.correct ? "看准来招，应对得当" : "未破来招，权衡攻守"))
     );
   }
-  if (s.journey.main === "blade" && move === "strike")
+  if (s.outerSea?.method !== "clear" && s.journey.main === "blade" && move === "strike")
     return "抢攻：伤害 +8；未击倒时承伤 +2";
-  if (s.journey.main === "spring" && move === "guard")
+  if (s.outerSea?.method !== "clear" && s.journey.main === "spring" && move === "guard")
     return s.herbs > 0
       ? "回春：收势伤害 −2；存活时耗灵草 1、恢复最多 7 气势"
       : "灵草不足，本次使用普通守势，不扣材料";
-  if (s.journey.main === "breath" && move === "discern")
+  if (s.outerSea?.method !== "clear" && s.journey.main === "breath" && move === "discern")
     return s.expedition.cleared === 2
       ? "破核：伤害 +7，承伤 −2"
       : "辨影：伤害 +2，承伤 −2";

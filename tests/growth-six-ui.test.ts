@@ -209,10 +209,10 @@ it("foundation shortcut confirms crossing the appointment and cancelling never s
   expect(document.body.textContent).not.toContain("这次闭关将错过约期");
 });
 
-it("medical path with sword inheritance sees the same training injury warning", async () => {
+it("learning swordplay alongside medicine shows the training injury warning", async () => {
   const s = expeditionSession().state;
   s.path = "wood";
-  s.inherited = "sword";
+  s.journey.known.push("blade");
   s.unlocked = ["sword"];
   s.month = 24;
   s.age = 216;

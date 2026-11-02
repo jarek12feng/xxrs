@@ -110,7 +110,7 @@ export interface State {
   month: number;
   age: number;
   limit: number;
-  realm: 0 | 1;
+  realm: 0 | 1 | 2;
   qi: number;
   stones: number;
   herbs: number;
@@ -379,7 +379,7 @@ export function eventView(s: State): EventView | null {
     case "departure":
       return {
         title: "三年之约",
-        body: `陆迟已经在渡口等你。${s.realm === 1 ? "你已筑基，可以从容护送他越过遗府石阵。" : "你尚在炼气。遗府有石阵与毒瘴，准备的灵草或剑意将派上用场。"}现在出发，往返需三个月；留下会失去同行与护法，但此后仍可独自探府。`,
+        body: `陆迟已经在渡口等你。${s.realm >= 1 ? "你已筑基，可以从容护送他越过遗府石阵。" : "你尚在炼气。遗府有石阵与毒瘴，准备的灵草或剑意将派上用场。"}现在出发，往返需三个月；留下会失去同行与护法，但此后仍可独自探府。`,
         options: [
           o(
             "go",
@@ -431,13 +431,13 @@ export function eventView(s: State): EventView | null {
         };
       return {
         title:
-          s.realm === 1
+          s.realm >= 1
             ? "故人的天关"
             : s.pills > 0
               ? "丹药有余，归途同行"
               : "一丹，两条仙途",
         body:
-          s.realm === 1
+          s.realm >= 1
             ? "石匣里只有一枚筑基丹。你已筑基，陆迟却仍困在天关之前。将丹药赠他，可以让故人与你并肩；也可以留下丹药，各赴前程。"
             : s.pills > 0
               ? `你摸到行囊里已有的 ${s.pills} 枚筑基丹。这枚遗府丹不再是你唯一的机会。陆迟看见你的丹瓶，松开了紧握石匣的手：“若你愿意，我想先过天关，再护你一程。”你可以把它交给他，或留作自己再试的储备。`
@@ -474,7 +474,7 @@ function finish(s: State, dead = false) {
   record(s, s.result, "major");
 }
 function maybeFinish(s: State) {
-  if (s.realm === 1 && s.story.stage === "resolved") finish(s);
+  if (s.realm >= 1 && s.story.stage === "resolved") finish(s);
 }
 function missed(s: State) {
   s.story.stage = "resolved";
@@ -526,14 +526,14 @@ export function travelMonth(input: State, activity = "行路准备"): State {
   }
   return s;
 }
-export function actionError(s: State, activity: Activity) {
+export function actionError(s: State, activity: Activity, learnedAccess = false) {
   if (activity === "meditate" && s.sense >= 12) return "神识已达本篇上限";
   if (activity === "study" && s.study >= 4) return "研读心得已满";
-  if (activity === "gather" && !canGather(s)) return "需选择长春医道";
-  if (activity === "train" && !canTrain(s)) return "需选择青锋剑道";
   if (activity === "train" && s.mastery >= 12) return "剑意已满";
+  if (!learnedAccess && activity === "gather" && !canGather(s)) return "需选择长春医道";
+  if (!learnedAccess && activity === "train" && !canTrain(s)) return "需选择青锋剑道";
   if (activity === "rest" && s.injury === 0) return "当前无伤势";
-  if (activity === "cultivate" && (s.qi >= MAX_QI || s.realm === 1))
+  if (activity === "cultivate" && (s.qi >= MAX_QI || s.realm >= 1))
     return "修为已满，可准备突破或做其他行动";
   return "";
 }
@@ -555,7 +555,7 @@ export function preparationError(s: State, kind: "refine" | "retreat") {
   }
   return "";
 }
-export function dispatch(input: State, c: Command): State {
+export function dispatch(input: State, c: Command, learnedAccess = false): State {
   if (!c.id || input.seen.includes(c.id)) return input;
   if (
     (c.type === "next" || c.type === "beginChapter") &&
@@ -743,12 +743,12 @@ export function dispatch(input: State, c: Command): State {
       !Number.isInteger(c.months) ||
       c.months < 1 ||
       c.months > (c.activity === "cultivate" ? 120 : 12) ||
-      actionError(s, c.activity)
+      actionError(s, c.activity, learnedAccess)
     )
       return input;
     for (let i = 0; i < c.months; i++) {
       const previousQi = s.qi;
-      if (actionError(s, c.activity) || !month(s)) break;
+      if (actionError(s, c.activity, learnedAccess) || !month(s)) break;
       if (c.activity === "cultivate")
         s.qi = Math.min(MAX_QI, s.qi + cultivationGainAtAge(s));
       if (c.activity === "gather") {
@@ -904,7 +904,7 @@ export function validState(x: unknown): x is State {
   )
     return false;
   if (
-    !int(s.realm, 0, 1) ||
+    !int(s.realm, 0, 2) ||
     !int(s.qi, 0, 360) ||
     !int(s.foundation, 0, 24) ||
     !int(s.mastery, 0, 12) ||
@@ -956,7 +956,7 @@ export function validState(x: unknown): x is State {
   if (s.status === "alive" && s.age >= s.limit) return false;
   if (
     s.status === "complete" &&
-    (s.realm !== 1 || s.story.stage !== "resolved")
+    (s.realm < 1 || s.story.stage !== "resolved")
   )
     return false;
   if (s.pending !== null) {

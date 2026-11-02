@@ -1,0 +1,191 @@
+[
+  {
+    "main": "spring",
+    "route": "share",
+    "start": {
+      "month": 1392,
+      "age": 1584,
+      "stones": 122,
+      "herbs": 2
+    },
+    "end": {
+      "month": 1409,
+      "age": 1601,
+      "stones": 26,
+      "herbs": 3
+    },
+    "months": 17,
+    "chance": 100,
+    "damageGain": 10,
+    "armorGain": 10,
+    "valid": true
+  },
+  {
+    "main": "spring",
+    "route": "alone",
+    "start": {
+      "month": 1392,
+      "age": 1584,
+      "stones": 122,
+      "herbs": 2
+    },
+    "end": {
+      "month": 1409,
+      "age": 1601,
+      "stones": 50,
+      "herbs": 2
+    },
+    "months": 17,
+    "chance": 100,
+    "damageGain": 10,
+    "armorGain": 10,
+    "valid": true
+  },
+  {
+    "main": "spring",
+    "route": "contest",
+    "start": {
+      "month": 1392,
+      "age": 1584,
+      "stones": 122,
+      "herbs": 2
+    },
+    "end": {
+      "month": 1529,
+      "age": 1721,
+      "stones": 692,
+      "herbs": 0
+    },
+    "months": 137,
+    "chance": 100,
+    "damageGain": 10,
+    "armorGain": 10,
+    "valid": true
+  },
+  {
+    "main": "blade",
+    "route": "share",
+    "start": {
+      "month": 1398,
+      "age": 1590,
+      "stones": 132,
+      "herbs": 6
+    },
+    "end": {
+      "month": 1415,
+      "age": 1607,
+      "stones": 52,
+      "herbs": 0
+    },
+    "months": 17,
+    "chance": 100,
+    "damageGain": 10,
+    "armorGain": 10,
+    "valid": true
+  },
+  {
+    "main": "blade",
+    "route": "alone",
+    "start": {
+      "month": 1398,
+      "age": 1590,
+      "stones": 132,
+      "herbs": 6
+    },
+    "end": {
+      "month": 1415,
+      "age": 1607,
+      "stones": 76,
+      "herbs": 0
+    },
+    "months": 17,
+    "chance": 100,
+    "damageGain": 10,
+    "armorGain": 10,
+    "valid": true
+  },
+  {
+    "main": "blade",
+    "route": "contest",
+    "start": {
+      "month": 1398,
+      "age": 1590,
+      "stones": 132,
+      "herbs": 6
+    },
+    "end": {
+      "month": 1535,
+      "age": 1727,
+      "stones": 710,
+      "herbs": 2
+    },
+    "months": 137,
+    "chance": 100,
+    "damageGain": 10,
+    "armorGain": 10,
+    "valid": true
+  },
+  {
+    "main": "breath",
+    "route": "share",
+    "start": {
+      "month": 1392,
+      "age": 1584,
+      "stones": 102,
+      "herbs": 9
+    },
+    "end": {
+      "month": 1415,
+      "age": 1607,
+      "stones": 52,
+      "herbs": 3
+    },
+    "months": 23,
+    "chance": 100,
+    "damageGain": 10,
+    "armorGain": 10,
+    "valid": true
+  },
+  {
+    "main": "breath",
+    "route": "alone",
+    "start": {
+      "month": 1392,
+      "age": 1584,
+      "stones": 102,
+      "herbs": 9
+    },
+    "end": {
+      "month": 1409,
+      "age": 1601,
+      "stones": 46,
+      "herbs": 3
+    },
+    "months": 17,
+    "chance": 100,
+    "damageGain": 10,
+    "armorGain": 10,
+    "valid": true
+  },
+  {
+    "main": "breath",
+    "route": "contest",
+    "start": {
+      "month": 1392,
+      "age": 1584,
+      "stones": 102,
+      "herbs": 9
+    },
+    "end": {
+      "month": 1529,
+      "age": 1721,
+      "stones": 688,
+      "herbs": 1
+    },
+    "months": 137,
+    "chance": 100,
+    "damageGain": 10,
+    "armorGain": 10,
+    "valid": true
+  }
+]

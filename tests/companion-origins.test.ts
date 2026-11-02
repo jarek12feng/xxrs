@@ -127,7 +127,7 @@ it("migrates real v14 without invented memories, retaining existing relationship
     copy = structuredClone(old);
   expect(() => migrateSave(old)).toThrow();
   const n = s;
-  expect(n.version).toBe(25);
+  expect(n.version).toBe(30);
   expect(n.social.origins).toEqual([]);
   expect(n.social.scene).toEqual(old.social.scene);
   expect(n.social.answers).toEqual(old.social.answers);
@@ -143,7 +143,7 @@ it("migrates real v14 without invented memories, retaining existing relationship
       social: { ...n.social, origins: ["route-map", "route-map"] },
     }),
   ).toBe(false);
-  expect(() => migrateSave({ ...n, version: 26 })).toThrow();
+  expect(() => migrateSave({ ...n, version: 999 })).toThrow();
   expect(() => migrateSave({ ...old, stones: -1 })).toThrow();
 });
 it("blocks remote reads, premature biography, events and terminal states", () => {

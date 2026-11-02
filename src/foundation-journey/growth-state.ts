@@ -27,5 +27,5 @@ export function foundationCap(s: { foundationJourney?: FoundationProgress }) {
 export const hasSteady = (q: FoundationProgress) => q.rescue >= 3 || (!!q.growth && q.growth.steady !== 'none');
 export function foundationBlock(s: {foundationJourney?: FoundationProgress}) {
   const cap=foundationCap(s);
-  return cap===199 ? '在无名渡取得并装配沉井传承，通过试运新法。' : cap===399 ? '药庄、雪线、古道择一路取材，再处理主材凝练灵元。' : cap===599 ? '学会稳脉，修行至 500 后贯通周天，通过长风归流。' : '筑基本境圆满；金丹突破尚未开放。';
+  return cap===199 ? '在无名渡取得并装配沉井传承，通过试运新法。' : cap===399 ? '药庄、雪线、古道择一路取材，再处理主材凝练灵元。' : cap===599 ? '学会稳脉，修行至 500 后贯通周天，通过长风归流。' : '筑基本境圆满；可筹备凝丹主药、丹药与灵地。';
 }

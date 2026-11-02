@@ -1,4 +1,11 @@
 <script setup lang="ts">
+import { goldenGoal } from "./golden-core/rules";
+import OuterSeaPanel from "./outer-sea/OuterSeaPanel.vue";
+import {seaGoal} from "./outer-sea/rules";
+import GoldenCorePanel from "./golden-core/GoldenCorePanel.vue";
+import SectContestScene from "./sect-contest/SectContestScene.vue";
+import LearningChoices from "./LearningChoices.vue";
+import { techniques } from "./core";
 import GrowthPreview from "./GrowthPreview.vue";
 import InjuryImpact from "./InjuryImpact.vue";
 import { incidentalQiGain } from "./cultivation";
@@ -97,7 +104,6 @@ import {
   type Aptitude,
   createGame,
   dispatch,
-  paths,
   eventView,
   breakthroughDetails,
   nextGoal,
@@ -106,7 +112,6 @@ import {
   migrateSave,
   MAX_QI,
   type State,
-  type Path,
   type Activity,
   type Intent,
 } from "./core";
@@ -222,10 +227,14 @@ const worldTabs = [
   "queue",
 ] as const;
 const worldTab = computed(() => worldTabs.find((t) => t === dialog.value));
+const atContest = computed(() => !!game.value && ["entered", "finished"].includes(game.value.sectContest.stage) && game.value.foundationJourney.location === "home");
 const currentScene = computed(() => {
   const g = game.value;
-  if (!g || titleScreen.value || view.value === "cultivation")
+  if (!g || titleScreen.value || (view.value === "cultivation" && g.outerSea.location === "home"))
     return { image: "/scenes/moon-terrace.png", name: "听松山居" };
+  if(g.realm===2 && g.outerSea.location!=="home") return {image:g.outerSea.location==="ruins" ? (g.outerSea.cleared?"/art/outer-sea/inner.webp":"/art/outer-sea/ruins.webp"):"/art/outer-sea/ferry.webp",name:g.outerSea.location==="ruins"?"退潮遗迹":"外海古渡"};
+  if(g.realm===2) return {image:"/scenes/moon-terrace.png",name:g.outerSea.met?"听松行前居":"云外石台"};
+  if (atContest.value) return { image: "/art/sect-contest/tingsong.webp", name: "听松山 · 松间石台" };
   if (!showRoad.value && g.adventure.mist.stage !== "dormant") {
     const x = mistScenes[g.adventure.mist.stage];
     return { image: x.image, name: x.title };
@@ -236,6 +245,9 @@ const currentScene = computed(() => {
 const currentGoal = computed(() => {
   const g = game.value;
   if (!g) return "";
+  if(g.realm===2 && g.goldenCore.farShore) return seaGoal(g);
+  if(g.realm === 2 || g.goldenCore.expedition !== "idle") return goldenGoal(g);
+  if (atContest.value && view.value === "story") return g.sectContest.stage === "finished" ? "内比已毕，领取新成绩奖励后与同门道别。" : "按来招斗法，场间可整备，也可交还赛签。";
   if (view.value === "cultivation") return nextGoal(g);
   if (!showRoad.value && g.adventure.mist.stage !== "dormant")
     return mistGoal(g);
@@ -344,7 +356,6 @@ const ui = useSession(),
 const ready = ref(false),
   loadError = ref(false),
   name = ref("沈青禾"),
-  path = ref<Path>("wood"),
   aptitude = ref<Aptitude>("insightful"),
   gender = ref<Gender>("male"),
   activity = ref<Activity>("cultivate"),
@@ -563,7 +574,7 @@ async function start() {
       await persist(
         createGame(
           name.value,
-          path.value,
+          "wood",
           crypto.getRandomValues(new Uint32Array(1))[0],
           aptitude.value,
           gender.value,
@@ -880,7 +891,7 @@ onUnmounted(() => {
         ><span
           >{{ game.name
           }}<small
-            >{{ realmStageLabel(game) }} · {{ paths[game.path].name }} · 伤势
+            >{{ realmStageLabel(game) }} · {{ game.journey.main ? techniques[game.journey.main].name : "尚未选定主修" }} · 伤势
             {{ game.injury }}</small
           ><CultivationStatus :game="game" /><small class="life-remaining"
             >余寿 {{ formatLifeMonths(remainingLifeMonths(game)) }}</small
@@ -982,20 +993,8 @@ onUnmounted(() => {
           三组初始属性总和均为
           15。根骨、悟性先天固定；神识可通过凝神成长。资质不锁定路线。
         </p>
-        <h3>选择修行之路</h3>
+        <p>入山后可学习功法与技艺，练剑、采药、炼丹可以兼修。</p>
         <button
-          v-for="(p, id) in paths"
-          :key="id"
-          class="path-card"
-          :class="{ selected: path === id }"
-          @click="path = id"
-        >
-          <span class="path-symbol">{{ id === "wood" ? "药" : "剑" }}</span
-          ><span
-            ><strong>{{ p.name }}</strong
-            ><small>{{ p.description }}</small></span
-          ></button
-        ><button
           class="primary start"
           :disabled="ui.busy || loadError"
           @click="start"
@@ -1015,8 +1014,16 @@ onUnmounted(() => {
       }"
     >
       <section class="journey">
+        <aside v-if="game.treasures.auction?.entered && !game.treasures.auction.closed" class="opening-guide" aria-label="拍卖正在进行">
+          <p>你还在拍卖会场。结束竞拍或离场后，再继续修行与行旅。</p>
+          <button @click="openPanel('inventory')">返回拍卖会 · 继续竞拍或离场</button>
+        </aside>
+        <OuterSeaPanel :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
+        <GoldenCorePanel v-if="game.realm < 2 || !game.goldenCore.farShore" :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
+        <SectContestScene :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
+        <LearningChoices :game="game" :busy="ui.busy" @act="worldAct" />
         <details
-          v-if="horizon && !ui.history"
+          v-if="horizon && game.realm < 2 && !ui.history"
           class="opening-guide"
           aria-label="行旅目标"
         >
@@ -1083,7 +1090,7 @@ onUnmounted(() => {
         </nav>
         <MistPanel
           v-if="
-            !ui.history &&
+            game.realm < 2 && game.goldenCore.expedition === 'idle' && !atContest && !ui.history &&
             view === 'story' &&
             !showRoad &&
             game.adventure.mist.stage !== 'dormant'
@@ -1097,7 +1104,7 @@ onUnmounted(() => {
         />
         <RoadPanel
           v-else-if="
-            !ui.history && view === 'story' && game.adventure.step === 'done'
+            game.realm < 2 && game.goldenCore.expedition === 'idle' && !atContest && !ui.history && view === 'story' && game.adventure.step === 'done'
           "
           :game="game"
           :receipt="receipt"
@@ -1109,7 +1116,7 @@ onUnmounted(() => {
           @breakthrough="dialog = 'break'"
         />
         <AdventurePanel
-          v-else-if="!ui.history && view === 'story'"
+          v-else-if="game.realm < 2 && game.goldenCore.expedition === 'idle' && !atContest && !ui.history && view === 'story'"
           :game="game"
           :receipt="receipt"
           :busy="ui.busy || ui.running"
@@ -1149,15 +1156,16 @@ onUnmounted(() => {
               <h3 class="controls-heading">洞府修行 · 操作区</h3>
               <div class="progress-label">
                 <h2>
-                  {{ game.realm ? "筑基已成 · 构筑与历练" : "炼气 → 筑基" }}
+                  {{ game.realm === 2 ? "金丹初成 · 云壁之外" : game.realm ? "筑基已成 · 构筑与历练" : "炼气 → 筑基" }}
                 </h2>
                 <strong v-if="game.realm === 0"
                   >{{ game.qi }} / {{ MAX_QI }}</strong
                 >
-                <strong v-else
+                <strong v-else-if="game.realm === 1"
                   >筑基修行 {{ game.foundationJourney.cultivation }} /
                   600</strong
                 >
+                <strong v-else>金丹修行 {{ game.outerSea.cultivation }} / 299</strong>
               </div>
               <div v-if="game.realm === 0" class="qi-track">
                 <i :style="{ width: (game.qi / MAX_QI) * 100 + '%' }"></i>
@@ -1292,7 +1300,7 @@ onUnmounted(() => {
               />
               <button
                 class="break-button full"
-                :disabled="ui.busy || game.realm === 1 || game.qi < MAX_QI"
+                :disabled="ui.busy || game.realm >= 1 || game.qi < MAX_QI"
                 @click="dialog = 'break'"
               >
                 叩问天关 · 尝试筑基 ↗
@@ -1443,7 +1451,7 @@ onUnmounted(() => {
             <h1>{{ game.name }}</h1>
             <p class="realm-label">
               {{ realmStageLabel(game) }}
-              <span>{{ paths[game.path].name }}</span>
+              <span>{{ game.journey.main ? techniques[game.journey.main].name : "尚未选定主修" }}</span>
             </p>
             <div class="character-line"></div>
             <div class="stat">
@@ -1746,16 +1754,10 @@ onUnmounted(() => {
           @click="download(game.archive, '-旧版原档')"
         >
           导出完整旧版原档</button
-        ><label class="field-label"
-          >新篇路线<select v-model="path">
-            <option v-for="(p, id) in paths" :key="id" :value="id">
-              {{ p.name }}
-            </option>
-          </select></label
         ><button
           class="primary full"
           :disabled="ui.busy"
-          @click="act({ type: 'beginChapter', path, aptitude })"
+          @click="act({ type: 'beginChapter', path: 'wood', aptitude })"
         >
           保留旧档，以十六岁重新开篇（明心善悟）
         </button></template

@@ -5,6 +5,7 @@ export function openingGuide(s: State) {
   if (s.status !== "alive" || s.adventure.step !== "done") return null;
   if (s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel)
     return null;
+  if (s.realm === 2) return null;
   if (s.realm === 1) {
     if (!s.expedition.accepted || s.expedition.cleared !== 2) return null;
     return {
@@ -15,10 +16,16 @@ export function openingGuide(s: State) {
     };
   }
   const echo = rescueEcho(s.adventure);
+  if (!s.journey.learning.book) return {
+    title: "挑选入门功法",
+    body: `${!s.adventure.road.thanked ? echo : ""} 药工请你挑选一册功法。养气、练剑或调息，学过之后仍可兼修。`,
+    action: "skills" as const,
+    label: "挑选第一册功法",
+  };
   if (
     (!s.adventure.road.map || s.expedition.cleared === 1) &&
     !s.journey.main &&
-    s.journey.known.some((t) => t === "blade" || t === "spring")
+    s.journey.known.some((t) => t === "blade" || t === "spring" || t === "breath")
   )
     return {
       title: "初习功法",

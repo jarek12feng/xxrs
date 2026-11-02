@@ -314,7 +314,7 @@ export function roadError(s: State, action: RoadAction): string {
   if (action === "challenge" || action === "shelteredChallenge") {
     if (r.passed) return "已经过关";
     if (r.obstacle === "none") return "先观察山口";
-    if (s.realm !== 1) return "山风剥离护体，需先筑基；可回行营安排修行";
+    if (s.realm < 1) return "山风剥离护体，需先筑基；可回行营安排修行";
     if (s.injury >= 3) return "伤势过重，先养伤至 2 以下";
     if (r.route === "none") return "回行营选择一种准备方向";
     if (r.route === "art" && !s.journey.main && !s.journey.support)
@@ -535,7 +535,7 @@ function validRoadProgress(r: Road, s: State): boolean {
         r.route !== "none" &&
         ((r.passed && r.solution === "legacy") || r.roll > r.chance)) &&
     (!r.passed ||
-      (s.realm === 1 &&
+      (s.realm >= 1 &&
         (r.solution !== "legacy" || (r.attempts > 0 && r.roll <= r.chance)))) &&
     (!["beyond", "lookout"].includes(r.stage) || r.passed) &&
     (!r.surveyed || r.passed)

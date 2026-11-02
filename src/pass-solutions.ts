@@ -77,8 +77,8 @@ export function passActionError(s: State, action: PassAction): string {
   if (s.realm !== 1) return "需先筑基，才能承受山口灵流";
   if (s.injury >= 3) return "伤势过重，先养伤至 2 以下";
   if (key === "medicine") {
-    if (s.path !== "wood" && !s.journey.known.includes("herb"))
-      return "需要医道，或在坊市学会辨草录";
+    if (!s.journey.known.some(t => t === "spring" || t === "herb"))
+      return "需要学会长春诀或辨草录";
     if (s.study < 2) return "需要心得 2，先研读药理";
     if (s.herbs < 6) return "需要灵草 6 温养镇风草";
   }

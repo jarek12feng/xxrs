@@ -7,6 +7,7 @@ import { qiCap, type QiJourney } from "./qi-journey/state";
 /** Shared pure cultivation rules; optional fields also support the first-volume core. */
 export interface Cultivator {
   realm: number;
+  outerSea?: { cultivation: number; method: string };
   cultivationRemainder?: number;
   qiJourney?: QiJourney;
   qi: number;
@@ -29,6 +30,7 @@ export interface Cultivator {
 }
 export const minorStageNames = ["前期", "中期", "后期", "圆满"] as const;
 export function cultivationStageIndex(s: Cultivator): 0 | 1 | 2 | 3 {
+  if (s.realm === 2) return 0;
   return Math.min(
     3,
     Math.floor(
@@ -38,7 +40,7 @@ export function cultivationStageIndex(s: Cultivator): 0 | 1 | 2 | 3 {
   ) as 0 | 1 | 2 | 3;
 }
 export function realmStageLabel(s: Cultivator) {
-  return `${s.realm === 1 ? "筑基" : "炼气"}${minorStageNames[cultivationStageIndex(s)]}`;
+  return `${s.realm === 2 ? "金丹" : s.realm === 1 ? "筑基" : "炼气"}${minorStageNames[cultivationStageIndex(s)]}`;
 }
 export const remainingLifeMonths = (s: Pick<Cultivator, "age" | "limit">) =>
   Math.max(0, s.limit - s.age);
@@ -56,6 +58,12 @@ export function lifeEfficiency(s: Pick<Cultivator, "age" | "limit">) {
 export function cultivationBaseGain(s: Cultivator) {
   const main = s.journey?.main;
   const training = main ? (s.growth?.training[main] ?? 0) : 0;
+  if (s.realm === 2)
+    return (
+      3 +
+      (training >= 2 ? 1 : 0) +
+      (s.outerSea?.method && s.outerSea.method !== "none" ? 2 : 0)
+    );
   if (s.realm === 1)
     return (
       2 +
@@ -68,7 +76,7 @@ export function cultivationBaseGain(s: Cultivator) {
         : 0)
     );
   return (
-    (s.path === "wood" ? 10 : 14) +
+    (s.journey ? 10 : s.path === "wood" ? 10 : 14) +
     Math.max(0, s.root - 4) +
     (main === "spring" ? 3 : 0) +
     training * 2
@@ -85,7 +93,7 @@ export function cultivationMonth(s: Cultivator) {
     Math.round(
       cultivationBaseGain(s) *
         lifeEfficiency(s) *
-        (s.realm === 1 ? 24 : s.qi < 180 ? 240 : 60),
+        (s.realm === 2 ? 12 : s.realm === 1 ? 24 : s.qi < 180 ? 240 : 60),
     ),
   );
   const total = remainder + units;
@@ -97,9 +105,11 @@ export function cultivationGainAtAge(s: Cultivator) {
 }
 export const cultivationMonthlyGain = (s: Cultivator) =>
   (
-    s.realm === 1
-      ? (s.foundationJourney?.cultivation ?? 0) >= foundationCap(s)
-      : s.qi >= qiCap(s)
+    s.realm === 2
+      ? (s.outerSea?.cultivation ?? 0) >= 299
+      : s.realm === 1
+        ? (s.foundationJourney?.cultivation ?? 0) >= foundationCap(s)
+        : s.qi >= qiCap(s)
   )
     ? 0
     : cultivationGainAtAge({ ...s, age: s.age + 1 });
@@ -110,9 +120,13 @@ export function cultivationProjection(
   batchLimit = 12,
 ) {
   const current =
-    s.realm === 1 ? (s.foundationJourney?.cultivation ?? 0) : s.qi;
-  const cap = s.realm === 1 ? foundationCap(s) : qiCap(s);
-  const step = s.realm === 1 ? 200 : 120;
+    s.realm === 2
+      ? (s.outerSea?.cultivation ?? 0)
+      : s.realm === 1
+        ? (s.foundationJourney?.cultivation ?? 0)
+        : s.qi;
+  const cap = s.realm === 2 ? 299 : s.realm === 1 ? foundationCap(s) : qiCap(s);
+  const step = s.realm === 2 ? 300 : s.realm === 1 ? 200 : 120;
   const target = Math.max(
     current,
     Math.min(cap, requestedTarget ?? (cultivationStageIndex(s) + 1) * step),
@@ -146,7 +160,7 @@ export function cultivationProjection(
   const monthsToTarget = gain >= missing ? elapsed : null;
   return {
     current,
-    bottleneck: cap < (s.realm === 1 ? 600 : 360),
+    bottleneck: cap < (s.realm === 2 ? 900 : s.realm === 1 ? 600 : 360),
     target,
     missing,
     monthlyGain: cultivationMonthlyGain(s),

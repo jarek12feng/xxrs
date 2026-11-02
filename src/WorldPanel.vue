@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import LearningChoices from "./LearningChoices.vue";
 import GrowthPreview from "./GrowthPreview.vue";
 import RecognitionPanel from "./recognition/RecognitionPanel.vue";
 import { identity, currentOffice, officeName } from "./recognition/rules";
 import { recognitionView } from "./recognition/view";
+import TreasurePanel from "./treasures/TreasurePanel.vue";
 import WorkshopPanel from "./workshop/WorkshopPanel.vue";
 import type { CombatFeedback } from "./foundation-journey/feedback";
 import FoundationPanel from "./foundation-journey/FoundationPanel.vue";
@@ -212,7 +214,7 @@ const mapImages = {
     <div v-else-if="tab === 'world'" class="world-content">
       <FoundationPanel
         :combat-feedback="combatFeedback"
-        v-if="game.realm >= 1"
+        v-if="game.realm === 1"
         :game="game"
         :busy="busy || running"
         @act="emit('act', $event)"
@@ -401,6 +403,7 @@ const mapImages = {
       class="world-content scene-controls"
       aria-label="灵器操作区"
     >
+      <TreasurePanel :game="game" :busy="busy || running" @act="emit('act', $event)" />
       <WorkshopPanel :game="game" :busy="busy || running" @act="emit('act', $event)" />
     </div>
     <div v-else-if="tab === 'sect'" class="world-content">
@@ -513,6 +516,7 @@ const mapImages = {
       aria-label="功法操作区"
     >
       <h3 class="controls-heading">功法研习与装配</h3>
+      <LearningChoices :game="game" :busy="busy" @act="emit('act', $event)" />
       <p>
         主修：{{
           game.journey.main ? techniques[game.journey.main].name : "未装配"

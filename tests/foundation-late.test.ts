@@ -167,7 +167,7 @@ it("v16 migration starts new progression empty and rejects malformed or future s
   expect(() => migrateSave(old)).toThrow();
   const upgraded = s;
   expect(old).toEqual(before);
-  expect(() => migrateSave({ ...upgraded, version: 26 })).toThrow();
+  expect(() => migrateSave({ ...upgraded, version: 999 })).toThrow();
   for (const patch of [
     { cultivation: -1 },
     { cultivation: 601 },

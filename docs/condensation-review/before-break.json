@@ -1,0 +1,1587 @@
+{
+  "version": 29,
+  "aptitude": "insightful",
+  "root": 4,
+  "wisdom": 8,
+  "sense": 12,
+  "study": 4,
+  "ward": false,
+  "memories": {
+    "letter": true,
+    "visit": true,
+    "confided": true,
+    "support": "herbs",
+    "crossing": "medicine"
+  },
+  "seed": 476557059,
+  "name": "雾海行者",
+  "path": "wood",
+  "life": 1,
+  "month": 1402,
+  "age": 1594,
+  "limit": 2400,
+  "realm": 1,
+  "qi": 0,
+  "stones": 2,
+  "herbs": 3,
+  "pills": 0,
+  "foundation": 24,
+  "mastery": 0,
+  "injury": 0,
+  "legacy": 0,
+  "earned": 0,
+  "status": "alive",
+  "pending": null,
+  "story": {
+    "stage": "resolved",
+    "trust": 5,
+    "choice": "gift",
+    "luchi": "foundation",
+    "deadline": 36
+  },
+  "crafted": 1,
+  "inherited": "none",
+  "unlocked": [],
+  "result": "双星照渡：你与陆迟都已筑基，今后可并肩而行。那句三年之约，终于有了回音。",
+  "log": [
+    {
+      "month": 1402,
+      "kind": "major",
+      "text": "凝丹护持已就绪，本次叩关成功把握 +15；叩关后消耗，失败可重新准备。"
+    },
+    {
+      "month": 1402,
+      "text": "开炉筹备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1401,
+      "kind": "major",
+      "text": "护脉丹已购入：灵石 20，耗时 0 月。在淬脉泉或凝元内府两战之间服用：回气 26，不增伤势。每次消耗一枚，不能在交锋中服用。"
+    },
+    {
+      "month": 1401,
+      "kind": "major",
+      "text": "凝丹灵地已备妥，失败后仍可使用。修复灵穴灵气稍弱，租用或师门静室更稳；都可结成同等金丹。"
+    },
+    {
+      "month": 1401,
+      "text": "开炉筹备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1400,
+      "kind": "major",
+      "text": "凝丹丹药一枚已成。你按药谱缓缓合药。消耗灵石 16、灵草 8，用时 3 月；主药不再留在囊中。"
+    },
+    {
+      "month": 1400,
+      "text": "开炉筹备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1399,
+      "text": "开炉筹备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1398,
+      "text": "开炉筹备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1397,
+      "text": "坊市购得灵草四株，可用于灵器炼制、炼丹或与守境妖修交涉。",
+      "kind": "story"
+    },
+    {
+      "month": 1397,
+      "kind": "major",
+      "text": "凝露芝心一份入囊。柳知微取走约定的药材。临别留下一瓶回春散作为首次合作谢礼。"
+    },
+    {
+      "month": 1397,
+      "text": "开炉筹备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1396,
+      "kind": "major",
+      "text": "石偶停止追击，药床显露。凝露芝心就在眼前，取药归山后可炼丹。"
+    },
+    {
+      "month": 1396,
+      "kind": "major",
+      "text": "破阵 28、承伤 0。长春守势收敛攻势，伤害 −2。阵核暴露，阵势转急，承伤 +2。稳守：伤害 −4、承伤 −4；下合反击 +10。"
+    },
+    {
+      "month": 1396,
+      "kind": "major",
+      "text": "破阵 40、承伤 7。阵核暴露，阵势转急，承伤 +2。沿上合辨出的阵路，伤害 +6、承伤 −2。"
+    },
+    {
+      "month": 1396,
+      "kind": "major",
+      "text": "破阵 31、承伤 7。探阵：本合伤害 −3；下合伤害 +6、承伤 −2。"
+    },
+    {
+      "month": 1396,
+      "kind": "major",
+      "text": "破阵 28、承伤 3，耗草 1 回气 3。长春守势收敛攻势，伤害 −2。稳守：伤害 −4、承伤 −4；下合反击 +10。"
+    },
+    {
+      "month": 1396,
+      "kind": "major",
+      "text": "守药石偶抬起双臂。最多十六合；败退伤势 +1，主动撤回不加伤。"
+    },
+    {
+      "month": 1396,
+      "text": "开炉筹备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1395,
+      "kind": "major",
+      "text": "你与柳知微约好各取一份主药。她牵制外阵，你应对石偶；额外药材留给她。"
+    },
+    {
+      "month": 1395,
+      "text": "开炉筹备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1394,
+      "kind": "major",
+      "text": "你循药谱找到凝露药圃。另一名采药修士柳知微也为结丹而来，她提议合力开阵，各取一份芝心。"
+    },
+    {
+      "month": 1394,
+      "text": "开炉筹备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1393,
+      "text": "开炉筹备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1392,
+      "text": "坊市购得灵草四株，可用于灵器炼制、炼丹或与守境妖修交涉。",
+      "kind": "story"
+    },
+    {
+      "month": 1392,
+      "text": "坊市购得灵草四株，可用于灵器炼制、炼丹或与守境妖修交涉。",
+      "kind": "story"
+    },
+    {
+      "month": 1392,
+      "kind": "story",
+      "text": "长风归山 · 筑基篇终\n你独自走完归流阵，将沉井的传承与你练成的稳脉法接成一个周天。最后一道灵流从指间散去时，程砚收起一直未用的护阵旗：“这条路，往后你能自己走了。”\n你以长春续脉接住回流，掌心枯叶重新舒开。\n苏婉宁把新图摊在你膝前，指着尚未画完的一角。今夜先不赶路，你替她压住被风掀起的纸。\n听松山门仍有新弟子在练剑，你从他们身旁走过，想起自己初来时的脚步。\n你将行囊放回窗下。山中暮钟响起，明日再续修行。"
+    },
+    {
+      "month": 1392,
+      "kind": "story",
+      "text": "你来到听松行前居。"
+    },
+    {
+      "month": 1392,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1391,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1391,
+      "text": "筑基修行 +1（600/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1391,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1390,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1390,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1389,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1389,
+      "text": "筑基修行 +1（599/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1389,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1388,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1388,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1387,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1387,
+      "text": "筑基修行 +1（598/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1387,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1386,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1386,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1385,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1385,
+      "text": "筑基修行 +1（597/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1385,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1384,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1384,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1383,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1383,
+      "text": "筑基修行 +1（596/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1383,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1382,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1382,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1381,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1381,
+      "text": "筑基修行 +1（595/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1381,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1380,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1380,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1379,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1379,
+      "text": "筑基修行 +1（594/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1379,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1378,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1378,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1377,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1377,
+      "text": "筑基修行 +1（593/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1377,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1376,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1376,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1375,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1375,
+      "text": "筑基修行 +1（592/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1375,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1374,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1374,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1373,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1373,
+      "text": "筑基修行 +1（591/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1373,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1372,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1372,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1371,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1371,
+      "text": "筑基修行 +1（590/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1371,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1370,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1370,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1369,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1369,
+      "text": "筑基修行 +1（589/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1369,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1368,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1368,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1367,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1367,
+      "text": "筑基修行 +1（588/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1367,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1366,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1366,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1365,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1365,
+      "text": "筑基修行 +1（587/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1365,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1364,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1364,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1363,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1363,
+      "text": "筑基修行 +1（586/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1363,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1362,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1362,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1361,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1361,
+      "text": "筑基修行 +1（585/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1361,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1360,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1360,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1359,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1359,
+      "text": "筑基修行 +1（584/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1359,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1358,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1358,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1357,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1357,
+      "text": "筑基修行 +1（583/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1357,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1356,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1356,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1355,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1355,
+      "text": "筑基修行 +1（582/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1355,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1354,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1354,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1353,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1353,
+      "text": "筑基修行 +1（581/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1353,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1352,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1352,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1351,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1351,
+      "text": "筑基修行 +1（580/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1351,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1350,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1350,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1349,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1349,
+      "text": "筑基修行 +1（579/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1349,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1348,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1348,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1347,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1347,
+      "text": "筑基修行 +1（578/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1347,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1346,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1346,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1345,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1345,
+      "text": "筑基修行 +1（577/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1345,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1344,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1344,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1343,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1343,
+      "text": "筑基修行 +1（576/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1343,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1342,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1342,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1341,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1341,
+      "text": "筑基修行 +1（575/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1341,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1340,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1340,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1339,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1339,
+      "text": "筑基修行 +1（574/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1339,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1338,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1338,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1337,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1337,
+      "text": "筑基修行 +1（573/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1337,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1336,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1336,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1335,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1335,
+      "text": "筑基修行 +1（572/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1335,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1334,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1334,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1333,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1333,
+      "text": "筑基修行 +1（571/600）。",
+      "kind": "story"
+    },
+    {
+      "month": 1333,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1332,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    },
+    {
+      "month": 1332,
+      "text": "行路准备耗时一月，寿元随之流逝。",
+      "kind": "story"
+    },
+    {
+      "month": 1331,
+      "text": "吐纳：属性未变。已计入功法效果。",
+      "kind": "story"
+    }
+  ],
+  "seen": [
+    "checkpoint-1",
+    "checkpoint-2",
+    "checkpoint-3",
+    "checkpoint-4",
+    "checkpoint-5",
+    "checkpoint-6",
+    "checkpoint-7",
+    "checkpoint-8",
+    "checkpoint-9",
+    "checkpoint-10",
+    "checkpoint-11",
+    "checkpoint-12",
+    "checkpoint-13",
+    "checkpoint-14",
+    "checkpoint-15",
+    "checkpoint-16",
+    "checkpoint-17",
+    "checkpoint-18",
+    "checkpoint-19",
+    "checkpoint-20",
+    "checkpoint-21",
+    "checkpoint-22",
+    "checkpoint-23",
+    "checkpoint-24",
+    "checkpoint-25",
+    "checkpoint-26",
+    "checkpoint-27",
+    "checkpoint-28",
+    "checkpoint-29",
+    "checkpoint-30",
+    "checkpoint-31",
+    "checkpoint-32",
+    "checkpoint-33",
+    "checkpoint-34",
+    "checkpoint-35",
+    "checkpoint-36",
+    "checkpoint-37",
+    "checkpoint-38",
+    "checkpoint-39",
+    "checkpoint-40",
+    "checkpoint-41",
+    "checkpoint-42",
+    "checkpoint-43",
+    "checkpoint-44",
+    "checkpoint-45",
+    "checkpoint-46",
+    "checkpoint-47",
+    "checkpoint-48",
+    "checkpoint-49",
+    "checkpoint-50",
+    "checkpoint-51",
+    "checkpoint-52",
+    "checkpoint-53",
+    "checkpoint-54",
+    "checkpoint-55",
+    "checkpoint-56",
+    "checkpoint-57",
+    "checkpoint-58",
+    "checkpoint-59",
+    "checkpoint-60",
+    "checkpoint-61",
+    "checkpoint-62",
+    "checkpoint-63",
+    "checkpoint-64",
+    "checkpoint-65",
+    "checkpoint-66",
+    "checkpoint-67",
+    "checkpoint-68",
+    "checkpoint-69",
+    "checkpoint-70",
+    "checkpoint-71",
+    "checkpoint-72",
+    "checkpoint-73",
+    "checkpoint-74",
+    "checkpoint-75",
+    "checkpoint-76",
+    "checkpoint-77",
+    "checkpoint-78",
+    "checkpoint-79",
+    "checkpoint-80",
+    "checkpoint-81",
+    "checkpoint-82",
+    "checkpoint-83",
+    "checkpoint-84",
+    "checkpoint-85",
+    "checkpoint-86",
+    "checkpoint-87",
+    "checkpoint-88",
+    "checkpoint-89",
+    "checkpoint-90",
+    "checkpoint-91",
+    "checkpoint-92",
+    "checkpoint-93",
+    "checkpoint-94",
+    "checkpoint-95",
+    "checkpoint-96",
+    "checkpoint-97",
+    "checkpoint-98",
+    "checkpoint-99",
+    "checkpoint-100",
+    "checkpoint-101",
+    "checkpoint-102",
+    "checkpoint-103",
+    "checkpoint-104",
+    "checkpoint-105",
+    "checkpoint-106",
+    "checkpoint-107",
+    "checkpoint-108",
+    "checkpoint-109",
+    "checkpoint-110",
+    "checkpoint-111",
+    "checkpoint-112",
+    "checkpoint-113",
+    "checkpoint-114",
+    "checkpoint-115",
+    "checkpoint-116",
+    "checkpoint-117",
+    "checkpoint-118",
+    "checkpoint-119",
+    "checkpoint-120",
+    "foundation-check-180-1",
+    "foundation-check-180-2",
+    "foundation-check-180-3",
+    "foundation-check-181-4",
+    "foundation-check-181-5",
+    "foundation-check-182-6",
+    "foundation-check-182-7",
+    "foundation-check-182-8",
+    "foundation-check-182-9",
+    "foundation-check-182-10",
+    "foundation-check-182-11",
+    "foundation-check-182-12",
+    "foundation-check-182-13",
+    "foundation-check-194-14",
+    "foundation-check-206-15",
+    "foundation-check-218-16",
+    "foundation-check-230-17",
+    "foundation-check-242-18",
+    "foundation-check-254-19",
+    "foundation-check-266-20",
+    "foundation-check-278-21",
+    "foundation-check-290-22",
+    "foundation-check-302-23",
+    "foundation-check-314-24",
+    "foundation-check-326-25",
+    "foundation-check-338-26",
+    "foundation-check-350-27",
+    "foundation-check-362-28",
+    "foundation-check-374-29",
+    "foundation-check-386-30",
+    "foundation-check-398-31",
+    "foundation-check-410-32",
+    "foundation-check-422-33",
+    "foundation-check-434-34",
+    "foundation-check-442-35",
+    "foundation-check-443-36",
+    "foundation-check-443-37",
+    "foundation-check-443-38",
+    "foundation-check-443-39",
+    "foundation-check-443-40",
+    "foundation-check-443-41",
+    "foundation-check-444-42",
+    "foundation-check-444-43",
+    "foundation-check-444-44",
+    "foundation-check-444-45",
+    "foundation-check-444-46",
+    "foundation-check-444-47",
+    "foundation-check-444-48",
+    "foundation-check-456-49",
+    "foundation-check-468-50",
+    "foundation-check-480-51",
+    "foundation-check-492-52",
+    "foundation-check-504-53",
+    "foundation-check-516-54",
+    "foundation-check-528-55",
+    "foundation-check-540-56",
+    "foundation-check-552-57",
+    "foundation-check-564-58",
+    "foundation-check-576-59",
+    "foundation-check-588-60",
+    "foundation-check-600-61",
+    "foundation-check-612-62",
+    "foundation-check-624-63",
+    "foundation-check-636-64",
+    "foundation-check-648-65",
+    "foundation-check-660-66",
+    "foundation-check-672-67",
+    "foundation-check-684-68",
+    "foundation-check-696-69",
+    "foundation-check-708-70",
+    "foundation-check-720-71",
+    "foundation-check-732-72",
+    "foundation-check-744-73",
+    "foundation-check-756-74",
+    "foundation-check-768-75",
+    "foundation-check-780-76",
+    "foundation-check-792-77",
+    "foundation-check-804-78",
+    "foundation-check-805-79",
+    "foundation-check-806-80",
+    "foundation-check-807-81",
+    "foundation-check-808-82",
+    "foundation-check-808-83",
+    "foundation-check-808-84",
+    "foundation-check-808-85",
+    "foundation-check-808-86",
+    "foundation-check-808-87",
+    "foundation-check-808-88",
+    "foundation-check-810-89",
+    "foundation-check-811-90",
+    "foundation-check-812-91",
+    "foundation-check-812-92",
+    "foundation-check-812-93",
+    "foundation-check-824-94",
+    "foundation-check-836-95",
+    "foundation-check-848-96",
+    "foundation-check-860-97",
+    "foundation-check-872-98",
+    "foundation-check-884-99",
+    "foundation-check-896-100",
+    "foundation-check-908-101",
+    "foundation-check-920-102",
+    "foundation-check-932-103",
+    "foundation-check-944-104",
+    "foundation-check-956-105",
+    "foundation-check-968-106",
+    "foundation-check-980-107",
+    "foundation-check-992-108",
+    "foundation-check-1004-109",
+    "foundation-check-1016-110",
+    "foundation-check-1028-111",
+    "foundation-check-1040-112",
+    "foundation-check-1052-113",
+    "foundation-check-1064-114",
+    "foundation-check-1072-115",
+    "foundation-check-1072-116",
+    "foundation-check-1073-117",
+    "foundation-check-1085-118",
+    "foundation-check-1097-119",
+    "foundation-check-1109-120",
+    "foundation-check-1121-121",
+    "foundation-check-1123-122",
+    "foundation-check-1124-123",
+    "foundation-check-1124-124",
+    "foundation-check-1124-125",
+    "foundation-check-1125-126",
+    "foundation-check-1125-127",
+    "foundation-check-1125-128",
+    "foundation-check-1125-129",
+    "foundation-check-1125-130",
+    "foundation-check-1125-131",
+    "foundation-check-1125-132",
+    "foundation-check-1126-133",
+    "foundation-check-1126-134",
+    "foundation-check-1126-135",
+    "foundation-check-1126-136",
+    "foundation-check-1126-137",
+    "foundation-check-1126-138",
+    "foundation-check-1126-139",
+    "foundation-check-1138-140",
+    "foundation-check-1150-141",
+    "foundation-check-1162-142",
+    "foundation-check-1174-143",
+    "foundation-check-1186-144",
+    "foundation-check-1198-145",
+    "foundation-check-1210-146",
+    "foundation-check-1222-147",
+    "foundation-check-1222-1",
+    "foundation-check-1223-2",
+    "foundation-check-1223-3",
+    "foundation-check-1223-4",
+    "foundation-check-1223-5",
+    "foundation-check-1223-6",
+    "foundation-check-1223-7",
+    "foundation-check-1223-8",
+    "foundation-check-1223-9",
+    "foundation-check-1235-10",
+    "foundation-check-1247-11",
+    "foundation-check-1259-12",
+    "foundation-check-1271-13",
+    "foundation-check-1283-14",
+    "foundation-check-1295-15",
+    "foundation-check-1307-16",
+    "foundation-check-1319-17",
+    "foundation-check-1331-18",
+    "foundation-check-1343-19",
+    "foundation-check-1355-20",
+    "foundation-check-1367-21",
+    "foundation-check-1379-22",
+    "foundation-check-1391-23",
+    "foundation-check-1392-24",
+    "audit-1",
+    "audit-2",
+    "audit-3",
+    "audit-4",
+    "audit-5",
+    "audit-6",
+    "audit-7",
+    "audit-8",
+    "audit-9",
+    "audit-10",
+    "audit-11",
+    "audit-12",
+    "audit-13",
+    "audit-14",
+    "audit-15"
+  ],
+  "archive": null,
+  "goldenCore": {
+    "medicine": 0,
+    "pills": 1,
+    "contestMedicine": false,
+    "champion": "none",
+    "havenCredit": false,
+    "guardCredit": false,
+    "site": "rented",
+    "guard": true,
+    "attempts": 0,
+    "lastChance": 0,
+    "lastRoll": 0,
+    "formedAt": null,
+    "farShore": false,
+    "expedition": "idle",
+    "route": "none",
+    "gathered": 1,
+    "duel": null,
+    "last": "凝丹护持已就绪，本次叩关成功把握 +15；叩关后消耗，失败可重新准备。"
+  },
+  "sectContest": {
+    "stage": "unheard",
+    "source": "none",
+    "announced": 0,
+    "starts": 0,
+    "reminded": false,
+    "edition": 0,
+    "results": [],
+    "best": 0,
+    "claimed": 0,
+    "duel": null,
+    "last": ""
+  },
+  "treasures": {
+    "owned": {
+      "bell": 0,
+      "cord": 0,
+      "mirror": 0
+    },
+    "equipped": null,
+    "auction": null,
+    "nextMonth": 0,
+    "last": ""
+  },
+  "secretPact": {
+    "stage": "none",
+    "preparation": "none",
+    "aggressor": "none",
+    "outcome": "none",
+    "manual": false,
+    "settled": false,
+    "supplies": false,
+    "promisedMonth": null,
+    "last": ""
+  },
+  "recognition": {
+    "innerMonth": null,
+    "office": 0,
+    "affiliation": "none",
+    "deferred": false,
+    "appointments": [],
+    "deeds": [],
+    "last": ""
+  },
+  "cultivationRemainder": 0,
+  "workshop": {
+    "iron": 0,
+    "ward": 0,
+    "temper": {
+      "sword": "plain",
+      "vial": "plain"
+    }
+  },
+  "qiJourney": {
+    "people": {
+      "scout": false,
+      "smith": false,
+      "beastLesson": false,
+      "constructLesson": true,
+      "scales": true,
+      "core": true,
+      "scoutReward": "none",
+      "smithReward": "none"
+    },
+    "preparations": [
+      {
+        "medicine": 0,
+        "sect": 0,
+        "wander": 3
+      },
+      {
+        "medicine": 0,
+        "sect": 0,
+        "wander": 3
+      }
+    ],
+    "trial": null,
+    "gates": 2,
+    "node": 0,
+    "route": null,
+    "essence": false,
+    "vigor": 53,
+    "commissions": [],
+    "duel": null,
+    "last": "凝元晶髓炼入气海，圆满瓶颈已开。根基 +4；积累到 360 修为后，可持筑基丹叩关。"
+  },
+  "foundationJourney": {
+    "growth": {
+      "routes": {
+        "estate": {
+          "prepared": false,
+          "choice": "",
+          "processed": false,
+          "revisited": false
+        },
+        "snow": {
+          "prepared": true,
+          "choice": "careful",
+          "processed": true,
+          "revisited": false
+        },
+        "frontier": {
+          "prepared": false,
+          "choice": "",
+          "processed": false,
+          "revisited": false
+        }
+      },
+      "refined": true,
+      "steady": "mentor",
+      "steadyStudy": "none",
+      "rankGift": false
+    },
+    "heroine": {
+      "meeting": "insight",
+      "purpose": "longevity",
+      "route": "snow",
+      "map": "public",
+      "expedition": true,
+      "supplied": true
+    },
+    "epilogue": true,
+    "aftermath": {
+      "estate": false,
+      "snow": false,
+      "inn": false
+    },
+    "sharedMoment": false,
+    "cultivation": 600,
+    "location": "home",
+    "ferry": 4,
+    "inheritance": "spring",
+    "sister": "none",
+    "evidence": [],
+    "consent": false,
+    "ferryOutcome": "escort",
+    "sides": {
+      "estate": {
+        "step": 0,
+        "outcome": ""
+      },
+      "snow": {
+        "step": 0,
+        "outcome": ""
+      },
+      "inn": {
+        "step": 0,
+        "outcome": ""
+      }
+    },
+    "bond": "none",
+    "contact": "letters",
+    "whereabouts": "rescued",
+    "departedAt": 812,
+    "reunion": true,
+    "rescue": 4,
+    "target": "companion",
+    "oldFriend": false,
+    "board": {
+      "last": "",
+      "wins": [],
+      "losses": 0,
+      "best": {}
+    },
+    "won": [
+      "well",
+      "application",
+      "exit",
+      "deer",
+      "frontier",
+      "rescue",
+      "culmination"
+    ],
+    "duel": null,
+    "aid": false,
+    "condensation": true,
+    "last": "长风归山 · 筑基篇终\n你独自走完归流阵，将沉井的传承与你练成的稳脉法接成一个周天。最后一道灵流从指间散去时，程砚收起一直未用的护阵旗：“这条路，往后你能自己走了。”\n你以长春续脉接住回流，掌心枯叶重新舒开。\n苏婉宁把新图摊在你膝前，指着尚未画完的一角。今夜先不赶路，你替她压住被风掀起的纸。\n听松山门仍有新弟子在练剑，你从他们身旁走过，想起自己初来时的脚步。\n你将行囊放回窗下。山中暮钟响起，明日再续修行。"
+  },
+  "companionship": {
+    "stage": "unstarted",
+    "method": null,
+    "plan": null,
+    "last": ""
+  },
+  "growth": {
+    "training": {
+      "spring": 2,
+      "blade": 0,
+      "breath": 0,
+      "herb": 0,
+      "guard": 1,
+      "lantern": 0
+    },
+    "medicines": {
+      "healing": 1,
+      "clarity": 0
+    },
+    "lastMedicineMonth": null
+  },
+  "journey": {
+    "learning": {
+      "book": true,
+      "relic": false
+    },
+    "branch": "none",
+    "rank": 0,
+    "contribution": 0,
+    "duties": 0,
+    "mentor": false,
+    "known": [
+      "spring",
+      "guard"
+    ],
+    "main": "spring",
+    "support": "guard",
+    "maps": {
+      "valley": 0,
+      "peak": 0,
+      "sea": 0
+    },
+    "approach": "none",
+    "settled": true,
+    "queue": [],
+    "relics": {
+      "vial": 1,
+      "sword": 0
+    },
+    "equipped": "vial",
+    "encounters": {
+      "peak": null,
+      "sea": null
+    }
+  },
+  "social": {
+    "gender": "male",
+    "origins": [],
+    "met": true,
+    "metMonth": 180,
+    "affection": 34,
+    "memories": [],
+    "answers": {
+      "meet": "bridge"
+    },
+    "bonded": false,
+    "scene": null,
+    "arena": {
+      "wins": 0,
+      "losses": 0,
+      "scouted": [],
+      "duel": null,
+      "last": "",
+      "invited": false
+    }
+  },
+  "adventure": {
+    "rescueChoice": "supplies",
+    "mist": {
+      "stage": "dormant",
+      "partner": "none",
+      "firstRoute": "none",
+      "garden": false,
+      "station": false,
+      "hazard": "none",
+      "vow": "none",
+      "insight": false,
+      "ward": false,
+      "attempts": 0,
+      "roll": 0,
+      "chance": 0,
+      "passed": false,
+      "lamp": false,
+      "settled": false,
+      "revisited": false,
+      "result": ""
+    },
+    "road": {
+      "solution": "legacy",
+      "prepared": "none",
+      "stage": "lookout",
+      "thanked": true,
+      "met": true,
+      "commission": true,
+      "map": true,
+      "obstacle": "mist",
+      "route": "friend",
+      "ally": true,
+      "attempts": 1,
+      "roll": 12,
+      "chance": 100,
+      "passed": true,
+      "surveyed": true,
+      "result": "你将背风石阶和假雾的位置画进路簿。旅亭给你灵石 8 作为谢礼。郁青的旧友托人捎话：下次运药，会走你留下的这条路。",
+      "discoveries": [],
+      "lastApproach": "direct"
+    },
+    "step": "done",
+    "clue": true,
+    "method": "medicine",
+    "ready": true,
+    "attempts": 1,
+    "result": "温蘅收下带回的成株，先替渡口伤者敷药，再分出四株供你远行。药工答应来年回山补种，这一季药圃先空着。获得灵草 4。获得灵石 12。从配药中学到辨药心得 +1（上限 4）。药工留下旧航图，背面盖着同样的护路半印。“有人早年教妖修守这座阵，我只听过一个名字：陈渡。”陆迟把半印按在图上，没有追问。雾岭灵流非炼气之身能承受；要查这位修士的去向，得先筑基。药工请你挑选一册功法作为谢礼。想养气、练剑还是调息，由你自己决定。你收下长春诀，开始依诀修行；以后仍可学习其他功法。"
+  },
+  "expedition": {
+    "accepted": false,
+    "cleared": 0,
+    "attempts": 0,
+    "duel": null,
+    "last": "",
+    "effect": "none"
+  }
+}

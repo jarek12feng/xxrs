@@ -32,7 +32,9 @@ export function pactQuote(s: State, a: PactAction) {
     stones = 0,
     months = 0;
   error ||= s.realm !== 1 ? "筑基后再赴此约" : "";
-  if (a === "promise" || a === "decline") {
+  if (a === "exchange") {
+    error ||= "贺崇不肯以药资换此传承；欲得玉简，须争过这一场";
+  } else if (a === "promise" || a === "decline") {
     error ||= !["none", "declined"].includes(p.stage)
       ? "约定已记下"
       : q.location !== "ferry"
@@ -56,17 +58,13 @@ export function pactQuote(s: State, a: PactAction) {
                 : s.injury > 2
                   ? "先将伤势养至 2 或以下"
                   : "";
-  } else if (["exchange", "yield", "insist", "seize"].includes(a)) {
+  } else if (["yield", "insist", "seize"].includes(a)) {
     error ||=
       p.stage !== "inside"
         ? "先一同进入遗府"
         : q.location !== "frontier"
           ? "回古道内府再商议分宝"
           : "";
-    if (a === "exchange") {
-      herbs = 6;
-      stones = 12;
-    }
   } else if (a === "leave") {
     error ||= !["inside", "betrayed"].includes(p.stage)
       ? "此番已经退出内府"
@@ -126,7 +124,7 @@ export function runPact(
     p.stage = "promised";
     p.promisedMonth = s.month;
     p.last =
-      "叶照收起阵盘：“照玄府内罡风不歇，须到筑基中期才能站稳。到时在古道外缘会合，各走各的准备，不催年月。”贺崇按了按右腕：“旧伤多年，寻常丹药无用。若有补脉法，我愿拿别的换。”三人约定：散财平分，独一份的传承当面议价，未议定前谁也不动手。";
+      "叶照收起阵盘：“照玄府内罡风不歇，须到筑基中期才能站稳。到时在古道外缘会合，各走各的准备，不催年月。”贺崇按了按右腕：“旧伤多年，寻常丹药无用。若有补脉法，我志在必得。”三人约定：散财平分，独一份的传承当面议价，未议定前谁也不动手。";
   } else if (a === "decline") {
     p.stage = "declined";
     p.last = "你暂不同行。叶照留下方位：“日后有意，再来商议。”";
@@ -137,13 +135,7 @@ export function runPact(
       (a === "enterAnchor"
         ? "你用灵草稳住阵钉，叶照替众人留了一段可靠退路。"
         : "你们轻装越过风口，省下药草，却未留稳固阵钉。") +
-      " 贺崇挡住石门回流，三人抵达照玄内府。石台上只有一枚玉简，传法后即碎，无法分抄。叶照辨出其中护脉法能接续守势与识阵。贺崇盯着玉简：“此法也许能补我旧伤。旁的我都不要，这一份，让给我。”";
-  } else if (a === "exchange") {
-    p.stage = "resolved";
-    p.outcome = "exchange";
-    p.manual = true;
-    p.last =
-      "你拿出六株灵草、十二枚灵石，换贺崇另寻药师治伤。叶照替他记下药庄的诊期。贺崇沉默片刻，松开手：“照原约，玉简归你。此番不是白让。”你受得照玄护脉法，玉简随即碎去。守势后接识阵，额外伤敌 2；可在下一场筑基交锋试用。";
+      " 贺崇挡住石门回流，三人抵达照玄内府。石台上只有一枚玉简，传法后即碎，无法分抄。叶照辨出其中护脉法能接续守势与识阵，反攻时亦能护住经脉。贺崇盯着玉简：“此法也许能补我旧伤。旁的我都不要，灵草灵石治不好这条经脉。这一份，我不会让。”";
   } else if (a === "yield") {
     p.stage = "resolved";
     p.outcome = "yield";
@@ -196,7 +188,7 @@ export function resolvePactBattle(s: State, victory: boolean) {
     ? (p.aggressor === "player"
         ? "你击退贺崇，取走照玄玉简。叶照收起阵盘独自离去：“法是你的了，往后不必再来约我。”"
         : "你击落贺崇的剑，夺回玉简。叶照作证，是他先毁约。贺崇收剑离去，此怨尚未了结。") +
-      "照玄护脉法已领悟：守势后接识阵，额外伤敌 2。"
+      "照玄护脉法已领悟：守势后接识阵，伤害 +6、承伤 −3。"
     : "此番未能夺回玉简，你沿退路离府。先前主材与传承仍在；养伤后可追索，也可传信了结旧怨。";
   s.foundationJourney.last += " " + p.last;
 }

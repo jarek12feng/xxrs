@@ -43,7 +43,7 @@ const battle = (
 });
 export const victoryCultivation = 16;
 export const challenges: Record<BattleId, Challenge> = {
-  pactRival: {...battle(1,"照玄夺简","贺崇",160,23,200,["guard","discern","strike"],"/art/secret-pact/he-chong-combat.webp","贺崇横剑护住玉简。先护住自身，再辨清剑路；可随时撤出，既有主材不失。"),cost:0,prize:0},
+  pactRival: {...battle(1,"照玄夺简","贺崇",200,28,200,["guard","discern","strike"],"/art/secret-pact/he-chong-combat.webp","贺崇横剑护住玉简。先护住自身，再辨清剑路；可随时撤出，既有主材不失。"),cost:0,prize:0},
   application: {...battle(0,"试运新法","沉井试法阵",145,23,120,["guard","discern","strike"],"/art/characters/golem.webp","装配沉井传承，将新法运过乱流，冲开通往中期的瓶颈。",true),prize:0},
   salamander: battle(1,"药泽引离","玄鳞螈",175,24,280,["guard","strike","discern"],"/art/foundation-growth/darkscale-salamander.webp","水面鼓起时护住药床，水落后逼退它。逼退玄鳞螈便可取药心，无须追杀。"),
   deer: battle(1,"雪线取髓","霜角鹿",165,23,280,["discern","guard","strike"],"/art/foundation-growth/frost-antler-deer.webp","蹄声停下时辨清冲锋方向，护住采髓点，逼退鹿群后取得寒髓晶。"),

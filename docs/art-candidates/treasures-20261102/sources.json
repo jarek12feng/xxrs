@@ -1,0 +1,15 @@
+{
+  "tool": "image_gen.imagegen",
+  "mode": "built-in",
+  "date": "2026-11-02",
+  "session": "01a19b38-06be-7e41-a17e-a9ea88fe5abe",
+  "model": "Tool did not expose model/version; not inferred",
+  "sourceDirectory": "/Users/admin/.codex/generated_images/01a19b38-06be-7e41-a17e-a9ea88fe5abe",
+  "files": {
+    "bell": "exec-4a518ade-6901-454f-a211-0c75b9389448.png",
+    "mirror": "exec-93f14d59-37f0-462b-98cf-6878af22e7eb.png",
+    "cord": "exec-43d0efee-5a96-4a15-809e-cb191a45de96.png",
+    "seal": "exec-d49751a5-d603-4882-aa5e-392bab23b8ec.png",
+    "auction-hall": "exec-59bc0ae8-a684-4765-8f9e-98a822c837e7.png"
+  }
+}

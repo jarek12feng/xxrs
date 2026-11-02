@@ -41,7 +41,7 @@ export function validRecognition(
     typeof r.last === "string" &&
     r.last.length <= 2000 &&
     (r.innerMonth === null ||
-      (realm === 1 && branch !== "none" && time(r.innerMonth))) &&
+      (realm >= 1 && branch !== "none" && time(r.innerMonth))) &&
     Array.isArray(r.appointments) &&
     r.appointments.length <= 4 &&
     r.appointments.every(
@@ -57,7 +57,7 @@ export function validRecognition(
       r.appointments.some(
         (a) => a.tier === r.office && a.affiliation === r.affiliation,
       )) &&
-    (!r.appointments.some((a) => a.tier === 2) || realm === 1) &&
+    (!r.appointments.some((a) => a.tier === 2) || realm >= 1) &&
     Array.isArray(r.deeds) &&
     r.deeds.length <= 3 &&
     r.deeds.every(
@@ -69,7 +69,7 @@ export function validRecognition(
         time(d.month),
     ) &&
     new Set(r.deeds.map((d) => d.tier)).size === r.deeds.length &&
-    (!r.deeds.some((d) => d.tier >= 1) || realm === 1) &&
+    (!r.deeds.some((d) => d.tier >= 1) || realm >= 1) &&
     (!r.deeds.some((d) => d.tier === 2) ||
       r.appointments.some((a) => a.tier === 2))
   );

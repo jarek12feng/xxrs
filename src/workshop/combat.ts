@@ -1,3 +1,4 @@
+import { treasureEffect } from "../treasures/combat";
 import type { State } from "../world";
 // All turn-based battle adapters use this projection before realm pressure and lethal resolution.
 export function temperEffect(
@@ -28,12 +29,15 @@ export function temperEffect(
     }
     if (move === "strike") incoming = 1;
   }
+  const auxiliary = treasureEffect(s, move, correct);
+  damage += auxiliary.damage;
+  incoming += auxiliary.incoming;
   return {
     damage,
     incoming,
     note:
       damage || incoming
-        ? `器纹：伤害 ${damage >= 0 ? "+" : ""}${damage}、承伤 ${incoming >= 0 ? "+" : ""}${incoming}。`
+        ? `器物修正：伤害 ${damage >= 0 ? "+" : ""}${damage}、承伤 ${incoming >= 0 ? "+" : ""}${incoming}。`
         : "",
   };
 }

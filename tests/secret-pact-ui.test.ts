@@ -14,6 +14,9 @@ it("shows the early promise and real disabled realm gate", () => {
   app.mount(host);
   try {
     expect(host.textContent).toContain("筑基中期");
+    expect(host.textContent).toContain("气势 200");
+    expect(host.textContent).toContain("攻势 28");
+    expect(host.textContent).toContain("入府不等于得宝");
     expect(
       [...host.querySelectorAll("button")]
         .filter(
@@ -26,7 +29,7 @@ it("shows the early promise and real disabled realm gate", () => {
     app.unmount();
   }
 });
-it("negotiation updates the same panel and pays the follow-up only once", async () => {
+it("yield gives compensation and follow-up, never the exclusive method", async () => {
   const state = shallowRef(secretPactCheckpoint());
   const host = document.createElement("div");
   let serial = 0;
@@ -55,8 +58,9 @@ it("negotiation updates the same panel and pays the follow-up only once", async 
     await nextTick();
   };
   try {
-    await click("出资助他治伤");
-    expect(host.textContent).toContain("已得照玄护脉法");
+    expect(host.textContent).not.toContain("出资助他治伤");
+    await click("让他受法");
+    expect(host.textContent).not.toContain("已得照玄护脉法");
     expect(host.textContent).toContain("分取守约");
     const before = state.value.growth.medicines.healing;
     await click("收取贺崇");

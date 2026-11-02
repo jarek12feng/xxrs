@@ -1,0 +1,519 @@
+{
+  "kind": "controlled fixtures; bounded search, not player rates",
+  "rows": [
+    {
+      "main": "spring",
+      "route": "medicine",
+      "passage": "ward",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "guard",
+        "ward",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike",
+        "guard"
+      ],
+      "herbsSpent": 8,
+      "wardSpent": 1,
+      "entryStones": 6
+    },
+    {
+      "main": "spring",
+      "route": "medicine",
+      "passage": "relic",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "guard",
+        "guard",
+        "strike",
+        "relic",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike",
+        "guard"
+      ],
+      "herbsSpent": 9,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "spring",
+      "route": "medicine",
+      "passage": "sense",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "sense",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike"
+      ],
+      "herbsSpent": 7,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "spring",
+      "route": "sword",
+      "passage": "ward",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "ward",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "discern"
+      ],
+      "herbsSpent": 3,
+      "wardSpent": 1,
+      "entryStones": 6
+    },
+    {
+      "main": "spring",
+      "route": "sword",
+      "passage": "relic",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "relic",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "discern"
+      ],
+      "herbsSpent": 3,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "spring",
+      "route": "sword",
+      "passage": "sense",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "guard",
+        "guard",
+        "sense",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "guard"
+      ],
+      "herbsSpent": 4,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "spring",
+      "route": "array",
+      "passage": "ward",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "guard",
+        "ward",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "discern",
+        "guard"
+      ],
+      "herbsSpent": 4,
+      "wardSpent": 1,
+      "entryStones": 6
+    },
+    {
+      "main": "spring",
+      "route": "array",
+      "passage": "relic",
+      "won": true,
+      "moves": [
+        "guard",
+        "guard",
+        "discern",
+        "guard",
+        "strike",
+        "relic",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "discern",
+        "guard"
+      ],
+      "herbsSpent": 5,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "spring",
+      "route": "array",
+      "passage": "sense",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "sense",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "discern"
+      ],
+      "herbsSpent": 3,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "blade",
+      "route": "medicine",
+      "passage": "ward",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "ward",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike"
+      ],
+      "herbsSpent": 4,
+      "wardSpent": 1,
+      "entryStones": 6
+    },
+    {
+      "main": "blade",
+      "route": "medicine",
+      "passage": "relic",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "relic",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike"
+      ],
+      "herbsSpent": 4,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "blade",
+      "route": "medicine",
+      "passage": "sense",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "sense",
+        "discern",
+        "strike",
+        "strike",
+        "strike"
+      ],
+      "herbsSpent": 4,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "blade",
+      "route": "sword",
+      "passage": "ward",
+      "won": false
+    },
+    {
+      "main": "blade",
+      "route": "sword",
+      "passage": "relic",
+      "won": false
+    },
+    {
+      "main": "blade",
+      "route": "sword",
+      "passage": "sense",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "strike",
+        "sense",
+        "discern",
+        "guard",
+        "strike",
+        "guard"
+      ],
+      "herbsSpent": 0,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "blade",
+      "route": "array",
+      "passage": "ward",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "ward",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike"
+      ],
+      "herbsSpent": 0,
+      "wardSpent": 1,
+      "entryStones": 6
+    },
+    {
+      "main": "blade",
+      "route": "array",
+      "passage": "relic",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "relic",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike"
+      ],
+      "herbsSpent": 0,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "blade",
+      "route": "array",
+      "passage": "sense",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "sense",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "guard"
+      ],
+      "herbsSpent": 0,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "breath",
+      "route": "medicine",
+      "passage": "ward",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "ward",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike",
+        "guard"
+      ],
+      "herbsSpent": 4,
+      "wardSpent": 1,
+      "entryStones": 6
+    },
+    {
+      "main": "breath",
+      "route": "medicine",
+      "passage": "relic",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "relic",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike",
+        "guard"
+      ],
+      "herbsSpent": 4,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "breath",
+      "route": "medicine",
+      "passage": "sense",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "sense",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "strike"
+      ],
+      "herbsSpent": 4,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "breath",
+      "route": "sword",
+      "passage": "ward",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "ward",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "guard"
+      ],
+      "herbsSpent": 0,
+      "wardSpent": 1,
+      "entryStones": 6
+    },
+    {
+      "main": "breath",
+      "route": "sword",
+      "passage": "relic",
+      "won": false
+    },
+    {
+      "main": "breath",
+      "route": "sword",
+      "passage": "sense",
+      "won": false
+    },
+    {
+      "main": "breath",
+      "route": "array",
+      "passage": "ward",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "ward",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "discern"
+      ],
+      "herbsSpent": 0,
+      "wardSpent": 1,
+      "entryStones": 6
+    },
+    {
+      "main": "breath",
+      "route": "array",
+      "passage": "relic",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "relic",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "discern"
+      ],
+      "herbsSpent": 0,
+      "wardSpent": 0,
+      "entryStones": 6
+    },
+    {
+      "main": "breath",
+      "route": "array",
+      "passage": "sense",
+      "won": true,
+      "moves": [
+        "guard",
+        "strike",
+        "discern",
+        "guard",
+        "sense",
+        "discern",
+        "guard",
+        "strike",
+        "guard",
+        "guard"
+      ],
+      "herbsSpent": 0,
+      "wardSpent": 0,
+      "entryStones": 6
+    }
+  ]
+}

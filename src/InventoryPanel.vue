@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import TreasurePanel from "./treasures/TreasurePanel.vue";
 import GrowthPreview from "./GrowthPreview.vue";
 import { workshopQuote } from "./workshop/rules";
 import { products } from "./workshop/catalog";
@@ -201,5 +202,6 @@ const craft = computed(() =>
       </p>
     </section>
   </div>
+  <TreasurePanel :game="game" :busy="busy" @act="emit('act', $event)" />
   <button @click="emit('forge')">前往丹药与法器准备 · 采购、委托与刻纹</button>
 </template>

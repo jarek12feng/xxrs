@@ -1,0 +1,130 @@
+[
+  {
+    "file": "gu-cangyao-original.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "bytes": 2457058,
+    "sha256": "2e43f86359b39215cbbcb2cfdadba48dbf227a0479ee8afda2c7c772f8190a76",
+    "alpha_extrema": [
+      0,
+      254
+    ],
+    "fully_transparent_fraction": 0.39856910705566406,
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-a2b630d1-9ab6-481f-86e3-7267947f9b01.png"
+  },
+  {
+    "file": "gu-cangyao-512x768.webp",
+    "size": [
+      512,
+      768
+    ],
+    "mode": "RGBA",
+    "bytes": 91276,
+    "sha256": "d33d08cc79ffb441b7c294027f84f6f93e15f4f2c880598791d0bb5d3d220de6",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "fully_transparent_fraction": 0.3993428548177083,
+    "source": "gu-cangyao-original.png"
+  },
+  {
+    "file": "ye-wenling-original.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "bytes": 2494265,
+    "sha256": "8fa3e5c4af1f8e2c5661f8de27d5b3d3cc77c80536f75e90c16bc062d27972df",
+    "alpha_extrema": [
+      0,
+      254
+    ],
+    "fully_transparent_fraction": 0.408599853515625,
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-3d625b0c-873f-4e28-a5f8-52bf45ebd304.png"
+  },
+  {
+    "file": "ye-wenling-512x768.webp",
+    "size": [
+      512,
+      768
+    ],
+    "mode": "RGBA",
+    "bytes": 84852,
+    "sha256": "efbbc4329bc4a767fccc5b81fab4fcfbaa8ee00d6c290dd0f592fe7bc379b261",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "fully_transparent_fraction": 0.40897369384765625,
+    "source": "ye-wenling-original.png"
+  },
+  {
+    "file": "tide-suppressing-seal-original.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "bytes": 1338495,
+    "sha256": "078feb073b8d05dcc0da9c65002df604265a0c8a014e92bd935790ff27136e42",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "fully_transparent_fraction": 0.6179142215405121,
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-1080bba6-9d40-4a6c-8e31-f7f5f7f375ba.png"
+  },
+  {
+    "file": "tide-suppressing-seal-256x256.webp",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 15732,
+    "sha256": "dcb12e8e43660bb6915d7ad72b7796e7c5ad52456027a3b4e0da1117c517633c",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "fully_transparent_fraction": 0.6166229248046875,
+    "source": "tide-suppressing-seal-original.png"
+  },
+  {
+    "file": "chengxi-manual-original.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "bytes": 1579839,
+    "sha256": "c95e4864f49e997b64b957457c0293bba3930cf13452606b837a9e530b469f56",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "fully_transparent_fraction": 0.5490506932838839,
+    "source": "/Users/admin/.codex/generated_images/01a19b5f-0f71-7692-9ea8-2f51d245b164/exec-7a9a6b35-b9d3-4c72-b1a6-8a5fa698f748.png"
+  },
+  {
+    "file": "chengxi-manual-256x256.webp",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 15730,
+    "sha256": "642ac2d4e3a6d23286b162af977c6f6762f1026a30a50cd4a6136d4e3931e3bd",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "fully_transparent_fraction": 0.537078857421875,
+    "source": "chengxi-manual-original.png"
+  }
+]

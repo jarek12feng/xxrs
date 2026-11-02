@@ -41,7 +41,7 @@ export function validWorkshop(
   return (["sword", "vial"] as const).every(
     (r) =>
       Object.hasOwn(tempers[r], w.temper[r]) &&
-      (w.temper[r] === "plain" || (realm === 1 && relics[r] > 0)),
+      (w.temper[r] === "plain" || (realm >= 1 && relics[r] > 0)),
   );
 }
 

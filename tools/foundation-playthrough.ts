@@ -56,6 +56,7 @@ export function foundationStep(
                 : "enter";
     return { type: "adventure", action };
   }
+  if (!s.journey.learning.book) return { type: "learning", choice: s.path === "sword" ? "blade" : "spring" };
   if (s.qiJourney.node) return qiJourneyStep(s, route)!;
   if (s.injury) return { type: "advance", activity: "rest", months: 3 };
   if (!hasFoundationRecipe(s) && !s.pills) {

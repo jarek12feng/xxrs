@@ -241,7 +241,7 @@ describe("v4 world progression", () => {
     const before = structuredClone(old),
       s = migrateSave(old);
     expect(old).toEqual(before);
-    expect(s.version).toBe(25);
+    expect(s.version).toBe(30);
     expect(s.seed).toBe(91);
     expect(s.status).toBe("complete");
     expect(act(s, { type: "continue" }).legacy).toBe(5);
@@ -302,7 +302,9 @@ describe("online queue", () => {
     expect(s.journey.queue).toEqual([{ action: "work", remaining: 3 }]);
   });
   it("persists remaining work, stops at a pending event and refuses duplicate ticks", () => {
-    let s = act(createGame("队列", "wood"), {
+    const initial = createGame("队列", "wood");
+    initial.journey.known = ["herb"];
+    let s = act(initial, {
       type: "enqueue",
       action: "gather",
       repeat: 6,

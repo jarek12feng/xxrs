@@ -76,3 +76,18 @@ it("persists and resumes the new companion adventure without replaying rewards",
   await save(next);
   expect((await load()).state?.companionship.stage).toBe("trial");
 });
+
+it('persists a live auction and preserves its next bid and opponent budget', async () => {
+  let state=createGame('拍卖存档','wood',83);state.month=4;state.age=196;state.story.stage='waiting';state.qi=120;state.stones=200;
+  for(const [id,action] of [
+    ['catalog',{kind:'catalog',venue:'market'}],
+    ['budget',{kind:'budget',value:100}],
+    ['enter',{kind:'enter'}],
+    ['bid',{kind:'bid'}],
+  ] as const) state=dispatch(state,{id,type:'treasure',action});
+  await save(state);
+  const restored=(await load()).state!;
+  expect(restored).toEqual(state);
+  expect(dispatch(restored,{id:'bid',type:'treasure',action:{kind:'bid'}})).toBe(restored);
+  expect(dispatch(restored,{id:'next-bid',type:'treasure',action:{kind:'bid'}})).toEqual(dispatch(state,{id:'next-bid',type:'treasure',action:{kind:'bid'}}));
+});

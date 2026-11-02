@@ -9,16 +9,18 @@ export type RetreatPace = "short" | "regular" | "long";
 export function retreatDurations(
   s: Cultivator,
 ): { pace: RetreatPace; label: string; months: number }[] {
-  if (s.realm !== 0 && s.realm !== 1) return [];
+  if (s.realm < 0 || s.realm > 2) return [];
   const early = cultivationStageIndex(s) === 0;
   const months =
-    s.realm === 0
-      ? early
-        ? [1, 3, 6]
-        : [3, 12, 36]
-      : early
-        ? [6, 24, 60]
-        : [12, 36, 120];
+    s.realm === 2
+      ? [12, 60, 120]
+      : s.realm === 0
+        ? early
+          ? [1, 3, 6]
+          : [3, 12, 36]
+        : early
+          ? [6, 24, 60]
+          : [12, 36, 120];
   return (["short", "regular", "long"] as const).map((pace, i) => ({
     pace,
     label: ["短修", "常规闭关", early && s.realm === 0 ? "潜心修行" : "长关"][

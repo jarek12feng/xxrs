@@ -1,3 +1,4 @@
+import { treasures, treasureIds } from "./treasures/catalog";
 import { pactView } from "./secret-pact/view";
 import { recognitionView, advancementChanges } from "./recognition/view";
 import { foundationGoal } from "./foundation-journey/progression";
@@ -62,6 +63,7 @@ export function actionReceipt(
   )
     return null;
   if (
+    (intent.type === "outerSea" && !!after.outerSea.duel) ||
     (intent.type === "foundationJourney" && !!after.foundationJourney.duel) ||
     (intent.type === "arenaTurn" && after.social.arena.duel) ||
     (intent.type === "arenaStart" && after.social.arena.duel)
@@ -120,6 +122,7 @@ export function actionReceipt(
     before.foundationJourney.cultivation,
     after.foundationJourney.cultivation,
   );
+  add("金丹修行", before.outerSea.cultivation, after.outerSea.cultivation);
   add("道友信任", before.story.trust, after.story.trust);
   add("好感", before.social.affection, after.social.affection);
   add("宗门贡献", before.journey.contribution, after.journey.contribution);
@@ -135,6 +138,7 @@ export function actionReceipt(
   );
   add("护脉丹", before.workshop.ward, after.workshop.ward);
   add("玄铁料", before.workshop.iron, after.workshop.iron);
+  for (const id of treasureIds) add(treasures[id].name, before.treasures.owned[id], after.treasures.owned[id]);
   add("灵瓶品阶", before.journey.relics.vial, after.journey.relics.vial);
   add("灵剑品阶", before.journey.relics.sword, after.journey.relics.sword);
   // Find the retained log suffix even when the 180-entry ring is full.
@@ -208,6 +212,7 @@ export function actionReceipt(
   }
   if (effective.type === "trainTechnique") title = "功法研修完成";
   const growthNotes = [
+    "outerSea",
     "equip",
     "equipRelic",
     "trainTechnique",
@@ -226,6 +231,8 @@ export function actionReceipt(
     if (before.realm === after.realm && !dead) title = advancement[0]!;
     growthNotes.push(...advancement);
   }
+  if (effective.type === "outerSea" && !dead) {title=after.outerSea.cleared>before.outerSea.cleared?"遗迹告捷 · 机缘入手":"外海行旅";growthNotes.push(after.outerSea.last);}
+  if (effective.type === "treasure" && !dead) { title = failed ? "宝物行程中断" : "宝物与拍卖会"; growthNotes.push(after.treasures.last); }
   if (effective.type === "secretPact" && !dead) title = "照玄之约";
   if (effective.type === "recognition" && !dead) title = effective.action.kind === "inner" ? "回山受录" : effective.action.kind === "appoint" ? "受托任职" : effective.action.kind === "resign" ? "交还行牌" : effective.action.kind === "defer" ? "暂缓任用" : "委托归来";
   if (after.social.arena.wins > before.social.arena.wins) {

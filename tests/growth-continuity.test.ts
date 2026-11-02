@@ -129,7 +129,7 @@ it("migrates v12 conservatively, rejects corrupt growth, and retains it across m
   const old = { ...rest, version: 12 };
   const copy = structuredClone(old);
   const n = migrateSave(old);
-  expect(n.version).toBe(25);
+  expect(n.version).toBe(30);
   expect(old).toEqual(copy);
   expect(n.seed).toBe(old.seed);
   expect(
@@ -177,7 +177,7 @@ it("escort earns usable equipment and medicine once; a closed boss core punishes
 });
 import { challengeDetails, encounterDescription } from "../src/world";
 import { expeditionMistEcho } from "../src/expedition/resolution";
-it("first rescue supplies a path-specific skill and never duplicates it", () => {
+it("first rescue lets the player choose a skill and never duplicates it", () => {
   const p = expeditionSession(42, "sword");
   expect(p.state.journey.known).toContain("blade");
   const s = p.state;

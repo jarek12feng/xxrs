@@ -81,6 +81,7 @@ describe("修行、寿元与小境界", () => {
     for (const activity of ["work", "train"] as const) {
       const s = player();
       s.journey.main = "blade";
+      s.journey.known = ["blade"];
       const n = dispatch(s, {
         id: activity,
         type: "advance",

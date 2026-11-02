@@ -7,7 +7,7 @@ import {
 } from "../tools/foundation-tactics-audit";
 import { challenges } from "../src/foundation-journey/content";
 import type { BattleId } from "../src/foundation-journey/state";
-import { foundationExchange } from "../src/foundation-journey/combat";
+import { foundationPower, foundationExchange } from "../src/foundation-journey/combat";
 import { tacticalAdjustment } from "../src/foundation-journey/tactics";
 import { journeyPreparation } from "../src/foundation-journey/preparation";
 
@@ -15,7 +15,7 @@ it("all mains have supplied routes with either first-tier relic, and dry routes 
   for (const preparation of ["normal", "strong", "no-grass"] as const)
     for (const technique of ["spring", "blade", "breath"] as const)
       for (const gear of ["vial", "sword"] as const)
-        for (const id of (Object.keys(challenges) as BattleId[]).filter(id=>!["application","salamander","deer","steady"].includes(id))) {
+        for (const id of (Object.keys(challenges) as BattleId[]).filter(id=>!["application","salamander","deer","steady","pactRival"].includes(id))) {
           if (
             preparation === "no-grass" &&
             gear !== (technique === "blade" ? "sword" : "vial")
@@ -161,8 +161,15 @@ it("spring preparation offers optional herbs and budgets both herbs and entry co
 });
 
 it("new growth challenges are reachable with a developed foundation and fitting relic",()=>{
- for(const id of ["application","salamander","deer","steady"] as const)for(const main of ["spring","blade","breath"] as const){
+ for(const id of ["application","salamander","deer","steady","pactRival"] as const)for(const main of ["spring","blade","breath"] as const){
   const s=foundationCombatFixture(id,main,main==="blade"?"sword":"vial","strong");
+  if (id === "pactRival") {
+    // Optional treasure contention is tested after preparation, not at entry eligibility.
+    s.foundationJourney.cultivation = 350;
+    s.growth.training.guard = 2;
+    s.journey.relics[main === "blade" ? "sword" : "vial"] = 2;
+    s.foundationJourney.duel!.hp = foundationPower(s).hp;
+  }
   expect(findCombatRoute(s),`${id}/${main}`).not.toBeNull();
  }
 });

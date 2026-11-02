@@ -57,7 +57,7 @@ export function validSecretPact(
     p.last.length > 2000
   )
     return false;
-  if (p.stage !== "none" && realm !== 1) return false;
+  if (p.stage !== "none" && realm < 1) return false;
   const entered = ["inside", "betrayed", "resolved"].includes(p.stage);
   if (
     p.promisedMonth !== null &&
@@ -69,7 +69,7 @@ export function validSecretPact(
   if (
     ["none", "declined"].includes(p.stage)
       ? p.promisedMonth !== null
-      : p.promisedMonth === null || realm !== 1
+      : p.promisedMonth === null || realm < 1
   )
     return false;
   if (

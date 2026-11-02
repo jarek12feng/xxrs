@@ -1,4 +1,5 @@
 import { foundationCap } from "../src/foundation-journey/growth-state";
+import { growthQuote } from "../src/foundation-journey/growth";
 import { cultivationProjection } from "../src/cultivation";
 import {
   createGame,
@@ -241,6 +242,7 @@ export function runRoute(
       "takeHerbs",
     ] as const)
       send({ type: "adventure", action });
+    send({ type: "learning", choice: technique === "blade" ? "blade" : "spring" });
     send({
       type: "equip",
       technique: technique === "blade" ? "blade" : "spring",
@@ -300,7 +302,8 @@ export function runRoute(
     phase = "frontier";
     cultivate(280);
     act({kind:"travel",destination:"snow"});
-    funds(24);act({kind:"routePrepare",route:"snow",method:"service"});
+    const snowPreparation = {kind:"routePrepare",route:"snow",method:"service"} as const;
+    funds(growthQuote(s, snowPreparation).stones);act(snowPreparation);
     act({kind:"routeChoose",route:"snow",choice:"careful"});fight("deer");
     herbs(6);funds(4);act({kind:"routeProcess",route:"snow",method:"self"});
     act({ kind: "travel", destination: "frontier" });

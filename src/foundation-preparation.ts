@@ -83,7 +83,7 @@ export function foundationPreparation(s: State) {
               { type: "prepare", kind: "retreat" },
               preparationError(s, "retreat"),
             ),
-            ...(s.path === "sword" || s.inherited === "sword"
+            ...(s.journey.known.includes("blade")
               ? [
                   action(
                     "自行历练剑意一月",

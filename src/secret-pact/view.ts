@@ -1,10 +1,13 @@
 import type { State } from "../world";
+import { challenges } from "../foundation-journey/content";
+import { foundationPower } from "../foundation-journey/combat";
+import { mainTraining, supportTraining } from "../growth";
 import type { PactAction } from "./rules";
 export function pactView(s: State) {
   const p = s.secretPact,
     q = s.foundationJourney;
   let next =
-    "叶照带来古道支脉的石门拓图，贺崇说内中或藏补脉古法。三人须到筑基中期，才能抵住门内罡风；独一份的机缘入府后当面议价。";
+    "叶照带来古道支脉的石门拓图，贺崇说内中或藏补脉古法。三人须到筑基中期，才能抵住门内罡风；照玄护脉法可接续守势与识阵，伤害 +6、承伤 −3。贺崇也为此而来，能入府，未必争得过他。";
   const actions: { action: PactAction; label: string; detail: string }[] = [];
   const add = (action: PactAction, label: string, detail = "") =>
     actions.push({ action, label, detail });
@@ -33,12 +36,7 @@ export function pactView(s: State) {
     );
   } else if (p.stage === "inside") {
     next =
-      "玉简仅可传法一人。照玄护脉法：筑基交锋中，守势后接识阵，额外伤敌 2。";
-    add(
-      "exchange",
-      "出资助他治伤，换取玉简",
-      "灵草 6、灵石 12；贺崇依约让宝，你学得护脉法，保留同行情谊。",
-    );
+      "玉简仅可传法一人。照玄护脉法：筑基交锋中，守势后接识阵，伤害 +6、承伤 −3。";
     add(
       "yield",
       "让他受法，收下补偿",
@@ -47,7 +45,7 @@ export function pactView(s: State) {
     add(
       "insist",
       "暂不让宝，要求继续议价",
-      "可能引发夺宝冲突；尚不自动开战，可再选择应战或退走。",
+      "贺崇不肯让宝，会毁约相争；可再选择应战或退走。",
     );
     add(
       "seize",
@@ -91,7 +89,18 @@ export function pactView(s: State) {
           : "放弃追索玉简，双方互不寻仇；不恢复同行。",
       );
   }
+  const power = foundationPower(s);
+  const preparation = [
+    s.injury ? `伤势 ${s.injury}：先静养，免得带伤争宝。` : "伤势已平。",
+    mainTraining(s) < 2 ? "主修尚未通达，可到功法页研修。" : "主修已通达。",
+    s.journey.equipped === null || s.journey.relics[s.journey.equipped] < 2 ? "可到灵器页精炼法器，补足攻守。" : "已备二阶灵器。",
+    supportTraining(s) < 2 ? "辅修仍可研修，护身之力尚有余地。" : "辅修已通达。",
+    "长春守势需留灵草；也可先炼化古道主材、提升修为，再来赴约。",
+  ];
   return {
+    preparation,
+    power,
+    rival: challenges.pactRival,
     next,
     actions,
     visible: s.realm === 1 && (q.location === "ferry" || p.stage !== "none"),

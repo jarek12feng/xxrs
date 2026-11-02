@@ -1,3 +1,12 @@
+import {freshOuterSea, validOuterSea, type OuterSea} from "./outer-sea/state";
+import {runSea,seaGoal,updateSeaCalendar,type SeaAction} from "./outer-sea/rules";
+import { freshGoldenCore, validGoldenCore, type GoldenCore } from "./golden-core/state";
+import { runGolden, goldenGoal, type GoldenAction } from "./golden-core/rules";
+import { freshSectContest, validSectContest, type SectContest } from "./sect-contest/state";
+import { runContest, discoverContest, updateContestCalendar, type ContestAction } from "./sect-contest/rules";
+import { freshTreasures, validTreasures, type Treasures } from "./treasures/state";
+import { runTreasure, type TreasureAction } from "./treasures/rules";
+import { freshLearning, validLearning, runLearning, type LearningChoice } from "./learning";
 import { freshSecretPact, validSecretPact, type SecretPact } from "./secret-pact/state";
 import { runPact, type PactAction } from "./secret-pact/rules";
 import { freshRecognition, validRecognition, type Recognition } from "./recognition/state";
@@ -92,19 +101,19 @@ export const techniques = {
   spring: {
     name: "长春诀",
     slot: "main",
-    hint: "炼气吐纳基础收益 +3（受寿元影响）；回合交锋守势可耗灵草恢复气势",
+    hint: "学会后可采药；炼气吐纳基础收益 +3（受寿元影响）；回合交锋守势可耗灵草恢复气势",
   },
   blade: {
     name: "听松剑经",
     slot: "main",
-    hint: "炼气历练每月额外 +4 修为；回合交锋反击伤害 +8、承伤 +2",
+    hint: "学会后可历练剑意；炼气历练每月额外 +4 修为；回合交锋反击伤害 +8、承伤 +2",
   },
   breath: {
     name: "归元息",
     slot: "main",
     hint: "炼气劳作每月额外 +4 修为；回合交锋辨影减伤，擅破傀儡阵核",
   },
-  herb: { name: "辨草录", slot: "support", hint: "采药每月额外 +1 灵草" },
+  herb: { name: "辨草录", slot: "support", hint: "学会后可采药；装配后采药每月额外 +1 灵草" },
   guard: {
     name: "护身诀",
     slot: "support",
@@ -186,6 +195,7 @@ export const places = {
   },
 } as const;
 export interface Journey {
+  learning: { book: boolean; relic: boolean };
   branch: Branch;
   rank: 0 | 1;
   contribution: number;
@@ -211,7 +221,11 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 25;
+  version: 30;
+  outerSea: OuterSea;
+  goldenCore: GoldenCore;
+  sectContest: SectContest;
+  treasures: Treasures;
   secretPact: SecretPact;
   recognition: Recognition;
   cultivationRemainder: number;
@@ -226,6 +240,11 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | {id:string;type:"outerSea";action:SeaAction}
+  | { id: string; type: "goldenCore"; action: GoldenAction }
+  | { id: string; type: "sectContest"; action: ContestAction }
+  | { id: string; type: "treasure"; action: TreasureAction }
+  | { id: string; type: "learning"; choice: LearningChoice }
   | {id:string; type:"secretPact"; action:PactAction}
   | { id: string; type: "recognition"; action: RecognitionAction }
   | { id: string; type: "qiJourney"; action: QiAction }
@@ -264,6 +283,7 @@ export type Intent = Command extends infer C
     : never
   : never;
 const fresh = (): Journey => ({
+  learning: freshLearning(),
   branch: "none",
   rank: 0,
   contribution: 0,
@@ -294,6 +314,10 @@ function base(s: State): chapter.State {
     cultivationRemainder: __________,
     recognition: ___________,
     secretPact: ____________,
+    treasures: _____________,
+    sectContest: ______________,
+    goldenCore: _______________,
+    outerSea: ________________,
     ...rest
   } = s;
   return { ...rest, version: 3 };
@@ -306,7 +330,11 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 25,
+    version: 30,
+    outerSea: freshOuterSea(),
+    goldenCore: freshGoldenCore(),
+    sectContest: freshSectContest(),
+    treasures: freshTreasures(),
     secretPact: freshSecretPact(),
     recognition: freshRecognition(),
     cultivationRemainder: 0,
@@ -349,14 +377,21 @@ export const eventView = (s: State) => {
 };
 export const activeEventId = (s: State) =>
   s.pending?.id ?? s.social.scene?.id ?? "";
-export const canGather = (s: State) => chapter.canGather(base(s));
-export const canTrain = (s: State) => chapter.canTrain(base(s));
+export const canGather = (s: State) => s.journey.known.some(t => t === "spring" || t === "herb");
+export const canTrain = (s: State) => s.journey.known.includes("blade");
 export const breakthroughDetails = (s: State, pill = false) =>
   chapter.breakthroughDetails(base(s), pill);
 export const refineCost = (s: State) => chapter.refineCost(base(s));
 export const replayHints = (s: State) => chapter.replayHints(base(s));
 export const actionError = (s: State, a: chapter.Activity) =>
-  s.qiJourney.node
+  s.outerSea.location === "ruins" ? "先结束遗迹探索或撤回古渡" :
+  s.goldenCore.expedition !== "idle" ? "先结束药圃探索或撤回" :
+  s.realm === 2 && a === "cultivate" ? (s.status !== "alive" || s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel || s.foundationJourney.duel ? "先处理眼前事件或结束交锋" : !s.outerSea.met ? "先赴外海古渡，与当地道友相识" : s.outerSea.cultivation >= 299 ? "已至金丹前期瓶颈，中期历练尚未开放" : "") :
+  s.sectContest.duel ? "先结束内比斗法" :
+  s.realm === 1 && s.sectContest.stage === "invited" && s.sectContest.reminded && s.month < s.sectContest.starts + 12 ? "内比传来开场消息，请先决定赴会或暂不参加" :
+  a === "gather" && !canGather(s) ? "先学长春诀或辨草录，再去采药"
+    : a === "train" && !canTrain(s) ? "先学听松剑经，再历练剑意"
+    : s.qiJourney.node
     ? "先结束秘境历练或撤回"
     : a === "cultivate" && !s.realm && s.qi >= qiCap(s)
       ? "修为已抵瓶颈，先去历练取得晋升材料"
@@ -372,7 +407,7 @@ export const actionError = (s: State, a: chapter.Activity) =>
             : s.foundationJourney.cultivation >= foundationCap(s)
               ? foundationBlock(s)
               : ""
-          : chapter.actionError(base(s), a);
+          : chapter.actionError(base(s), a, true);
 export const preparationError = (s: State, k: "refine" | "retreat") => {
   if (k === "refine") return workshopQuote(s, { product: "foundation", method: "craft" }).error;
   const error = chapter.preparationError(base(s), k);
@@ -461,6 +496,8 @@ export function aidError(s: State, p: TrialPlace, helper: "mentor" | "luchi") {
   return "";
 }
 export function nextGoal(s: State) {
+  if(s.realm===2 && s.goldenCore.farShore) return seaGoal(s);
+  if(s.status === "alive" && !s.pending && (s.realm === 2 || s.foundationJourney.epilogue || s.goldenCore.expedition !== "idle")) return goldenGoal(s);
   if (s.realm === 1 && s.adventure.road.surveyed) return foundationGoal(s);
   if (s.status !== "alive" || s.pending) return chapter.nextGoal(base(s));
   if (s.social.arena.duel)
@@ -510,6 +547,13 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.outerSea = n.life === old.life ? structuredClone(old.outerSea) : freshOuterSea();
+  updateSeaCalendar(n);
+  n.goldenCore = n.life === old.life ? structuredClone(old.goldenCore) : freshGoldenCore();
+  if(n.status !== "alive") n.goldenCore.duel = null;
+  n.sectContest = n.life === old.life ? structuredClone(old.sectContest) : freshSectContest();
+  updateContestCalendar(n);
+  n.treasures = n.life === old.life ? structuredClone(old.treasures) : freshTreasures();
   n.secretPact = n.life === old.life ? structuredClone(old.secretPact) : freshSecretPact();
   n.recognition = n.life === old.life ? structuredClone(old.recognition) : freshRecognition();
   n.cultivationRemainder = n.life === old.life && n.realm === old.realm ? old.cultivationRemainder : 0;
@@ -568,13 +612,26 @@ function workshopMonth(s: State): State {
 export function dispatch(input: State, c: Command): State {
   const next = dispatchCommand(input, c);
   if (next !== input) {
+    updateSeaCalendar(next);
+    updateContestCalendar(next);
+    discoverContest(next,c);
     if (!next.realm) next.qi = Math.min(next.qi, qiCap(next));
-    if ((!next.realm && next.qi === qiCap(next)) || (next.realm && next.foundationJourney.cultivation === foundationCap(next))) next.cultivationRemainder = 0;
+    if ((!next.realm && next.qi === qiCap(next)) || (next.realm === 1 && next.foundationJourney.cultivation === foundationCap(next)) || (next.realm === 2 && next.outerSea.cultivation === 299)) next.cultivationRemainder = 0;
   }
   return next;
 }
 function dispatchCommand(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if(c.type === "outerSea") return runSea(input,c.action,c.id,workshopMonth);
+  if(input.outerSea.location === "ruins") return input;
+  if(input.outerSea.location !== "home" && ["foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest"].includes(c.type)) return input;
+  if (c.type === "goldenCore") return runGolden(input,c.action,c.id,workshopMonth);
+  if (input.goldenCore.expedition !== "idle") return input;
+  if (c.type === "sectContest") return runContest(input,c.action,c.id,workshopMonth);
+  if (input.sectContest.duel) return input;
+  if (c.type === "treasure") return runTreasure(input,c.action,c.id,workshopMonth);
+  if (input.treasures.auction?.entered && !input.treasures.auction.closed) return input;
+  if (c.type === "learning") return runLearning(input, c.choice, c.id);
   if (c.type === "secretPact") return runPact(input,c.action,c.id,(s) => normalize(lift(chapter.travelMonth(base(s),"秘境赴约"),structuredClone(s.journey),structuredClone(s.social),structuredClone(s.adventure)),s));
   if (c.type === "recognition") return runRecognition(input, c.action, c.id, (s) =>
     normalize(lift(chapter.travelMonth(base(s), "领队行程"), structuredClone(s.journey), structuredClone(s.social), structuredClone(s.adventure)), s));
@@ -648,9 +705,7 @@ function dispatchCommand(input: State, c: Command): State {
       n.adventure.step === "done" &&
       n.status === "alive"
     ) {
-      const technique = n.path === "sword" ? "blade" : "spring";
-      learn(n, technique);
-      n.adventure.result += `药工送来一册${techniques[technique].name}作为谢礼。请在功法面板装配；它会改变修行收益与下一场交锋。`;
+      n.adventure.result += "药工请你挑选一册功法作为谢礼。想养气、练剑还是调息，由你自己决定。";
     }
     return n;
   }
@@ -693,9 +748,9 @@ function dispatchCommand(input: State, c: Command): State {
         )
           break;
         const result =
-          n.realm === 1 && command.activity === "cultivate"
+          n.realm >= 1 && command.activity === "cultivate"
             ? chapter.travelMonth(b)
-            : chapter.dispatch(b, { ...command, id: c.id, months: 1 });
+            : chapter.dispatch(b, { ...command, id: c.id, months: 1 }, true);
         if (result === b) break;
         const old = n;
         n = normalize(
@@ -721,6 +776,11 @@ function dispatchCommand(input: State, c: Command): State {
             n.injury = old.injury;
           if (a === "meditate" && n.journey.support === "lantern")
             n.study = Math.min(4, n.study + 1);
+          if (n.realm === 2) {
+            n.qi=old.qi;
+            n.outerSea.cultivation=Math.min(299,old.outerSea.cultivation+(cultivation?.gain??0));
+            if(cultivation?.gain) log(n,`金丹修行 +${n.outerSea.cultivation-old.outerSea.cultivation}（${n.outerSea.cultivation}/299，前期瓶颈）。`);
+          }
           if (n.realm === 1) {
             n.qi = old.qi;
             const gain = cultivation?.gain ?? 0;
@@ -770,7 +830,9 @@ function dispatchCommand(input: State, c: Command): State {
         }
         // One user command owns a batch; intermediate months do not own its id.
         n.seen = old.seen;
+        if(n.outerSea.reminded && !old.outerSea.reminded) break;
         if (
+          (!old.sectContest.reminded && n.sectContest.reminded) ||
           n.pending ||
           n.status !== "alive" ||
           (n.realm === 0 && old.qi < 360 && n.qi === 360)
@@ -963,7 +1025,7 @@ function dispatchCommand(input: State, c: Command): State {
         !n.journey.queue[0].remaining ||
         (task.action === "rest" && n.injury === 0) ||
         (task.action === "cultivate" &&
-          (n.realm === 1
+          (n.realm === 2 ? n.outerSea.cultivation >= 299 : n.realm === 1
             ? n.foundationJourney.cultivation >= foundationCap(n)
             : n.qi >= qiCap(n)))
       )
@@ -1197,21 +1259,27 @@ function dispatchCommand(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 25);
+  return validWorldState(x, 30);
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
     (x as { version: unknown }).version !== version ||
+    (version >= 30 && !validOuterSea(s)) ||
+    (version >= 29 && !validGoldenCore(s)) ||
+    (version < 29 && s.realm > 1) ||
+    (version >= 28 && !validSectContest(s)) ||
+    (version >= 27 && !validTreasures(s.treasures,s.realm)) ||
     (version >= 23 && (!Number.isInteger(s.cultivationRemainder) || s.cultivationRemainder < 0 || s.cultivationRemainder >= 240)) ||
     (version >= 25 && !validSecretPact(s.secretPact,s.month,s.realm,s.foundationJourney?.won ?? [],s.foundationJourney?.duel?.id)) ||
     (version >= 24 && !validRecognition(s.recognition, s.month, s.realm, s.journey?.branch)) ||
     !j ||
+    (version >= 26 && !validLearning(j.learning)) ||
     !chapter.validState(base(s)) ||
     !validSocial(s) ||
     (version >= 21 && !validWorkshop(s.workshop, j.relics, s.realm)) ||
@@ -1251,12 +1319,12 @@ function validWorldState(
     ) &&
     !!j.maps &&
     ["valley", "peak", "sea"].every((p) => integer(j.maps[p as Place], 3)) &&
-    (j.maps.peak === 0 || (j.maps.valley === 3 && s.realm === 1)) &&
+    (j.maps.peak === 0 || (j.maps.valley === 3 && s.realm >= 1)) &&
     (j.maps.sea === 0 || j.maps.peak === 3) &&
     ["none", "rescue", "trace"].includes(j.approach) &&
     (j.maps.valley >= 2 ? j.approach !== "none" : j.approach === "none") &&
     typeof j.settled === "boolean" &&
-    (!j.settled || (s.realm === 1 && s.story.stage === "resolved")) &&
+    (!j.settled || (s.realm >= 1 && s.story.stage === "resolved")) &&
     Array.isArray(j.queue) &&
     j.queue.length <= 8 &&
     j.queue.every(
@@ -1292,11 +1360,36 @@ function validWorldState(
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if(x && typeof x === "object" && "version" in x && x.version===29){
+    if(!validWorldState(x,29)) throw new Error("旧存档损坏，原档未修改。");
+    return {...structuredClone(x) as State,version:30,outerSea:freshOuterSea()};
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 28) {
+    if (!validWorldState(x,28)) throw new Error("旧存档损坏，原档未修改。");
+    return {...structuredClone(x) as State,version:30,outerSea:freshOuterSea(),goldenCore:freshGoldenCore()};
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 27) {
+    if (!validWorldState(x,27)) throw new Error("旧存档损坏，原档未修改。");
+    return {...structuredClone(x) as State,version:30,outerSea:freshOuterSea(),goldenCore:freshGoldenCore(),sectContest:freshSectContest()};
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 26) {
+    if (!validWorldState(x,26)) throw new Error("旧存档损坏，原档未修改。");
+    return migrateSave({...structuredClone(x) as State,version:27,treasures:freshTreasures()});
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 25) {
+    if (!validWorldState(x, 25)) throw new Error("旧存档损坏，原档未修改。");
+    const n = structuredClone(x) as State;
+    n.version = 30;
+    n.outerSea = freshOuterSea();
+    n.goldenCore = freshGoldenCore();
+    n.sectContest = freshSectContest();
+    n.treasures = freshTreasures();
+    n.journey.learning = { book: n.adventure.step === "done", relic: n.expedition.cleared > 0 };
+    return n;
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 24) {
     if (!validWorldState(x,24)) throw new Error("旧存档损坏，原档未修改。");
-    const upgraded={...structuredClone(x) as State,version:25 as const,secretPact:freshSecretPact()};
-    if(!validState(upgraded))throw new Error("旧存档含无法承接的秘境记录，原档未修改。");
-    return upgraded;
+    return migrateSave({...structuredClone(x) as State,version:25,secretPact:freshSecretPact()});
   }
   if (x && typeof x === "object" && "version" in x && x.version === 23) {
     if (!validWorldState(x, 23)) throw new Error("旧存档损坏，原档未修改。");
@@ -1311,7 +1404,12 @@ export function migrateSave(x: unknown): State {
     const n = structuredClone(x) as State;
     // No invented milestones: earlier foundation runs must start a new character.
     if (n.realm === 1) throw new Error("筑基成长规则已重构，请备份原档并新建角色；原档未修改。");
-    n.version = 25;
+    n.version = 30;
+    n.outerSea = freshOuterSea();
+    n.goldenCore = freshGoldenCore();
+    n.sectContest = freshSectContest();
+    n.treasures = freshTreasures();
+    n.journey.learning = { book: n.adventure.step === "done", relic: n.expedition.cleared > 0 };
     n.secretPact = freshSecretPact();
     n.recognition = freshRecognition();
     n.cultivationRemainder = 0;
@@ -1540,6 +1638,7 @@ export function migrateSave(x: unknown): State {
     throw new Error("存档格式不受支持或已损坏，原始数据未被修改。");
   const old = chapter.migrateSave(x),
     s = lift(old);
+  s.journey.learning = { book: s.adventure.step === "done", relic: false };
   s.journey.settled = old.status === "complete";
   return s;
 }

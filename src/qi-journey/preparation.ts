@@ -144,7 +144,7 @@ export function settlePreparation(s: State, a: PreparationAction) {
         ? "medicine"
         : route === "wander"
           ? "array"
-          : s.path === "sword"
+          : s.journey.main === "blade"
             ? "sword"
             : "medicine";
     q.node = 1;

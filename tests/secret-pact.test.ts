@@ -48,6 +48,18 @@ function ready(main: "spring" | "blade" | "breath" = "spring") {
   cache.set(main, p.state);
   return structuredClone(p.state);
 }
+function prepare(s: State) {
+  const p = journeyPlayer(s);
+  for (const technique of [s.journey.main!, "guard"] as const) {
+    while (p.state.growth.training[technique] < 2) {
+      const before = p.state.growth.training[technique];
+      p.send({ type: "trainTechnique", technique });
+      expect(p.state.growth.training[technique]).toBe(before + 1);
+    }
+  }
+  p.cultivate(350);
+  return p.state;
+}
 it("a promise precedes the realm gate; optional decline can be reversed without elapsed-time punishment", () => {
   const p = journeyPlayer(journeyCheckpoint());
   p.act({ kind: "travel", destination: "ferry" });
@@ -64,25 +76,22 @@ it("a promise precedes the realm gate; optional decline can be reversed without 
   expect(send(noGate, "enterAnchor")).toEqual(noGate);
 });
 it.each(["spring", "blade", "breath"] as const)(
-  "%s negotiates a real reward without replaying the cleared route",
+  "%s prepares and wins the exclusive reward without replaying the cleared route",
   (main) => {
-    const initial = ready(main),
+    const initial = prepare(ready(main)),
       entered = send(initial, "enterAnchor");
     expect(entered.month).toBe(initial.month + 1);
     expect(entered.herbs).toBe(initial.herbs - 2);
-    const n = send(entered, "exchange");
-    expect(n.herbs).toBe(entered.herbs - 6);
-    expect(n.stones).toBe(entered.stones - 12);
+    expect(send(entered, "exchange")).toEqual(entered);
+    const p = journeyPlayer(send(entered, "insist"));
+    p.fight("pactRival");
+    const n = p.state;
     expect(n.secretPact.manual).toBe(true);
+    expect(n.stones).toBe(entered.stones);
     expect(validState(n)).toBe(true);
     expect(send(n, "exchange")).toEqual(n);
-    expect(n.foundationJourney.won).toEqual(initial.foundationJourney.won);
-    const supplies = send(n, "supplies");
-    expect(supplies.growth.medicines.healing).toBe(
-      n.growth.medicines.healing + 2,
-    );
-    expect(send(supplies, "supplies")).toEqual(supplies);
-    const p = journeyPlayer(supplies);
+    expect(n.foundationJourney.won).toEqual([...initial.foundationJourney.won, "pactRival"]);
+    expect(send(n, "supplies")).toEqual(n);
     p.act({ kind: "routeProcess", route: "frontier", method: "self" });
     expect(p.state.foundationJourney.growth.refined).toBe(true);
     expect(eligibleOffice(p.state)).toBe(2);
@@ -105,7 +114,7 @@ it("yield pays once and does not grant the exclusive method; exchange cannot spe
 it.each(["insist", "seize"] as const)(
   "%s leads to actual battle and durable, different relationships",
   (choice) => {
-    const s = send(send(ready(), "enterAnchor"), choice);
+    const s = send(send(prepare(ready()), "enterAnchor"), choice);
     expect(s.secretPact.aggressor).toBe(
       choice === "insist" ? "rival" : "player",
     );
@@ -148,7 +157,7 @@ it("retreat retains the route material; pursuit remains possible and peace close
   expect(p.state.foundationJourney.won).toEqual(initial.foundationJourney.won);
   expect(validState(p.state)).toBe(true);
   const restored = migrateSave(JSON.parse(JSON.stringify(p.state)));
-  const chase = journeyPlayer(restored);
+  const chase = journeyPlayer(prepare(restored));
   chase.fight("pactRival");
   expect(chase.state.secretPact.manual).toBe(true);
   const peace = send(restored, "settle");
@@ -180,7 +189,7 @@ it("preparing a retreat and preserving trust change actual incoming damage", () 
   withManual.foundationJourney.duel!.effect = "guard";
   a.foundationJourney.duel!.effect = "guard";
   expect(foundationExchange(withManual, "discern")!.damage).toBe(
-    foundationExchange(a, "discern")!.damage + 2,
+    foundationExchange(a, "discern")!.damage + 6,
   );
 });
 it("locks and interrupted travel cannot debit, award or enter; new records survive deterministic save roundtrips", () => {
@@ -208,8 +217,41 @@ it("locks and interrupted travel cannot debit, award or enter; new records survi
     migrateSave({ ...a, secretPact: { ...a.secretPact, outcome: "seized" } }),
   ).toThrow();
   expect(() =>
-    migrateSave({ ...a, secretPact: { ...a.secretPact, manual: false } }),
+    migrateSave({ ...a, secretPact: { ...a.secretPact, manual: true } }),
   ).toThrow();
-  expect(() => migrateSave({ ...a, version: 27 })).toThrow();
+  expect(() => migrateSave({ ...a, version: 999 })).toThrow();
   expect(validState(createGame("新角色", "wood"))).toBe(true);
+});
+
+it("a failed attempt awards no treasure; recovery and preparation allow a later victory", () => {
+  const initial = send(send(ready(), "enterLight"), "insist");
+  const p = journeyPlayer(initial);
+  p.act({ kind: "battle", battle: "pactRival" });
+  for (let i = 0; i < 12 && p.state.foundationJourney.duel; i++) p.act({ kind: "move", move: "strike" });
+  expect(p.state.secretPact.outcome).toBe("retreated");
+  expect(p.state.secretPact.manual).toBe(false);
+  expect(p.state.injury).toBe(initial.injury + 2);
+  expect(p.state.foundationJourney.won).toEqual(initial.foundationJourney.won);
+  while (p.state.injury) p.send({ type: "advance", activity: "rest", months: 1 });
+  const trained = journeyPlayer(prepare(p.state));
+  trained.fight("pactRival");
+  expect(trained.state.secretPact.manual).toBe(true);
+  expect(validState(trained.state)).toBe(true);
+  const final = trained.state;
+  trained.act({ kind: "battle", battle: "pactRival" });
+  expect(trained.state).toEqual(final);
+});
+it("treasure mitigates a later battle only after guard into discern", () => {
+  const p = journeyPlayer(send(send(prepare(ready()), "enterAnchor"), "insist"));
+  p.fight("pactRival");
+  p.act({ kind: "battle", battle: "rank1" });
+  expect(p.state.foundationJourney.duel).not.toBeNull();
+  p.act({ kind: "move", move: "guard" });
+  const without = structuredClone(p.state);
+  without.secretPact.manual = false;
+  const actual = foundationExchange(p.state, "discern")!;
+  const baseline = foundationExchange(without, "discern")!;
+  expect(actual.damage).toBe(baseline.damage + 6);
+  expect(actual.incoming).toBe(Math.max(0, baseline.incoming - 3));
+  expect(foundationExchange(p.state, "strike")).toEqual(foundationExchange(without, "strike"));
 });

@@ -274,6 +274,7 @@ it("timing and capped preparation gains reflect the actual stage and inventory",
 it("training projection includes injury penalty and equipped guard protection", () => {
   const s = waiting();
   s.mastery = 3;
+  s.journey.known = ["blade"];
   expect(foundationPreparation(s).trainingHint).toContain(
     "伤势 +1；当前把握净变化 -4",
   );

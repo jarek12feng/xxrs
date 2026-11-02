@@ -11,6 +11,7 @@ import {
 it("first earned main technique takes priority over another conversation, without equipping automatically", () => {
   const s = createGame("新玩家", "sword", 2654435761);
   s.adventure.step = "done";
+  s.journey.learning.book = true;
   s.journey.known = ["blade"];
   const before = structuredClone(s);
   expect(openingGuide(s)?.action).toBe("skills");
@@ -38,7 +39,7 @@ it("the actual panel offers a bounded preparation command and a single homecomin
   try {
     expect(host.querySelectorAll('[aria-label="筑基篇尾声"]')).toHaveLength(1);
     expect(host.textContent?.split("你独自走完归流阵")).toHaveLength(2);
-    expect(host.textContent).toContain("金丹篇暂未开放");
+    expect(host.textContent).toContain("可在凝丹筹备中争取主药、炼丹并叩关");
     expect(intents).toEqual([]);
   } finally {
     app.unmount();

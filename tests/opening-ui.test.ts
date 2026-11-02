@@ -116,7 +116,7 @@ it("restores choice consequences and contextual guidance without replaying rewar
   ).toContain("护根");
   expect(
     document.querySelector('[aria-label="初入仙途指引"] > div > strong')
-      ?.textContent === "初习功法",
+      ?.textContent === "挑选入门功法",
   ).toBe(true);
   expect(save).not.toHaveBeenCalled();
   expect(audio.cue).not.toHaveBeenCalled();
@@ -151,12 +151,15 @@ it("first guidance equips earned power before returning to the promised revisit"
     action: "return",
   });
   await mount(s);
-  button("装配第一册功法").click();
+  button("挑选第一册功法").click();
   await flush();
   expect(save).not.toHaveBeenCalled();
+  document.querySelector<HTMLButtonElement>('[role="dialog"] [aria-label="挑选入门功法"] button')!.click();
+  await flush();
+  expect(vi.mocked(save).mock.calls.at(-1)![0].journey.known).toContain("spring");
   button("装配长春诀").click();
   await flush();
-  expect(vi.mocked(save).mock.calls[0]![0].journey.main).toBe("spring");
+  expect(vi.mocked(save).mock.calls.at(-1)![0].journey.main).toBe("spring");
   document.querySelector<HTMLButtonElement>('[aria-label="关闭面板"]')!.click();
   await flush();
   button("回访药工，看看后来").click();

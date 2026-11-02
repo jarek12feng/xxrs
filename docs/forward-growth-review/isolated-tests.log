@@ -1,0 +1,45 @@
+
+> cultivation-life@0.15.0 test
+> vitest run --maxWorkers=2 --testTimeout=15000
+
+fatal: not a git repository (or any of the parent directories): .git
+
+ RUN  v5.0.5 /private/var/folders/7_/0wh4syys1ql7gpfhcm27rqj80000gn/T/xxrs-forward-review-m5fhjxd8
+
+ ❯ tests/release-readiness.test.ts (0 test)
+ ❯ tests/action-feedback-ui.test.ts (0 test)
+ ❯ tests/growth-six-ui.test.ts (0 test)
+ ❯ tests/opening-ui.test.ts (0 test)
+ ❯ tests/continuous-journey-ui.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/action-feedback-ui.test.ts [ tests/action-feedback-ui.test.ts ]
+ FAIL  tests/continuous-journey-ui.test.ts [ tests/continuous-journey-ui.test.ts ]
+ FAIL  tests/growth-six-ui.test.ts [ tests/growth-six-ui.test.ts ]
+ FAIL  tests/opening-ui.test.ts [ tests/opening-ui.test.ts ]
+Error: Denied ID /mountains.svg
+  File: /mountains.svg
+ ❯ loadAndTransform ../../../../../../../Users/admin/Documents/ChatGPT/xxrs/node_modules/vite/dist/node/chunks/config.js:22864:33
+ ❯ doTransform ../../../../../../../Users/admin/Documents/ChatGPT/xxrs/node_modules/vite/dist/node/chunks/config.js:22841:17
+ ❯ fetchModule ../../../../../../../Users/admin/Documents/ChatGPT/xxrs/node_modules/vite/dist/node/chunks/config.js:34244:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/release-readiness.test.ts [ tests/release-readiness.test.ts ]
+Error: Denied ID /mountains.svg
+  File: /mountains.svg
+ ❯ loadAndTransform ../../../../../../../Users/admin/Documents/ChatGPT/xxrs/node_modules/vite/dist/node/chunks/config.js:22864:33
+ ❯ doTransform ../../../../../../../Users/admin/Documents/ChatGPT/xxrs/node_modules/vite/dist/node/chunks/config.js:22841:17
+ ❯ fetchModule ../../../../../../../Users/admin/Documents/ChatGPT/xxrs/node_modules/vite/dist/node/chunks/config.js:34244:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+
+ Test Files  5 failed | 79 passed (84)
+      Tests  584 passed (584)
+   Start at  15:49:36
+   Duration  38.04s (tests 85%, environment 8%, import 6%, transform 1%)
+
+    Isolate  84 workers spawned · ~151ms startup each (spawn + environment, per file)
+             at least ~6.19s faster with isolate: false — reuses workers across files instead of one per file

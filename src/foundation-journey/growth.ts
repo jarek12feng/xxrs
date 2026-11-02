@@ -29,9 +29,17 @@ export function growthQuote(s: State, a: GrowthAction) {
     const p=g.routes[r];
     if(q.location!==r || q.ferry<4 || q.cultivation<200) error='完成离渡并修至筑基中期，到对应地点准备';
     if(a.kind==='routePrepare') {
-      if(p.prepared || !['supplies','service'].includes(a.method)) error='已完成准备，或准备方式无效';
+      if(p.prepared || !['supplies','service','relic','training'].includes(a.method)) error='已完成准备，或准备方式无效';
       if(r==='frontier' && Math.max(s.journey.relics.sword,s.journey.relics.vial)<2 && (!s.journey.main || s.growth.training[s.journey.main]<2)) error='古道需二阶灵器或通达主修，先到功法灵器准备';
-      if(a.method==='supplies'){herbs=r==='estate'?3:2;ward=1;stones=2;}else stones=r==='estate'?32:30;
+      if(a.method==='supplies'){herbs=r==='estate'?3:2;ward=1;stones=2;}
+      else if(a.method==='service') stones=r==='estate'?32:30;
+      else if(a.method==='relic' || a.method==='training') {
+        stones=2;
+        if(r!=='snow') error='只有雪线可用灵器或通达功法替代护寒药';
+        else if(a.method==='relic' && (!s.journey.equipped || s.journey.relics[s.journey.equipped]<2)) error='先装配二阶灵器，以器光隔开寒流';
+        else if(a.method==='training' && (!s.journey.main || s.growth.training[s.journey.main]<2)) error='先装配通达主修，再调息适应寒流';
+        if(a.method==='training')months=6;
+      }
     }
     if(a.kind==='routeChoose') {
       if(!p.prepared || p.choice || !['careful','swift'].includes(a.choice)) error='先完成整备；现场取舍只定一次';
@@ -64,9 +72,9 @@ export function applyGrowth(s: State,a: GrowthAction) {
     q.last=a.method==='medicine'?'岑霁让你按药性缓急运气：“先稳住，再辨逆流。”疗程已备，亲自完成调息考验才能学会稳脉。':'你照着古道阵纹练了三月，将乱流引向空处。行功之法已记下，还需独自调息一试。';
   } else {
     const p=g.routes[a.route],info=routeInfo[a.route];
-    if(a.kind==='routePrepare'){p.prepared=true;q.last=`${info.name}整备完成。${info.intro}`;}
+    if(a.kind==='routePrepare'){p.prepared=true;q.last=`${info.name}整备完成。${a.method==='relic'?'你以二阶灵器的器光探出避寒落点，省下了护寒药。':a.method==='training'?'你用六个月将通达功法调到寒流的节律，省下了护寒药。':''}${info.intro}`;}
     if(a.kind==='routeChoose'){p.choice=a.choice;q.last=`你选择${a.choice==='careful'?info.careful:info.swift}。此番安排已定，败退后仍可循此路再来。`;}
-    if(a.kind==='routeProcess'){p.processed=true;g.refined=true;if(s.social.gender === "male" && q.heroine.route === "none")q.heroine.route=a.route;q.last=`${info.material}经处理融入灵元。灵元凝练已成，修行至 400 可入后期，至 599 再遇瓶颈；另寻主材不会提高此上限。`;}
+    if(a.kind==='routeProcess'){p.processed=true;g.refined=true;if(s.social.gender === "male" && q.heroine.route === "none")q.heroine.route=a.route;q.last=`${info.material}经处理融入灵元。灵元凝练已成，修行至 400 可入后期，至 599 再遇瓶颈。后期前往古道时，凝练灵元可抵住外缘与接应交锋的前两合冲击，承伤 −3；不必另找主材。`;}
     if(a.kind==='routeRevisit'){
       p.revisited=true;
       const reward=a.route==='estate'?(p.choice==='careful'?22:12):12;s.stones+=reward;

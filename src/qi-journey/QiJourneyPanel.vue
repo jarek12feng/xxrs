@@ -7,7 +7,8 @@ import QiPeoplePanel from "./QiPeoplePanel.vue";
 import QiPreparationPanel from "./QiPreparationPanel.vue";
 import { computed } from "vue";
 import type { State, Intent } from "../core";
-import { qiGoal, qiError, qiEnemy, qiPreview, qiPower } from "./rules";
+import { qiGoal, qiError, qiEnemy, qiPreview, qiPower, qiEnemyTell } from "./rules";
+import { qiTacticalCue, medicineOpening } from "./tactics";
 import { qiSites, qiRoutes, commissions, type QiAction } from "./content";
 import { moves, type Move } from "../expedition/content";
 const props = defineProps<{ game: State; busy: boolean }>();
@@ -70,7 +71,9 @@ const preview = (move: Move) => qiPreview(props.game, move);
         />
       </div>
       <p>{{ enemy.trait }}</p>
-      <p>{{ enemy.tells[q.duel.turn % enemy.pattern.length] }}</p>
+      <p v-if="enemy.kind === '妖兽'">守势可收力护身：伤害 −3、承伤 −4；抢攻则争取尽早结束交锋。</p>
+      <p>{{ qiEnemyTell(game) }}</p>
+      <p v-if="!medicineOpening(game, enemy.identity)">{{ qiTacticalCue(game, enemy.identity) }}</p>
       <label
         >自身气势 {{ q.duel.hp }} / {{ qiPower(game).hp
         }}<progress :value="q.duel.hp" :max="qiPower(game).hp"
@@ -97,7 +100,7 @@ const preview = (move: Move) => qiPreview(props.game, move);
     </template>
     <template v-else-if="q.node === 2">
       <h4>灵流逆涌 · 剩余气势 {{ q.vigor }}</h4>
-      <p>守关者就在前方，先调息，再择路而行。</p>
+      <p>守关者就在前方。护脉丹最多恢复 26 气势，灵瓶与熟练功法可省下耗材；看看哪种已够用，择一即可。</p>
       <div class="qi-actions">
         <button
           v-for="p in passages"
@@ -161,7 +164,7 @@ const preview = (move: Move) => qiPreview(props.game, move);
         <details>
           <summary>行前准备建议</summary>
           <p>
-            先装配主修。研修功法提升伤害；灵剑利于抢攻，灵瓶减伤；固本增加气势。长春诀守势会消耗灵草回气。先看缺口，再选择需要的准备，无需把所有属性练满。
+            灵剑利于抢攻；灵瓶持续减伤，途中还能护脉通行。主修研至熟练后，具备神识 8、心得 2 可不耗材穿阵并恢复气势；护脉丹恢复更多，适合这次救急。长春诀守势会耗草回气。选择一项主要投入，留足盘缠即可尝试。
           </p>
         </details>
         <div class="qi-actions">
@@ -171,7 +174,7 @@ const preview = (move: Move) => qiPreview(props.game, move);
             :disabled="locked(`enter:${key}`)"
             @click="act(`enter:${key}`)"
           >
-            {{ route.name }}<small>{{ route.hint }}</small
+            {{ route.name }}<small>{{ key === 'medicine' && q.gates > 0 ? '灵草 4；入内耗草，气势上限 +12。内府傀儡不受药气诱引。' : route.hint }}</small
             ><small>{{
               qiError(game, `enter:${key}`) || "准备就绪，出发"
             }}</small>

@@ -24,7 +24,9 @@ async function click(label: string) {
   await flush();
 }
 function state() {
-  let s = dispatch(createGame("验丹", "wood", 42), {
+  const initial = createGame("验丹", "wood", 42);
+  initial.journey.known = ["herb"]; // Alchemy fixture has learned gathering.
+  let s = dispatch(initial, {
     type: "advance",
     activity: "gather",
     months: 3,

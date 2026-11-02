@@ -38,6 +38,7 @@ export function balanceOpening(
     "return",
   ] as const)
     send({ type: "adventure", action });
+  send({ type: "learning", choice: path === "wood" ? "spring" : "blade" });
   send({ type: "equip", technique: path === "wood" ? "spring" : "blade" });
   return {
     get state() {

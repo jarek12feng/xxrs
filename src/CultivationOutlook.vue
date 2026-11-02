@@ -29,7 +29,7 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
   <aside class="cultivation-outlook" aria-label="吐纳耗时与寿元">
     <p class="realm-promise">
       {{ advancementPromise(game)
-      }}<button :disabled="busy" @click="$emit('standing')">
+      }}<button v-if="game.realm < 2" :disabled="busy" @click="$emit('standing')">
         查看亲历与任用
       </button>
     </p>
@@ -57,7 +57,7 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
     </p>
     <p v-else-if="outlook.bottleneck">
       {{
-        game.realm === 1
+        game.realm === 2 ? "金丹前期瓶颈；中期历练尚未开放。" : game.realm === 1
           ? foundationBlock(game)
           : "修为已抵当前瓶颈，去下方历练取得材料并炼化后，才能继续晋升。"
       }}
@@ -65,7 +65,7 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
     <p v-else>
       当前修行目标已达到。
       <template v-if="game.realm === 1 && outlook.current >= 600"
-        >金丹突破尚未开放，可继续原角色的行旅。</template
+        >可筹备凝丹主药、丹药与灵地，尝试突破金丹。</template
       >
       <template v-else-if="game.realm === 0 && outlook.current >= 360"
         >须备齐筑基丹才能尝试突破筑基。</template
@@ -73,7 +73,8 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
       <template v-else>可继续积累或寻找机缘。</template>
     </p>
     <p>
-      <template v-if="automatic"
+      <template v-if="game.realm === 2">闭关按下方所选年月逐月结算，到目标或会期来信时提前出关。</template>
+      <template v-else-if="automatic"
         >逐月行动按钮每次
         {{ months }} 月以内；自动行动逐月继续，可随时暂停。</template
       >
