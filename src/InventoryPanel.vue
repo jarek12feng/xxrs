@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { workshopQuote } from "./workshop/rules";
+import { products } from "./workshop/catalog";
+import { temperInfo } from "./workshop/state";
 import { foundationGoal } from "./foundation";
 import ItemArt from "./presentation/ItemArt.vue";
 import SceneResponse from "./SceneResponse.vue";
@@ -38,6 +41,13 @@ const items = computed(() => [
     count: props.game.pills,
     description: "筑基必需一枚，成功或失败都会消耗。遗府通关后可依丹方补炼。",
   },
+  ...(["ward", "iron"] as const).map((id) => ({
+    id,
+    name: products[id].name,
+    category: id === "ward" ? "丹药" : "材料",
+    count: props.game.workshop[id],
+    description: products[id].hint,
+  })),
   ...(["healing", "clarity"] as const).map((id) => ({
     id,
     name: medicines[id].name,
@@ -62,6 +72,11 @@ const visible = computed(() =>
 );
 const item = computed(
   () => visible.value.find((i) => i.id === selected.value) || visible.value[0],
+);
+const craft = computed(() =>
+  item.value?.id === "healing" || item.value?.id === "clarity"
+    ? workshopQuote(props.game, { product: item.value.id, method: "craft" })
+    : null,
 );
 </script>
 <template>
@@ -128,6 +143,10 @@ const item = computed(
       <p>{{ item.description }}</p>
       <template v-if="item.id === 'vial' || item.id === 'sword'">
         <p>
+          器纹：{{ temperInfo(game.workshop, item.id).name }} ·
+          {{ temperInfo(game.workshop, item.id).hint }}
+        </p>
+        <p>
           {{ game.journey.relics[item.id] === 2 ? "精炼灵器" : "普通灵器" }} ·
           道友寻亲基础把握 +{{ game.journey.relics[item.id] === 2 ? 32 : 10 }}%
         </p>
@@ -151,17 +170,19 @@ const item = computed(
       </template>
       <template v-if="item.id === 'healing' || item.id === 'clarity'">
         <p>
-          丹方：灵草 {{ medicines[item.id].herbs }}、灵石
-          {{ medicines[item.id].stones }}，需心得
-          1。清心丹间隔三个月；回春散即时疗伤，筑基丹用于突破。
+          丹方：{{ craft?.cost }}，需心得 {{ craft?.study }}，炼制耗时
+          {{
+            craft?.months
+          }}
+          月。清心丹间隔三个月；回春散即时疗伤，筑基丹用于突破。
         </p>
         <button
-          :disabled="busy || !!medicineError(game, item.id)"
+          :disabled="busy || !!craft?.error"
           @click="emit('act', { type: 'brew', medicine: item.id })"
         >
           炼制{{ item.name }}
         </button>
-        <small>{{ medicineError(game, item.id) }}</small>
+        <small>{{ craft?.error }}</small>
         <button
           :disabled="busy || !!medicineError(game, item.id, true)"
           @click="emit('act', { type: 'consume', medicine: item.id })"
@@ -184,5 +205,5 @@ const item = computed(
       </p>
     </section>
   </div>
-  <button @click="emit('forge')">前往炼器与购药</button>
+  <button @click="emit('forge')">前往丹药与法器准备 · 采购、委托与刻纹</button>
 </template>

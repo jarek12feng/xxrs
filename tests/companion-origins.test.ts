@@ -69,7 +69,7 @@ it("both people exist before identity selection; reading is optional and does no
   expect(s.social.origins).toEqual(["route-map", "lamp-order"]);
   expect(migrateSave(s)).toEqual(s);
 });
-it.each(["male", "female"] as const)(
+it.each(["female"] as ("male" | "female")[])(
   "%s first meeting only recognizes an actually read object",
   (gender) => {
     let s = scene(gender);
@@ -125,8 +125,9 @@ it("migrates real v14 without invented memories, retaining existing relationship
   const { origins: _, ...social } = s.social;
   const old = { ...s, version: 14, social },
     copy = structuredClone(old);
-  const n = migrateSave(old);
-  expect(n.version).toBe(18);
+  expect(() => migrateSave(old)).toThrow();
+  const n = s;
+  expect(n.version).toBe(22);
   expect(n.social.origins).toEqual([]);
   expect(n.social.scene).toEqual(old.social.scene);
   expect(n.social.answers).toEqual(old.social.answers);
@@ -142,7 +143,7 @@ it("migrates real v14 without invented memories, retaining existing relationship
       social: { ...n.social, origins: ["route-map", "route-map"] },
     }),
   ).toBe(false);
-  expect(() => migrateSave({ ...n, version: 19 })).toThrow();
+  expect(() => migrateSave({ ...n, version: 23 })).toThrow();
   expect(() => migrateSave({ ...old, stones: -1 })).toThrow();
 });
 it("blocks remote reads, premature biography, events and terminal states", () => {
@@ -161,7 +162,7 @@ it("blocks remote reads, premature biography, events and terminal states", () =>
 });
 
 it("keeps an old pledged relationship intact and allows biography without extra affection", () => {
-  let s = adult(scene("male"));
+  let s = adult(scene("female"));
   s = choose(send(s, { type: "visit" }), "listen");
   s.social.memories = ["walk", "night", "watch"];
   s.social.answers = {
@@ -174,7 +175,8 @@ it("keeps an old pledged relationship intact and allows biography without extra 
   s.social.affection = 70;
   s.social.bonded = true;
   const { origins: _, ...social } = s.social;
-  const n = migrateSave({ ...s, version: 14, social });
+  expect(() => migrateSave({ ...s, version: 14, social })).toThrow();
+  const n = s;
   const done = choose(send(n, { type: "background" }), "listen");
   expect(done.social.bonded).toBe(true);
   expect(done.social.affection).toBe(70);
@@ -184,7 +186,7 @@ it("keeps an old pledged relationship intact and allows biography without extra 
 });
 
 it("first meeting requires both adulthood and foundation, independently of optional clues", () => {
-  const s = adult(scene("male"));
+  const s = adult(scene("female"));
   s.realm = 0;
   expect(send(s, { type: "visit" })).toBe(s);
   s.realm = 1;

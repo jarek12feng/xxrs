@@ -195,6 +195,7 @@ describe("v4 world progression", () => {
     expect(s.pending?.kind).toBe("meeting");
     s = choose(s, "promise");
     s.qi = 350;
+    s.qiJourney.gates=2;
     s = advance(s, "cultivate", 12);
     expect(s.month).toBe(4);
     expect(s.qi).toBe(360);
@@ -240,7 +241,7 @@ describe("v4 world progression", () => {
     const before = structuredClone(old),
       s = migrateSave(old);
     expect(old).toEqual(before);
-    expect(s.version).toBe(18);
+    expect(s.version).toBe(22);
     expect(s.seed).toBe(91);
     expect(s.status).toBe("complete");
     expect(act(s, { type: "continue" }).legacy).toBe(5);
@@ -265,6 +266,7 @@ describe("online queue", () => {
   it("keeps all twelve foundation cultivation months and replays after save migration", () => {
     let s = settled();
     s.qi = 360;
+  s.qiJourney.gates = 2;
     s = act(s, { type: "enqueue", action: "cultivate", repeat: 12 });
     const start = s;
     const commands = Array.from({ length: 12 }, (_, i) => ({
@@ -288,12 +290,13 @@ describe("online queue", () => {
   it("finishes foundation cultivation at its own cap without consuming the next job", () => {
     let s = settled();
     s.qi = 360;
-    s.foundationJourney.cultivation = 599;
+  s.qiJourney.gates = 2;
+    s.foundationJourney.cultivation = 198;
     s = act(s, { type: "enqueue", action: "cultivate", repeat: 12 });
     s = act(s, { type: "enqueue", action: "work", repeat: 3 });
     const month = s.month;
     s = act(s, { type: "queueTick" });
-    expect(s.foundationJourney.cultivation).toBe(600);
+    expect(s.foundationJourney.cultivation).toBe(199);
     expect(s.month).toBe(month + 1);
     expect(s.journey.queue).toEqual([{ action: "work", remaining: 3 }]);
   });
@@ -336,6 +339,7 @@ describe("online queue", () => {
     expect(s.injury).toBe(0);
     expect(s.journey.queue[0].action).toBe("cultivate");
     s.qi = 355;
+  s.qiJourney.gates = 2;
     s = act(s, { type: "queueTick" });
     expect(s.qi).toBe(360);
     expect(s.journey.queue).toHaveLength(0);

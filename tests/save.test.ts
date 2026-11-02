@@ -47,7 +47,7 @@ describe("save snapshots", () => {
 });
 it("persists and resumes the new companion adventure without replaying rewards", async () => {
   const { mistCheckpoint } = await import("../tools/mist-checkpoint");
-  let state = mistCheckpoint();
+  let state = mistCheckpoint(42,"wood","female");
   state = dispatch(state, {
     id: "together",
     type: "companionship",
@@ -71,7 +71,7 @@ it("persists and resumes the new companion adventure without replaying rewards",
   const next = dispatch(restored, {
     id: "route",
     type: "companionship",
-    action: "public",
+    action: "backup",
   });
   await save(next);
   expect((await load()).state?.companionship.stage).toBe("trial");

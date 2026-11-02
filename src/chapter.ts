@@ -1,3 +1,4 @@
+import { foundationCost } from "./workshop/catalog";
 import { cultivationGainAtAge, cultivationMonthlyGain } from "./cultivation";
 import {
   hasFoundationRecipe,
@@ -194,10 +195,10 @@ export function createGame(
     life: 1,
     month: 0,
     age: 192,
-    limit: (path === "wood" ? 60 : 48) * 12,
+    limit: 100 * 12,
     realm: 0,
     qi: 0,
-    stones: 25,
+    stones: 12,
     herbs: 0,
     pills: 0,
     foundation: 0,
@@ -277,12 +278,7 @@ export function breakthroughDetails(s: State, pill = false) {
 export function cultivationGain(s: State) {
   return cultivationMonthlyGain(s);
 }
-export function refineCost(s: State) {
-  return {
-    herbs: s.wisdom >= 8 && s.study >= 2 ? 4 : 6,
-    stones: s.sense >= 8 ? 8 : 12,
-  };
-}
+export const refineCost = foundationCost;
 export function replayHints(s: State) {
   const hints: string[] = [];
   if (s.memories.crossing !== "sense")
@@ -309,7 +305,7 @@ export function nextGoal(s: State) {
   if (s.story.stage === "waiting")
     return `第三十六个月与陆迟会合，还剩 ${Math.max(0, 36 - s.month)} 个月。闭关六个月若跨过约期，将失约。`;
   if (s.realm === 0) return foundationGoal(s);
-  return "筑基篇即将结算。";
+  return "此段修行将告一段落。";
 }
 export function eventView(s: State): EventView | null {
   if (!s.pending) return null;
@@ -496,7 +492,6 @@ function month(s: State) {
     finish(s, true);
     return false;
   }
-  s.stones++;
   return true;
 }
 function hooks(s: State) {
@@ -517,13 +512,13 @@ function hooks(s: State) {
   if (s.month >= 24 && !s.memories.visit) decision(s, "visit");
 }
 // Shared adventure clock: consumes lifespan and processes appointments, without work income.
-export function travelMonth(input: State): State {
+export function travelMonth(input: State, activity = "行路准备"): State {
   if (input.status !== "alive" || input.pending) return input;
   const s = structuredClone(input);
   const stones = s.stones;
   if (month(s)) {
     s.stones = stones;
-    record(s, "行路准备耗时一月，寿元随之流逝。");
+    record(s, `${activity}耗时一月，寿元随之流逝。`);
     hooks(s);
   }
   return s;
@@ -768,12 +763,12 @@ export function dispatch(input: State, c: Command): State {
       }
       if (c.activity === "study")
         s.study = Math.min(4, s.study + (s.wisdom >= 8 ? 2 : 1));
-      if (c.activity === "work") s.stones += 4;
+      if (c.activity === "work") s.stones += 5;
       if (c.activity === "rest") s.injury = Math.max(0, s.injury - 1);
       if (c.activity !== "cultivate")
         record(
           s,
-          `${{ meditate: "凝神内观，神识 +1（上限 12）、修为 +2", study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: "山下劳作，额外灵石 +4", rest: "静养经脉，伤势 −1" }[c.activity]}。`,
+          `${{ meditate: "凝神内观，神识 +1（上限 12）、修为 +2", study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: "山下劳作，灵石 +5", rest: "静养经脉，伤势 −1" }[c.activity]}。`,
         );
       hooks(s);
       if (
@@ -829,8 +824,8 @@ export function dispatch(input: State, c: Command): State {
     if (roll <= chance) {
       s.realm = 1;
       s.qi = 0;
-      s.limit += 216;
-      s.result = `筑基成功：判定 ${roll}/100，成功率 ${chance}%。寿元 +18 年。`;
+      s.limit += 100 * 12;
+      s.result = `筑基成功：判定 ${roll}/100，成功率 ${chance}%。寿元 +100 年。`;
       record(s, s.result, "major");
       maybeFinish(s);
     } else {

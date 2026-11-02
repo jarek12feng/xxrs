@@ -353,7 +353,7 @@ export function mistError(s: State, action: MistAction): string {
   if (action === "companion" && !companionPresent(s))
     return "对方正在远行或等待接应，不能同时赴约；可独行或邀陆迟";
   if (["solo", "luchi", "companion"].includes(action)) {
-    if (m.passed) return "这段同行经历已经写入故事";
+    if (m.passed) return "此行已经走过";
     if (m.partner === action) return "已经约好同行方式";
     if (
       action === "companion" &&
@@ -401,7 +401,7 @@ export function mistError(s: State, action: MistAction): string {
   if (action === "caravanBridge") {
     if (s.adventure.road.solution !== "sword")
       return "需要青嶂关开出的货车商道";
-    if (m.passed || m.ward) return "归路已经备好，不重复领取援助";
+    if (m.passed || m.ward) return "归路已备妥";
     if (m.partner === "none") return "先决定同行方式";
     if (s.stones < 6) return "需要灵石 6 雇商队运来桥材";
   }

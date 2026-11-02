@@ -1,6 +1,7 @@
 // Presentation-only IDs. Never persist URLs or derive game rules from artwork.
 export type CharacterId =
   | "hero-male"
+  | "hero-male-qi"
   | "hero-female"
   | "luchi"
   | "yuqing"
@@ -10,9 +11,10 @@ export type CharacterId =
   | "gongyan"
   | "peizhufeng"
   | "qiuxingluo";
-export type Pose = "idle" | "meditate" | "attack" | "hurt";
+export type Pose = "idle" | "meditate" | "attack" | "guard" | "hurt";
 const poses: Record<CharacterId, readonly Pose[]> = {
-  "hero-male": ["idle", "meditate", "attack"],
+  "hero-male": ["idle", "meditate", "attack", "guard", "hurt"],
+  "hero-male-qi": ["idle", "meditate", "attack", "guard", "hurt"],
   "hero-female": ["idle", "meditate", "attack"],
   gongyan: ["idle"],
   peizhufeng: ["idle"],
@@ -23,11 +25,25 @@ const poses: Record<CharacterId, readonly Pose[]> = {
   raider: ["idle", "attack", "hurt"],
   golem: ["idle", "attack", "hurt"],
 };
-export function heroArt(gender?: string | null): CharacterId {
-  return gender === "female" ? "hero-female" : "hero-male";
+export function heroArt(gender?: string | null, realm = 0): CharacterId {
+  return gender === "female"
+    ? "hero-female"
+    : realm === 1
+      ? "hero-male"
+      : "hero-male-qi";
+}
+// Read only settled combat effects; never infer a hit from an enemy telegraph.
+export function heroBattlePose(effect?: string | null): Pose {
+  if (effect === "strike") return "attack";
+  if (effect === "guard" || effect === "discern") return "guard";
+  if (effect === "hurt" || effect === "loss") return "hurt";
+  return "idle";
 }
 export function characterArt(id: CharacterId, pose: Pose = "idle") {
   const supported = poses[id].includes(pose) ? pose : "idle";
+  if (id === "hero-male-qi") return `/art/hero-male/qi-${supported}.webp`;
+  if (id === "hero-male" && (supported === "guard" || supported === "hurt"))
+    return `/art/hero-male/foundation-${supported}.webp`;
   return `/art/characters/${id}${supported === "idle" ? "" : `-${supported}`}.webp`;
 }
 export const rivalArt: Readonly<Record<string, CharacterId>> = {
@@ -60,6 +76,8 @@ const items: Readonly<Record<string, string>> = {
   lamp: "spirit-lantern",
 };
 export function itemArt(id: string, tier = 0): string | undefined {
+  if (id === "ward" || id === "iron")
+    return `/art/workshop/${id === "ward" ? "meridian-pill" : "spirit-iron"}.webp`;
   const file = items[id];
   if (!file) return undefined;
   const refined = (id === "sword" || id === "vial") && tier === 2;

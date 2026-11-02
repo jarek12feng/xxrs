@@ -1,3 +1,16 @@
+import { freshHeroine } from "./foundation-journey/heroine";
+import { foundationCap, foundationBlock, freshFoundationGrowth } from "./foundation-journey/growth-state";
+import { freshWorkshop, validWorkshop, type Workshop } from "./workshop/state";
+import { runWorkshop, workshopQuote, type WorkshopCommand } from "./workshop/rules";
+import {
+  freshQiJourney,
+  validQiJourney,
+  qiCap,
+  runQiJourney,
+  qiGoal,
+  type QiJourney,
+  type QiAction,
+} from "./qi-journey/rules";
 import { cultivationGainAtAge, cultivationMonthlyGain } from "./cultivation";
 import {
   freshFoundationJourney,
@@ -21,6 +34,7 @@ import {
 } from "./companionship/rules";
 import {
   freshGrowth,
+  medicines,
   validGrowth,
   runGrowth,
   mainTraining,
@@ -192,7 +206,9 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 18;
+  version: 22;
+  workshop: Workshop;
+  qiJourney: QiJourney;
   foundationJourney: FoundationJourney;
   companionship: Companionship;
   growth: Growth;
@@ -202,8 +218,10 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | { id: string; type: "qiJourney"; action: QiAction }
   | { id: string; type: "foundationJourney"; action: JourneyAction }
   | { id: string; type: "companionship"; action: CompanionAction }
+  | WorkshopCommand
   | GrowthCommand
   | { id: string; type: "expedition"; action: ExpeditionAction }
   | chapter.Command
@@ -261,6 +279,8 @@ function base(s: State): chapter.State {
     growth: _____,
     companionship: ______,
     foundationJourney: _______,
+    qiJourney: ________,
+    workshop: _________,
     ...rest
   } = s;
   return { ...rest, version: 3 };
@@ -273,7 +293,9 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 18,
+    version: 22,
+    workshop: freshWorkshop(),
+    qiJourney: freshQiJourney(),
     foundationJourney: freshFoundationJourney(),
     companionship: freshCompanionship(),
     growth: freshGrowth(),
@@ -318,20 +340,25 @@ export const breakthroughDetails = (s: State, pill = false) =>
 export const refineCost = (s: State) => chapter.refineCost(base(s));
 export const replayHints = (s: State) => chapter.replayHints(base(s));
 export const actionError = (s: State, a: chapter.Activity) =>
-  s.foundationJourney.duel
-    ? "先结束筑基交锋"
-    : a === "cultivate" && s.realm === 1
-      ? s.status !== "alive" ||
-        s.pending ||
-        s.social.scene ||
-        s.social.arena.duel ||
-        s.expedition.duel
-        ? "先处理眼前事件或结束交锋"
-        : s.foundationJourney.cultivation >= 600
-          ? "筑基修行圆满，可完成凝丹准备或挑战试剑榜；金丹突破未开放"
-          : ""
-      : chapter.actionError(base(s), a);
+  s.qiJourney.node
+    ? "先结束秘境历练或撤回"
+    : a === "cultivate" && !s.realm && s.qi >= qiCap(s)
+      ? "修为已抵瓶颈，先去历练取得晋升材料"
+      : s.foundationJourney.duel
+        ? "先结束筑基交锋"
+        : a === "cultivate" && s.realm === 1
+          ? s.status !== "alive" ||
+            s.pending ||
+            s.social.scene ||
+            s.social.arena.duel ||
+            s.expedition.duel
+            ? "先处理眼前事件或结束交锋"
+            : s.foundationJourney.cultivation >= foundationCap(s)
+              ? foundationBlock(s)
+              : ""
+          : chapter.actionError(base(s), a);
 export const preparationError = (s: State, k: "refine" | "retreat") => {
+  if (k === "refine") return workshopQuote(s, { product: "foundation", method: "craft" }).error;
   const error = chapter.preparationError(base(s), k);
   return error === "先去渡口相识" && s.adventure.step === "done"
     ? "先修行至第三月，与陆迟再叙旧约"
@@ -403,11 +430,7 @@ export function challengeDetails(s: State, p: TrialPlace) {
 }
 export function forgeError(s: State, r: Relic) {
   if (!Object.hasOwn(relics, r)) return "未知灵器";
-  if (s.journey.relics[r] >= 2) return "已精炼至二阶";
-  if (s.journey.relics[r] === 1 && s.realm !== 1) return "筑基后可精炼";
-  if (s.study < 2 || s.stones < 24 || s.herbs < 4)
-    return "需心得 2、灵石 24、灵草 4";
-  return "";
+  return workshopQuote(s, { product: r, method: "craft" }).error;
 }
 export function aidError(s: State, p: TrialPlace, helper: "mentor" | "luchi") {
   const e = s.journey.encounters[p];
@@ -427,6 +450,15 @@ export function nextGoal(s: State) {
   if (s.social.arena.duel)
     return "擂台交锋中：查看对手意图，选择应对方式，或主动认负。时间暂停。";
   if (s.social.scene) return "眼前的人在等你的回应，完成对话后再继续修行。";
+  const qiTask = qiGoal(s);
+  if (
+    qiTask &&
+    s.adventure.step === "done" &&
+    !s.pending &&
+    s.qi >= 120 &&
+    s.qiJourney.gates < 2
+  )
+    return qiTask;
   const quest = expeditionGoal(s);
   if (quest) return quest;
   if (s.adventure.mist.stage !== "dormant" && !s.adventure.mist.revisited)
@@ -461,6 +493,14 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.qiJourney =
+    n.life === old.life ? structuredClone(old.qiJourney) : freshQiJourney();
+  if (n.status !== "alive") {
+    n.qiJourney.node = 0;
+    n.qiJourney.duel = null;
+    n.qiJourney.trial = null;
+  }
+  if (!n.realm) n.qi = Math.min(n.qi, qiCap(n));
   n.foundationJourney =
     n.life === old.life
       ? structuredClone(old.foundationJourney)
@@ -470,6 +510,7 @@ function normalize(n: State, old: State) {
     n.life === old.life
       ? structuredClone(old.companionship)
       : freshCompanionship();
+  n.workshop = n.life === old.life ? structuredClone(old.workshop) : freshWorkshop();
   n.growth = n.life === old.life ? structuredClone(old.growth) : freshGrowth();
   n.expedition =
     n.life === old.life ? structuredClone(old.expedition) : freshExpedition();
@@ -501,8 +542,30 @@ function normalize(n: State, old: State) {
   }
   return n;
 }
+function workshopMonth(s: State): State {
+  return normalize(lift(chapter.travelMonth(base(s), "开炉筹备"), structuredClone(s.journey), structuredClone(s.social), structuredClone(s.adventure)), s);
+}
 export function dispatch(input: State, c: Command): State {
+  const next = dispatchCommand(input, c);
+  if (next !== input && !next.realm) next.qi = Math.min(next.qi, qiCap(next));
+  return next;
+}
+function dispatchCommand(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (c.type === "qiJourney")
+    return runQiJourney(input, c.action, c.id, (s) =>
+      normalize(
+        lift(
+          chapter.travelMonth(base(s)),
+          structuredClone(s.journey),
+          structuredClone(s.social),
+          structuredClone(s.adventure),
+        ),
+        s,
+      ),
+    );
+  if (input.qiJourney.node) return input;
+  if (c.type === "break" && input.qiJourney.gates < 2) return input;
   if (c.type === "foundationJourney")
     return runFoundationJourney(input, c.action, c.id, (s) =>
       normalize(
@@ -528,7 +591,13 @@ export function dispatch(input: State, c: Command): State {
 
   if (c.type === "companionship")
     return runCompanionship(input, c.action, c.id);
-  if (c.type === "trainTechnique" || c.type === "brew" || c.type === "consume")
+  if (c.type === "workshop" || c.type === "forge" || c.type === "brew" || (c.type === "prepare" && c.kind === "refine")) {
+    if (c.type === "forge" && !Object.hasOwn(relics, c.relic)) return input;
+    if (c.type === "brew" && !Object.hasOwn(medicines, c.medicine)) return input;
+    const order = c.type === "workshop" ? c.order : { product: c.type === "forge" ? c.relic : c.type === "brew" ? c.medicine : "foundation" as const, method: "craft" as const };
+    return runWorkshop(input, order, c.id, workshopMonth);
+  }
+  if (c.type === "trainTechnique" || c.type === "consume")
     return runGrowth(input, c);
   if (c.type === "expedition")
     return runExpedition(input, c.action, c.id, (s) =>
@@ -589,11 +658,12 @@ export function dispatch(input: State, c: Command): State {
         return input;
       let n = input;
       for (let i = 0; i < command.months; i++) {
+        if (actionError(n, command.activity)) break;
         const b = base(n);
         if (
           n.realm === 1 &&
           command.activity === "cultivate" &&
-          n.foundationJourney.cultivation >= 600
+          n.foundationJourney.cultivation >= foundationCap(n)
         )
           break;
         const result =
@@ -621,10 +691,10 @@ export function dispatch(input: State, c: Command): State {
                 ? 4
                 : 0;
           if (n.realm === 0 && a === "cultivate")
-            n.qi = Math.min(360, old.qi + cultivationGainAtAge(n));
+            n.qi = Math.min(qiCap(n), old.qi + cultivationGainAtAge(n));
           if (n.realm === 0 && a !== "cultivate")
             n.qi = Math.min(
-              360,
+              qiCap(n),
               n.qi +
                 bonus +
                 (["cultivate", "train", "work"].includes(a)
@@ -641,7 +711,7 @@ export function dispatch(input: State, c: Command): State {
             n.qi = old.qi;
             const gain = a === "cultivate" ? cultivationGainAtAge(n) : 0;
             n.foundationJourney.cultivation = Math.min(
-              600,
+              foundationCap(n),
               old.foundationJourney.cultivation + gain,
             );
             if (gain)
@@ -680,7 +750,7 @@ export function dispatch(input: State, c: Command): State {
                 (l) => l.month === n.month && l.text.startsWith(prefix),
               )
             : null;
-          const actual = `${queueActions[a]}：${values.join("、") || "属性未变"}。已计入功法与当月收入。`;
+          const actual = `${queueActions[a]}：${values.join("、") || "属性未变"}。已计入功法效果。`;
           if (entry) entry.text = actual;
           else log(n, actual);
         }
@@ -731,6 +801,7 @@ export function dispatch(input: State, c: Command): State {
   let s = structuredClone(input);
   const accept = () => {
     s.seen = [...input.seen, c.id].slice(-512);
+    if (!s.realm) s.qi = Math.min(s.qi, qiCap(s));
     return s;
   };
   // Expeditions and duties spend one real month; death wins over their rewards.
@@ -744,9 +815,9 @@ export function dispatch(input: State, c: Command): State {
       });
     s = normalize(lift(n, s.journey, s.social, s.adventure), input);
     if (s.status === "alive") {
-      s.stones -= 4; // no labour income while travelling
+      s.stones -= 5; // no labour income while travelling
       s.log = s.log.filter(
-        (l) => !(l.month === s.month && l.text === "山下劳作，额外灵石 +4。"),
+        (l) => !(l.month === s.month && l.text === "山下劳作，灵石 +5。"),
       );
     }
     return s.status === "alive";
@@ -757,16 +828,6 @@ export function dispatch(input: State, c: Command): State {
       s.stones -= 8;
       s.herbs += 4;
       log(s, "坊市购得灵草四株，可用于灵器炼制、炼丹或与守境妖修交涉。");
-      return accept();
-    case "forge":
-      if (forgeError(s, c.relic)) return input;
-      s.stones -= 24;
-      s.herbs -= 4;
-      s.journey.relics[c.relic]++;
-      log(
-        s,
-        `${relics[c.relic].name}${s.journey.relics[c.relic] === 2 ? "精炼完成" : "炼成"}。装配后才能应对山外挑战。`,
-      );
       return accept();
     case "equipRelic":
       if (!Object.hasOwn(relics, c.relic) || !s.journey.relics[c.relic])
@@ -882,14 +943,15 @@ export function dispatch(input: State, c: Command): State {
           : { id: c.id, type: "advance", activity: task.action, months: 1 },
       );
       if (n === input) return input;
+      if (task.action === "refine" && n.pills <= input.pills) return n;
       n.journey.queue[0].remaining--;
       if (
         !n.journey.queue[0].remaining ||
         (task.action === "rest" && n.injury === 0) ||
         (task.action === "cultivate" &&
           (n.realm === 1
-            ? n.foundationJourney.cultivation >= 600
-            : n.qi >= 360))
+            ? n.foundationJourney.cultivation >= foundationCap(n)
+            : n.qi >= qiCap(n)))
       )
         n.journey.queue.shift();
       return n;
@@ -946,6 +1008,7 @@ export function dispatch(input: State, c: Command): State {
         return input;
       if (c.duty === "herbs" && s.herbs < 2) return input;
       if (c.duty === "copy" && s.stones < 3) return input;
+      if (c.duty === "watch" && s.injury >= 3) return input;
       if (!travel()) return accept();
       if (c.duty === "herbs") {
         s.herbs -= 2;
@@ -959,6 +1022,7 @@ export function dispatch(input: State, c: Command): State {
         s.injury = Math.min(6, s.injury + 1);
         s.qi = Math.min(360, s.qi + (s.realm === 0 ? 8 : 0));
       }
+      s.stones += c.duty === "herbs" ? 10 : c.duty === "watch" ? 8 : 6;
       s.journey.duties++;
       s.journey.contribution += 2;
       log(
@@ -967,7 +1031,8 @@ export function dispatch(input: State, c: Command): State {
           herbs: "送药下山，温蘅让你记住病人的名字，而不只是一笔贡献。",
           watch: "守夜归来，季衡接过你的灯：“今夜山路上的人，平安到家了。”",
           copy: "整理旧卷，你在采药名册上发现陆迟父亲的名字；旁边写着“雾岭”。",
-        }[c.duty],
+        }[c.duty] +
+          ` 灵石 +${c.duty === "herbs" ? 10 : c.duty === "watch" ? 8 : 6}，贡献 +2。`,
       );
       return accept();
     case "promote":
@@ -989,7 +1054,7 @@ export function dispatch(input: State, c: Command): State {
       }
       log(
         s,
-        "你凭亲历与心得成为外门弟子。执事交付雾岭通行令：资格不是终点，带一个答案回来。",
+        "你凭亲历与心得成为外门弟子。执事递来雾岭通行令：“山中路险，查明去向便回来。”",
       );
       return accept();
     case "learn":
@@ -1102,7 +1167,7 @@ export function dispatch(input: State, c: Command): State {
           s.stones += 20;
           log(
             s,
-            "你把守灯人的亲笔信交到陆迟母亲手里。她先摸了摸落款，才将信展开：“这个收笔，还是老样子。”陆迟没有催她。读到父亲仍须留守，她把窗边的灯挪到桌上：“既然信能送来，就替我回一句，家里的门没换。”陆迟接过空白信纸，终于不再望着山路等一个影子。父亲尚未归家，近况已经核实，亲笔信已送达。寻亲支线完成；灵石 +20，已取得的功法与航图保留，可在人物档案回看。",
+            "你把守灯人的亲笔信交到陆迟母亲手里。她先摸了摸落款，才将信展开：“这个收笔，还是老样子。”陆迟没有催她。读到父亲仍须留守，她把窗边的灯挪到桌上：“既然信能送来，就替我回一句，家里的门没换。”陆迟接过空白信纸，终于不再望着山路等一个影子。家书已送达。灵石 +20。",
           );
         }
       }
@@ -1118,11 +1183,11 @@ export function dispatch(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 18);
+  return validWorldState(x, 22);
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
@@ -1132,8 +1197,10 @@ function validWorldState(
     !j ||
     !chapter.validState(base(s)) ||
     !validSocial(s) ||
+    (version >= 21 && !validWorkshop(s.workshop, j.relics, s.realm)) ||
+    (version >= 19 && !validQiJourney(s, version < 20)) ||
     (version >= 16 && !validCompanionship(s)) ||
-    (version >= 17 && !validFoundationJourney(s, version < 18)) ||
+    (version >= 17 && !validFoundationJourney(s, version < 18, version < 22)) ||
     !(version === 10
       ? validAdventureV10(s.adventure)
       : validAdventure(s.adventure)) ||
@@ -1208,6 +1275,51 @@ function validWorldState(
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 21) {
+    if (!validWorldState(x, 21)) throw new Error("旧存档损坏，原档未修改。");
+    const n = structuredClone(x) as State;
+    // No invented milestones: earlier foundation runs must start a new character.
+    if (n.realm === 1) throw new Error("筑基成长规则已重构，请备份原档并新建角色；原档未修改。");
+    n.version = 22;
+    n.foundationJourney.growth = freshFoundationGrowth();
+    n.foundationJourney.heroine = freshHeroine();
+    return n;
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 20) {
+    if (!validWorldState(x, 20)) throw new Error("旧存档损坏，原档未修改。");
+    return migrateSave({ ...structuredClone(x) as State, version: 21, workshop: freshWorkshop() });
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 19) {
+    if (!validWorldState(x, 19)) throw new Error("旧存档损坏，原档未修改。");
+    const old = structuredClone(x) as State;
+    // No invented contacts or route completions. Current playtest rules start unearned.
+    return migrateSave({
+      ...old,
+      version: 20,
+      qiJourney: {
+        ...freshQiJourney(),
+        ...old.qiJourney,
+        people: freshQiJourney().people,
+        preparations: freshQiJourney().preparations,
+        trial: null,
+      },
+    });
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 18) {
+    if (!validWorldState(x, 18)) throw new Error("旧存档损坏，原档未修改。");
+    const old = structuredClone(x) as State;
+    const q = freshQiJourney();
+    // Honor already reached stages; do not fabricate battles, items or NPC meetings.
+    q.gates = old.realm || old.qi >= 360 ? 2 : old.qi >= 240 ? 1 : 0;
+    const upgraded = {
+      ...old,
+      version: 20 as const,
+      qiJourney: q,
+      limit: old.limit,
+    };
+    if (validWorldState(upgraded, 20)) return migrateSave(upgraded);
+    throw new Error("旧存档损坏，原档未修改。");
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 17) {
     if (!validWorldState(x, 17)) throw new Error("旧存档损坏，原档未修改。");
     const old = structuredClone(x) as State;
@@ -1224,7 +1336,7 @@ export function migrateSave(x: unknown): State {
           : null,
       },
     };
-    if (validState(upgraded)) return upgraded;
+    if (validWorldState(upgraded, 18)) return migrateSave(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 16) {

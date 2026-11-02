@@ -52,6 +52,7 @@ afterEach(() => {
 it("stops at full qi, links to the actual breakthrough preview and resumes no hidden ticks", async () => {
   const s = expeditionSession().state;
   s.qi = 359;
+  s.qiJourney.gates = 2;
   await mount(s);
   button("自动行动").click();
   await vi.advanceTimersByTimeAsync(800);
@@ -72,6 +73,7 @@ it("stops at full qi, links to the actual breakthrough preview and resumes no hi
 it("keeps ordinary work usable when qi was already full", async () => {
   const s = expeditionSession().state;
   s.qi = 360;
+  s.qiJourney.gates = 2;
   await mount(s);
   button("劳作").click();
   await flush();
@@ -112,6 +114,7 @@ it("pauses a queue on its next unavailable task without spending an extra month"
 it("does not announce a successful milestone if persistence fails", async () => {
   const s = expeditionSession().state;
   s.qi = 359;
+  s.qiJourney.gates = 2;
   await mount(s);
   vi.mocked(save).mockRejectedValue(new Error("test storage unavailable"));
   button("自动行动").click();
@@ -124,6 +127,7 @@ it("does not announce a successful milestone if persistence fails", async () => 
 it("explains the mandatory relic pill and blocks breakthrough without it", async () => {
   const s = expeditionSession().state;
   s.qi = 360;
+  s.qiJourney.gates = 2;
   s.pills = 0;
   await mount(s);
   button("叩问天关").click();
@@ -140,6 +144,7 @@ it("explains the mandatory relic pill and blocks breakthrough without it", async
 it("offers a sword cultivator the earned recipe, with material costs and real command", async () => {
   const s = expeditionSession().state;
   s.path = "sword";
+  s.qiJourney.gates = 2;
   s.story.stage = "resolved";
   s.story.choice = "gift";
   s.story.luchi = "foundation";

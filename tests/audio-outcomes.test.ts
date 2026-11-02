@@ -20,6 +20,7 @@ it("death overrides the routine action, and rebirth overrides terminal state", (
 it("real breakthrough failure is identified even at the injury cap", () => {
   let [a] = pair();
   a.qi = 360;
+  a.qiJourney.gates = 2;
   a.injury = 6;
   for (const seed of [123456, 987654321, 2147483647, 4294967295]) {
     a.seed = seed;

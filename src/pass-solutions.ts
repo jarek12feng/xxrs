@@ -110,7 +110,7 @@ export function applyPassAction(s: State, action: PassAction) {
     plan = passSolutions[key];
   if (action === plan.prepare) {
     r.prepared = key;
-    r.result = plan.finding + " 尚未实施，可改看其他办法。";
+    r.result = plan.finding + " 尚未动手，也可另寻办法。";
     return;
   }
   s.stones -= { medicine: 4, sword: 8, array: 6 }[key];

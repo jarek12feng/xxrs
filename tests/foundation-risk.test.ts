@@ -181,6 +181,7 @@ describe("passage scenes preserve actual preparation and companion presence", ()
 it("successful gift breakthrough acknowledges mutual growth, without inventing a reunion for other branches", () => {
   let s = crossing();
   s.qi = 360;
+  s.qiJourney.gates = 2;
   s = send(s, choose(s, "sense"));
   s = send(s, choose(s, "gift"));
   s.herbs = 6;

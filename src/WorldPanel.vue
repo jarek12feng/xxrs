@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import WorkshopPanel from "./workshop/WorkshopPanel.vue";
 import type { CombatFeedback } from "./foundation-journey/feedback";
 import FoundationPanel from "./foundation-journey/FoundationPanel.vue";
 import ItemArt from "./presentation/ItemArt.vue";
@@ -10,8 +11,6 @@ import {
   encounterDescription,
   opponents,
   techniques,
-  relics,
-  forgeError,
   explorationError,
   promotionError,
   queueActions,
@@ -122,7 +121,7 @@ const queueError = computed(() => {
 });
 const rooms = {
   gear: {
-    title: "灯下炼器",
+    title: "丹炉与器坊",
     image: "/scenes/apothecary.jpg",
     body: "炉火映着瓶身与剑纹。你把一路遇过的风瘴记在旁边，决定这一回要为哪一种险境准备。",
   },
@@ -398,48 +397,7 @@ const mapImages = {
       class="world-content scene-controls"
       aria-label="灵器操作区"
     >
-      <h3 class="controls-heading">炼制与装配</h3>
-      <p>
-        当前灵器：{{
-          game.journey.equipped ? relics[game.journey.equipped].name : "未装配"
-        }}
-      </p>
-      <p class="muted">
-        灵器可炼制、装配，筑基后可精炼一次。普通灵器闯关 +10%，精炼
-        +32%；针对不同敌人另有作用。一次只装配一件。
-      </p>
-      <article v-for="(r, id) in relics" :key="id" class="map-card">
-        <h3>
-          <ItemArt :id="id" :tier="game.journey.relics[id]" />
-          {{ r.name }} ·
-          {{ ["未炼制", "灵器", "精炼灵器"][game.journey.relics[id]] }}
-        </h3>
-        <p>{{ r.hint }}</p>
-        <p class="muted">
-          {{
-            forgeError(game, id) || "本次炼制消耗灵石 24、灵草 4；需心得 2。"
-          }}
-        </p>
-        <button
-          :disabled="locked || !!forgeError(game, id)"
-          @click="emit('act', { type: 'forge', relic: id })"
-        >
-          {{ game.journey.relics[id] ? "精炼" : "炼制" }} · 灵石 24 / 灵草 4</button
-        ><button
-          :disabled="
-            locked || !game.journey.relics[id] || game.journey.equipped === id
-          "
-          @click="emit('act', { type: 'equipRelic', relic: id })"
-        >
-          {{ game.journey.equipped === id ? "已装配" : "装配灵器" }}
-        </button>
-      </article>
-      <button
-        :disabled="locked || game.stones < 8"
-        @click="emit('act', { type: 'supplies' })"
-      >
-        坊市购药 · 灵石 −8 / 灵草 +4
-      </button>
+      <WorkshopPanel :game="game" :busy="busy || running" @act="emit('act', $event)" />
     </div>
     <div v-else-if="tab === 'sect'" class="world-content">
       <p class="muted">
@@ -496,19 +454,19 @@ const mapImages = {
             :disabled="locked || game.herbs < 2"
             @click="emit('act', { type: 'duty', duty: 'herbs' })"
           >
-            送药济人<small>一月 / 灵草 −2 / 根基 +1 / 贡献 +2</small>
+            送药济人<small>一月 / 灵草 −2 / 灵石 +10 / 根基 +1 / 贡献 +2</small>
           </button>
           <button
-            :disabled="locked"
+            :disabled="locked || game.injury >= 3"
             @click="emit('act', { type: 'duty', duty: 'watch' })"
           >
-            守护夜路<small>一月 / 伤势 +1 / 炼气修为 +8 / 贡献 +2</small>
+            守护夜路<small>一月 / 灵石 +8 / 伤势 +1 / 炼气修为 +8 / 贡献 +2</small>
           </button>
           <button
             :disabled="locked || game.stones < 3"
             @click="emit('act', { type: 'duty', duty: 'copy' })"
           >
-            整理旧卷<small>一月 / 灵石 −3 / 心得 +1 / 贡献 +2</small>
+            整理旧卷<small>一月 / 灵石先付 3、完工收 6 / 心得 +1 / 贡献 +2</small>
           </button>
         </div>
         <div

@@ -1,6 +1,9 @@
+import { foundationCap, hasSteady, type FoundationProgress } from "./foundation-journey/growth-state";
+import { qiCap, type QiJourney } from "./qi-journey/state";
 /** Shared pure cultivation rules; optional fields also support the first-volume core. */
 export interface Cultivator {
   realm: number;
+  qiJourney?: QiJourney;
   qi: number;
   age: number;
   limit: number;
@@ -9,7 +12,7 @@ export interface Cultivator {
   status: string;
   journey?: { main: string | null };
   growth?: { training: Record<string, number> };
-  foundationJourney?: {
+  foundationJourney?: FoundationProgress & {
     cultivation: number;
     inheritance: string;
     rescue: number;
@@ -50,7 +53,7 @@ export function cultivationBaseGain(s: Cultivator) {
       (s.root >= 8 ? 1 : 0) +
       (training >= 2 ? 1 : 0) +
       (main && s.foundationJourney?.inheritance === main ? 1 : 0) +
-      ((s.foundationJourney?.rescue ?? 0) >= 3 ? 1 : 0)
+      (s.foundationJourney && hasSteady(s.foundationJourney) ? 1 : 0)
     );
   return (
     (s.path === "wood" ? 10 : 14) +
@@ -65,14 +68,14 @@ export function cultivationGainAtAge(s: Cultivator) {
   return Math.max(1, Math.round(cultivationBaseGain(s) * lifeEfficiency(s)));
 }
 export const cultivationMonthlyGain = (s: Cultivator) =>
-  (s.realm === 1 ? (s.foundationJourney?.cultivation ?? 0) >= 600 : s.qi >= 360)
+  (s.realm === 1 ? (s.foundationJourney?.cultivation ?? 0) >= foundationCap(s) : s.qi >= qiCap(s))
     ? 0
     : cultivationGainAtAge({ ...s, age: s.age + 1 });
 /** Ignores narrative interruptions; reports the maximum safe batch, not a promise to skip events. */
 export function cultivationProjection(s: Cultivator, requestedTarget?: number) {
   const current =
     s.realm === 1 ? (s.foundationJourney?.cultivation ?? 0) : s.qi;
-  const cap = s.realm === 1 ? 600 : 360;
+  const cap = s.realm === 1 ? foundationCap(s) : qiCap(s);
   const step = s.realm === 1 ? 200 : 120;
   const target = Math.max(
     current,
@@ -102,6 +105,7 @@ export function cultivationProjection(s: Cultivator, requestedTarget?: number) {
   const monthsToTarget = gain >= missing ? elapsed : null;
   return {
     current,
+    bottleneck: cap < (s.realm === 1 ? 600 : 360),
     target,
     missing,
     monthlyGain: cultivationMonthlyGain(s),

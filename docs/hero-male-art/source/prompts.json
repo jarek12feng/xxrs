@@ -1,0 +1,37 @@
+[
+  {
+    "outfit": "qi",
+    "pose": "idle",
+    "prompt": "Edit this reference into one standalone transparent full-body Chinese xianxia game character sprite. Preserve exactly the same adult male character identity, face, black tied long hair, painterly illustration style and jade-green ivory palette. Change costume to a simpler early cultivation travel outfit: plain muted jade-green cross-collar robe over ivory inner layer, narrow practical sleeves, simple brown cloth belt, dark cloth boots, no elaborate floral brocade or gold decoration. Consistent outfit across poses. Pose: Stand calmly, full body, arms relaxed, sword sheathed. Entire body, head, hair, clothes and any weapon fully inside canvas with 8 percent transparent margin. Face turned three-quarter toward viewer/right. Single character only, no text, borders, floor, shadows, backdrop or UI. True transparent alpha, portrait 2:3. Do not change sex, apparent age, facial identity or art style."
+  },
+  {
+    "outfit": "qi",
+    "pose": "meditate",
+    "prompt": "Edit this reference into one standalone transparent full-body Chinese xianxia game character sprite. Preserve exactly the same adult male character identity, face, black tied long hair, painterly illustration style and jade-green ivory palette. Change costume to a simpler early cultivation travel outfit: plain muted jade-green cross-collar robe over ivory inner layer, narrow practical sleeves, simple brown cloth belt, dark cloth boots, no elaborate floral brocade or gold decoration. Consistent outfit across poses. Pose: Seated cross-legged in meditation, eyes closed, hands resting on knees, full seated body. Entire body, head, hair, clothes and any weapon fully inside canvas with 8 percent transparent margin. Face turned three-quarter toward viewer/right. Single character only, no text, borders, floor, shadows, backdrop or UI. True transparent alpha, portrait 2:3. Do not change sex, apparent age, facial identity or art style."
+  },
+  {
+    "outfit": "qi",
+    "pose": "attack",
+    "prompt": "Edit this reference into one standalone transparent full-body Chinese xianxia game character sprite. Preserve exactly the same adult male character identity, face, black tied long hair, painterly illustration style and jade-green ivory palette. Change costume to a simpler early cultivation travel outfit: plain muted jade-green cross-collar robe over ivory inner layer, narrow practical sleeves, simple brown cloth belt, dark cloth boots, no elaborate floral brocade or gold decoration. Consistent outfit across poses. Pose: Full body sword strike facing right, one Chinese straight jian extended toward right, entire blade and both feet inside image. Entire body, head, hair, clothes and any weapon fully inside canvas with 8 percent transparent margin. Face turned three-quarter toward viewer/right. Single character only, no text, borders, floor, shadows, backdrop or UI. True transparent alpha, portrait 2:3. Do not change sex, apparent age, facial identity or art style."
+  },
+  {
+    "outfit": "qi",
+    "pose": "guard",
+    "prompt": "Edit this reference into one standalone transparent full-body Chinese xianxia game character sprite. Preserve exactly the same adult male character identity, face, black tied long hair, painterly illustration style and jade-green ivory palette. Change costume to a simpler early cultivation travel outfit: plain muted jade-green cross-collar robe over ivory inner layer, narrow practical sleeves, simple brown cloth belt, dark cloth boots, no elaborate floral brocade or gold decoration. Consistent outfit across poses. Pose: Full body, stable defensive stance facing slightly right, one open palm extended protectively, other hand making a simple cultivation hand seal near chest. Sword sheathed. No magical circle or effects baked into image. Entire body, head, hair, clothes and any weapon fully inside canvas with 8 percent transparent margin. Face turned three-quarter toward viewer/right. Single character only, no text, borders, floor, shadows, backdrop or UI. True transparent alpha, portrait 2:3. Do not change sex, apparent age, facial identity or art style."
+  },
+  {
+    "outfit": "qi",
+    "pose": "hurt",
+    "prompt": "Edit this reference into one standalone transparent full-body Chinese xianxia game character sprite. Preserve exactly the same adult male character identity, face, black tied long hair, painterly illustration style and jade-green ivory palette. Change costume to a simpler early cultivation travel outfit: plain muted jade-green cross-collar robe over ivory inner layer, narrow practical sleeves, simple brown cloth belt, dark cloth boots, no elaborate floral brocade or gold decoration. Consistent outfit across poses. Pose: Full body recoiling slightly from a hit coming from right, one hand clutching upper chest, knees bent, strained but composed expression, sword sheathed. No blood, no wounds, no new costume damage. Entire body, head, hair, clothes and any weapon fully inside canvas with 8 percent transparent margin. Face turned three-quarter toward viewer/right. Single character only, no text, borders, floor, shadows, backdrop or UI. True transparent alpha, portrait 2:3. Do not change sex, apparent age, facial identity or art style."
+  },
+  {
+    "outfit": "foundation",
+    "pose": "guard",
+    "prompt": "Edit this reference into one standalone transparent full-body Chinese xianxia game character sprite. Preserve exactly the same adult male character identity, face, black tied long hair, painterly illustration style and jade-green ivory palette. Keep the reference's established ornate jade-green and ivory leaf-pattern robe, layered flowing sleeves, brown waist belt, jade fittings and boots exactly; this is the same foundation-stage outfit. Pose: Full body, stable defensive stance facing slightly right, one open palm extended protectively, other hand making a simple cultivation hand seal near chest. Sword sheathed. No magical circle or effects baked into image. Entire body, head, hair, clothes and any weapon fully inside canvas with 8 percent transparent margin. Face turned three-quarter toward viewer/right. Single character only, no text, borders, floor, shadows, backdrop or UI. True transparent alpha, portrait 2:3. Do not change sex, apparent age, facial identity or art style."
+  },
+  {
+    "outfit": "foundation",
+    "pose": "hurt",
+    "prompt": "Edit this reference into one standalone transparent full-body Chinese xianxia game character sprite. Preserve exactly the same adult male character identity, face, black tied long hair, painterly illustration style and jade-green ivory palette. Keep the reference's established ornate jade-green and ivory leaf-pattern robe, layered flowing sleeves, brown waist belt, jade fittings and boots exactly; this is the same foundation-stage outfit. Pose: Full body recoiling slightly from a hit coming from right, one hand clutching upper chest, knees bent, strained but composed expression, sword sheathed. No blood, no wounds, no new costume damage. Entire body, head, hair, clothes and any weapon fully inside canvas with 8 percent transparent margin. Face turned three-quarter toward viewer/right. Single character only, no text, borders, floor, shadows, backdrop or UI. True transparent alpha, portrait 2:3. Do not change sex, apparent age, facial identity or art style."
+  }
+]

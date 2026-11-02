@@ -30,6 +30,7 @@ const choose = (s: State, option: string) =>
 it("requires a pill for every attempt and gates new recipes behind the relic", () => {
   const s = createGame("叩关", "wood", 1);
   s.qi = 360;
+  s.qiJourney.gates = 2;
   s.herbs = 100;
   s.stones = 100;
   const snapshot = structuredClone(s);
@@ -104,6 +105,7 @@ it.each(["wood", "sword"] as const)(
     let s = crossing();
     s.path = path;
     s.qi = 360;
+  s.qiJourney.gates = 2;
     s.herbs = 10;
     s = choose(choose(s, "medicine"), "gift");
     expect(s.pills).toBe(0);
@@ -121,6 +123,7 @@ it.each(["wood", "sword"] as const)(
 it("failure consumes one pill, retains the recipe and prevents duplicate settlement", () => {
   let s = crossing();
   s.qi = 360;
+  s.qiJourney.gates = 2;
   s.herbs = 4;
   s = choose(choose(s, "medicine"), "self");
   s.seed = 10000;

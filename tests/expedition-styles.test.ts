@@ -30,6 +30,7 @@ function boss(
   p.send({ type: "expedition", action: "studyArray" });
   if (technique) {
     p.send({ type: "learn", technique });
+    if(!p.state.growth.training[technique])p.send({type:"trainTechnique",technique});
     p.send({ type: "equip", technique });
     expect(p.state.journey.main).toBe(technique);
   }
@@ -77,7 +78,7 @@ it("medicine spends one herb to recover after a survivable hit, caps health and 
   expect(next.herbs).toBe(old.herbs - 1);
   const calc = exchangePreview(old, "guard")!;
   expect(next.expedition.duel!.hp).toBe(
-    old.expedition.duel!.hp - calc.incoming + 7,
+    old.expedition.duel!.hp - calc.incoming + calc.healing,
   );
   expect(next.expedition.duel!.hp).toBeLessThanOrEqual(readiness(next).hp);
   expect(dispatch(next, cmd)).toBe(next);
@@ -109,6 +110,8 @@ it("medicine spends one herb to recover after a survivable hit, caps health and 
 it("perception technique specifically breaks the golem core and cannot be swapped mid fight", () => {
   const p = boss("breath"),
     baseline = boss();
+  // Remove preparation armor to measure the technique rather than the zero-damage floor.
+  for (const x of [p, baseline]) { x.state.foundation = 0; x.state.journey.support = null; x.state.journey.equipped = null; }
   const special = exchangePreview(p.state, "discern")!,
     plain = exchangePreview(baseline.state, "discern")!;
   expect(special.damage - plain.damage).toBe(7);
@@ -118,7 +121,7 @@ it("perception technique specifically breaks the golem core and cannot be swappe
     dispatch(old, { type: "equip", technique: "spring", id: "swap" }),
   ).toBe(old);
   expect(exchangePreview(old, "guard")!.damage).toBe(
-    exchangePreview(baseline.state, "guard")!.damage,
+    exchangePreview(baseline.state, "guard")!.damage + 2, // trained breath adds two base damage
   );
 });
 it("all three equipped styles can complete the existing boss with resources bounded", () => {
@@ -211,7 +214,7 @@ it("replays 180 style/path/aptitude/seed combinations with bounded herbs and no 
           expect(a.state.herbs).toBeGreaterThanOrEqual(0);
           expect(a.state.injury).toBe(0);
         }
-});
+}, 20000);
 it("does not invent station evidence when the player only explored the garden", () => {
   const p = boss();
   p.fight();

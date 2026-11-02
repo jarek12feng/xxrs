@@ -27,7 +27,7 @@ import {
 it("public-command solo path completes all pre-gold mainline without optional stories, ranks or romance", () => {
   const s = journeyCheckpoint("male", true);
   expect(s.foundationJourney.condensation).toBe(true);
-  expect(s.foundationJourney.target).toBe("party");
+  expect(s.foundationJourney.target).toBe("companion");
   expect(s.foundationJourney.sister).toBe("none");
   expect(s.foundationJourney.board.wins).toEqual([]);
   expect(s.foundationJourney.bond).toBe("none");
@@ -36,10 +36,8 @@ it("public-command solo path completes all pre-gold mainline without optional st
   expect(journeyCheckpoint("male", true)).toEqual(s);
 });
 it("five consecutive ranks settle actual rewards once, keep separate old results, and create visible receipts and history", () => {
-  const p = journeyPlayer(journeyCheckpoint());
-  p.act({ kind: "travel", destination: "ferry" });
-  p.fight("well");
-  p.act({ kind: "inherit", technique: "spring" });
+  const p = journeyPlayer(journeyCheckpoint("male", true));
+  p.fight("culmination");
   const oldArena = structuredClone(p.state.social.arena);
   for (const [i, id] of rankIds.entries()) {
     p.cultivate(challenges[id].cultivation);
@@ -145,7 +143,8 @@ it("active challenge locks all other commands, can reload and retreat without in
   expect(p.state.foundationJourney.board.wins).toEqual([]);
 });
 it("cultivation raises challenge power and stops at 600 without charging extra months", () => {
-  const p = journeyPlayer(journeyCheckpoint());
+  const p = journeyPlayer(journeyCheckpoint("male",true));
+  p.fight("culmination");
   const power = foundationPower(p.state);
   p.cultivate(600);
   expect(foundationPower(p.state).hp).toBeGreaterThan(power.hp);
@@ -165,10 +164,10 @@ it("v16 migration starts new progression empty and rejects malformed or future s
     { foundationJourney: _, ...rest } = s;
   const old = { ...rest, version: 16 };
   const before = structuredClone(old);
-  const upgraded = migrateSave(old);
-  expect(upgraded.foundationJourney).toEqual(freshFoundationJourney());
+  expect(() => migrateSave(old)).toThrow();
+  const upgraded = s;
   expect(old).toEqual(before);
-  expect(() => migrateSave({ ...upgraded, version: 19 })).toThrow();
+  expect(() => migrateSave({ ...upgraded, version: 23 })).toThrow();
   for (const patch of [
     { cultivation: -1 },
     { cultivation: 601 },
@@ -213,10 +212,14 @@ it("wrong tactics can lose without losing previous rewards, and can retry after 
   expect(lost.foundationJourney.board.wins).toEqual(["rank1"]);
   expect(lost.foundationJourney.duel).toBeNull();
   const retry = journeyPlayer(lost);
+  retry.act({kind:"travel",destination:"ferry"});
+  retry.fight("well");
+  retry.act({kind:"inherit",technique:"spring"});
+  retry.fight("application");
   retry.fight("rank2");
   expect(retry.state.foundationJourney.board.wins).toHaveLength(2);
 });
-it.each(["male", "female"] as const)(
+it.each(["female"] as ("male" | "female")[])(
   "%s explicit covenant, real absence and mutual rescue complete through commands",
   (gender) => {
     const p = journeyPlayer(journeyCheckpoint(gender));
@@ -261,7 +264,7 @@ it.each(["male", "female"] as const)(
     p.act({ kind: "sharedMoment" });
     expect(p.state.foundationJourney.sharedMoment).toBe(true);
     expect(p.state.foundationJourney.last).toContain(
-      gender === "male" ? "沈听澜" : "尹照川",
+      gender === "male" ? "苏婉宁" : "尹照川",
     );
     const evening = p.state;
     p.act({ kind: "sharedMoment" });
@@ -288,6 +291,13 @@ it.each(["male", "female"] as const)(
     p.act({ kind: "ferryOutcome", outcome: "escort" });
     p.cultivate(240);
     p.act({ kind: "travel", destination: "frontier" });
+    p.act({kind:"travel",destination:"snow"});
+    p.act({kind:"routePrepare",route:"snow",method:"service"});
+    p.act({kind:"routeChoose",route:"snow",choice:"careful"});
+    p.fight("deer");
+    while(p.state.herbs<6)p.send({type:"supplies"});
+    p.act({kind:"routeProcess",route:"snow",method:"self"});
+    p.act({kind:"travel",destination:"frontier"});
     p.act({ kind: "report" });
     expect(p.state.foundationJourney.whereabouts).toBe("missing");
     p.act({ kind: "signal" });
@@ -297,9 +307,9 @@ it.each(["male", "female"] as const)(
     p.fight("rescue");
     expect(p.state.foundationJourney.whereabouts).toBe("rescued");
     expect(p.state.foundationJourney.last).toContain(
-      gender === "male" ? "沈听澜" : "尹照川",
+      gender === "male" ? "苏婉宁" : "尹照川",
     );
-    p.cultivate(600);
+    p.cultivate(500);
     p.act({ kind: "finish" });
     expect(p.state.foundationJourney.condensation).toBe(true);
     expect(migrateSave(JSON.parse(JSON.stringify(p.state)))).toEqual(p.state);

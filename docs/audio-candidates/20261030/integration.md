@@ -5,7 +5,7 @@
 ## 实际覆盖
 
 - 配乐 7 首：筑基日常 foundation；关系面板职业协作 survey/lamps；无名渡 sunken；筑基交锋、雪线与古道 frontier；关系面板正常远行 parting、实际归来 return。听雨旅亭也使用 return。
-- 环境循环 4 条：渡口 waterside、沈听澜雨棚与听雨旅亭 rain-shelter、庭院/山门 wind-chimes、雪线 snow-wind。文件环境声开启后停止旧合成底噪；切换只保留当前与淡出的上一条，零音量立即释放。
+- 环境循环 4 条：渡口 waterside、苏婉宁雨棚与听雨旅亭 rain-shelter、庭院/山门 wind-chimes、雪线 snow-wind。文件环境声开启后停止旧合成底噪；切换只保留当前与淡出的上一条，零音量立即释放。
 - 事件音效 13 个：职业准备 ward-learn，选定勘路/灯阵方案 route-mark/lamp-align，实际护身试验成功 ward-test，回访交接与渡口交接 handover，沉井/出口胜利 array-open，领取传承 inheritance，事故核实发讯 signal-send，确认回讯 signal-reply，接应完成 rescue-clear，双方结契 vow，正常出发 farewell，进入渡口 boat-step。
 - memorial 已注册、可在素材页试听；当前没有确认死亡后的纪念事件，不用于失联、收到行牌、普通分别或玩家死亡。实际游戏事件覆盖为 24/25，不能称 25 个文件都已有剧情触发。
 - 试剑升榜继续使用既有 victory；普通交锋保留 strike/guard/discern，炼气场景继续使用 v1。

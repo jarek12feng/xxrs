@@ -21,8 +21,8 @@ const PlaytestRecorder = defineAsyncComponent(
 import { defineStore } from "pinia";
 import { presences } from "./landmarks";
 import { actionSound } from "./action-sound";
-import { foundationAudioScene } from "./audio-scene";
-import { createMusicPlayer, sceneMusic, musicNames } from "./local-music";
+import { gameAudioScene } from "./audio-scene";
+import { createMusicPlayer, musicNames } from "./local-music";
 import FoundationJourney from "./FoundationJourney.vue";
 import { breakthroughError } from "./foundation";
 import PreparationValues from "./PreparationValues.vue";
@@ -33,7 +33,7 @@ import { sisterNote } from "./foundation-journey/narrative";
 import { openingGuide } from "./opening-guide";
 import { expeditionGoal } from "./expedition/progression";
 import { createSoundscape, soundSettings, type SoundMood } from "./audio";
-// User-authorized audio revision; gameplay freeze remains in force.
+// Audio is presentation only; successful persisted outcomes trigger effects.
 const localMusicEnabled = true;
 let music:
   ReturnType<typeof import("./local-music").createMusicPlayer> | undefined;
@@ -122,6 +122,8 @@ import SceneBackdrop from "./SceneBackdrop.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import PracticeStage from "./PracticeStage.vue";
 import CultivationOutlook from "./CultivationOutlook.vue";
+import CultivationStatus from "./CultivationStatus.vue";
+import QiJourneyPanel from "./qi-journey/QiJourneyPanel.vue";
 import {
   realmStageLabel,
   remainingLifeMonths,
@@ -195,7 +197,7 @@ const panelTitles: Record<string, string> = {
   relationship: "人物关系",
   sect: "宗门师承",
   arena: "听松擂台",
-  gear: "炼器与购药",
+  gear: "丹药与法器准备",
   queue: "修行安排",
   journal: "任务与见闻",
   system: "系统菜单",
@@ -758,25 +760,18 @@ onMounted(async () => {
       watch(
         () => ({
           scene: currentScene.value,
-          foundation: !titleScreen.value
-            ? foundationAudioScene(game.value, dialog.value)
-            : null,
-          shrineRelit: game.value?.adventure.mist.revisited ?? false,
-          fighting: Boolean(
-            game.value?.social.arena.duel || game.value?.expedition.duel,
+          audio: gameAudioScene(
+            titleScreen.value ? null : game.value,
+            dialog.value,
+            currentScene.value.name,
           ),
         }),
-        ({ scene, fighting, shrineRelit, foundation }) => {
-          const cue = fighting
-            ? "trial"
-            : (foundation?.music ?? sceneMusic(scene.name, shrineRelit));
+        ({ scene, audio }) => {
+          const cue = audio.music;
           const mood =
             presences[scene.name]?.weather ??
             ("mood" in scene ? scene.mood : "moon");
-          sound.scene(
-            mood as SoundMood,
-            fighting ? null : (foundation?.ambient ?? null),
-          );
+          sound.scene(mood as SoundMood, audio.ambient);
           musicTitle.value = musicNames[cue];
           music?.scene(cue);
         },
@@ -857,7 +852,7 @@ onUnmounted(() => {
 </script>
 <template>
   <PlaytestRecorder v-if="playtestEnabled" :game="game" />
-  <div v-if="ui.busy" class="saving-pulse" role="status">正在结算并保存……</div>
+  <div v-if="ui.busy" class="saving-pulse" role="status">正在保存……</div>
   <div v-if="notice" class="notice" role="alert">{{ notice }}</div>
   <div
     class="shell immersive-shell"
@@ -882,7 +877,7 @@ onUnmounted(() => {
           }}<small
             >{{ realmStageLabel(game) }} · {{ paths[game.path].name }} · 伤势
             {{ game.injury }}</small
-          ><small class="life-remaining"
+          ><CultivationStatus :game="game" /><small class="life-remaining"
             >余寿 {{ formatLifeMonths(remainingLifeMonths(game)) }}</small
           ></span
         >
@@ -923,7 +918,7 @@ onUnmounted(() => {
       <p>{{ playableScope }}</p>
       <small>版本 {{ build.version }} · {{ build.id }}</small>
       <p>
-        听松问道，云外求长生。<br />
+        听松问道，漫漫长生路。<br />
         仙途渺渺，或遇知己，结契同行。
       </p>
       <button v-if="game" class="primary" @click="resumeGame">
@@ -962,7 +957,7 @@ onUnmounted(() => {
         <h3>选择先天资质</h3>
         <label class="field-label"
           >角色性别<select v-model="gender">
-            <option value="male">男修 · 成年筑基后可结识沈听澜</option>
+            <option value="male">男修 · 筑基主线与苏婉宁同行</option>
             <option value="female">女修 · 成年筑基后可结识尹照川</option>
           </select></label
         >
@@ -1135,6 +1130,7 @@ onUnmounted(() => {
             <PracticeStage
               :key="practiceSerial"
               :gender="game.social.gender"
+              :realm="game.realm"
               :activity="practice ?? activity"
               :playing="!!practice && !modal"
             />
@@ -1182,8 +1178,18 @@ onUnmounted(() => {
                     ? `还差 ${MAX_QI - game.qi} 修为可尝试筑基。`
                     : "修为已满，可查看把握后决定是否突破。"
                 }}
-                筑基丹是必需品；固本与护法可进一步提高把握，不要求全部完成。伤势会降低成功率，可先静养。
+                淬脉、凝元与筑基丹是必需准备；固本与护法可进一步提高把握，不要求全部完成。伤势会降低成功率，可先静养。
               </p>
+              <QiJourneyPanel
+                :game="game"
+                :busy="ui.busy || ui.running"
+                @act="act"
+                @facilities="openPanel('skills')"
+                @board="openPanel('arena')"
+                @gear="openPanel('gear')"
+                @sect="openPanel('sect')"
+                @inventory="openPanel('inventory')"
+              />
               <CultivationOutlook
                 v-if="activity === 'cultivate'"
                 :game="game"
@@ -1247,7 +1253,7 @@ onUnmounted(() => {
                 {{
                   game.realm === 1 && activity === "cultivate"
                     ? "筑基吐纳期间没有灵石收入。"
-                    : "每月收入 1 灵石。"
+                    : "劳作或完成委托赚取灵石；修炼不产生灵石。"
                 }}自动每 0.8 秒推进一月，遇关键剧情、修为满或切后台暂停。
               </p>
               <div class="preparations">
@@ -1288,7 +1294,7 @@ onUnmounted(() => {
           </section>
           <nav class="facility-actions" aria-label="山居设施">
             <button @click="openPanel('sect')">拜访师门</button
-            ><button @click="openPanel('gear')">炼器与购药</button
+            ><button @click="openPanel('gear')">丹药与法器准备</button
             ><button @click="openPanel('arena')">听松擂台</button
             ><button @click="openPanel('queue')">修行安排</button>
           </nav>

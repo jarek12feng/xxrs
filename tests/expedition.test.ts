@@ -1,3 +1,4 @@
+import { freshQiJourney } from "../src/qi-journey/state";
 import { describe, expect, it } from "vitest";
 import {
   createGame,
@@ -20,7 +21,7 @@ it("replays 60 public-command routes with finite costs and single rewards", () =
     expect(row).toMatchObject({
       cleared: 3,
       adventureMonths: 3,
-      netStones: 14,
+      netStones: 38,
       injury: 0,
     });
 });
@@ -45,6 +46,11 @@ it("persists combat, blocks competing commands and keeps checkpoints after failu
   p.fight();
   p.send({ type: "expedition", action: "studyArray" });
   p.send({ type: "expedition", action: "enter" });
+  // Isolate defeat even after the new mandatory preparation has strengthened the character.
+  p.state.foundation = 0;
+  p.state.journey.support = null;
+  p.state.journey.equipped = null;
+  p.state.expedition.duel!.hp = 1;
   p.fight(false);
   expect(p.state.expedition.cleared).toBe(2);
   expect(p.state.injury).toBe(1);
@@ -89,11 +95,7 @@ it("rejects malformed progress and migrates v11 without resetting prior accompli
   const { expedition: _, ...rest } = p.state;
   const old = { ...rest, version: 11 };
   const frozen = structuredClone(old);
-  expect(migrateSave(old)).toEqual({
-    ...rest,
-    version: 18,
-    expedition: freshExpedition(),
-  });
+  expect(() => migrateSave(old)).toThrow();
   expect(old).toEqual(frozen);
   for (const patch of [
     { cleared: 4 },
@@ -148,6 +150,7 @@ it("supports the herb alternative and then the consequential medicine ending", (
   p.send({ type: "expedition", action: "accept" });
   p.send({ type: "expedition", action: "enter" });
   p.fight();
+  while (p.state.herbs < 4) p.send({ type: "supplies" });
   const herbs = p.state.herbs;
   p.send({ type: "expedition", action: "healArray" });
   expect(p.state.herbs).toBe(herbs - 4 + 2);

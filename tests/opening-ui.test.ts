@@ -116,7 +116,7 @@ it("restores choice consequences and contextual guidance without replaying rewar
   ).toContain("护根");
   expect(
     document.querySelector('[aria-label="初入仙途指引"] > div > strong')
-      ?.textContent === "把第一册功法用起来",
+      ?.textContent === "初习功法",
   ).toBe(true);
   expect(save).not.toHaveBeenCalled();
   expect(audio.cue).not.toHaveBeenCalled();
@@ -259,7 +259,7 @@ it("plays the corresponding cultivation figure only after persistence succeeds, 
     document
       .querySelector(".practice-stage .character-sprite img")
       ?.getAttribute("src"),
-  ).toContain("/art/characters/hero-male.webp");
+  ).toContain("/art/hero-male/qi-idle.webp");
   expect(
     document
       .querySelector(".practice-stage .practice-prop img")
@@ -341,7 +341,7 @@ it("first relic coaching opens equipment and equips the earned item through a sa
 });
 
 it("completes the companion field test through persisted UI commands and the actual skill panel", async () => {
-  await mount(mistCheckpoint(42, "wood", "male"));
+  await mount(mistCheckpoint(42, "wood", "female"));
   const relation = [
     ...document.querySelectorAll<HTMLButtonElement>("button"),
   ].find(
@@ -354,9 +354,9 @@ it("completes the companion field test through persisted UI commands and the act
   await flush();
   button("商量这次同行").click();
   await flush();
-  button("辨清稳固节点").click();
+  button("辨认回流节点").click();
   await flush();
-  button("先刻公共干道").click();
+  button("完成双人轮值校验").click();
   await flush();
   button("打开功法，装配护身诀").click();
   await flush();
@@ -389,5 +389,5 @@ it("completes the companion field test through persisted UI commands and the act
   expect(vi.mocked(save).mock.calls.at(-1)![0].companionship.stage).toBe(
     "done",
   );
-  expect(document.body.textContent).toContain("岔路引导");
+  expect(document.body.textContent).toContain("交叉复核");
 });

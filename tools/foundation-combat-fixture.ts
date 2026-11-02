@@ -27,6 +27,8 @@ export function foundationCombatFixture(
   s.journey.known = [technique, "guard"];
   const q = s.foundationJourney;
   q.cultivation = e.cultivation;
+  q.growth.routes.snow.prepared = true;
+  q.growth.routes.snow.choice = "careful";
   q.inheritance = id === "well" || id === "rank1" ? "none" : technique;
   q.rescue = ["rescue", "culmination"].includes(id) ? 3 : 0;
   q.condensation = id === "culmination";

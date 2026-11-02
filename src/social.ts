@@ -1,3 +1,5 @@
+import { hasMainlineMeeting, mainlineRomanceReady } from "./foundation-journey/heroine";
+import { temperEffect } from "./workshop/combat";
 import { realmPressure } from "./realm-pressure";
 import { companionScene } from "./companion-scenes";
 import {
@@ -22,7 +24,7 @@ export const stances: Record<Stance, string> = {
 };
 export const companions = {
   male: {
-    name: "沈听澜",
+    name: "苏婉宁",
     gender: "女",
     age: 24,
     pronoun: "她",
@@ -156,6 +158,7 @@ export const companion = (s: State) =>
   s.social.gender ? companions[s.social.gender] : null;
 export function relationship(s: State) {
   const r = s.social;
+  if(hasMainlineMeeting(s) && !r.bonded) return s.foundationJourney.reunion ? "相知" : s.foundationJourney.heroine.route !== "none" ? "同道相契" : "相识";
   return r.bonded
     ? "两心相许"
     : r.memories.length === 3 && r.affection >= 50
@@ -168,19 +171,21 @@ export function relationship(s: State) {
 }
 export function relationshipGoal(s: State) {
   if (!s.social.gender) return "请先在人物页选择角色性别，再去山门外相识。";
+  if (s.social.gender === "male" && !s.social.met) return "筑基后重返青嶂，与苏婉宁合力开路。";
+  if (hasMainlineMeeting(s)) return mainlineRomanceReady(s) ? "共同历险后已按约重逢；成年后可表达心意，也可继续同道。" : "与她同行历练，修订路图，再约重逢之期。";
   if (s.age < 216)
     return "成年并筑基后，可在山门外结识新的同行者。眼下先走好自己的修行路。";
   if (!s.social.met && s.realm < 1)
     return "筑基后可前往山门外相识。路旁见闻可以随缘阅读，不影响突破。";
-  if (!s.social.met) return "前往山门外，认识一个有自己心愿的人。";
+  if (!s.social.met) return "去山门外走走，或能遇见同道。";
   if (!s.social.memories.includes("walk"))
     return "对方想勘察一段旧路，邀你一起去看看。";
   if (!s.social.memories.includes("night"))
-    return "那晚的话还没说完，去灯下听一听对方真正的心愿。";
+    return "那晚的话还未说完，不妨再去灯下坐坐。";
   if (!s.social.memories.includes("watch"))
-    return "完成一场擂台胜利，或两次败后复盘，再一起谈谈胜负。无需夺魁才能发展感情。";
+    return "完成一场擂台胜利，或两次败后复盘，再一起谈谈胜负。";
   return s.social.bonded
-    ? "已经定情，保留彼此的修行目标。完成职业同行并商定联络后，可另行商议结契。"
+    ? "两心已许。同行历险、约好联络后，可再商议结契。"
     : "共同经历让心意渐明。是否定情，由你选择；保持朋友关系也不影响修行。";
 }
 function note(s: State, text: string) {
@@ -347,7 +352,7 @@ export function outingError(s: State, outing: Memory) {
 }
 export function arenaError(s: State) {
   if (s.age < 216) return "年满十八岁后可参加";
-  if (s.social.arena.wins >= 3) return "本届三位对手已全部击败，不重复发奖";
+  if (s.social.arena.wins >= 3) return "本届三位对手皆已胜过，奖赏已领";
 
   if (s.injury > 0) return "擂台不接纳负伤参赛，先养伤";
   if (s.stones < 4) return "需要灵石 4 作为擂台修缮费";
@@ -389,6 +394,13 @@ export function turnPreview(s: State, stance: Stance) {
       (support === "guard" ? 2 : 0) -
       (gear === "vial" ? s.journey.relics.vial : 0),
   );
+  const temper = temperEffect(
+    s,
+    stance === "break" ? "strike" : stance === "endure" ? "guard" : "discern",
+    correct,
+  );
+  damage += temper.damage;
+  incoming = Math.max(1, incoming + temper.incoming);
   const pressure = realmPressure(s, rivals[d.opponent]);
   damage = Math.max(1, Math.floor(damage * pressure.damageFactor));
   incoming += pressure.incomingExtra;
@@ -507,11 +519,13 @@ export function dispatchSocial(
       open(s, "background");
       return accept();
     case "identity":
+      if(c.gender === "male" && s.foundationJourney.ferry > 0) return input;
       if (s.social.gender !== null || !["male", "female"].includes(c.gender))
         return input;
       s.social.gender = c.gender;
       return accept();
     case "visit":
+      if(s.social.gender === "male") return input;
       if (!s.social.gender || s.social.met || s.age < 216 || s.realm < 1)
         return input;
       if (!travel()) return accept();
@@ -528,10 +542,10 @@ export function dispatchSocial(
       open(s, c.outing);
       return accept();
     case "confess":
+      if(s.social.gender === "male" && !mainlineRomanceReady(s)) return input;
       if (
         !s.social.met ||
-        s.social.memories.length !== 3 ||
-        s.social.affection < 50 ||
+        (!mainlineRomanceReady(s) && (s.social.memories.length !== 3 || s.social.affection < 50)) ||
         s.social.bonded ||
         s.age < 216
       )
@@ -662,14 +676,14 @@ export function validSocial(s: State): boolean {
     return false;
   if (
     r.met
-      ? !r.gender || !int(r.metMonth, s.month) || s.age < 216 || r.affection < 8
+      ? !r.gender || !int(r.metMonth, s.month) || (s.age < 216 && !hasMainlineMeeting(s)) || r.affection < 8
       : r.metMonth !== null ||
         r.affection !== 0 ||
         r.memories.length > 0 ||
         r.bonded
   )
     return false;
-  if (r.bonded && (r.memories.length !== 3 || r.affection < 50)) return false;
+  if (r.bonded && (s.age < 216 || (!mainlineRomanceReady(s) && (r.memories.length !== 3 || r.affection < 50)))) return false;
   if (
     Number(s.version) >= 15 &&
     (!Array.isArray(r.origins) ||
@@ -680,6 +694,7 @@ export function validSocial(s: State): boolean {
     return false;
   const allowed = {
     meet: [
+      ...(Number(s.version) >= 22 ? ["bridge"] : []),
       "help",
       "share",
       "listen",
@@ -702,6 +717,7 @@ export function validSocial(s: State): boolean {
     )
   )
     return false;
+  if (r.answers.meet === "bridge" && !hasMainlineMeeting(s)) return false;
   if (r.answers.meet === "recognize" && !recognizedOrigin(s)) return false;
   if (r.answers.background && !r.met) return false;
   if (
@@ -764,7 +780,7 @@ export function validSocial(s: State): boolean {
       return false;
     if (
       r.scene.kind === "pledge" &&
-      (r.memories.length !== 3 || r.affection < 50 || r.bonded)
+      ((!mainlineRomanceReady(s) && (r.memories.length !== 3 || r.affection < 50)) || r.bonded)
     )
       return false;
   }

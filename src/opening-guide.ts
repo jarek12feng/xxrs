@@ -21,8 +21,8 @@ export function openingGuide(s: State) {
     s.journey.known.some((t) => t === "blade" || t === "spring")
   )
     return {
-      title: "把第一册功法用起来",
-      body: `${!s.adventure.road.thanked ? echo : ""} 药工的谢礼已收入功法页。先装配主修，下一次修行或交锋便能用上；再回访药工，听听归路的消息。`,
+      title: "初习功法",
+      body: `${!s.adventure.road.thanked ? echo : ""} 药工所赠功法已收好。装配主修，修行与交锋便可运用；也可回访药工，打听归路消息。`,
       action: "skills" as const,
       label: "装配第一册功法",
     };
@@ -40,7 +40,7 @@ export function openingGuide(s: State) {
   )
     return {
       title: "药队送来的灵器，还未装配",
-      body: "首胜奖励已经在行囊里。装配后再查看交锋准备，比较伤害或减伤变化；不用先花材料精炼。",
+      body: "药队所赠灵器已收入行囊，装配便可御敌，无须先行精炼。",
       action: "gear" as const,
       label: "查看并装配首件灵器",
     };
@@ -48,8 +48,8 @@ export function openingGuide(s: State) {
     q = s.expedition;
   if (!r.map)
     return {
-      title: "先去坊市，让修行有个目标",
-      body: "与郁青交谈、接下伤药委托，交灵草或帮助辨药补齐航图。接下来有炼气期就能尝试的护送小关，不必先练满属性。",
+      title: "坊市问路",
+      body: "与郁青交谈、接下伤药委托，交灵草或帮助辨药补齐航图。炼气修士也可接下山道护送，赚些盘缠。",
       action: "road" as const,
       label: "循缺角航图去坊市",
     };
@@ -65,10 +65,10 @@ export function openingGuide(s: State) {
       title: q.cleared === 0 ? "护住药车，追查名单" : "古阵前有两种准备路线",
       body:
         q.cleared === 0
-          ? "先完成一场短交锋；失败后静养再来，不必把所有数值练满。"
+          ? "观察来招，护住药车。若败退，可先静养，再来一试。"
           : "神识 6、心得 2 可以辨阵；也可用灵草 4 温养草根。选择适合自己的准备方式即可。",
       action: "road" as const,
-      label: "返回当前小关",
+      label: "返回关口",
     };
   if (q.accepted && q.cleared === 2)
     return s.qi < 360
@@ -86,14 +86,14 @@ export function openingGuide(s: State) {
         };
   if (s.month < 3)
     return {
-      title: "先试一个月的修行",
-      body: "营救不计月份，洞府修行才会推进时光。先体验一次吐纳；第三个月陆迟会来找你，剧情出现时修行会停下。",
+      title: "回山吐纳",
+      body: "此番营救不耗月份。回洞府吐纳一月，稳固根基；遇来信或赴约，修行会暂停。",
       action: "cultivate" as const,
       label: "去洞府试一次吐纳",
     };
   if (s.journey.branch === "none" && s.journey.known.length === 0)
     return {
-      title: "让修行有自己的路数",
+      title: "择师求道",
       body: "丹堂擅长药理，剑院擅长护送。先看看师门和功法；也可以保持散修，在坊市求教。三十六月的渡口之约记在见闻里。",
       action: "sect" as const,
       label: "看看师门能教什么",
@@ -101,7 +101,7 @@ export function openingGuide(s: State) {
   if (s.qi < 360)
     return {
       title: "为三年之约作准备",
-      body: `距第三十六月${s.month < 36 ? `还有 ${36 - s.month} 个月` : "的约定已有进展"}。吐纳积累修为，积累 180 修为并准备一种破阵手段，通关后才能依方炼筑基丹；不用把所有属性练满。闭关会经过六个月，赴约前留意时辰。`,
+      body: `距第三十六月${s.month < 36 ? `还有 ${36 - s.month} 个月` : "的约定已有进展"}。吐纳积累修为，积累 180 修为并准备一种破阵手段，通关后才能依方炼筑基丹；闭关会经过六个月，赴约前留意时辰。`,
       action: "cultivate" as const,
       label: "回洞府准备",
     };

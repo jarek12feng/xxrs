@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { foundationBlock } from "./foundation-journey/growth-state";
 import { computed } from "vue";
 import type { State } from "./world";
 import { cultivationProjection, formatLifeMonths } from "./cultivation";
@@ -31,6 +32,7 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
         >按当前功法继续吐纳，寿尽前无法达到；可探险取得修为与功法机缘。</template
       >
     </p>
+    <p v-else-if="outlook.bottleneck">{{ game.realm === 1 ? foundationBlock(game) : "修为已抵当前瓶颈，去下方历练取得材料并炼化后，才能继续晋升。" }}</p>
     <p v-else>
       当前修行目标已达到。
       <template v-if="game.realm === 1 && outlook.current >= 600"

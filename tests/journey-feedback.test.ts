@@ -53,7 +53,7 @@ it("opens a named defeat result on voluntary withdrawal without claiming new wou
   expect(r.changes.find((c) => c.label === "伤势")).toBeUndefined();
 });
 it("keeps an NPC response and relationship milestone after choosing", () => {
-  const s = createGame("玩家", "wood", 42, "insightful", "male");
+  const s = createGame("玩家", "wood", 42, "insightful", "female");
   s.age = 216;
   s.realm = 1;
   s.month = 24;
@@ -67,7 +67,7 @@ it("keeps an NPC response and relationship milestone after choosing", () => {
     option: "listen",
   } as const;
   const r = actionReceipt(visiting, send(visiting, c), c)!;
-  expect(r.person?.name).toBe("沈听澜");
+  expect(r.person?.name).toBe("尹照川");
   expect(r.person?.response.length).toBeGreaterThan(10);
   expect(r.person?.relation).toBe("尚未相识 → 相识");
 });

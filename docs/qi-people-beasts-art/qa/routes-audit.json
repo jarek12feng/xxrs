@@ -1,0 +1,1085 @@
+{
+  "note": "Public commands; reference policy knows encounter patterns and spends conservatively. These are regression samples, not real player durations or success rates.",
+  "rows": [
+    {
+      "route": "medicine",
+      "path": "wood",
+      "aptitude": "sturdy",
+      "seed": 1,
+      "realm": 1,
+      "commands": 96,
+      "months": 125,
+      "age": 26.416666666666668,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 28,
+      "income": 280,
+      "spending": 272,
+      "stones": 20,
+      "gateMonths": [
+        87,
+        123
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "wood",
+      "aptitude": "sturdy",
+      "seed": 42,
+      "realm": 1,
+      "commands": 96,
+      "months": 125,
+      "age": 26.416666666666668,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 28,
+      "income": 280,
+      "spending": 272,
+      "stones": 20,
+      "gateMonths": [
+        87,
+        123
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "wood",
+      "aptitude": "sturdy",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 96,
+      "months": 125,
+      "age": 26.416666666666668,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 28,
+      "income": 280,
+      "spending": 272,
+      "stones": 20,
+      "gateMonths": [
+        87,
+        123
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "wood",
+      "aptitude": "insightful",
+      "seed": 1,
+      "realm": 1,
+      "commands": 96,
+      "months": 131,
+      "age": 26.916666666666668,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 28,
+      "income": 280,
+      "spending": 280,
+      "stones": 12,
+      "gateMonths": [
+        92,
+        129
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "wood",
+      "aptitude": "insightful",
+      "seed": 42,
+      "realm": 1,
+      "commands": 96,
+      "months": 131,
+      "age": 26.916666666666668,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 28,
+      "income": 280,
+      "spending": 280,
+      "stones": 12,
+      "gateMonths": [
+        92,
+        129
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "wood",
+      "aptitude": "insightful",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 96,
+      "months": 131,
+      "age": 26.916666666666668,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 28,
+      "income": 280,
+      "spending": 280,
+      "stones": 12,
+      "gateMonths": [
+        92,
+        129
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "wood",
+      "aptitude": "perceptive",
+      "seed": 1,
+      "realm": 1,
+      "commands": 95,
+      "months": 128,
+      "age": 26.666666666666668,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 28,
+      "income": 280,
+      "spending": 280,
+      "stones": 12,
+      "gateMonths": [
+        89,
+        126
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "wood",
+      "aptitude": "perceptive",
+      "seed": 42,
+      "realm": 1,
+      "commands": 95,
+      "months": 128,
+      "age": 26.666666666666668,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 28,
+      "income": 280,
+      "spending": 280,
+      "stones": 12,
+      "gateMonths": [
+        89,
+        126
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "wood",
+      "aptitude": "perceptive",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 95,
+      "months": 128,
+      "age": 26.666666666666668,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 28,
+      "income": 280,
+      "spending": 280,
+      "stones": 12,
+      "gateMonths": [
+        89,
+        126
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "sword",
+      "aptitude": "sturdy",
+      "seed": 1,
+      "realm": 1,
+      "commands": 90,
+      "months": 123,
+      "age": 26.25,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 23,
+      "income": 270,
+      "spending": 256,
+      "stones": 26,
+      "gateMonths": [
+        86,
+        121
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "sword",
+      "aptitude": "sturdy",
+      "seed": 42,
+      "realm": 1,
+      "commands": 90,
+      "months": 123,
+      "age": 26.25,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 23,
+      "income": 270,
+      "spending": 256,
+      "stones": 26,
+      "gateMonths": [
+        86,
+        121
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "sword",
+      "aptitude": "sturdy",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 90,
+      "months": 123,
+      "age": 26.25,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 23,
+      "income": 270,
+      "spending": 256,
+      "stones": 26,
+      "gateMonths": [
+        86,
+        121
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "sword",
+      "aptitude": "insightful",
+      "seed": 1,
+      "realm": 1,
+      "commands": 90,
+      "months": 130,
+      "age": 26.833333333333332,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 22,
+      "income": 280,
+      "spending": 264,
+      "stones": 28,
+      "gateMonths": [
+        91,
+        128
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "sword",
+      "aptitude": "insightful",
+      "seed": 42,
+      "realm": 1,
+      "commands": 90,
+      "months": 130,
+      "age": 26.833333333333332,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 22,
+      "income": 280,
+      "spending": 264,
+      "stones": 28,
+      "gateMonths": [
+        91,
+        128
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "sword",
+      "aptitude": "insightful",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 90,
+      "months": 130,
+      "age": 26.833333333333332,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 22,
+      "income": 280,
+      "spending": 264,
+      "stones": 28,
+      "gateMonths": [
+        91,
+        128
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "sword",
+      "aptitude": "perceptive",
+      "seed": 1,
+      "realm": 1,
+      "commands": 89,
+      "months": 127,
+      "age": 26.583333333333332,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 22,
+      "income": 280,
+      "spending": 264,
+      "stones": 28,
+      "gateMonths": [
+        88,
+        125
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "sword",
+      "aptitude": "perceptive",
+      "seed": 42,
+      "realm": 1,
+      "commands": 89,
+      "months": 127,
+      "age": 26.583333333333332,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 22,
+      "income": 280,
+      "spending": 264,
+      "stones": 28,
+      "gateMonths": [
+        88,
+        125
+      ]
+    },
+    {
+      "route": "medicine",
+      "path": "sword",
+      "aptitude": "perceptive",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 89,
+      "months": 127,
+      "age": 26.583333333333332,
+      "limit": 200,
+      "work": 7,
+      "battleCommands": 22,
+      "income": 280,
+      "spending": 264,
+      "stones": 28,
+      "gateMonths": [
+        88,
+        125
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "wood",
+      "aptitude": "sturdy",
+      "seed": 1,
+      "realm": 1,
+      "commands": 94,
+      "months": 113,
+      "age": 25.416666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 28,
+      "income": 254,
+      "spending": 252,
+      "stones": 14,
+      "gateMonths": [
+        81,
+        111
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "wood",
+      "aptitude": "sturdy",
+      "seed": 42,
+      "realm": 1,
+      "commands": 94,
+      "months": 113,
+      "age": 25.416666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 28,
+      "income": 254,
+      "spending": 252,
+      "stones": 14,
+      "gateMonths": [
+        81,
+        111
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "wood",
+      "aptitude": "sturdy",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 94,
+      "months": 113,
+      "age": 25.416666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 28,
+      "income": 254,
+      "spending": 252,
+      "stones": 14,
+      "gateMonths": [
+        81,
+        111
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "wood",
+      "aptitude": "insightful",
+      "seed": 1,
+      "realm": 1,
+      "commands": 94,
+      "months": 119,
+      "age": 25.916666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 28,
+      "income": 254,
+      "spending": 260,
+      "stones": 6,
+      "gateMonths": [
+        86,
+        117
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "wood",
+      "aptitude": "insightful",
+      "seed": 42,
+      "realm": 1,
+      "commands": 94,
+      "months": 119,
+      "age": 25.916666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 28,
+      "income": 254,
+      "spending": 260,
+      "stones": 6,
+      "gateMonths": [
+        86,
+        117
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "wood",
+      "aptitude": "insightful",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 94,
+      "months": 119,
+      "age": 25.916666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 28,
+      "income": 254,
+      "spending": 260,
+      "stones": 6,
+      "gateMonths": [
+        86,
+        117
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "wood",
+      "aptitude": "perceptive",
+      "seed": 1,
+      "realm": 1,
+      "commands": 93,
+      "months": 116,
+      "age": 25.666666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 28,
+      "income": 254,
+      "spending": 260,
+      "stones": 6,
+      "gateMonths": [
+        83,
+        114
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "wood",
+      "aptitude": "perceptive",
+      "seed": 42,
+      "realm": 1,
+      "commands": 93,
+      "months": 116,
+      "age": 25.666666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 28,
+      "income": 254,
+      "spending": 260,
+      "stones": 6,
+      "gateMonths": [
+        83,
+        114
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "wood",
+      "aptitude": "perceptive",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 93,
+      "months": 116,
+      "age": 25.666666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 28,
+      "income": 254,
+      "spending": 260,
+      "stones": 6,
+      "gateMonths": [
+        83,
+        114
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "sword",
+      "aptitude": "sturdy",
+      "seed": 1,
+      "realm": 1,
+      "commands": 86,
+      "months": 111,
+      "age": 25.25,
+      "limit": 200,
+      "work": 4,
+      "battleCommands": 21,
+      "income": 244,
+      "spending": 236,
+      "stones": 20,
+      "gateMonths": [
+        80,
+        109
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "sword",
+      "aptitude": "sturdy",
+      "seed": 42,
+      "realm": 1,
+      "commands": 86,
+      "months": 111,
+      "age": 25.25,
+      "limit": 200,
+      "work": 4,
+      "battleCommands": 21,
+      "income": 244,
+      "spending": 236,
+      "stones": 20,
+      "gateMonths": [
+        80,
+        109
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "sword",
+      "aptitude": "sturdy",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 86,
+      "months": 111,
+      "age": 25.25,
+      "limit": 200,
+      "work": 4,
+      "battleCommands": 21,
+      "income": 244,
+      "spending": 236,
+      "stones": 20,
+      "gateMonths": [
+        80,
+        109
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "sword",
+      "aptitude": "insightful",
+      "seed": 1,
+      "realm": 1,
+      "commands": 87,
+      "months": 118,
+      "age": 25.833333333333332,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 21,
+      "income": 254,
+      "spending": 244,
+      "stones": 22,
+      "gateMonths": [
+        85,
+        116
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "sword",
+      "aptitude": "insightful",
+      "seed": 42,
+      "realm": 1,
+      "commands": 87,
+      "months": 118,
+      "age": 25.833333333333332,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 21,
+      "income": 254,
+      "spending": 244,
+      "stones": 22,
+      "gateMonths": [
+        85,
+        116
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "sword",
+      "aptitude": "insightful",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 87,
+      "months": 118,
+      "age": 25.833333333333332,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 21,
+      "income": 254,
+      "spending": 244,
+      "stones": 22,
+      "gateMonths": [
+        85,
+        116
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "sword",
+      "aptitude": "perceptive",
+      "seed": 1,
+      "realm": 1,
+      "commands": 86,
+      "months": 115,
+      "age": 25.583333333333332,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 21,
+      "income": 254,
+      "spending": 244,
+      "stones": 22,
+      "gateMonths": [
+        82,
+        113
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "sword",
+      "aptitude": "perceptive",
+      "seed": 42,
+      "realm": 1,
+      "commands": 86,
+      "months": 115,
+      "age": 25.583333333333332,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 21,
+      "income": 254,
+      "spending": 244,
+      "stones": 22,
+      "gateMonths": [
+        82,
+        113
+      ]
+    },
+    {
+      "route": "sect",
+      "path": "sword",
+      "aptitude": "perceptive",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 86,
+      "months": 115,
+      "age": 25.583333333333332,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 21,
+      "income": 254,
+      "spending": 244,
+      "stones": 22,
+      "gateMonths": [
+        82,
+        113
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "wood",
+      "aptitude": "sturdy",
+      "seed": 1,
+      "realm": 1,
+      "commands": 92,
+      "months": 118,
+      "age": 25.833333333333332,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 28,
+      "income": 266,
+      "spending": 268,
+      "stones": 10,
+      "gateMonths": [
+        80,
+        116
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "wood",
+      "aptitude": "sturdy",
+      "seed": 42,
+      "realm": 1,
+      "commands": 92,
+      "months": 118,
+      "age": 25.833333333333332,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 28,
+      "income": 266,
+      "spending": 268,
+      "stones": 10,
+      "gateMonths": [
+        80,
+        116
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "wood",
+      "aptitude": "sturdy",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 92,
+      "months": 118,
+      "age": 25.833333333333332,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 28,
+      "income": 266,
+      "spending": 268,
+      "stones": 10,
+      "gateMonths": [
+        80,
+        116
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "wood",
+      "aptitude": "insightful",
+      "seed": 1,
+      "realm": 1,
+      "commands": 92,
+      "months": 124,
+      "age": 26.333333333333332,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 28,
+      "income": 266,
+      "spending": 276,
+      "stones": 2,
+      "gateMonths": [
+        85,
+        122
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "wood",
+      "aptitude": "insightful",
+      "seed": 42,
+      "realm": 1,
+      "commands": 92,
+      "months": 124,
+      "age": 26.333333333333332,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 28,
+      "income": 266,
+      "spending": 276,
+      "stones": 2,
+      "gateMonths": [
+        85,
+        122
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "wood",
+      "aptitude": "insightful",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 92,
+      "months": 124,
+      "age": 26.333333333333332,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 28,
+      "income": 266,
+      "spending": 276,
+      "stones": 2,
+      "gateMonths": [
+        85,
+        122
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "wood",
+      "aptitude": "perceptive",
+      "seed": 1,
+      "realm": 1,
+      "commands": 91,
+      "months": 121,
+      "age": 26.083333333333332,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 28,
+      "income": 266,
+      "spending": 276,
+      "stones": 2,
+      "gateMonths": [
+        82,
+        119
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "wood",
+      "aptitude": "perceptive",
+      "seed": 42,
+      "realm": 1,
+      "commands": 91,
+      "months": 121,
+      "age": 26.083333333333332,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 28,
+      "income": 266,
+      "spending": 276,
+      "stones": 2,
+      "gateMonths": [
+        82,
+        119
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "wood",
+      "aptitude": "perceptive",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 91,
+      "months": 121,
+      "age": 26.083333333333332,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 28,
+      "income": 266,
+      "spending": 276,
+      "stones": 2,
+      "gateMonths": [
+        82,
+        119
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "sword",
+      "aptitude": "sturdy",
+      "seed": 1,
+      "realm": 1,
+      "commands": 84,
+      "months": 116,
+      "age": 25.666666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 21,
+      "income": 256,
+      "spending": 252,
+      "stones": 16,
+      "gateMonths": [
+        85,
+        114
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "sword",
+      "aptitude": "sturdy",
+      "seed": 42,
+      "realm": 1,
+      "commands": 84,
+      "months": 116,
+      "age": 25.666666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 21,
+      "income": 256,
+      "spending": 252,
+      "stones": 16,
+      "gateMonths": [
+        85,
+        114
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "sword",
+      "aptitude": "sturdy",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 84,
+      "months": 116,
+      "age": 25.666666666666668,
+      "limit": 200,
+      "work": 5,
+      "battleCommands": 21,
+      "income": 256,
+      "spending": 252,
+      "stones": 16,
+      "gateMonths": [
+        85,
+        114
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "sword",
+      "aptitude": "insightful",
+      "seed": 1,
+      "realm": 1,
+      "commands": 85,
+      "months": 123,
+      "age": 26.25,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 21,
+      "income": 266,
+      "spending": 260,
+      "stones": 18,
+      "gateMonths": [
+        84,
+        121
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "sword",
+      "aptitude": "insightful",
+      "seed": 42,
+      "realm": 1,
+      "commands": 85,
+      "months": 123,
+      "age": 26.25,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 21,
+      "income": 266,
+      "spending": 260,
+      "stones": 18,
+      "gateMonths": [
+        84,
+        121
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "sword",
+      "aptitude": "insightful",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 85,
+      "months": 123,
+      "age": 26.25,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 21,
+      "income": 266,
+      "spending": 260,
+      "stones": 18,
+      "gateMonths": [
+        84,
+        121
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "sword",
+      "aptitude": "perceptive",
+      "seed": 1,
+      "realm": 1,
+      "commands": 84,
+      "months": 120,
+      "age": 26,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 21,
+      "income": 266,
+      "spending": 260,
+      "stones": 18,
+      "gateMonths": [
+        81,
+        118
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "sword",
+      "aptitude": "perceptive",
+      "seed": 42,
+      "realm": 1,
+      "commands": 84,
+      "months": 120,
+      "age": 26,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 21,
+      "income": 266,
+      "spending": 260,
+      "stones": 18,
+      "gateMonths": [
+        81,
+        118
+      ]
+    },
+    {
+      "route": "wander",
+      "path": "sword",
+      "aptitude": "perceptive",
+      "seed": 2718,
+      "realm": 1,
+      "commands": 84,
+      "months": 120,
+      "age": 26,
+      "limit": 200,
+      "work": 6,
+      "battleCommands": 21,
+      "income": 266,
+      "spending": 260,
+      "stones": 18,
+      "gateMonths": [
+        81,
+        118
+      ]
+    }
+  ]
+}

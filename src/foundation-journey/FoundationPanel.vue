@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { foundationCap, foundationBlock } from "./growth-state";
+import CharacterSprite from "../presentation/CharacterSprite.vue";
+import { heroArt, heroBattlePose } from "../presentation/art";
 import { computed } from "vue";
 import CombatFeedbackView from "./CombatFeedback.vue";
 import type { CombatFeedback } from "./feedback";
@@ -167,12 +170,19 @@ function act(action: JourneyAction) {
       <h2>{{ ending[0] }}</h2>
       <p v-for="line in ending.slice(1)" :key="line">{{ line }}</p>
       <p class="ending-scope">
-        本篇到此完成，角色与存档继续保留。可自由回访、补完支线和榜单；金丹突破与后续篇章尚未开放。
+        筑基篇终。可继续修行、回访故人或再赴试剑榜。金丹篇暂未开放。
       </p>
     </article>
     <template v-if="q.duel && foe">
       <div class="foundation-duel">
-        <img :src="foe.image" :alt="foe.foe" />
+        <div class="combat-figures">
+          <CharacterSprite
+            :character="heroArt(game.social.gender, game.realm)"
+            :pose="heroBattlePose(q.duel.effect)"
+            :label="game.name"
+          />
+          <img :src="foe.image" :alt="foe.foe" />
+        </div>
         <div>
           <small>第 {{ q.duel.turn + 1 }} 合 / 最多 12 合</small>
           <h3>{{ foe.name }}</h3>
@@ -267,9 +277,9 @@ function act(action: JourneyAction) {
           </p>
           <p>
             首胜奖励：灵石 {{ row.prize }}、筑基修行
-            {{ Math.min(40, 600 - q.cultivation) }}（至多 600）{{
+            {{ Math.max(0, Math.min(40, foundationCap(game) - q.cultivation)) }}（当前上限 {{ foundationCap(game) }}）{{
               row.extra ? `、${row.extra}` : ""
-            }}。每场只结算一次。
+            }}。每场首胜可获报酬。
           </p>
           <p v-if="row.won">已获胜 · {{ row.turns }} 合 · 奖励已入袋</p>
           <template v-else-if="row.current"
@@ -287,14 +297,20 @@ function act(action: JourneyAction) {
               挑战{{ row.foe }}
             </button></template
           >
-          <small v-else>先击败前一位对手；需修行 {{ row.cultivation }}</small>
+          <small v-else>先击败前一位对手；同阶参考修行 {{ row.stage * 200 }}</small>
         </li>
       </ol>
     </template>
     <template v-else>
       <template v-if="mode === 'journey'">
         <h3>筑基行旅 · 青玄界</h3>
-        <p>{{ cultivationStage(game) }} · 修行 {{ q.cultivation }}/600</p>
+        <p>{{ cultivationStage(game) }} · 修行 {{ q.cultivation }}/600 · 当前可积累至 {{ foundationCap(game) }}</p>
+        <p>{{ foundationBlock(game) }}</p>
+        <aside v-if="q.cultivation === 600" aria-label="凝丹筹备">
+          <h4>凝丹筹备 · 金丹篇尚未开放</h4>
+          <p>圆满积累与归流成果已成。后续尚需凝丹主药及闭关灵地；当前不可取得或突破。</p>
+          <p>护脉辅药可在工坊自炼或购置；伤势 {{ game.injury }}，先静养调息。药物准备不会提前开放金丹。</p>
+        </aside>
         <p class="next-goal">{{ foundationGoal(game) }}</p>
         <nav aria-label="筑基行旅地点">
           <button
@@ -322,7 +338,7 @@ function act(action: JourneyAction) {
           :speaker="presentation.speaker"
           compact
         />
-        <p>行旅之外，可随时回洞府修行；支线标有“可选”。</p>
+        <p>行旅途中，也可随时回洞府修行。</p>
         <button :disabled="busy" @click="emit('equipment')">
           装配传承与功法
         </button>
@@ -501,6 +517,9 @@ function act(action: JourneyAction) {
   width: 100%;
   max-height: 280px;
   object-fit: contain;
+}
+.combat-figures :deep(.character-sprite) {
+  height: 160px;
 }
 @media (max-width: 550px) {
   .foundation-duel {

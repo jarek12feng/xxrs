@@ -164,6 +164,7 @@ createApp({
             onClick: () => {
               const p = journeyPlayer(journeyCheckpoint("male", true));
               p.fight("culmination");
+              p.cultivate(600);
               p.act({ kind: "travel", destination: "home" });
               p.act({ kind: "epilogue" });
               game.value = p.state;

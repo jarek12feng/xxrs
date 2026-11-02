@@ -4,14 +4,14 @@
 
 | ID | 名称 | 类型 | 状态 | 使用条件 |
 | --- | --- | --- | --- | --- |
-| shentinglan-simple | 沈听澜·简约服饰定稿候选 | characters | reviewed-candidate | 成年沈听澜；不是玩家女角色；不预设恋爱成立 |
-| shentinglan-outfit-courtyard | 沈听澜·庭院便装 | characters | reviewed-candidate | 成年沈听澜场合换装；不是已接入的换装系统 |
-| shentinglan-outfit-date | 沈听澜·月下相约装 | characters | reviewed-candidate | 成年沈听澜场合换装；不是已接入的换装系统 |
-| shentinglan-outfit-travel | 沈听澜·出行装 | characters | reviewed-candidate | 成年沈听澜场合换装；不是已接入的换装系统 |
-| shentinglan-outfit-work | 沈听澜·绘图工作装 | characters | reviewed-candidate | 成年沈听澜场合换装；不是已接入的换装系统 |
-| shentinglan-travel | 沈听澜·同行与分别 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
-| shentinglan-work | 沈听澜·共同工作 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
-| shentinglan-disagree | 沈听澜·分歧与商议 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
+| shentinglan-simple | 苏婉宁·简约服饰定稿候选 | characters | reviewed-candidate | 成年苏婉宁；不是玩家女角色；不预设恋爱成立 |
+| shentinglan-outfit-courtyard | 苏婉宁·庭院便装 | characters | reviewed-candidate | 成年苏婉宁场合换装；不是已接入的换装系统 |
+| shentinglan-outfit-date | 苏婉宁·月下相约装 | characters | reviewed-candidate | 成年苏婉宁场合换装；不是已接入的换装系统 |
+| shentinglan-outfit-travel | 苏婉宁·出行装 | characters | reviewed-candidate | 成年苏婉宁场合换装；不是已接入的换装系统 |
+| shentinglan-outfit-work | 苏婉宁·绘图工作装 | characters | reviewed-candidate | 成年苏婉宁场合换装；不是已接入的换装系统 |
+| shentinglan-travel | 苏婉宁·同行与分别 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
+| shentinglan-work | 苏婉宁·共同工作 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
+| shentinglan-disagree | 苏婉宁·分歧与商议 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
 | yinzhaochuan-travel | 尹照川·同行与分别 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
 | yinzhaochuan-work | 尹照川·共同工作 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
 | yinzhaochuan-disagree | 尹照川·分歧与商议 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
@@ -34,9 +34,9 @@
 | returned-proof | 退回刻样 | items | reviewed-candidate | ORIGIN候选；关键条件由UI提供，不代表已相识或恋爱 |
 | lamp-work-order | 修灯工单 | items | reviewed-candidate | ORIGIN候选；关键条件由UI提供，不代表已相识或恋爱 |
 | ordinary-spares | 普通备用件 | items | reviewed-candidate | ORIGIN候选；关键条件由UI提供，不代表已相识或恋爱 |
-| shentinglan-reunion | 沈听澜·正常重逢 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
-| shentinglan-vow | 沈听澜·定情与结契 | characters | reviewed-candidate | 仅成年且双方明确同意后的定情/结契；不能据图认定旧档已婚 |
-| shentinglan-growth | 沈听澜·独立成长 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
+| shentinglan-reunion | 苏婉宁·正常重逢 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
+| shentinglan-vow | 苏婉宁·定情与结契 | characters | reviewed-candidate | 仅成年且双方明确同意后的定情/结契；不能据图认定旧档已婚 |
+| shentinglan-growth | 苏婉宁·独立成长 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
 | yinzhaochuan-reunion | 尹照川·正常重逢 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
 | yinzhaochuan-vow | 尹照川·定情与结契 | characters | reviewed-candidate | 仅成年且双方明确同意后的定情/结契；不能据图认定旧档已婚 |
 | yinzhaochuan-growth | 尹照川·独立成长 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
@@ -68,7 +68,7 @@
 | testament-pages | 族谱与账页候选 | items | reviewed-candidate | 候选，须按真实剧情状态选用 |
 | gate-relic | 门闩与半枚药签 | items | reviewed-candidate | 候选，须按真实剧情状态选用 |
 | keepsake-bundle | 旧人物件与遗物候选 | items | reviewed-candidate | 候选，须按真实剧情状态选用 |
-| shentinglan-rescue | 沈听澜·受困行动与接应 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
+| shentinglan-rescue | 苏婉宁·受困行动与接应 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
 | yinzhaochuan-rescue | 尹照川·受困行动与接应 | characters | reviewed-candidate | 对应实际同行、分别、重逢或救援阶段；不自动生成经历 |
 | frontier-valley | 远行·新地域候选 | scenes | reviewed-candidate | 候选，须按真实剧情状态选用 |
 | signal-refuge | 断讯·内部避险处 | scenes | reviewed-candidate | 候选，须按真实剧情状态选用 |

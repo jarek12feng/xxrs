@@ -20,7 +20,7 @@ export function mistCheckpoint(
   let s = createGame("雾海行者", path, seed, "insightful", gender),
     id = 0;
   const send = (intent: Intent) => {
-    if (++id > 500) throw new Error("Checkpoint did not converge");
+    if (++id > 500) throw new Error(`Checkpoint did not converge: ${JSON.stringify({intent,qi:s.qi,stones:s.stones,herbs:s.herbs,injury:s.injury,status:s.status,journey:s.qiJourney,main:s.journey.main,foundation:s.foundation,pending:s.pending})}`);
     s = dispatch(s, { ...intent, id: `checkpoint-${id}` });
     if (!validState(s))
       throw new Error(`Invalid checkpoint after ${JSON.stringify(intent)}`);
@@ -61,9 +61,12 @@ export function mistCheckpoint(
   if (stopAtPass) return s;
   for (const action of ["challenge", "lookout", "survey"] as RoadAction[])
     send({ type: "road", action });
-  send({ type: "visit" });
-  if (!s.social.scene) throw new Error("Companion meeting missing");
-  send({ type: "choose", instanceId: s.social.scene.id, option: "listen" });
+  if(gender === "male") send({type:"foundationJourney",action:{kind:"meetHeroine",method:"insight"}});
+  else {
+    send({ type: "visit" });
+    if (!s.social.scene) throw new Error("Companion meeting missing");
+    send({ type: "choose", instanceId: s.social.scene.id, option: "listen" });
+  }
   if (!s.adventure.road.surveyed) throw new Error("Road not completed");
   return s;
 }

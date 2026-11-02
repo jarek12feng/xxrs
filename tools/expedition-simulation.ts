@@ -52,6 +52,7 @@ export function expeditionSession(
       send({ type: "advance", activity: "meditate", months: 1 });
     while (state.study < 2)
       send({ type: "advance", activity: "study", months: 1 });
+    while (state.stones < 80) send({type:"advance",activity:"work",months:12});
     while (state.foundation < 6) send({ type: "prepare", kind: "retreat" });
   }
   function fight(correct = true) {

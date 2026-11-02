@@ -143,7 +143,7 @@ it("rejects missing or premature choice fields and preserves completed v10 as le
     }),
   ).toBe(false);
   expect(
-    validState({ ...rescue(), adventure: current.adventure, version: 19 }),
+    validState({ ...rescue(), adventure: current.adventure, version: 23 }),
   ).toBe(false);
   const start = createGame("客", "wood");
   expect(

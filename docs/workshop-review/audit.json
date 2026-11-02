@@ -1,0 +1,351 @@
+{
+  "scope": "固定种子 2718 的公开命令检查点；不代表玩家成功率或真人首玩时长",
+  "checkpointMonths": {
+    "qi": 125,
+    "foundation": 177,
+    "passage": 126
+  },
+  "rows": [
+    {
+      "product": "healing",
+      "method": "craft",
+      "cost": "灵草 2、灵石 4",
+      "study": 1,
+      "months": 1,
+      "error": "",
+      "actual": {
+        "months": 1,
+        "stones": 4,
+        "herbs": 2,
+        "ward": 0
+      }
+    },
+    {
+      "product": "healing",
+      "method": "buy",
+      "cost": "灵石 12",
+      "study": 0,
+      "months": 0,
+      "error": "",
+      "actual": {
+        "months": 0,
+        "stones": 12,
+        "herbs": 0,
+        "ward": 0
+      }
+    },
+    {
+      "product": "healing",
+      "method": "commission",
+      "cost": "灵草 2、灵石 6",
+      "study": 0,
+      "months": 1,
+      "error": "",
+      "actual": {
+        "months": 1,
+        "stones": 6,
+        "herbs": 2,
+        "ward": 0
+      }
+    },
+    {
+      "product": "clarity",
+      "method": "craft",
+      "cost": "灵草 2、灵石 4",
+      "study": 1,
+      "months": 1,
+      "error": "",
+      "actual": {
+        "months": 1,
+        "stones": 4,
+        "herbs": 2,
+        "ward": 0
+      }
+    },
+    {
+      "product": "clarity",
+      "method": "buy",
+      "cost": "灵石 12",
+      "study": 0,
+      "months": 0,
+      "error": "",
+      "actual": {
+        "months": 0,
+        "stones": 12,
+        "herbs": 0,
+        "ward": 0
+      }
+    },
+    {
+      "product": "clarity",
+      "method": "commission",
+      "cost": "灵草 2、灵石 6",
+      "study": 0,
+      "months": 1,
+      "error": "",
+      "actual": {
+        "months": 1,
+        "stones": 6,
+        "herbs": 2,
+        "ward": 0
+      }
+    },
+    {
+      "product": "ward",
+      "method": "craft",
+      "cost": "灵草 3、灵石 6",
+      "study": 2,
+      "months": 1,
+      "error": "",
+      "actual": {
+        "months": 1,
+        "stones": 6,
+        "herbs": 3,
+        "ward": 1
+      }
+    },
+    {
+      "product": "ward",
+      "method": "buy",
+      "cost": "灵石 20",
+      "study": 0,
+      "months": 0,
+      "error": "",
+      "actual": {
+        "months": 0,
+        "stones": 20,
+        "herbs": 0,
+        "ward": 1
+      }
+    },
+    {
+      "product": "ward",
+      "method": "commission",
+      "cost": "灵草 3、灵石 10",
+      "study": 0,
+      "months": 1,
+      "error": "",
+      "actual": {
+        "months": 1,
+        "stones": 10,
+        "herbs": 3,
+        "ward": 1
+      }
+    },
+    {
+      "product": "foundation",
+      "method": "craft",
+      "cost": "灵草 4、灵石 8",
+      "study": 0,
+      "months": 3,
+      "error": "",
+      "actual": {
+        "months": 3,
+        "stones": 8,
+        "herbs": 4,
+        "ward": 0
+      }
+    },
+    {
+      "product": "foundation",
+      "method": "buy",
+      "cost": "灵石 12",
+      "study": 0,
+      "months": 0,
+      "error": "坊市不出售筑基丹；取得遗府丹方后可自炼或委托",
+      "actual": {
+        "months": 0,
+        "stones": 0,
+        "herbs": 0,
+        "ward": 0
+      }
+    },
+    {
+      "product": "foundation",
+      "method": "commission",
+      "cost": "灵草 4、灵石 20",
+      "study": 0,
+      "months": 3,
+      "error": "",
+      "actual": {
+        "months": 3,
+        "stones": 20,
+        "herbs": 4,
+        "ward": 0
+      }
+    },
+    {
+      "product": "sword",
+      "method": "craft",
+      "cost": "灵草 4、灵石 24",
+      "study": 2,
+      "months": 1,
+      "error": "",
+      "actual": {
+        "months": 1,
+        "stones": 24,
+        "herbs": 4,
+        "ward": 0
+      }
+    },
+    {
+      "product": "sword",
+      "method": "buy",
+      "cost": "灵石 40",
+      "study": 0,
+      "months": 0,
+      "error": "",
+      "actual": {
+        "months": 0,
+        "stones": 40,
+        "herbs": 0,
+        "ward": 0
+      }
+    },
+    {
+      "product": "sword",
+      "method": "commission",
+      "cost": "灵草 4、灵石 28",
+      "study": 0,
+      "months": 1,
+      "error": "",
+      "actual": {
+        "months": 1,
+        "stones": 28,
+        "herbs": 4,
+        "ward": 0
+      }
+    },
+    {
+      "product": "vial",
+      "method": "craft",
+      "cost": "灵草 4、灵石 24",
+      "study": 2,
+      "months": 1,
+      "error": "筑基后可精炼",
+      "actual": {
+        "months": 0,
+        "stones": 0,
+        "herbs": 0,
+        "ward": 0
+      }
+    },
+    {
+      "product": "vial",
+      "method": "buy",
+      "cost": "灵石 40",
+      "study": 0,
+      "months": 0,
+      "error": "已持有此器，可选择精炼或刻纹",
+      "actual": {
+        "months": 0,
+        "stones": 0,
+        "herbs": 0,
+        "ward": 0
+      }
+    },
+    {
+      "product": "vial",
+      "method": "commission",
+      "cost": "灵草 4、灵石 28",
+      "study": 0,
+      "months": 1,
+      "error": "筑基后可精炼",
+      "actual": {
+        "months": 0,
+        "stones": 0,
+        "herbs": 0,
+        "ward": 0
+      }
+    },
+    {
+      "product": "iron",
+      "method": "craft",
+      "cost": "灵石 8",
+      "study": 0,
+      "months": 0,
+      "error": "玄铁料从坊市购入",
+      "actual": {
+        "months": 0,
+        "stones": 0,
+        "herbs": 0,
+        "ward": 0
+      }
+    },
+    {
+      "product": "iron",
+      "method": "buy",
+      "cost": "灵石 8",
+      "study": 0,
+      "months": 0,
+      "error": "",
+      "actual": {
+        "months": 0,
+        "stones": 8,
+        "herbs": 0,
+        "ward": 0
+      }
+    },
+    {
+      "product": "iron",
+      "method": "commission",
+      "cost": "灵石 8",
+      "study": 0,
+      "months": 0,
+      "error": "玄铁料从坊市购入",
+      "actual": {
+        "months": 0,
+        "stones": 0,
+        "herbs": 0,
+        "ward": 0
+      }
+    }
+  ],
+  "passage": [
+    {
+      "action": "herbs",
+      "label": "草药护脉",
+      "recovery": 18,
+      "injury": 0,
+      "herbs": 3,
+      "ward": 0,
+      "cost": "灵草 3",
+      "error": "",
+      "vigor": 64
+    },
+    {
+      "action": "ward",
+      "label": "服护脉丹",
+      "recovery": 26,
+      "injury": 0,
+      "herbs": 0,
+      "ward": 1,
+      "cost": "护脉丹 1",
+      "error": "",
+      "vigor": 66
+    },
+    {
+      "action": "sense",
+      "label": "辨阵绕行",
+      "recovery": 6,
+      "injury": 0,
+      "herbs": 0,
+      "ward": 0,
+      "cost": "神识 8、心得 2",
+      "error": "",
+      "vigor": 52
+    },
+    {
+      "action": "force",
+      "label": "强行通过",
+      "recovery": -12,
+      "injury": 1,
+      "herbs": 0,
+      "ward": 0,
+      "cost": "伤势 +1",
+      "error": "",
+      "vigor": 34
+    }
+  ],
+  "elapsedMs": 96
+}

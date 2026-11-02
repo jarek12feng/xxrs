@@ -80,8 +80,32 @@ export function actionSound(
       before.growth.training[intent.technique]
   )
     return "upgrade";
+  if (intent.type === "workshop") {
+    const o = intent.order;
+    if ("relic" in o)
+      return before.workshop.temper[o.relic] !== after.workshop.temper[o.relic]
+        ? "upgrade"
+        : "choice";
+    if (o.product === "sword" || o.product === "vial")
+      return after.journey.relics[o.product] > before.journey.relics[o.product]
+        ? "upgrade"
+        : "choice";
+    if (o.product === "iron") return "choice";
+    const gained =
+      o.product === "foundation"
+        ? after.pills > before.pills
+        : o.product === "ward"
+          ? after.workshop.ward > before.workshop.ward
+          : after.growth.medicines[o.product] >
+            before.growth.medicines[o.product];
+    return gained ? "medicine" : "choice";
+  }
   if (intent.type === "prepare")
-    return intent.kind === "retreat" ? "cultivate" : "medicine";
+    return intent.kind === "retreat"
+      ? "cultivate"
+      : after.pills > before.pills
+        ? "medicine"
+        : "choice";
   if (intent.type === "advance") {
     const routine = {
       gather: "gather",
@@ -95,7 +119,12 @@ export function actionSound(
     if (intent.activity in routine)
       return routine[intent.activity as keyof typeof routine];
   }
-  if (intent.type === "brew" || intent.type === "consume") return "medicine";
+  if (intent.type === "brew")
+    return after.growth.medicines[intent.medicine] >
+      before.growth.medicines[intent.medicine]
+      ? "medicine"
+      : "choice";
+  if (intent.type === "consume") return "medicine";
   if (intent.type === "equip" || intent.type === "equipRelic") return "choice";
   if (intent.type === "arenaTurn") {
     if (after.social.arena.wins > before.social.arena.wins) return "victory";
@@ -117,10 +146,45 @@ export function actionSound(
     if (intent.action === "test") return "hurt";
     if (intent.action === "revisit") return "handover";
   }
+  if (intent.type === "qiJourney") {
+    if (after.qiJourney.gates > before.qiJourney.gates) return "upgrade";
+    if (
+      before.qiJourney.trial &&
+      after.qiJourney.preparations[before.qiJourney.gates]![
+        before.qiJourney.trial
+      ] === 3
+    )
+      return "victory";
+    if (
+      (after.qiJourney.essence && !before.qiJourney.essence) ||
+      (before.qiJourney.node === 1 && after.qiJourney.node === 2)
+    )
+      return "victory";
+    if (
+      before.qiJourney.duel &&
+      !after.qiJourney.duel &&
+      ["strike", "guard", "discern"].includes(intent.action)
+    )
+      return "hurt";
+    if (
+      intent.action === "guard" ||
+      intent.action === "strike" ||
+      intent.action === "discern"
+    )
+      return intent.action;
+    return "choice";
+  }
   if (intent.type === "foundationJourney") {
     const old = before.foundationJourney,
       now = after.foundationJourney;
     if (now.epilogue && !old.epilogue) return "closure";
+    if (now.growth.refined && !old.growth.refined) return "upgrade";
+    if (now.growth.steady !== old.growth.steady) return "ward-learn";
+    if (now.heroine.map !== old.heroine.map) return "route-mark";
+    if (now.heroine.meeting !== old.heroine.meeting) return "discovery";
+    if (now.heroine.expedition && !old.heroine.expedition) return "signal-send";
+    if (now.heroine.supplied && !old.heroine.supplied) return "handover";
+
     if (now.condensation && !old.condensation) return "inheritance";
     if (now.rescue === 4 && old.rescue !== 4) return "rescue-clear";
     if (now.bond === "covenant" && old.bond !== "covenant") return "vow";

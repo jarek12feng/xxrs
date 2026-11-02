@@ -1,3 +1,4 @@
+import { freshQiJourney } from "../src/qi-journey/state";
 import { foundationStep } from "../tools/foundation-playthrough";
 import { expect, it } from "vitest";
 import {
@@ -174,14 +175,9 @@ it("preserves v7 road progress and rejects invalid new clue histories", () => {
   const s = shelteredState();
   const { discoveries: _, lastApproach: __, ...road } = s.adventure.road;
   const old = { ...s, version: 7, adventure: { ...s.adventure, road } };
-  expect(migrateSave(old)).toEqual({
-    ...s,
-    adventure: {
-      ...s.adventure,
-      rescueChoice: "legacy",
-      road: { ...road, discoveries: [], lastApproach: "direct" },
-    },
-  });
+  const snapshot=structuredClone(old);
+  expect(() => migrateSave(old)).toThrow();
+  expect(old).toEqual(snapshot);
   for (const discoveries of [
     ["ledger", "ledger"],
     ["unknown"],
@@ -353,7 +349,7 @@ it("migrates v6 without changing resources, scene, old story or RNG; rejects cor
   const upgraded = migrateSave(old);
   expect(upgraded).toEqual({
     ...s,
-    version: 18,
+    version: 22,
     adventure: { ...adventure, rescueChoice: "legacy", road: freshRoad() },
   });
   expect(() =>

@@ -47,6 +47,9 @@ export function journeyPlayer(initial = mistCheckpoint()) {
     }
   };
   const fight = (id: BattleId) => {
+    if(id === "well" && state.social.gender === "male" && state.foundationJourney.heroine.purpose === "none")act({kind:"journeyPurpose",purpose:"longevity"});
+    if(id === "application" && state.foundationJourney.inheritance !== "none")send({type:"equip",technique:state.foundationJourney.inheritance});
+    if(id === "exit" && !state.foundationJourney.won.includes("application"))fight("application");
     cultivate(challenges[id].cultivation);
     while (state.injury) send({ type: "advance", activity: "rest", months: 1 });
     while (state.stones < 12)
@@ -101,14 +104,30 @@ export function journeyCheckpoint(
   p.act({ kind: "inherit", technique });
   p.fight("exit");
   p.act({ kind: "ferryOutcome", outcome: "escort" });
-  p.cultivate(240);
+  p.cultivate(280);
+  p.act({kind:"travel",destination:"snow"});
+  p.act({kind:"routePrepare",route:"snow",method:"service"});
+  p.act({kind:"routeChoose",route:"snow",choice:"careful"});
+  p.fight("deer");
+  while(p.state.herbs<6)p.send({type:"supplies"});
+  p.act({kind:"routeProcess",route:"snow",method:"self"});
+  if(gender === "male") {
+    p.act({kind:"travel",destination:"home"});
+    p.act({kind:"mapPlan",plan:"public"});
+    p.act({kind:"contact",contact:"letters"});
+    p.act({kind:"depart"});
+    p.cultivate(400);
+    p.act({kind:"reunion"});
+    p.act({kind:"expeditionPlan"});
+  }
+  p.cultivate(420);
   p.act({ kind: "travel", destination: "frontier" });
   p.act({ kind: "report" });
   p.act({ kind: "signal" });
   p.fight("frontier");
   p.act({ kind: "mentor" });
   p.fight("rescue");
-  p.cultivate(600);
+  p.cultivate(500);
   p.act({ kind: "finish" });
   return p.state;
 }

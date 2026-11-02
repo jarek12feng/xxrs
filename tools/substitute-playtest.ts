@@ -1,3 +1,4 @@
+import { foundationCap } from "../src/foundation-journey/growth-state";
 import { cultivationProjection } from "../src/cultivation";
 import {
   createGame,
@@ -156,7 +157,7 @@ export function runRoute(
         }
         while (s.sense < 12)
           send({ type: "advance", activity: "meditate", months: 1 });
-        cultivate(Math.min(600, challenges[id].cultivation + 120));
+        cultivate(Math.min(foundationCap(s), challenges[id].cultivation + 120));
       }
       funds(4);
       act({ kind: "battle", battle: id });
@@ -278,6 +279,7 @@ export function runRoute(
     act({ kind: "travel", destination: "ferry" });
     fight("well");
     act({ kind: "inherit", technique });
+    fight("application");
     fight("exit");
     act({ kind: "ferryOutcome", outcome: "escort" });
     if (profile === "explorer") {
@@ -296,7 +298,11 @@ export function runRoute(
       }
     }
     phase = "frontier";
-    cultivate(240);
+    cultivate(280);
+    act({kind:"travel",destination:"snow"});
+    funds(24);act({kind:"routePrepare",route:"snow",method:"service"});
+    act({kind:"routeChoose",route:"snow",choice:"careful"});fight("deer");
+    herbs(6);funds(4);act({kind:"routeProcess",route:"snow",method:"self"});
     act({ kind: "travel", destination: "frontier" });
     act({ kind: "report" });
     act({ kind: "signal" });
@@ -304,9 +310,10 @@ export function runRoute(
     act({ kind: "mentor" });
     fight("rescue");
     phase = "finale";
-    cultivate(600);
+    cultivate(500);
     act({ kind: "finish" });
     fight("culmination");
+    cultivate(600);
     act({ kind: "travel", destination: "home" });
     act({ kind: "epilogue" });
   } catch (error) {

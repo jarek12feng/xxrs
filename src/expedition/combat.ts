@@ -1,3 +1,4 @@
+import { temperEffect } from "../workshop/combat";
 import { realmPressure, type OpponentRealm } from "../realm-pressure";
 import { mainTraining, supportTraining } from "../growth";
 import type { State } from "../world";
@@ -135,6 +136,10 @@ export function tacticalExchange(
       note += "探阵：本合伤害 −3；下合伤害 +6、承伤 −2。";
     }
   }
+  const temper = temperEffect(s, move, correct);
+  damage = Math.max(1, damage + temper.damage);
+  incoming += temper.incoming;
+  note += temper.note;
   if (!deferLethal && e.realm !== undefined && e.stage !== undefined) {
     const pressure = realmPressure(s, e as OpponentRealm);
     damage = Math.max(1, Math.floor(damage * pressure.damageFactor));

@@ -39,6 +39,7 @@ it("routes visible foundation places and actual battles without leaking a hidden
     ambient: "waterside",
   });
   expect(foundationAudioScene(p.state, "")?.music).toBe("foundation");
+  p.act({kind:"journeyPurpose",purpose:"longevity"});
   p.act({ kind: "battle", battle: "well" });
   expect(foundationAudioScene(p.state, "world")?.music).toBe("frontier");
 });
@@ -60,7 +61,7 @@ it("emits unique event cues only for new outcomes through public commands, never
   p.send(inherit);
   expect(actionSound(pre, p.state, inherit)).toBe("inheritance");
   expect(actionSound(p.state, p.state, inherit)).toBe("step");
-  const ready = journeyCheckpoint();
+  const ready = journeyCheckpoint("female");
   const start = dispatch(ready, {
     type: "companionship",
     action: "start",
@@ -83,7 +84,7 @@ it("invites the earned inheritance into a real cross-stage exit trial without a 
   p.fight("well");
   p.act({ kind: "inherit", technique: "spring" });
   expect(p.state.foundationJourney.cultivation).toBeLessThan(200);
-  expect(foundationGoal(p.state)).toContain("越阶胜利");
+  expect(foundationGoal(p.state)).toContain("试运新法");
   p.act({ kind: "battle", battle: "exit" });
   expect(p.state.foundationJourney.duel?.id).toBe("exit");
 });

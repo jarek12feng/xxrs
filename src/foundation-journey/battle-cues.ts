@@ -5,6 +5,10 @@ import { expectedMove, tacticalCue } from "./tactics";
 import type { BattleId } from "./state";
 // Match the same turn/pattern as combat. Descriptions never select a move or consume RNG.
 const cues: Record<BattleId, Record<Move, string>> = {
+  application: {guard:"两道灵流连续压来，先护经脉。",discern:"壁上亮起假阵眼，真流藏在其后。",strike:"乱流交错后露出短暂空隙。"},
+  salamander: {guard:"玄鳞螈低伏蓄水，药床前水面鼓起。",discern:"水下尾影摆动，冲势正在变向。",strike:"蓄水已落，玄鳞螈露出侧身。"},
+  deer: {guard:"霜角发亮，鹿蹄向你压来。",discern:"蹄声停了一息，雪纹指向另一侧。",strike:"冲势已尽，采髓点露出空隙。"},
+  steady: {guard:"逆流压向经脉，先稳住呼吸。",discern:"两股灵流交错，需辨清去向。",strike:"滞涩松动，可送出所蓄之力。"},
   culmination: {
     guard: "三股乱流压向经脉，护阵旗已收起。",
     discern: "经脉渐稳，交错的灵光各有去向。",

@@ -20,6 +20,7 @@ export function companionshipError(s: State) {
   if (s.status !== "alive") return "这段修行已经结束";
   if (s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel)
     return "先处理眼前事件或结束交锋";
+  if (s.social.gender === "male" && Number(s.version) >= 22) return "请到听松行前居，与苏婉宁商议行程";
   if (s.realm < 1) return "筑基后才能承受这段险路的灵流";
   if (s.age < 216) return "成年后再与同行者相约";
   if (!s.social.met || !s.social.gender) return "先在山门外相识，无需定情";
@@ -89,7 +90,7 @@ export function runCompanionship(
   if (action === "start") {
     n.stage = "prepare";
     n.last = femaleCompanion
-      ? "你要为自己的远行勘一条安全路。沈听澜带来尺绳：“我量坡度，你稳住上面的石梁。能御剑过去，不代表背粮的人也能走。”雨棚外有一道松动的落石，先准备好再动手。"
+      ? "你要为自己的远行勘一条安全路。苏婉宁带来尺绳：“我量坡度，你稳住上面的石梁。能御剑过去，不代表背粮的人也能走。”雨棚外有一道松动的落石，先准备好再动手。"
       : "你想学会在紊乱灵流中护住自身，为远行作准备。尹照川请你到上游校验阵石，他在主灯处报信。旧工单漏记了风标半格的偏差；今晚先用空船试灯，失手便退到备用泊点，不拿药工试阵。";
   } else if (["strength", "insight", "supplies"].includes(action)) {
     n.method = action as Method;
@@ -98,11 +99,11 @@ export function runCompanionship(
     const methods = femaleCompanion
       ? {
           strength:
-            "你以剑意卸去松石的力道，稳住石梁；沈听澜拴好尺绳，测出背粮人能走的坡度。",
+            "你以剑意卸去松石的力道，稳住石梁；苏婉宁拴好尺绳，测出背粮人能走的坡度。",
           insight:
-            "你循灵流找出石梁下的稳固节点；沈听澜顺着你的标记重测，避开那截看似平坦的空壳石。",
+            "你循灵流找出石梁下的稳固节点；苏婉宁顺着你的标记重测，避开那截看似平坦的空壳石。",
           supplies:
-            "你用四份灵草调出固根药液，把崖边根系护住；沈听澜系绳复核每一段落脚点。灵草 −4。",
+            "你用四份灵草调出固根药液，把崖边根系护住；苏婉宁系绳复核每一段落脚点。灵草 −4。",
         }
       : {
           strength:
@@ -126,7 +127,7 @@ export function runCompanionship(
     s.stones -= plans[n.plan].cost;
     n.stage = "trial";
     n.last = femaleCompanion
-      ? "“我没写名字。”沈听澜看着药舍住户指出的井口与果树，终于放下刻刀：“可这些已经够找上门了。”门外那家人仍抱着孩子等消息。她亲自刮去刻样上的旧线，请你去复核新路，刻坊的人被她留在门外。"
+      ? "“我没写名字。”苏婉宁看着药舍住户指出的井口与果树，终于放下刻刀：“可这些已经够找上门了。”门外那家人仍抱着孩子等消息。她亲自刮去刻样上的旧线，请你去复核新路，刻坊的人被她留在门外。"
       : "尹照川又把自己的名字填进每个空班。“风标是我修的，漏写也是我的错。”你指出一直熬着不能补上训练。他划去多余夜值，答应按你们选定的办法交接。先让渡工独立报信，你去验备用泊点。";
   } else if (action === "test") {
     // The same existing support technique that reduces combat damage now

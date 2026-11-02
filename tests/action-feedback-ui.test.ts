@@ -66,7 +66,7 @@ it("shows an alchemy transition, then actual costs and reward without opening th
   const result = document.querySelector('[role="dialog"]')?.textContent;
   expect(result).toContain("丹成");
   expect(result).toContain("灵石 −12");
-  expect(result).toContain("28 → 19");
+  expect(result).toContain("12 → 0");
   expect(result).toContain("0 → 1");
   await click("知晓结果");
   expect(document.querySelector('[role="dialog"]')).toBeNull();
@@ -83,7 +83,7 @@ it("blocks duplicate clicks while saving and while the result is open", async ()
   refine.click();
   await flush();
   expect(save).toHaveBeenCalledTimes(1);
-  expect(text()).toContain("正在结算并保存");
+  expect(text()).toContain("正在保存");
   finish();
   await flush();
   refine.click();
@@ -106,6 +106,7 @@ it.each([1, 123456])(
     const s = state();
     s.seed = seed;
     s.qi = 360;
+  s.qiJourney.gates = 2;
     s.pills = 1;
     const expected = dispatch(s, { type: "break", pill: true, id: "expected" });
     await mount(s);
@@ -119,7 +120,7 @@ it.each([1, 123456])(
     expect(save).toHaveBeenCalledTimes(1);
   },
 );
-it("shows alchemy results before the pending letter and never advances that story automatically", async () => {
+it("shows interrupted alchemy before the pending letter and never advances that story automatically", async () => {
   const s = state();
   s.month = 10;
   s.age = 202;
@@ -128,8 +129,10 @@ it("shows alchemy results before the pending letter and never advances that stor
   await click("跳过演出");
   expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(1);
   expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
-    "丹成",
+    "炼丹中断",
   );
+  expect((vi.mocked(save).mock.calls[0][0] as State).pills).toBe(s.pills);
+  expect((vi.mocked(save).mock.calls[0][0] as State).stones).toBe(s.stones);
   await click("知晓结果");
   expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
     "未寄",
@@ -231,7 +234,7 @@ it("NPC choices have a named response, affection and memory before returning to 
   await click("用研读所得标出安全通路");
   expect(document.querySelector(".action-feedback.playing")).toBeNull();
   const dialog = document.querySelector("[role=dialog]");
-  expect(dialog?.textContent).toContain("沈听澜");
+  expect(dialog?.textContent).toContain("苏婉宁");
   expect(dialog?.textContent).toContain("共同记忆 · 共勘旧路");
   expect(dialog?.textContent).toContain("+16");
   expect(dialog?.querySelector(".reply-person")).not.toBeNull();
@@ -459,7 +462,7 @@ it("foundation ranking shows actual reward after save, returns to its group and 
   expect(text()).toContain("听松试剑榜 · 筑基组");
   expect(text()).toContain("奖励已入袋");
   await click("金丹组");
-  expect(text()).toContain("金丹组尚未开放");
+  expect(text()).toContain("金丹组暂未开放");
   await click("筑基组");
   expect(text()).toContain("首胜灵石 +14");
   expect(text()).toContain("已获胜");

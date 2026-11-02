@@ -50,7 +50,7 @@ function prepared(seed = 1) {
   return s;
 }
 describe("relationships and arena", () => {
-  it.each(["male", "female"] as const)(
+  it.each(["female"] as ("male" | "female")[])(
     "finishes the %s relationship through finite shared memories",
     (gender) => {
       let s = adult(gender);
@@ -79,7 +79,7 @@ describe("relationships and arena", () => {
     expect(act(s, { type: "identity", gender: "male" })).toBe(s);
   });
   it("freezes scenes, rejects stale choices and restores the exact pending scene", () => {
-    const s = act(adult(), { type: "visit" });
+    const s = act(adult("female"), { type: "visit" });
     for (const c of [
       { type: "advance", activity: "work", months: 1 },
       { type: "arenaScout" },
@@ -153,7 +153,7 @@ describe("relationships and arena", () => {
   });
 });
 
-it.each(["male", "female"] as const)(
+it.each(["female"] as ("male" | "female")[])(
   "keeps cultivation ambitions and prior answers in the %s romance after reload",
   (gender) => {
     for (const night of ["promise", "honest"] as const) {

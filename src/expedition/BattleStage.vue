@@ -2,10 +2,11 @@
 import { computed } from "vue";
 import { usePageVisible } from "../presentation/usePageVisible";
 const pageVisible = usePageVisible();
-import { characterArt, heroArt } from "../presentation/art";
+import { characterArt, heroArt, heroBattlePose } from "../presentation/art";
 import type { Expedition } from "./rules";
 const props = defineProps<{
   gender?: string | null;
+  realm?: number;
   quest: Expedition;
   foe: string;
   playerMax?: number;
@@ -14,8 +15,8 @@ const props = defineProps<{
 }>();
 const hero = computed(() =>
   characterArt(
-    heroArt(props.gender),
-    props.quest.effect === "strike" ? "attack" : "idle",
+    heroArt(props.gender, props.realm),
+    heroBattlePose(props.quest.effect),
   ),
 );
 const enemy = computed(() =>

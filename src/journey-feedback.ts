@@ -149,7 +149,7 @@ export function enrichReceipt(
   if (intent.type === "equipRelic")
     r.notes = [
       ...r.notes,
-      `已装配${relics[intent.relic].name}，当前品阶 ${after.journey.relics[intent.relic]}。下一次挑战按这件灵器结算。`,
+      `已装配${relics[intent.relic].name}，当前品阶 ${after.journey.relics[intent.relic]}。下次交锋即可使用。`,
     ];
   if (
     intent.type === "explore" &&
@@ -345,7 +345,7 @@ export function enrichReceipt(
         name: "陆迟",
         portrait: luchiView(after).portrait,
         response: reunion,
-        relation: "赠丹与护关，都已兑现",
+        relation: "当年赠丹，今日护关",
       };
     }
   }
@@ -411,7 +411,7 @@ export function enrichReceipt(
   }
   if (intent.type === "readOrigin") {
     r.title = originNotes[intent.origin].title;
-    r.next = "见闻已记下，可以继续原来的行程；这还不算双方相识。";
+    r.next = "你记住了落款，收好纸页，继续赶路。";
   }
   if (intent.type === "choose" && before.social.scene?.kind === "background") {
     r.title = "听过来处，各有远方";

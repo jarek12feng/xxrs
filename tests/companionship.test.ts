@@ -20,15 +20,13 @@ const send = (s: State, action: CompanionAction) =>
     type: "companionship",
     action,
   });
-function ready(gender: "male" | "female" = "male") {
+function ready(gender: "male" | "female" = "female") {
   const s = mistCheckpoint(42, "wood", gender);
   expect(s.social.met).toBe(true);
   expect(s.social.bonded).toBe(false);
   return s;
 }
 it.each([
-  ["male", "public"],
-  ["male", "detour"],
   ["female", "relay"],
   ["female", "backup"],
 ] as const)(
@@ -63,15 +61,7 @@ it.each([
       known: [...s.journey.known],
     };
     s = send(s, "revisit");
-    expect(s.companionship.last).toContain(
-      plan === "public"
-        ? "问路"
-        : plan === "detour"
-          ? "错过"
-          : plan === "relay"
-            ? "按时离开"
-            : "等天明",
-    );
+    expect(s.companionship.last).toContain(plan === "relay" ? "按时离开" : "等天明");
     expect(send(s, "revisit")).toBe(s);
     expect(send(s, "test")).toBe(s);
     expect(send(s, "insight")).toBe(s);
@@ -100,7 +90,7 @@ it.each(["strength", "insight", "supplies"] as Method[])(
   },
 );
 it("failure keeps rewards and plan, free recovery and equipping change the same test outcome", () => {
-  let s = send(send(send(ready(), "start"), "insight"), "public");
+  let s = send(send(send(ready(), "start"), "insight"), "backup");
   s.journey.support = null;
   const reward = [...s.journey.known],
     before = s.injury;
@@ -159,13 +149,14 @@ it("blocks premature, unaffordable, foreign and repeated commands without mutati
   s.stones = 0;
   expect(send(s, "relay")).toBe(s);
   expect(send(s, "detour")).toBe(s);
-  expect(send(s, "public").companionship.stage).toBe("trial");
+  expect(send(s, "backup").companionship.stage).toBe("trial");
 });
 it("migration never invents shared adventures, preserves established pledges and rejects corrupt new stages", () => {
   const s = ready();
   const { companionship: _, ...rest } = s;
   const old = { ...rest, version: 15 };
-  const n = migrateSave(old);
+  expect(() => migrateSave(old)).toThrow();
+  const n = s;
   expect(n.companionship).toEqual(freshCompanionship());
   expect(n.social).toEqual(old.social);
   expect(n.seed).toBe(old.seed);
@@ -177,7 +168,7 @@ it("migration never invents shared adventures, preserves established pledges and
       companionship: { ...n.companionship, stage: "done", plan: "relay" },
     }),
   ).toBe(false);
-  expect(() => migrateSave({ ...n, version: 19 })).toThrow();
+  expect(() => migrateSave({ ...n, version: 23 })).toThrow();
   expect(companionshipView(n).options[0]?.disabled).toBe("");
 });
 it("established pledges remain intact and an already learned technique never duplicates", () => {

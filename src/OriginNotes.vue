@@ -19,7 +19,7 @@ const locked = computed(
 </script>
 <template>
   <aside v-if="notes.length" class="origin-notes" aria-label="路旁见闻">
-    <h4>{{ journal ? "亲眼读过的见闻" : "路旁一瞥 · 可选" }}</h4>
+    <h4>{{ journal ? "旧日见闻" : "路旁一瞥 · 可选" }}</h4>
     <div v-for="key in notes" :key="key">
       <details v-if="game.social.origins.includes(key)">
         <summary>{{ originNotes[key].title }} · 已读</summary>

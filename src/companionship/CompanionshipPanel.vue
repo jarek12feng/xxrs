@@ -64,7 +64,7 @@ const scene = computed(() => companionshipView(props.game));
       </button>
     </div>
     <p class="muted">
-      可关闭人物面板，回洞府准备后继续；阶段与约定会保存。此段行动不推进月份。
+      可先回洞府整备，再来赴约。此行不耗月份。
     </p>
   </section>
 </template>

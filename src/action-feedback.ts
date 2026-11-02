@@ -131,6 +131,8 @@ export function actionReceipt(
     before.growth.medicines.clarity,
     after.growth.medicines.clarity,
   );
+  add("护脉丹", before.workshop.ward, after.workshop.ward);
+  add("玄铁料", before.workshop.iron, after.workshop.iron);
   add("灵瓶品阶", before.journey.relics.vial, after.journey.relics.vial);
   add("灵剑品阶", before.journey.relics.sword, after.journey.relics.sword);
   // Find the retained log suffix even when the 180-entry ring is full.
@@ -173,7 +175,7 @@ export function actionReceipt(
   if (ritual === "refine")
     title = after.pills > before.pills ? "丹成 · 筑基丹入囊" : "炼丹中断";
   if (ritual === "retreat") title = "出关 · 根基渐稳";
-  if (ritual === "forge") title = "灵器炼成";
+  if (ritual === "forge") title = failed ? "炼器中断" : "灵器炼成";
   if (ritual === "challenge")
     title = failed ? "暂退一步 · 整备再来" : "闯关告捷";
   if (dead) title = "寿元已尽 · 此行止步";
@@ -192,6 +194,8 @@ export function actionReceipt(
   };
   if (!ritual && !dead && labels[effective.type])
     title = labels[effective.type]!;
+  if (effective.type === "workshop" && !dead)
+    title = failed ? "制作中断 · 未扣材料" : "丹药与法器 · 准备完成";
   if (effective.type === "promote") title = "晋升外门 · 师门谢礼";
   if (after.realm > before.realm) {
     const qi = changes.find((c) => c.label === "修为");
@@ -206,6 +210,7 @@ export function actionReceipt(
     "equipRelic",
     "trainTechnique",
     "forge",
+    "workshop",
   ].includes(effective.type)
     ? growthComparison(before, after)
     : [];
@@ -242,9 +247,9 @@ export function actionReceipt(
   const cost =
     effective.type === "prepare"
       ? effective.kind === "refine"
-        ? `投炉消耗：灵草 −${refineCost(before).herbs}，灵石 −${refineCost(before).stones}。下方为含月收入的实际净变化。`
-        : "闭关消耗：灵石 −8。下方为含月收入的实际净变化。"
-      : "下方为本次行动的实际净变化。";
+        ? `投炉消耗：灵草 −${refineCost(before).herbs}，灵石 −${refineCost(before).stones}。所得所耗见下方。`
+        : "闭关消耗：灵石 −8。所得所耗见下方。"
+      : "本次得失";
   const payoff = routePayoff(before, after, intent);
   return enrichReceipt(before, after, intent, {
     title,
@@ -301,7 +306,9 @@ export function actionReceipt(
                 ? `境界已从炼气晋升筑基，炼气修为已转化为新境界（归零并非损失）。${expeditionGoal(after) || "功法通达与灵器精炼已开放，回到当前行路查看后续目标。"}`
                 : "先养伤、补回修为，再炼丹或闭关固本；准备好后可以再次突破。"
               : ritual === "refine"
-                ? "丹药已收入行囊。修为满 360 后可叩关，每次必消耗一枚；失败后可依丹方补炼。"
+                ? failed
+                  ? "材料仍在，处理眼前事件后可重新安排炼制。"
+                  : "丹药已收入行囊。修为满 360 后可叩关，每次必消耗一枚；失败后可依丹方补炼。"
                 : ritual === "challenge" && failed
                   ? "线索仍在。查看当前挑战提示，提升实力或寻求帮助后再来。"
                   : "成果已自动保存，可以继续行动。",

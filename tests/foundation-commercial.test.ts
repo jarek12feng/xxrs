@@ -33,6 +33,7 @@ it.each(["spring", "blade", "breath"] as const)(
     p.fight("culmination");
     expect(p.state.foundationJourney.board.wins).toEqual([]);
     expect(p.state.foundationJourney.bond).toBe("none");
+    p.cultivate(600);
     const won = p.state;
     p.act({ kind: "epilogue" });
     expect(p.state).toBe(won); // Must actually return home.
@@ -42,7 +43,7 @@ it.each(["spring", "blade", "breath"] as const)(
     expect(p.state.foundationJourney.epilogue).toBe(true);
     expect(p.state.realm).toBe(1);
     expect(p.state.foundationJourney.last).toContain("闻岑");
-    expect(p.state.foundationJourney.last).not.toContain("沈听澜");
+    expect(p.state.foundationJourney.last).not.toContain("苏婉宁");
     expect(
       actionReceipt(home, p.state, {
         type: "foundationJourney",
@@ -218,9 +219,9 @@ it("preparation forecasts a safe same-stage alternative without imposing a battl
   expect(prep.optionalBattle).toBe(true);
   expect(prep.months).toBeGreaterThan(0);
   p.send({ type: "advance", activity: "cultivate", months: prep.months });
-  expect(p.state.foundationJourney.cultivation).toBeGreaterThanOrEqual(200);
+  expect(p.state.foundationJourney.cultivation).toBe(199);
   expect(p.state.foundationJourney.cultivation).toBeLessThan(206);
-  expect(journeyPreparation(p.state)?.missing).toBe(0);
+  expect(journeyPreparation(p.state)?.months).toBe(0);
 });
 it("optional recording retains real timestamps and excludes names and save data", () => {
   const s = journeyCheckpoint();

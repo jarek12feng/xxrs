@@ -17,24 +17,14 @@ export const freshGrowth = (): Growth => ({
   medicines: { healing: 0, clarity: 0 },
   lastMedicineMonth: null,
 });
-export const medicines = {
-  healing: {
-    name: "回春散",
-    herbs: 2,
-    stones: 4,
-    hint: "伤势降低 2；即时疗伤，不推进月份，不受清心丹药性影响。气势只属于单场交锋，不能用本药恢复",
-  },
-  clarity: {
-    name: "清心丹",
-    herbs: 2,
-    stones: 4,
-    hint: "神识 +2（上限 12）；不推进月份，以材料换取最多两个月凝神时间；三个月内不能再服清心丹",
-  },
-} as const;
+import { medicines } from "./workshop/catalog";
+import { workshopQuote, workshopLock } from "./workshop/rules";
+export { medicines } from "./workshop/catalog";
 export type Medicine = keyof typeof medicines;
 export type GrowthCommand =
   | { id: string; type: "trainTechnique"; technique: Technique }
-  | { id: string; type: "brew" | "consume"; medicine: Medicine };
+  | { id: string; type: "brew"; medicine: Medicine }
+  | { id: string; type: "consume"; medicine: Medicine };
 export function trainingError(s: State, t: Technique) {
   if (!techniqueIds.includes(t) || !s.journey.known.includes(t))
     return "先习得这册功法";
@@ -46,14 +36,7 @@ export function trainingError(s: State, t: Technique) {
   return "";
 }
 export function medicineError(s: State, m: Medicine, use = false) {
-  if (
-    s.status !== "alive" ||
-    s.pending ||
-    s.social.scene ||
-    s.social.arena.duel ||
-    s.expedition.duel
-  )
-    return "先处理眼前事件或结束交锋";
+  if (workshopLock(s)) return "先处理眼前事件或结束历练";
   if (!Object.hasOwn(medicines, m)) return "未知丹方";
   if (use) {
     if (!s.growth.medicines[m]) return "储物袋中没有此药";
@@ -65,23 +48,14 @@ export function medicineError(s: State, m: Medicine, use = false) {
       return `药性未散，再过 ${3 - (s.month - s.growth.lastMedicineMonth)} 个月可服药`;
     if (m === "healing" && !s.injury) return "没有伤势，无需服药";
     if (m === "clarity" && s.sense >= 12) return "神识已达本篇上限";
-  } else {
-    const recipe = medicines[m];
-    if (s.study < 1) return "先研读一次，掌握基础丹理";
-    if (s.herbs < recipe.herbs || s.stones < recipe.stones)
-      return `需要灵草 ${recipe.herbs}、灵石 ${recipe.stones}`;
-  }
+  } else return workshopQuote(s, { product: m, method: "craft" }).error;
   return "";
 }
-export function runGrowth(input: State, c: GrowthCommand): State {
-  if (
-    input.status !== "alive" ||
-    input.pending ||
-    input.social.scene ||
-    input.social.arena.duel ||
-    input.expedition.duel
-  )
-    return input;
+export function runGrowth(
+  input: State,
+  c: Exclude<GrowthCommand, { type: "brew" }>,
+): State {
+  if (workshopLock(input)) return input;
   const error =
     c.type === "trainTechnique"
       ? trainingError(input, c.technique)
@@ -94,12 +68,6 @@ export function runGrowth(input: State, c: GrowthCommand): State {
     s.herbs -= 2;
     s.growth.training[c.technique]++;
     text = `功法研修至${s.growth.training[c.technique] === 1 ? "熟练" : "通达"}；装配后生效。灵石 −12、灵草 −2。`;
-  } else if (c.type === "brew") {
-    const r = medicines[c.medicine];
-    s.herbs -= r.herbs;
-    s.stones -= r.stones;
-    s.growth.medicines[c.medicine]++;
-    text = `炼成${r.name}，已收入储物袋；${r.hint}。`;
   } else {
     s.growth.medicines[c.medicine]--;
     if (c.medicine === "healing") {
@@ -167,7 +135,7 @@ export function growthGoals(s: State): string[] {
     goals.push(
       remaining.length
         ? `境界：筑基已成，可准备${remaining.join("、")}；金丹尚未开放。`
-        : "境界：筑基篇交锋目标已完成。可补探已有支线、回看人物结局或封存本世；金丹尚未开放。",
+        : "境界：旧阵与听松擂台已过，可继续行旅、回访故人；金丹尚未开放。",
     );
   }
   return goals;
