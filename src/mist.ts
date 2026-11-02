@@ -151,7 +151,7 @@ export function mistPartner(s: State) {
 export function mistQuote(s: State): string {
   const m = s.adventure.mist;
   if (m.stage === "home" && s.journey.maps.sea === 3)
-    return "亲笔信已送到家中，守灯人尚未归来。寻亲已有答案，你的修行仍有自己的方向。";
+    return "亲笔信已送到家中，守灯人尚未归来。陆迟母亲托人备了回信，等下趟药船捎去。";
   if (m.stage === "letter")
     return s.journey.maps.sea >= 2
       ? "我们已经知道他在守灯。可他当年为什么留下来，家书里没有细说，也许答案就在这里。"
@@ -159,42 +159,42 @@ export function mistQuote(s: State): string {
   if (m.stage === "shrine")
     return m.revisited
       ? m.partner === "luchi"
-        ? "我以前只想找到他。现在，我也想把他留下的路照亮。"
-        : "下次有人在这里躲过一场雨，也许不会知道我们的名字。可灯会亮着。"
-      : "这道刻痕一直都在。是我们终于有了看清它的本领。";
+        ? "“先带其他人下山”……是父亲的字。这几行，容我再抄一遍。"
+        : "灯下能避雨，往后赶路的人也有处歇脚。"
+      : "灯举近些。这道刻痕从前看不清，如今能辨出纹路了。";
   if (m.stage === "archive")
     return m.partner === "luchi"
       ? "这行字，是他写的……先别收起来，让我再看一会儿。"
       : "我们追的那封信，原来一直在等一条能回去的路。";
   if (m.stage === "camp" && m.partner === "none")
-    return "把想去的地方圈出来，也想一想，你希望谁和你一起看到答案。";
+    return "先看航图，备好行装，再决定独行还是邀人同行。";
   if (m.stage === "home" && m.partner === "companion")
     return m.settled
       ? m.vow === "steady"
         ? "那天你先系好归绳，才问我要不要往前走。我记得。下次也一起商量。"
-        : "雾里听见你回应约好的信号，我才知道，你不是只顾着往前跑的人。"
+        : "雾里看不见你，听见回讯，我才松了口气。"
       : "先别急着整理战利品。那时你在阵门前想的是什么？我想听你说。";
   if (m.stage === "home")
     return m.settled
-      ? "原来他也曾在往前走和等别人之间，做过这样的选择。下一次，我们带着答案回来。"
+      ? "这几页先收好。下次进山，我还想问问当年的药工。"
       : m.partner === "luchi"
         ? "一路都顾着赶路，现在终于能坐下来，一起把父亲留下的记录再读一遍了。"
         : "先坐一会儿。你愿意把这一路的事，从头讲给我听吗？";
   if (m.passed)
     return m.partner === "luchi"
       ? "以前走过这里，我只顾着赶路。这次想再听听他们说当年的事。"
-      : "信的来路弄清了，可路上的人，还有他们自己的故事。我们不妨再停一会儿。";
+      : "信的来路已查清，先别急着走，再问问当年的药队。";
   if (m.partner === "companion")
     return m.vow === "pursue"
       ? "我会替你认清阵纹。答应我，听见撤退的信号就回来。"
       : s.social.gender === "male"
-        ? "我想画下的不只是你走得过的路，而是我们都能走回来的路。"
-        : "我想修好的不只是一座阵，而是让我们都能走回来的路。";
+        ? "这处岔口我记下了。待会儿折返，认准我系的绳。"
+        : "我守住这道阵眼。你认准灯号，回来时别走岔。";
   if (m.partner === "luchi")
     return m.vow === "steady"
-      ? "我也急着找他。可你说得对，不能让一个人的盼头变成所有人的险路。"
+      ? "我急着找父亲，可不能连累你。先备好归绳，我来守。"
       : "这次让我帮你守住归绳。无论信里写了什么，我们一起看。";
-  return "独行不是没有牵挂。把撤退的路记住，再往前走。";
+  return "先记清退路，再独自入阵。";
 }
 export function mistGoal(s: State): string {
   const m = s.adventure.mist;
@@ -538,7 +538,7 @@ export function runMist(input: State, action: MistAction, id: string): State {
     case "illuminate":
       m.revisited = true;
       m.result =
-        "探灵灯亮起，石墙上的尘土没有消失，尘土下的阵纹却一寸寸浮现。墙后是药队留下的避难室，刻着陆迟父亲的字：若我未归，先带其他人下山。你把誓言拓下带回，又点亮避难室的归灯。以后路过的药工，多了一个能避雨的地方。你曾靠力量救出一个人，如今靠新本领让这条旧路发生了变化。第三卷·雾海来信完。";
+        "探灵灯亮起，石墙上的尘土没有消失，尘土下的阵纹却一寸寸浮现。墙后是药队留下的避难室，刻着陆迟父亲的字：若我未归，先带其他人下山。你把誓言拓下带回，又点亮避难室的归灯。以后路过的药工，多了一个能避雨的地方。第三卷·雾海来信完。";
       break;
   }
   const expeditionEcho = expeditionMistEcho(s, action);

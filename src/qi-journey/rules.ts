@@ -22,7 +22,7 @@ export function qiGoal(s: State) {
   const q = s.qiJourney;
   if (s.realm || !q) return null;
   if (q.trial)
-    return `${preparationRoutes[q.trial].name}：完成实战，取得本阶段晋升准备。`;
+    return `${preparationRoutes[q.trial].name}：独自闯过此关，再往秘境取材。`;
   if (q.node)
     return `${qiSites[q.gates]!.name}：${q.node === 2 ? "穿过险地，保留气势迎战守关者。" : "留意敌人的动作，检验你的准备。"}`;
   if (q.essence)
@@ -30,7 +30,7 @@ export function qiGoal(s: State) {
   if (q.gates === 2)
     return "经脉与凝元已稳：备齐圆满修为与筑基丹，再考虑固本和疗伤后叩关。";
   if (s.qi >= qiSites[q.gates]!.qi && !preparationReady(s))
-    return "晋升准备：走通药谷、宗门或散修任一成长路线，再进入秘境取材。";
+    return "药谷采药、师门护送、独闯古阵，择一历练，再入秘境取材。";
   return s.qi < qiSites[q.gates]!.qi
     ? `先修炼到 ${qiSites[q.gates]!.qi} 修为，准备${qiSites[q.gates]!.name}。`
     : `突破${q.gates === 0 ? "后期" : "圆满"}瓶颈：准备功法、法器与补给，进入${qiSites[q.gates]!.name}取得${qiSites[q.gates]!.material}。`;
@@ -80,7 +80,7 @@ export function qiError(s: State, a: QiAction): string {
     if (!["medicine", "sword", "array"].includes(r)) return "未知入谷准备";
     if (q.essence) return "材料已经取到，先炼化";
     if (!preparationReady(s))
-      return "先完成药谷、宗门或散修任一成长路线的整备、选择与实战";
+      return "先择药谷、宗门或散修一路，备妥行装并亲自闯关";
     if (s.adventure.step !== "done") return "先救回药工，取得泉谷线索";
     if (s.qi < qiSites[q.gates]!.qi) return `需要修为 ${qiSites[q.gates]!.qi}`;
     if (

@@ -30,7 +30,7 @@ const actions = {
     aria-label="山下故人与成长委托"
   >
     <h3>山下故人</h3>
-    <p>成长路线在上方择一完成。这里的额外练习和战利品交付可自行取舍。</p>
+    <p>药谷、宗门、散修，择一路历练即可。若有余暇，也可向故人请教，或以战利品换些盘缠。</p>
     <details
       v-for="(npc, key) in qiPeople"
       :key="key"

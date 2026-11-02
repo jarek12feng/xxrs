@@ -1,4 +1,5 @@
-import { cultivationProjection } from "./cultivation";
+import { incidentalQiGain } from "./cultivation";
+import { retreatPlan } from "./retreat";
 import {
   actionError,
   preparationError,
@@ -27,7 +28,7 @@ export function foundationPreparation(s: State) {
     const months = Math.min(
       12,
       waiting && target === 360 ? stop - s.month : 12,
-      cultivationProjection(s, target).batchMonths,
+      retreatPlan(s, "regular", target).batchMonths,
     );
     return action(
       `吐纳至${target === 180 ? "探府" : "叩关"}修为 · 最多 ${months} 月`,
@@ -58,9 +59,7 @@ export function foundationPreparation(s: State) {
       : 0;
   const trainQi = Math.min(
     360 - s.qi,
-    10 +
-      (s.journey.main === "blade" ? 4 : 0) +
-      (s.journey.main ? s.growth.training[s.journey.main] * 2 : 0),
+    incidentalQiGain(s, "train"),
   );
   const trainChance =
     breakthroughDetails(

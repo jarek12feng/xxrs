@@ -23,7 +23,7 @@ export const preparationRoutes = {
     steps: ["领护送差事", "安置药队", "护送考校"],
     purpose: "季衡把药队交给你。先备齐护送所需，再守住山口。",
     cost: "须入门、贡献 2；为药队包扎耗灵草 2，或凭剑意 4 开路并受伤 1。",
-    reward: "完成得灵石 12、贡献 2；检验已有师门准备。",
+    reward: "完成得灵石 12、贡献 2。",
   },
   wander: {
     name: "散修探索",
@@ -51,7 +51,7 @@ export function preparationError(s: State, a: PreparationAction) {
   if (s.adventure.step !== "done" || s.qi < (q.gates ? 240 : 120))
     return `先完成寻人历练，并修至 ${q.gates ? 240 : 120} 修为`;
   const progress = q.preparations[q.gates]![route];
-  if (progress === 3) return "本阶段这条成长路线已经完成";
+  if (progress === 3) return "此番历练已成";
   if (step === "prepare") {
     if (progress !== 0) return "准备已经完成，继续下一步";
     if (route === "medicine")
@@ -136,7 +136,7 @@ export function settlePreparation(s: State, a: PreparationAction) {
           : step === "careful"
             ? "你辨明灵流方向，破去外围禁制。"
             : "你耗灵石 8 强破禁制，伤势 +1。";
-    q.last += "前方仍有守路者，准备好后完成实战；也可先回山休整。";
+    q.last += "前方尚有阻拦，须亲自闯过；也可先回山休整。";
   } else {
     q.trial = route;
     q.route =
@@ -187,5 +187,5 @@ export function completePreparation(s: State) {
   q.node = 0;
   q.duel = null;
   q.route = null;
-  q.last += ` ${preparationRoutes[r].name}已完成。${preparationRoutes[r].reward} 本阶段晋升秘境已可进入；仍须取得材料并炼化。`;
+  q.last += ` ${preparationRoutes[r].name}已完成。${preparationRoutes[r].reward} 可往秘境取材，带回炼化以破瓶颈。`;
 }

@@ -306,7 +306,7 @@ export function roadError(s: State, action: RoadAction): string {
     return "先补全航图";
   if (action === "invite" && r.ally) return "郁青已经答应同行";
   if (action === "inspect" && r.obstacle !== "none")
-    return "已看清危险，不会刷新重抽";
+    return "险情已探明";
   if (r.passed && ["art", "relic", "friend"].includes(action))
     return "归路已经留下，无需重新准备";
   if (["art", "relic", "friend"].includes(action) && r.route === action)
@@ -475,7 +475,7 @@ export function runRoad(input: State, action: RoadAction, id: string): State {
     case "back":
       r.stage = "camp";
       r.result =
-        "你记得回来的路。此后再过青嶂关不重复收费，也不会再次抽取胜负。";
+        "归路已通。此后再过青嶂关，无须缴费，也无须再闯阵。";
       break;
   }
   const echo = passEcho(s);

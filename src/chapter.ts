@@ -251,6 +251,9 @@ export function canGather(s: State) {
 export function canTrain(s: State) {
   return s.path === "sword" || s.inherited === "sword";
 }
+export function breakthroughSuccess(s: Pick<State, "limit">) {
+  return { realm: 1 as const, qi: 0, limit: s.limit + 100 * 12 };
+}
 export function breakthroughDetails(s: State, pill = false) {
   const parts = [
     { label: "炼气基础", value: 45 },
@@ -739,7 +742,7 @@ export function dispatch(input: State, c: Command): State {
       ].includes(c.activity) ||
       !Number.isInteger(c.months) ||
       c.months < 1 ||
-      c.months > 12 ||
+      c.months > (c.activity === "cultivate" ? 120 : 12) ||
       actionError(s, c.activity)
     )
       return input;
@@ -822,9 +825,7 @@ export function dispatch(input: State, c: Command): State {
       roll = Math.floor(rng(s) * 100) + 1;
     if (c.pill) s.pills--;
     if (roll <= chance) {
-      s.realm = 1;
-      s.qi = 0;
-      s.limit += 100 * 12;
+      Object.assign(s, breakthroughSuccess(s));
       s.result = `筑基成功：判定 ${roll}/100，成功率 ${chance}%。寿元 +100 年。`;
       record(s, s.result, "major");
       maybeFinish(s);

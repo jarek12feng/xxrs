@@ -212,9 +212,14 @@ export function actionReceipt(
     "trainTechnique",
     "forge",
     "workshop",
-  ].includes(effective.type)
+  ].includes(effective.type) || before.injury !== after.injury || before.realm !== after.realm || before.foundationJourney.cultivation !== after.foundationJourney.cultivation
     ? growthComparison(before, after)
     : [];
+  const newlyKnown = after.journey.known.filter((id) => !before.journey.known.includes(id));
+  if (newlyKnown.some((id) => after.journey.main !== id && after.journey.support !== id))
+    growthNotes.push("新功法已习得；尚未装配的功法不会改变当前能力，可到功法页比较后装配。");
+  if ((["vial", "sword"] as const).some((id) => after.journey.relics[id] > before.journey.relics[id] && after.journey.equipped !== id))
+    growthNotes.push("新灵器或品阶已入袋；尚未装备，不提供装备加成。可到储物袋比较后装备。");
   const advancement = advancementChanges(before, after);
   if (advancement.length) {
     if (before.realm === after.realm && !dead) title = advancement[0]!;

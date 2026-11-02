@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GrowthPreview from "../GrowthPreview.vue";
 import { computed, ref } from "vue";
 import type { State, Intent } from "../core";
 import ItemArt from "../presentation/ItemArt.vue";
@@ -44,6 +45,7 @@ const engravings = computed(() =>
     current: temperInfo(props.game.workshop, relic).name,
     options: Object.entries(tempers[relic]).map(([temper, info]) => ({
       ...info,
+      temper: temper as Temper,
       choices: (["craft", "commission"] as const).map((method) => ({
         method,
         order: { relic, temper: temper as Temper, method } as WorkshopOrder,
@@ -98,6 +100,7 @@ function order(o: WorkshopOrder) {
           game.journey.equipped === card.product ? "已装配" : "未装配"
         }}。基础炼制费用包含普通器胚与炉火，灵草用于温养灵路。
       </p>
+      <GrowthPreview v-if="card.product === 'sword' || card.product === 'vial'" :game="game" :request="{ kind: 'refine', id: card.product }" compact />
       <div class="workshop-options">
         <div v-for="choice in card.choices" :key="choice.method">
           <button
@@ -122,6 +125,7 @@ function order(o: WorkshopOrder) {
           <small v-if="choice.error">{{ choice.error }}</small>
         </div>
       </div>
+      <GrowthPreview v-if="(card.product === 'sword' || card.product === 'vial') && game.journey.relics[card.product] && game.journey.equipped !== card.product" :game="game" :request="{ kind: 'relic', id: card.product }" compact />
       <button
         v-if="card.product === 'sword' || card.product === 'vial'"
         :disabled="
@@ -149,6 +153,7 @@ function order(o: WorkshopOrder) {
         <article v-for="option in item.options" :key="option.name">
           <h4>{{ option.name }}</h4>
           <p>{{ option.hint }}</p>
+          <GrowthPreview :game="game" :request="{ kind: 'temper', id: item.relic, temper: option.temper }" compact />
           <div class="workshop-options">
             <div v-for="choice in option.choices" :key="choice.method">
               <button

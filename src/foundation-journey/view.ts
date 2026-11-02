@@ -4,7 +4,7 @@ import { maleMainline } from "./heroine";
 import { opponentRealmName } from "../realm-pressure";
 import type { State } from "../world";
 import type { JourneyAction, BattleId, Destination, Side } from "./state";
-import { challenges, rankIds, sideChoices } from "./content";
+import { victoryCultivation, challenges, rankIds, sideChoices } from "./content";
 import { aftermathScene } from "./aftermath";
 import { ferryScene, sideScene, homeScene } from "./narrative";
 import { journeyActionError } from "./progression";
@@ -44,7 +44,7 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
     actions.push({ label, action, error: journeyActionError(s, action) });
   const fight = (id: BattleId) =>
     add(
-      `${challenges[id].name} · ${opponentRealmName(challenges[id])} · 一月 / 灵石 ${id === "frontier" && q.growth.routes.frontier.choice === "careful" ? 0 : challenges[id].cost} / 首胜灵石 ${challenges[id].prize}、修行 ${Math.max(0, Math.min(id === "application" || id === "steady" ? 0 : 40, foundationCap(s) - q.cultivation))}`,
+      `${challenges[id].name} · ${opponentRealmName(challenges[id])} · 一月 / 灵石 ${id === "frontier" && q.growth.routes.frontier.choice === "careful" ? 0 : challenges[id].cost} / 首胜灵石 ${challenges[id].prize}、修行 ${Math.max(0, Math.min(id === "application" || id === "steady" ? 0 : victoryCultivation, foundationCap(s) - q.cultivation))}`,
       {
         kind: "battle",
         battle: id,
@@ -59,7 +59,7 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
       const h=q.heroine;
       if(q.location === "home" && h.meeting === "none") {
         add("青嶂同路 · 剑意稳住石梁（一月）",{kind:"meetHeroine",method:"strength"});
-        add("青嶂同路 · 辨清石梁节点（一月）",{kind:"meetHeroine",method:"insight"});
+        add("青嶂同路 · 辨清石梁承力处（一月）",{kind:"meetHeroine",method:"insight"});
         add("青嶂同路 · 灵草 4 护根开路（一月）",{kind:"meetHeroine",method:"supplies"});
       }
       if(q.location === "ferry" && h.purpose === "none") {
@@ -85,8 +85,8 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
       if(q.location !== route || q.cultivation<200)continue;
       const p=q.growth.routes[route],info=routeInfo[route];
       if(!p.prepared) {
-        add(`${info.name}：自备护脉丹 1、灵草 ${route === "estate" ? 6 : 3}、灵石 4 · 一月`,{kind:"routePrepare",route,method:"supplies"});
-        add(`${info.name}：租用阵具并购补给 · 灵石 24、一月`,{kind:"routePrepare",route,method:"service"});
+        add(`${info.name}：自备护脉丹 1、灵草 ${route === "estate" ? 3 : 2}、灵石 2 · 一月`,{kind:"routePrepare",route,method:"supplies"});
+        add(`${info.name}：租用阵具并购补给 · 灵石 ${route === "estate" ? 32 : 30}、一月`,{kind:"routePrepare",route,method:"service"});
       } else if(!p.choice) {
         add(info.careful,{kind:"routeChoose",route,choice:"careful"});
         add(info.swift,{kind:"routeChoose",route,choice:"swift"});
@@ -279,7 +279,7 @@ export function journeyPresentation(s: State, relationship = false) {
       : q.rescue === 4
         ? "接应已经完成，探索队回到落脚点。程砚收好归绳，向你指了指谷口的归流阵：“大家都已安顿。接下来，走你自己的路。”"
         : q.rescue === 2 || q.rescue === 3
-          ? "内部人员已经传出信号，避险处可以维持。先打通外缘送入补给，再和内部接应者约好撤离节奏；程砚接过外侧阵旗，示意你安心准备。"
+          ? "内侧灯号未断，众人暂在石室避险。先开外缘、送补给，再约好撤出的次序。程砚接过外侧阵旗，示意你先调息。"
           : "";
   }
   if (!relationship && ["estate", "snow", "inn"].includes(q.location)) {
@@ -308,7 +308,7 @@ export function journeyPresentation(s: State, relationship = false) {
     else if(q.reunion && !q.heroine.expedition)body="苏婉宁带回独立测完的图，修正了曾轻信的旧里程。闻岑小队邀她复核古道深处，临行前，她想与你再试一遍备用路标。";
   }
   if(!relationship && q.location === "estate" && q.growth.routes.estate.prepared) {
-    speaker="岑霁";portrait="";body=routeInfo.estate.intro+"她想留下可复核的药性记录，减少误服；药庄继承争执不影响取材。";
+    speaker="岑霁";portrait="";body=routeInfo.estate.intro+"岑霁将药性逐条记在册上：“庄里的家事容后再谈。药心性烈，先辨清药性，莫伤了经脉。”";
   }
   return {
     image: `/art/foundation-journey/${image}.webp`,

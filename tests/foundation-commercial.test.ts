@@ -90,7 +90,7 @@ it("changed tactics and cultivation ability match exact preview, including letha
   const p = journeyPlayer(journeyCheckpoint("male", true));
   p.act({ kind: "battle", battle: "culmination" });
   for (const grass of [0, 4])
-    for (const enemy of [1, 70, 150, 245])
+    for (const enemy of [1, 70, 150, 225])
       for (const move of ["guard", "strike", "discern"] as const) {
         const s = structuredClone(p.state);
         s.herbs = grass;
@@ -218,7 +218,14 @@ it("preparation forecasts a safe same-stage alternative without imposing a battl
   expect(prep.target).toBe(200);
   expect(prep.optionalBattle).toBe(true);
   expect(prep.months).toBeGreaterThan(0);
+  expect(prep.months).toBeLessThanOrEqual(24);
   p.send({ type: "advance", activity: "cultivate", months: prep.months });
+  expect(p.state.foundationJourney.cultivation).toBe(160 + prep.gain);
+  for (let i = 0; i < 10; i++) {
+    const next = journeyPreparation(p.state)!;
+    if (!next.months) break;
+    p.send({ type: "advance", activity: "cultivate", months: next.months });
+  }
   expect(p.state.foundationJourney.cultivation).toBe(199);
   expect(p.state.foundationJourney.cultivation).toBeLessThan(206);
   expect(journeyPreparation(p.state)?.months).toBe(0);

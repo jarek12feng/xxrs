@@ -62,7 +62,7 @@ it("resources, simple commissions, and NPC lessons cannot bypass a complete rout
   for (const a of ["lesson:scout", "commission:herbs"] as const)
     s = dispatch(s, { type: "qiJourney", action: a, id: a });
   expect(preparationReady(s)).toBe(false);
-  expect(qiError(s, "enter:medicine")).toContain("成长路线");
+  expect(qiError(s, "enter:medicine")).toContain("备妥行装并亲自闯关");
   expect(
     dispatch(s, { type: "qiJourney", action: "enter:medicine", id: "skip" }),
   ).toBe(s);

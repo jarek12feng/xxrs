@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GrowthPreview from "./GrowthPreview.vue";
 import RecognitionPanel from "./recognition/RecognitionPanel.vue";
 import { identity, currentOffice, officeName } from "./recognition/rules";
 import { recognitionView } from "./recognition/view";
@@ -534,12 +535,15 @@ const mapImages = {
             <small>{{ t.slot === "main" ? "主修" : "辅修" }}</small>
           </h3>
           <p>{{ t.hint }}</p>
+          <p v-if="game.journey[t.slot] !== id">{{ game.journey.known.includes(id) ? '已习得，尚未装配' : '尚未习得；求教后须装配才生效' }}</p>
+          <GrowthPreview :game="game" :request="{ kind: 'technique', id }" compact />
+          <GrowthPreview v-if="game.journey.known.includes(id) && game.growth.training[id] < (game.realm ? 2 : 1)" :game="game" :request="{ kind: 'training', id }" compact />
           <p v-if="game.journey.known.includes(id)">
             研修层级：{{
               ["入门", "熟练", "通达"][game.growth.training[id]]
             }}。{{
               t.slot === "main"
-                ? "每阶：吐纳、历练、劳作修为 +2，交锋伤害 +2。"
+                ? "每阶：交锋伤害 +2，并提高修行效率；积累速度随境界、瓶颈与寿元变化。"
                 : id === "herb"
                   ? "每阶：交锋减伤 +1，采药额外 +1。"
                   : "每阶：交锋减伤 +1。"

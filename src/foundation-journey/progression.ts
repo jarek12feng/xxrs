@@ -22,10 +22,10 @@ export function foundationGoal(s: State) {
     return "选择一条适合自己打法的沉井传承，然后亲手试用。";
   if (!q.won.includes("application")) return foundationBlock(s);
   if (q.ferry === 2) return "中期已可积累；准备好后挑战离渡执卫，打通三地药路。";
-  if (q.ferry === 3) return "决定渡口交接；护送或破禁都可离渡，寻亲取证可选。";
+  if (q.ferry === 3) return "可护送渡客或破禁离渡，也可留下寻亲、查证。";
   if (q.cultivation < 200) return `再积累 ${200-q.cultivation} 点到筑基中期，前往三地择一取材。`;
   if(!maleMainline(s) && q.rescue === 1)return "先辨认信号，确认内部避险处。";
-  if(!maleMainline(s) && q.rescue === 2)return q.heroine.supplied ? "补给已送达，向程砚学稳脉，再安排内层接应。" : q.won.includes("frontier") ? "外缘已打通，送入实际补给。" : "打通外缘挑战，送入第一批补给。";
+  if(!maleMainline(s) && q.rescue === 2)return q.heroine.supplied ? "补给已送达，向程砚学稳脉，再安排内层接应。" : q.won.includes("frontier") ? "外缘已打通，将补给送入石室。" : "击退外缘石偶，送入第一批补给。";
   if(!maleMainline(s) && q.rescue === 3)return "比较境界差距与越阶准备，再完成内层接应；晋后期需另行炼化机缘主材。";
   if (!q.growth.refined) return foundationBlock(s);
   if (q.cultivation < 400) return `灵元已凝练，再积累 ${400-q.cultivation} 点到后期。`;
@@ -151,7 +151,7 @@ export function journeyActionError(s: State, a: JourneyAction): string {
       if (q.ferryOutcome === a.outcome || q.ferryOutcome === "open")
         return "已完成这一交接";
       if (q.ferry === 4 && a.outcome !== "open")
-        return "交接后只能补证追责，不重选已经发生的安排";
+        return "渡客已经离岸，仍可补证追责，离渡之事已无法重来";
       if (a.outcome === "open" && (q.evidence.length < 3 || !q.consent))
         return "需三份相互印证的记录，并取得郁晚舟的公开范围同意；可先护送或破禁";
       return "";
@@ -173,7 +173,7 @@ export function journeyActionError(s: State, a: JourneyAction): string {
       q.sides[a.side].step === 3 &&
       !q.aftermath[a.side]
       ? ""
-      : "先完成当地交接；每段后续只发生一次";
+      : "当地事务未了，或此番已回访过";
   }
   if (a.kind === "epilogue")
     return q.location === "home" && q.cultivation === 600 && q.won.includes("culmination") && !q.epilogue

@@ -354,15 +354,15 @@ it("completes the companion field test through persisted UI commands and the act
   await flush();
   button("商量这次同行").click();
   await flush();
-  button("辨认回流节点").click();
+  button("辨认回流阵眼").click();
   await flush();
-  button("完成双人轮值校验").click();
+  button("两名渡工轮流试灯").click();
   await flush();
   button("打开功法，装配护身诀").click();
   await flush();
   expect(document.querySelector('[data-panel="skills"]')).not.toBeNull();
   const guard = [...document.querySelectorAll("article")].find(
-    (a) => a.textContent?.includes("护身诀") && a.querySelector("button"),
+    (a) => a.querySelector("h3")?.textContent?.includes("护身诀") && a.querySelector("button"),
   );
   const equip = [...(guard?.querySelectorAll("button") || [])].find((b) =>
     b.textContent?.includes("装配"),
@@ -384,10 +384,10 @@ it("completes the companion field test through persisted UI commands and the act
   );
   reopen!.click();
   await flush();
-  button("亲自校验归路").click();
+  button("亲自试走归路").click();
   await flush();
   expect(vi.mocked(save).mock.calls.at(-1)![0].companionship.stage).toBe(
     "done",
   );
-  expect(document.body.textContent).toContain("交叉复核");
+  expect(document.body.textContent).toContain("一人报信，一人验船");
 });

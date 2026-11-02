@@ -426,22 +426,19 @@ it("returns to the selected exploration place after a modal result", async () =>
 it("foundation ranking shows actual reward after save, returns to its group and retains the receipt", async () => {
   const { journeyCheckpoint, journeyPlayer } =
     await import("../tools/foundation-journey-checkpoint");
-  const { foundationExchange } =
-    await import("../src/foundation-journey/combat");
   const { moves } = await import("../src/expedition/content");
   const p = journeyPlayer(journeyCheckpoint());
   p.act({ kind: "battle", battle: "rank1" });
-  while (
-    p.state.foundationJourney.duel &&
-    foundationExchange(p.state, "guard")!.damage <
-      p.state.foundationJourney.duel.enemy
-  )
-    p.act({ kind: "move", move: "guard" });
+  const {findCombatRoute} = await import("../tools/foundation-tactics-audit");
+  const plan = findCombatRoute(p.state)!;
+  expect(plan).not.toBeNull();
+  for (const move of plan.moves.slice(0, -1)) p.act({kind:"move",move});
+  const finalMove = plan.moves.at(-1)!;
   expect(p.state.foundationJourney.duel).not.toBeNull();
   const before = p.state.stones;
   await mount(p.state);
   await click("听松擂台");
-  await click(moves.guard);
+  await click(moves[finalMove]);
   const result = document.querySelector('[role="dialog"]')?.textContent;
   expect(result).toContain("筑基试剑榜 · 第三十名");
   expect(document.querySelector(".combat-summary")?.textContent).toContain(

@@ -31,7 +31,7 @@ export function growthQuote(s: State, a: GrowthAction) {
     if(a.kind==='routePrepare') {
       if(p.prepared || !['supplies','service'].includes(a.method)) error='已完成准备，或准备方式无效';
       if(r==='frontier' && Math.max(s.journey.relics.sword,s.journey.relics.vial)<2 && (!s.journey.main || s.growth.training[s.journey.main]<2)) error='古道需二阶灵器或通达主修，先到功法灵器准备';
-      if(a.method==='supplies'){herbs=r==='estate'?6:3;ward=1;stones=4;}else stones=24;
+      if(a.method==='supplies'){herbs=r==='estate'?3:2;ward=1;stones=2;}else stones=r==='estate'?32:30;
     }
     if(a.kind==='routeChoose') {
       if(!p.prepared || p.choice || !['careful','swift'].includes(a.choice)) error='先完成整备；现场取舍只定一次';

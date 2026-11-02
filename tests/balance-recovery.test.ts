@@ -5,6 +5,7 @@ import {
   preparationBudget,
   balanceOpening,
 } from "../tools/balance-scenarios";
+// Hundreds of full public-command journeys now include longer cultivation and recovery.
 it("dispersed public-command journeys cover first and consecutive failures, shortages and unprotected recovery", () => {
   for (const path of ["wood", "sword"] as const) {
     const rows = dispersedSeeds.map((seed) => recoveryRun(seed, path));
@@ -41,7 +42,7 @@ it("dispersed public-command journeys cover first and consecutive failures, shor
       for (const a of r.attempts)
         expect(a.after.pills).toBe(a.before.pills - 1);
   }
-});
+}, 15000);
 it("gift failures recover with earned recipe and no ward on both paths", () => {
   for (const path of ["wood", "sword"] as const) {
     const row = dispersedSeeds

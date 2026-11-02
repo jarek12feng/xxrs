@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GrowthPreview from "./GrowthPreview.vue";
 import { workshopQuote } from "./workshop/rules";
 import { products } from "./workshop/catalog";
 import { temperInfo } from "./workshop/state";
@@ -146,14 +147,8 @@ const craft = computed(() =>
           器纹：{{ temperInfo(game.workshop, item.id).name }} ·
           {{ temperInfo(game.workshop, item.id).hint }}
         </p>
-        <p>
-          {{ game.journey.relics[item.id] === 2 ? "精炼灵器" : "普通灵器" }} ·
-          道友寻亲基础把握 +{{ game.journey.relics[item.id] === 2 ? 32 : 10 }}%
-        </p>
-        <p v-if="game.journey.equipped">
-          当前装备：{{ relics[game.journey.equipped].name }} · 道友寻亲基础把握
-          +{{ game.journey.relics[game.journey.equipped] === 2 ? 32 : 10 }}%
-        </p>
+        <p>{{ game.journey.relics[item.id] === 2 ? "二阶精炼灵器" : "一阶普通灵器" }}</p>
+        <GrowthPreview :game="game" :request="{ kind: 'relic', id: item.id }" />
         <button
           :disabled="
             busy ||
@@ -169,6 +164,7 @@ const craft = computed(() =>
         </button>
       </template>
       <template v-if="item.id === 'healing' || item.id === 'clarity'">
+        <GrowthPreview v-if="item.id === 'healing'" :game="game" :request="{ kind: 'healing' }" />
         <p>
           丹方：{{ craft?.cost }}，需心得 {{ craft?.study }}，炼制耗时
           {{

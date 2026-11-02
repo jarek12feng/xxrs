@@ -61,7 +61,7 @@ it.each([
       known: [...s.journey.known],
     };
     s = send(s, "revisit");
-    expect(s.companionship.last).toContain(plan === "relay" ? "按时离开" : "等天明");
+    expect(s.companionship.last).toContain(plan === "relay" ? "按时出了灯房" : "等天明");
     expect(send(s, "revisit")).toBe(s);
     expect(send(s, "test")).toBe(s);
     expect(send(s, "insight")).toBe(s);

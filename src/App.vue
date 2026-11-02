@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import GrowthPreview from "./GrowthPreview.vue";
+import InjuryImpact from "./InjuryImpact.vue";
+import { incidentalQiGain } from "./cultivation";
 import {
   ref,
   defineAsyncComponent,
@@ -122,6 +125,7 @@ import SceneBackdrop from "./SceneBackdrop.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import PracticeStage from "./PracticeStage.vue";
 import CultivationOutlook from "./CultivationOutlook.vue";
+import { retreatPlan } from "./retreat";
 import CultivationStatus from "./CultivationStatus.vue";
 import QiJourneyPanel from "./qi-journey/QiJourneyPanel.vue";
 import {
@@ -445,6 +449,7 @@ const activities: { id: Activity; name: string; hint: string }[] = [
   { id: "work", name: "劳作", hint: "每月共得 5 灵石" },
   { id: "rest", name: "养伤", hint: "每月伤势 −1" },
 ];
+const regularRetreat = computed(() => game.value ? retreatPlan(game.value) : null);
 async function persist(s: State) {
   ui.busy = true;
   try {
@@ -1195,7 +1200,10 @@ onUnmounted(() => {
                 :game="game"
                 :months="3"
                 automatic
+                :busy="ui.busy || ui.running"
+                @act="act"
               />
+              <InjuryImpact :game="game" :busy="ui.busy || ui.running" @act="act" />
               <div class="activity-grid">
                 <button
                   v-for="a in activities"
@@ -1209,15 +1217,15 @@ onUnmounted(() => {
                   ><small>{{
                     actionError(game, a.id) ||
                     (a.id === "cultivate"
-                      ? `下月${game.realm ? "筑基修行" : "修为"} +${cultivationMonthlyGain(game)}（已计寿元效率）`
+                      ? `常规闭关 ${formatLifeMonths(regularRetreat?.batchMonths ?? 0)} · 修为 +${regularRetreat?.batchGain ?? 0}`
                       : a.id === "train"
-                        ? `剑意 +1${game.realm ? "" : " · 修为 +" + (10 + (game.journey.main === "blade" ? 4 : 0) + mainTraining(game) * 2)}；${game.journey.support === "guard" ? "护身诀免历练伤势" : "每四重受伤"}`
+                        ? `剑意 +1${game.realm ? "" : " · 修为 +" + incidentalQiGain(game, "train")}；${game.journey.support === "guard" ? "护身诀免历练伤势" : "每四重受伤"}`
                         : a.id === "work"
-                          ? `每月灵石 +5${!game.realm && game.journey.main ? " · 修为 +" + ((game.journey.main === "breath" ? 4 : 0) + mainTraining(game) * 2) : ""}`
+                          ? `每月灵石 +5${!game.realm && game.journey.main ? " · 修为 +" + incidentalQiGain(game, "work") : ""}`
                           : a.id === "gather"
-                            ? `灵草 +${2 + (game.journey.support === "herb" ? 1 + game.growth.training.herb : 0)} · 修为 +${game.realm ? 0 : 3}`
+                            ? `灵草 +${2 + (game.journey.support === "herb" ? 1 + game.growth.training.herb : 0)} · 修为 +${incidentalQiGain(game, "gather")}`
                             : a.id === "meditate"
-                              ? `神识 +1${game.realm ? "" : " · 修为 +2"}；神识 8 可识阵、省炼丹灵石`
+                              ? `神识 +1${game.realm ? "" : " · 修为 +" + incidentalQiGain(game, "meditate")}；神识 8 可识阵、省炼丹灵石`
                               : a.hint)
                   }}</small>
                 </button>
@@ -1466,6 +1474,7 @@ onUnmounted(() => {
               <span>{{ label }}</span
               ><strong>{{ value }}</strong>
             </div>
+            <InjuryImpact :game="game" :busy="ui.busy || ui.running" @act="act" />
             <div class="character-line"></div>
             <span class="eyebrow"
               >资质 · {{ aptitudes[game.aptitude].name }}</span
@@ -1836,11 +1845,12 @@ onUnmounted(() => {
             @command="foundationCommand"
           />
           <PreparationValues :game="game" :pill="true" />
+          <GrowthPreview :game="game" :request="{ kind: 'break' }" />
           <p class="warning-text">
             本次突破耗时一月，剩余寿元
             {{
               formatLifeMonths(remainingLifeMonths(game))
-            }}；若当月寿尽，将先结束人生，不能靠突破延寿。成功延寿十八年。{{
+            }}；若当月寿尽，将先结束人生，不能靠突破延寿。成功增加一百年寿元上限。{{
               game.ward
                 ? "护脉丹纹生效：首次失败保留九成修为、不减寿，随后消耗；伤势仍 +2。"
                 : "失败保留七成修为、伤势 +2、寿元上限 −1 年。"

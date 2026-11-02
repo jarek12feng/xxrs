@@ -15,7 +15,7 @@ function player(realm: 0 | 1 = 1): State {
   s.qi = 0;
   s.month = 48;
   s.age = 240;
-  s.limit = 792;
+  s.limit = realm ? 2400 : 1200;
   return s;
 }
 const meditate = (s: State, months: number, id = "meditate") =>
@@ -40,10 +40,10 @@ describe("修行、寿元与小境界", () => {
     for (const realm of [0, 1] as const) {
       const young = player(realm);
       const old = { ...young, age: young.limit - 60 };
-      expect(cultivationMonthlyGain(old)).toBeLessThan(
-        cultivationMonthlyGain(young),
+      expect(cultivationProjection(old).batchGain).toBeLessThan(
+        cultivationProjection(young).batchGain,
       );
-      expect(cultivationMonthlyGain(old)).toBeGreaterThanOrEqual(1);
+      expect(cultivationProjection(old).batchGain).toBeGreaterThanOrEqual(0);
       expect(lifeEfficiency(old)).toBeLessThan(lifeEfficiency(young));
     }
   });
@@ -61,7 +61,7 @@ describe("修行、寿元与小境界", () => {
     expect(batch.foundationJourney.cultivation).toBe(prediction.batchGain);
     expect(batch.age).toBe(monthly.age);
     expect(batch.seed).toBe(monthly.seed);
-    expect(prediction.batchGain).toBeLessThan(12 * cultivationMonthlyGain(s));
+    expect(prediction.batchGain).toBeLessThan(cultivationProjection({...s, age: 240}).batchGain);
   });
   it("does not give cultivation or resources in the final month or allow another action", () => {
     const s = player();

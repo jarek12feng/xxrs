@@ -21,8 +21,8 @@ export function tacticalCue(s: State): string {
   const d = s.foundationJourney.duel;
   if (!d || d.ruleset !== 2) return "";
   switch (d.id) {
-    case "application": return "新法须亲手运转：长春稳住连压后反击，剑经辨明窗口后出剑，归元辨出假阵眼再换招。";
-    case "salamander": return "水面鼓起先护住药床，水落时反击；不必追杀，逼退即可取药。";
+    case "application": return "新法须亲手运转：长春护体时也须换招转气，剑经辨明窗口后出剑，归元辨出假阵眼再换招。";
+    case "salamander": return "水面鼓起先护住药床，水落时反击，回水交错时辨清落点；逼退即可取药。";
     case "deer": return "蹄声停顿时辨清方向，霜角发亮时守住；追击会迎上冲撞。";
     case "steady": return "护住经脉，再辨清逆流；连用同一招容易将灵力推回旧处。";
     case "exit":
@@ -84,6 +84,11 @@ export function tacticalAdjustment(s: State, move: Move) {
     note += "长春固护：转入守势承伤 −4；有草时仍可回春。";
   }
   const same = d.effect === move;
+  if (same && move === "guard" && s.journey.main === "spring") {
+    damage -= 8;
+    incoming += 10;
+    note += "连守失去腾挪：伤害 −8、承伤 +10；换招后可重新稳住。";
+  }
   switch (d.id) {
     case "exit":
       if (d.effect === "discern" && move === "strike") {
@@ -163,6 +168,11 @@ export function tacticalAdjustment(s: State, move: Move) {
     incoming += growth.routes.snow.choice === "careful" ? -2 : 2;
     note += growth.routes.snow.choice === "careful" ? "缓坡落脚稳，承伤 −2。" : "风口抢行，承伤 +2。";
     if(same && move === "strike") {incoming+=6;note+="追击撞上霜角，承伤 +6。";}
+  }
+  if (d.id === "salamander" && move === "discern" && expectedMove(s) === "discern") {
+    damage += 6;
+    incoming -= 4;
+    note += "辨清回水落点，伤害 +6、承伤 −4。";
   }
   if(d.id === "salamander" && d.effect === "guard" && move === "strike") {damage+=8;note+="水落借势，伤害 +8。";}
   if(d.id === "rescue" && s.social.gender === "male") {

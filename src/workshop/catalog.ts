@@ -22,8 +22,8 @@ export const products = {
     name: "护脉丹",
     hint: "在淬脉泉或凝元内府两战之间服用：回气 26，不增伤势。每次消耗一枚，不能在交锋中服用。",
   },
-  sword: { name: "听松灵剑", hint: "装配后每阶伤害 +2；筑基后可精炼至二阶。" },
-  vial: { name: "归元灵瓶", hint: "装配后每阶减伤 1；筑基后可精炼至二阶。" },
+  sword: { name: "听松灵剑", hint: "装配后一阶伤害 +2、二阶伤害 +5；二阶器物辅助筑基吐纳；筑基后可精炼至二阶。" },
+  vial: { name: "归元灵瓶", hint: "装配后一阶减伤 1、二阶减伤 3；二阶器物辅助筑基吐纳；筑基后可精炼至二阶。" },
   iron: { name: "玄铁料", hint: "用于刻纹、重铸器纹。坊市常备，可直接购入。" },
 } as const;
 export type Product = keyof typeof products;

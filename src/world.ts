@@ -1,5 +1,6 @@
 import { freshRecognition, validRecognition, type Recognition } from "./recognition/state";
 import { runRecognition, type RecognitionAction } from "./recognition/rules";
+import { cultivationMonth, incidentalQiGain } from "./cultivation";
 import { freshHeroine } from "./foundation-journey/heroine";
 import { foundationCap, foundationBlock, freshFoundationGrowth } from "./foundation-journey/growth-state";
 import { freshWorkshop, validWorkshop, type Workshop } from "./workshop/state";
@@ -13,7 +14,7 @@ import {
   type QiJourney,
   type QiAction,
 } from "./qi-journey/rules";
-import { cultivationGainAtAge, cultivationMonthlyGain } from "./cultivation";
+import { cultivationMonthlyGain } from "./cultivation";
 import {
   freshFoundationJourney,
   type FoundationJourney,
@@ -121,11 +122,11 @@ export type Relic = "vial" | "sword";
 export const relics = {
   vial: {
     name: "归元灵瓶",
-    hint: "回合交锋每品阶减伤 1；雾海回声阵每阶 +6、风阵 +3 把握；道友寻亲应对妖修额外 +8%，失败少受 1 层伤势",
+    hint: "回合交锋一阶减伤 1、二阶减伤 3；二阶器物辅助筑基吐纳；雾海回声阵每阶 +6、风阵 +3 把握；道友寻亲应对妖修额外 +8%，失败少受 1 层伤势",
   },
   sword: {
     name: "听松灵剑",
-    hint: "回合交锋每品阶伤害 +2；雾海风阵每阶 +6、回声阵 +3 把握；道友寻亲应对邪修额外 +8%",
+    hint: "回合交锋一阶伤害 +2、二阶伤害 +5；二阶器物辅助筑基吐纳；雾海风阵每阶 +6、回声阵 +3 把握；道友寻亲应对邪修额外 +8%",
   },
 };
 export const opponents = {
@@ -559,7 +560,10 @@ function workshopMonth(s: State): State {
 }
 export function dispatch(input: State, c: Command): State {
   const next = dispatchCommand(input, c);
-  if (next !== input && !next.realm) next.qi = Math.min(next.qi, qiCap(next));
+  if (next !== input) {
+    if (!next.realm) next.qi = Math.min(next.qi, qiCap(next));
+    if ((!next.realm && next.qi === qiCap(next)) || (next.realm && next.foundationJourney.cultivation === foundationCap(next))) next.cultivationRemainder = 0;
+  }
   return next;
 }
 function dispatchCommand(input: State, c: Command): State {
@@ -667,7 +671,7 @@ function dispatchCommand(input: State, c: Command): State {
       if (
         !Number.isInteger(command.months) ||
         command.months < 1 ||
-        command.months > 12
+        command.months > (command.activity === "cultivate" ? 120 : 12)
       )
         return input;
       let n = input;
@@ -697,24 +701,12 @@ function dispatchCommand(input: State, c: Command): State {
         );
         if (n.status === "alive") {
           const a = command.activity;
-          const bonus =
-            a === "cultivate" && n.journey.main === "spring"
-              ? 3
-              : (a === "train" && n.journey.main === "blade") ||
-                  (a === "work" && n.journey.main === "breath")
-                ? 4
-                : 0;
-          if (n.realm === 0 && a === "cultivate")
-            n.qi = Math.min(qiCap(n), old.qi + cultivationGainAtAge(n));
+          const cultivation = a === "cultivate" ? cultivationMonth({ ...n, qi: old.qi }) : null;
+          if (cultivation) n.cultivationRemainder = cultivation.remainder;
+          if (n.realm === 0 && cultivation)
+            n.qi = Math.min(qiCap(n), old.qi + cultivation.gain);
           if (n.realm === 0 && a !== "cultivate")
-            n.qi = Math.min(
-              qiCap(n),
-              n.qi +
-                bonus +
-                (["cultivate", "train", "work"].includes(a)
-                  ? mainTraining(n) * 2
-                  : 0),
-            );
+            n.qi = Math.min(qiCap(n), old.qi + incidentalQiGain(old, a));
           if (a === "gather" && n.journey.support === "herb")
             n.herbs += 1 + n.growth.training.herb;
           if (a === "train" && n.journey.support === "guard")
@@ -723,7 +715,7 @@ function dispatchCommand(input: State, c: Command): State {
             n.study = Math.min(4, n.study + 1);
           if (n.realm === 1) {
             n.qi = old.qi;
-            const gain = a === "cultivate" ? cultivationGainAtAge(n) : 0;
+            const gain = cultivation?.gain ?? 0;
             n.foundationJourney.cultivation = Math.min(
               foundationCap(n),
               old.foundationJourney.cultivation + gain,

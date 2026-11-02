@@ -24,6 +24,7 @@ import { foundationBoard, journeyOptions, journeyPresentation } from "./view";
 import JourneyResult from "./JourneyResult.vue";
 import { chapterEnding } from "./aftermath";
 import { journeyPreparation } from "./preparation";
+import { formatLifeMonths } from "../cultivation";
 import { foundationBattleCue, foundationMoveSetup } from "./battle-cues";
 import SceneBackdrop from "../SceneBackdrop.vue";
 import CultivationOutlook from "../CultivationOutlook.vue";
@@ -105,7 +106,7 @@ function act(action: JourneyAction) {
         {{ preparation.optionalBattle ? "同阶应战参考修行" : "下一段需要修行" }}
         {{ preparation.target }}，还差 {{ preparation.missing }}。{{
           preparation.optionalBattle ? "也可凭机缘直接越阶挑战。" : ""
-        }}本次最多吐纳 {{ preparation.months }} 月，剧情出现时会停下。
+        }}本次最多吐纳 {{ formatLifeMonths(preparation.months) }}，剧情出现时会停下。
       </p>
       <CultivationOutlook
         v-if="preparation.missing"
@@ -124,7 +125,7 @@ function act(action: JourneyAction) {
           })
         "
       >
-        积累修行 · 最多 {{ preparation.months }} 月
+        积累修行 · 最多 {{ formatLifeMonths(preparation.months) }}
       </button>
       <button
         v-if="preparation.injury"
@@ -239,7 +240,7 @@ function act(action: JourneyAction) {
         </p>
       </details>
       <p>
-        来招提示与连招收益需一起权衡。伤害、承伤已计入本合效果；连招不会自动替你出招。
+        留意来招，再接上合余势。下方伤害、承伤已计入本合效果。
       </p>
       <p role="status" class="foundation-result">{{ q.last }}</p>
     </template>
@@ -309,7 +310,7 @@ function act(action: JourneyAction) {
         <aside v-if="q.cultivation === 600" aria-label="凝丹筹备">
           <h4>凝丹筹备 · 金丹篇尚未开放</h4>
           <p>圆满积累与归流成果已成。后续尚需凝丹主药及闭关灵地；当前不可取得或突破。</p>
-          <p>护脉辅药可在工坊自炼或购置；伤势 {{ game.injury }}，先静养调息。药物准备不会提前开放金丹。</p>
+          <p>护脉辅药可在工坊自炼或购置；伤势 {{ game.injury }}，先静养调息。</p>
         </aside>
         <p class="next-goal">{{ foundationGoal(game) }}</p>
         <nav aria-label="筑基行旅地点">

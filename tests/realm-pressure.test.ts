@@ -31,14 +31,14 @@ it("the same stronger enemy defeats ordinary preparation but earned inheritance 
   expect(foundationBattleReadiness(trained, "exit").methods).toContain(
     "沉井传承与主修相合",
   );
-  // The actual first-clear reward is unchanged, and it cannot be claimed twice.
+  // The actual first-clear reward follows the revised budget, and it cannot be claimed twice.
   const route = findCombatRoute(trained)!;
   const player = journeyPlayer(trained),
     stones = trained.stones;
   for (const move of route.moves) player.act({ kind: "move", move });
   expect(player.state.stones).toBe(stones + challenges.exit.prize);
   expect(player.state.foundationJourney.cultivation).toBe(
-    trained.foundationJourney.cultivation + 40,
+    trained.foundationJourney.cultivation + 16,
   );
   expect(battleError(player.state, "exit")).toContain("奖赏已领");
 });

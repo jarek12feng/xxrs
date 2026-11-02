@@ -137,7 +137,7 @@ export function advancePlot(s: State, a: JourneyAction) {
       q.aid = false;
       q.last = shen
         ? "苏婉宁独自去补测渡口以外的旧路，带走共同准备。你可以继续自己的修行；三个月后按约重逢，临行时，她朝你晃了晃那截约好的路标绳。"
-        : "尹照川把夜值交给受训渡工，随修阵队去复核外地节点。你可以继续修行；三个月后按约重逢，出门前，他特意指给你看接班人的名字。";
+        : "尹照川将值夜簿交给渡工，随修阵队出山查验旧阵。临行前，他指了指簿上的名字：“有人接手了。这三个月，你安心修行，到时我来找你。”";
       return;
     case "reunion":
       q.whereabouts = "returned";
@@ -145,7 +145,7 @@ export function advancePlot(s: State, a: JourneyAction) {
       if(shen)s.social.affection=Math.min(100,s.social.affection+10);
       q.last = shen
         ? "苏婉宁拿来一张由她独立测完的新图，修正了自己曾轻信的旧里程。她学会在险段先留标，再进山。你们谈彼此的修行收获，约好以后继续使用相同的撤退记号。"
-        : "尹照川带回修订过的节点工单：这次由新同伴完成最后校验，他没有把全队工作揽回自己手里。你们核对亮灭节奏，把备用接应方式练了一遍。";
+        : "尹照川带回一册改过的阵图，末页添了几行旁人的字。“最后一段是他们验的，我在岸上等船。”他摊开灯谱，与你重试一遍接应的灯号。";
       s.study = Math.min(4, s.study + 1);
       return;
     case "oldFriend":
@@ -190,7 +190,7 @@ export function advancePlot(s: State, a: JourneyAction) {
       q.rescue = 3;
       if(q.growth.steady === "none") q.growth.steady = "mentor";
       q.last =
-        "补给送入后，你再试那股逆流，灵息却在腕间撞作一团。程砚用两指压住你的脉：“你一直想把它推回去。让它过去，再接回来。”你照着沉井的行功路线重试，指尖终于不再发麻。他将外旗换到另一只手，示意你先练熟；内侧的归绳已有回应。学会稳脉：本段后续交锋每合承伤 −2。筑基修行达到 420 后可挑战内层禁制。";
+        "补给送入后，你再试那股逆流，灵息却在腕间撞作一团。程砚用两指压住你的脉：“你一直想把它推回去。让它过去，再接回来。”你照着沉井的行功路线重试，指尖终于不再发麻。他将外旗换到另一只手，示意你先练熟；内侧的归绳已有回应。学会稳脉：古道后续交锋每合承伤 −2。筑基修行达到 420 后可挑战内层禁制。";
       return;
     case "finish":
       q.condensation = true;

@@ -52,7 +52,7 @@ export function planOrder(s: State, o: WorkshopOrder) {
       if (method !== "buy") reason = "玄铁料从坊市购入";
     } else if (p === "sword" || p === "vial") {
       const rank = s.journey.relics[p];
-      stones = method === "craft" ? 24 : method === "commission" ? 28 : 40;
+      stones = method === "craft" ? (rank ? 16 : 24) : method === "commission" ? (rank ? 20 : 28) : 40;
       herbs = method === "buy" ? 0 : 4;
       months = method === "buy" ? 0 : 1;
       study = method === "craft" ? 2 : 0;

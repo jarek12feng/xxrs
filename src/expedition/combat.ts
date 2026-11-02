@@ -1,3 +1,4 @@
+import { equipmentPower } from "../workshop/equipment";
 import { temperEffect } from "../workshop/combat";
 import { realmPressure, type OpponentRealm } from "../realm-pressure";
 import { mainTraining, supportTraining } from "../growth";
@@ -11,12 +12,12 @@ export function readiness(s: State) {
       (s.realm === 1 ? 2 : 0) +
       mainTraining(s) * 2 +
       Math.floor((s.sense + s.study * 2 + s.mastery + s.foundation) / 4) +
-      (s.journey.equipped === "sword" ? s.journey.relics.sword * 2 : 0),
+      equipmentPower(s).damage,
     armor:
       (s.realm === 1 ? 2 : 0) +
       (s.journey.support === "guard" ? 2 : 0) +
       supportTraining(s) +
-      (s.journey.equipped === "vial" ? s.journey.relics.vial : 0),
+      equipmentPower(s).armor,
   };
 }
 export function combatStyle(s: State) {

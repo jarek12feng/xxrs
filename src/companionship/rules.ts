@@ -101,7 +101,7 @@ export function runCompanionship(
           strength:
             "你以剑意卸去松石的力道，稳住石梁；苏婉宁拴好尺绳，测出背粮人能走的坡度。",
           insight:
-            "你循灵流找出石梁下的稳固节点；苏婉宁顺着你的标记重测，避开那截看似平坦的空壳石。",
+            "你循灵流找出石梁下的承力处；苏婉宁顺着你的标记重测，避开那截看似平坦的空壳石。",
           supplies:
             "你用四份灵草调出固根药液，把崖边根系护住；苏婉宁系绳复核每一段落脚点。灵草 −4。",
         }
@@ -120,15 +120,15 @@ export function runCompanionship(
       methods[action as Method] +
       (learned
         ? "你把这次稳住周身灵流的办法记成护身诀，已习得，可在功法页装配。它在交锋中每合减伤 2，历练不新增伤势。"
-        : "你已学过护身诀，这次复核使心得增加 2（上限 4）。") +
-      "接下来仍须装配护身诀，亲自校验归路。";
+        : "你已学过护身诀，此行再添心得 2（上限 4）。") +
+      "装配护身诀后，再亲自试走归路。";
   } else if (Object.hasOwn(plans, action)) {
     n.plan = action as Plan;
     s.stones -= plans[n.plan].cost;
     n.stage = "trial";
     n.last = femaleCompanion
       ? "“我没写名字。”苏婉宁看着药舍住户指出的井口与果树，终于放下刻刀：“可这些已经够找上门了。”门外那家人仍抱着孩子等消息。她亲自刮去刻样上的旧线，请你去复核新路，刻坊的人被她留在门外。"
-      : "尹照川又把自己的名字填进每个空班。“风标是我修的，漏写也是我的错。”你指出一直熬着不能补上训练。他划去多余夜值，答应按你们选定的办法交接。先让渡工独立报信，你去验备用泊点。";
+      : "尹照川又把自己的名字填进每个空班。“风标是我修的，漏写也是我的错。”你请他先让渡工试一回灯。他看了看排满的值夜簿，终于划去几处自己的名字。先让渡工独立报信，你去验备用泊点。";
   } else if (action === "test") {
     // The same existing support technique that reduces combat damage now
     // protects this announced, deterministic field test. No new stat system.

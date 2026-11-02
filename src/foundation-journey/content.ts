@@ -41,9 +41,10 @@ const battle = (
   image,
   purpose,
 });
+export const victoryCultivation = 16;
 export const challenges: Record<BattleId, Challenge> = {
-  application: {...battle(0,"试运新法","沉井试法阵",145,23,120,["guard","discern","strike"],"/art/characters/golem.webp","装配已得传承，亲手将新法运过乱流；通过后开放中期积累。",true),prize:0},
-  salamander: battle(1,"药泽引离","玄鳞螈",175,25,280,["guard","strike","discern"],"/art/foundation-growth/darkscale-salamander.webp","水面鼓起时护住药床，水落后逼退它。胜利取得养元药心，不必杀死。"),
+  application: {...battle(0,"试运新法","沉井试法阵",145,23,120,["guard","discern","strike"],"/art/characters/golem.webp","装配沉井传承，将新法运过乱流，冲开通往中期的瓶颈。",true),prize:0},
+  salamander: battle(1,"药泽引离","玄鳞螈",175,24,280,["guard","strike","discern"],"/art/foundation-growth/darkscale-salamander.webp","水面鼓起时护住药床，水落后逼退它。逼退玄鳞螈便可取药心，无须追杀。"),
   deer: battle(1,"雪线取髓","霜角鹿",165,23,280,["discern","guard","strike"],"/art/foundation-growth/frost-antler-deer.webp","蹄声停下时辨清冲锋方向，护住采髓点，逼退鹿群后取得寒髓晶。"),
   steady: {...battle(2,"独立调息","调息室逆流",180,25,420,["guard","discern","strike"],"/art/foundation-growth/meridian-retreat.webp","先稳住经脉，再将逆流引回；调息成功学会稳脉。",true),prize:0},
   culmination: battle(
@@ -55,7 +56,7 @@ export const challenges: Record<BattleId, Challenge> = {
     500,
     ["guard", "discern", "strike"],
     "/art/characters/golem.webp",
-    "程砚撤去外援，你独自将三股乱流引回经脉。稳住、辨清、放出，让自己的所学走完一个周天。胜后归山，完成筑基篇。",
+    "程砚撤去外援，三股乱流齐至。你须独自稳住经脉，辨清来势，再引气归流，运成一个完整周天。",
     true,
   ),
   well: battle(

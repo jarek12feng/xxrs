@@ -6,7 +6,7 @@ import type { State } from "../world";
 import { readiness, tacticalExchange } from "../expedition/combat";
 import type { Move } from "../expedition/content";
 import { expectedMove, tacticalAdjustment } from "./tactics";
-import { challenges, rankIds } from "./content";
+import { victoryCultivation, challenges, rankIds } from "./content";
 export function foundationCooperation(s: State, id: keyof typeof challenges) {
   const q = s.foundationJourney;
   return (
@@ -141,7 +141,7 @@ export function completeChallenge(s: State) {
   q.won.push(d.id);
   s.stones += e.prize;
   if(d.id === "steady")q.growth.steady = q.growth.steadyStudy === "medicine" ? "medicine" : "practice";
-  const gain = Math.max(0, Math.min(d.id === "application" || d.id === "steady" ? 0 : 40, foundationCap(s) - q.cultivation));
+  const gain = Math.max(0, Math.min(d.id === "application" || d.id === "steady" ? 0 : victoryCultivation, foundationCap(s) - q.cultivation));
   q.cultivation += gain;
   q.last = `击败${e.foe}。首胜灵石 +${e.prize}，筑基修行 +${gain}（当前上限 ${foundationCap(s)}）。`;
   if (rankIds.includes(d.id)) {
@@ -203,6 +203,6 @@ export function completeChallenge(s: State) {
   }
   if (d.id === "culmination")
     q.last +=
-      "三股乱流终于归于一息。你独自完成长风归流，周天贯流可继续用于筑基挑战。程砚收起护阵旗，邀你带着自己的所得归山。回听松行前居，翻开本篇尾声。";
+      "三股乱流归于一息，长风归流已成。程砚收起护阵旗：“气息稳了，回山吧。”待修至圆满，便可回听松行前居歇脚。";
   q.duel = null;
 }

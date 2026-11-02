@@ -1,3 +1,4 @@
+import { equipmentPower } from "./workshop/equipment";
 import { hasMainlineMeeting, mainlineRomanceReady } from "./foundation-journey/heroine";
 import { temperEffect } from "./workshop/combat";
 import { realmPressure } from "./realm-pressure";
@@ -370,7 +371,6 @@ export function turnPreview(s: State, stance: Stance) {
   const d = s.social.arena.duel;
   if (!d) return null;
   const correct = duelIntent(s) === stance;
-  const gear = s.journey.equipped;
   const skill = s.journey.main,
     support = s.journey.support;
   let damage =
@@ -378,7 +378,7 @@ export function turnPreview(s: State, stance: Stance) {
     (stance === "endure" ? -2 : 0) +
     (correct ? 8 : 3) +
     Math.floor((s.root + s.sense + s.study + s.mastery) / 8) +
-    (gear === "sword" ? s.journey.relics.sword * 2 : 0) +
+    equipmentPower(s).damage +
     (stance === "break" && skill === "blade" ? 4 : 0) +
     (stance === "discern" && skill === "breath" ? 3 : 0) +
     (stance === "discern" && support === "lantern" ? 3 : 0);
@@ -392,7 +392,7 @@ export function turnPreview(s: State, stance: Stance) {
       (stance === "endure" ? 6 : 0) +
       (correct ? 0 : 5) -
       (support === "guard" ? 2 : 0) -
-      (gear === "vial" ? s.journey.relics.vial : 0),
+      equipmentPower(s).armor,
   );
   const temper = temperEffect(
     s,

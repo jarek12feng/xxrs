@@ -197,7 +197,7 @@ describe("v4 world progression", () => {
     s.qi = 350;
     s.qiJourney.gates=2;
     s = advance(s, "cultivate", 12);
-    expect(s.month).toBe(4);
+    expect(s.month).toBe(7);
     expect(s.qi).toBe(360);
   });
   it("prioritizes death over duty and exploration rewards", () => {
@@ -276,8 +276,8 @@ describe("online queue", () => {
     for (const [i, command] of commands.entries()) {
       s = dispatch(s, command);
       expect(s.month).toBe(start.month + i + 1);
-      expect(s.foundationJourney.cultivation).toBeGreaterThan(
-        start.foundationJourney.cultivation,
+      expect(s.foundationJourney.cultivation * 240 + s.cultivationRemainder).toBeGreaterThan(
+        start.foundationJourney.cultivation * 240 + start.cultivationRemainder,
       );
       expect(s.journey.queue[0]?.remaining ?? 0).toBe(11 - i);
       expect(validState(s)).toBe(true);
@@ -292,6 +292,7 @@ describe("online queue", () => {
     s.qi = 360;
   s.qiJourney.gates = 2;
     s.foundationJourney.cultivation = 198;
+    s.cultivationRemainder = 239;
     s = act(s, { type: "enqueue", action: "cultivate", repeat: 12 });
     s = act(s, { type: "enqueue", action: "work", repeat: 3 });
     const month = s.month;
@@ -338,7 +339,7 @@ describe("online queue", () => {
     s = act(s, { type: "queueTick" });
     expect(s.injury).toBe(0);
     expect(s.journey.queue[0].action).toBe("cultivate");
-    s.qi = 355;
+    s.qi = 359;
   s.qiJourney.gates = 2;
     s = act(s, { type: "queueTick" });
     expect(s.qi).toBe(360);

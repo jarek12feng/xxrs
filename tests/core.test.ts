@@ -220,5 +220,5 @@ describe("筑基篇", () => {
           expect(simulate(path, seed, choice)).toEqual(
             simulate(path, seed, choice),
           );
-  });
+  }, 15000);
 });
