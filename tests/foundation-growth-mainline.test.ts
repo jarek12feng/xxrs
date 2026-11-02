@@ -79,5 +79,5 @@ it('rejects corrupt earned milestones and does not silently import old foundatio
  for(const update of [(n:typeof s)=>n.foundationJourney.growth.refined=true,(n:typeof s)=>n.foundationJourney.heroine.supplied=true,(n:typeof s)=>n.foundationJourney.cultivation=200]){
   const n=structuredClone(s);update(n);expect(validState(n)).toBe(false);
  }
- const qi=createGame('存档','wood');const legacy={...qi,version:21};expect(migrateSave(legacy).version).toBe(22);
+ const qi=createGame('存档','wood');const legacy={...qi,version:21};expect(migrateSave(legacy).version).toBe(24);
 });

@@ -195,7 +195,7 @@ const panelTitles: Record<string, string> = {
   skills: "功法",
   world: "山河地图",
   relationship: "人物关系",
-  sect: "宗门师承",
+  sect: "师门与委托",
   arena: "听松擂台",
   gear: "丹药与法器准备",
   queue: "修行安排",
@@ -1190,7 +1190,7 @@ onUnmounted(() => {
                 @sect="openPanel('sect')"
                 @inventory="openPanel('inventory')"
               />
-              <CultivationOutlook
+              <CultivationOutlook @standing="openPanel('sect')"
                 v-if="activity === 'cultivate'"
                 :game="game"
                 :months="3"
@@ -1293,7 +1293,7 @@ onUnmounted(() => {
             </fieldset>
           </section>
           <nav class="facility-actions" aria-label="山居设施">
-            <button @click="openPanel('sect')">拜访师门</button
+            <button @click="openPanel('sect')">师门与委托</button
             ><button @click="openPanel('gear')">丹药与法器准备</button
             ><button @click="openPanel('arena')">听松擂台</button
             ><button @click="openPanel('queue')">修行安排</button>

@@ -1,3 +1,4 @@
+import { recognitionView, advancementChanges } from "./recognition/view";
 import { foundationGoal } from "./foundation-journey/progression";
 import { foundationBoard } from "./foundation-journey/view";
 import { trialBoard } from "./world-ambition";
@@ -22,7 +23,7 @@ export interface ActionReceipt {
     "break" | "refine" | "retreat" | "challenge" | "forge" | "duel" | null;
   unlocks?: string[];
   spotlight?: boolean;
-  returnTo?: "relationship" | "world" | "gear" | "arena";
+  returnTo?: "relationship" | "world" | "gear" | "arena" | "sect";
   scene?: {
     from: string;
     to: string;
@@ -214,6 +215,12 @@ export function actionReceipt(
   ].includes(effective.type)
     ? growthComparison(before, after)
     : [];
+  const advancement = advancementChanges(before, after);
+  if (advancement.length) {
+    if (before.realm === after.realm && !dead) title = advancement[0]!;
+    growthNotes.push(...advancement);
+  }
+  if (effective.type === "recognition" && !dead) title = effective.action.kind === "inner" ? "回山受录" : effective.action.kind === "appoint" ? "受托任职" : effective.action.kind === "resign" ? "交还行牌" : effective.action.kind === "defer" ? "暂缓任用" : "委托归来";
   if (after.social.arena.wins > before.social.arena.wins) {
     title = trialBoard(after).title;
     growthNotes.push(trialBoard(after).response);
@@ -254,7 +261,7 @@ export function actionReceipt(
   return enrichReceipt(before, after, intent, {
     title,
     returnTo:
-      effective.type === "foundationJourney"
+      effective.type === "recognition" ? "sect" : effective.type === "foundationJourney"
         ? before.foundationJourney.duel?.id.startsWith("rank")
           ? "arena"
           : "world"
@@ -265,6 +272,7 @@ export function actionReceipt(
       inherited ||
       ranked ||
       journeyWin ||
+      effective.type === "recognition" ||
       effective.type === "promote" ||
       (effective.type === "choose" &&
         (before.pending?.kind === "relic" || !!before.social.scene)) ||
@@ -293,7 +301,7 @@ export function actionReceipt(
       ...growthNotes,
       ...entries.slice(0, 4).map((entry) => entry.text),
     ],
-    next: ranked
+    next: effective.type === "recognition" && !dead ? recognitionView(after).next : ranked
       ? foundationBoard(after).next
       : effective.type === "foundationJourney" && !dead
         ? foundationGoal(after)

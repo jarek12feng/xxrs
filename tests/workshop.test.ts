@@ -363,6 +363,6 @@ describe("workshop public commands", () => {
       { ...n.workshop, temper: { sword: "keen", vial: "plain" } },
     ])
       expect(validState({ ...n, workshop: w })).toBe(false);
-    expect(() => migrateSave({ ...n, version: 23 })).toThrow();
+    expect(() => migrateSave({ ...n, version: 25 })).toThrow();
   });
 });

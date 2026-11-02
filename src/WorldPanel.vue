@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import RecognitionPanel from "./recognition/RecognitionPanel.vue";
+import { identity, currentOffice, officeName } from "./recognition/rules";
+import { recognitionView } from "./recognition/view";
 import WorkshopPanel from "./workshop/WorkshopPanel.vue";
 import type { CombatFeedback } from "./foundation-journey/feedback";
 import FoundationPanel from "./foundation-journey/FoundationPanel.vue";
@@ -400,6 +403,7 @@ const mapImages = {
       <WorkshopPanel :game="game" :busy="busy || running" @act="emit('act', $event)" />
     </div>
     <div v-else-if="tab === 'sect'" class="world-content">
+      <RecognitionPanel :game="game" :busy="locked" @act="emit('act', $event)" />
       <p class="muted">
         宗门提供师承与通行资格，不是唯一道路。散修也可在坊市学同样的功法，以神识
         8、心得 2 识路入山。可选择一个堂口拜师。
@@ -423,7 +427,7 @@ const mapImages = {
           :body="mentor.story"
           :portrait="mentor.image"
           :speaker="mentor.name"
-          :quote="mentor.quote"
+          :quote="game.journey.branch === branch ? recognitionView(game).quote : mentor.quote"
           compact
         />
         <div class="scene-controls" :aria-label="mentor.hall + '拜师操作区'">
@@ -445,10 +449,11 @@ const mapImages = {
       >
         <h3 class="controls-heading">宗门事务与晋升</h3>
         <p>
-          身份：{{ game.journey.rank ? "外门弟子" : "记名弟子" }} · 贡献
+          身份：{{ identity(game) }} · {{ officeName(game) }} · 贡献
           {{ game.journey.contribution }} · 亲历事务
           {{ game.journey.duties }} 次
         </p>
+        <details :open="!currentOffice(game)"><summary>寻常师门事务</summary>
         <div class="world-actions">
           <button
             :disabled="locked || game.herbs < 2"
@@ -469,6 +474,7 @@ const mapImages = {
             整理旧卷<small>一月 / 灵石先付 3、完工收 6 / 心得 +1 / 贡献 +2</small>
           </button>
         </div>
+        </details>
         <div
           v-if="game.journey.duties >= 3 && !game.journey.mentor"
           class="mentor-question"

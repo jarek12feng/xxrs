@@ -1,3 +1,5 @@
+import { freshRecognition, validRecognition, type Recognition } from "./recognition/state";
+import { runRecognition, type RecognitionAction } from "./recognition/rules";
 import { freshHeroine } from "./foundation-journey/heroine";
 import { foundationCap, foundationBlock, freshFoundationGrowth } from "./foundation-journey/growth-state";
 import { freshWorkshop, validWorkshop, type Workshop } from "./workshop/state";
@@ -206,7 +208,9 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 22;
+  version: 24;
+  recognition: Recognition;
+  cultivationRemainder: number;
   workshop: Workshop;
   qiJourney: QiJourney;
   foundationJourney: FoundationJourney;
@@ -218,6 +222,7 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | { id: string; type: "recognition"; action: RecognitionAction }
   | { id: string; type: "qiJourney"; action: QiAction }
   | { id: string; type: "foundationJourney"; action: JourneyAction }
   | { id: string; type: "companionship"; action: CompanionAction }
@@ -281,6 +286,8 @@ function base(s: State): chapter.State {
     foundationJourney: _______,
     qiJourney: ________,
     workshop: _________,
+    cultivationRemainder: __________,
+    recognition: ___________,
     ...rest
   } = s;
   return { ...rest, version: 3 };
@@ -293,7 +300,9 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 22,
+    version: 24,
+    recognition: freshRecognition(),
+    cultivationRemainder: 0,
     workshop: freshWorkshop(),
     qiJourney: freshQiJourney(),
     foundationJourney: freshFoundationJourney(),
@@ -478,7 +487,7 @@ export function explorationError(s: State, p: Place) {
   if (s.realm < places[p].realm) return "需先突破筑基";
   if (p !== "valley" && s.story.stage !== "resolved") return "先了结渡口旧约";
   if (p === "peak" && s.journey.maps.valley < 3) return "先寻找回春谷的刻痕";
-  if (p === "peak" && s.journey.rank !== 1 && !(s.sense >= 8 && s.study >= 2))
+  if (p === "peak" && s.journey.rank !== 1 && s.recognition.innerMonth === null && !(s.sense >= 8 && s.study >= 2))
     return "需外门资格，或神识 8、心得 2（散修识路）";
   if (p === "sea" && s.journey.maps.peak < 3) return "需雾岭航图";
   if (s.injury > 2) return "伤势需降至 2 以下或等于 2";
@@ -486,6 +495,7 @@ export function explorationError(s: State, p: Place) {
 }
 export function promotionError(s: State) {
   if (s.journey.branch === "none") return "尚未加入宗门";
+  if (s.recognition.innerMonth !== null) return "已受录内门";
   if (s.journey.rank === 1) return "已是外门弟子";
   if (s.journey.duties < 3 || s.journey.contribution < 6 || s.study < 2)
     return "需要亲历 3 次事务、贡献 6、心得 2";
@@ -493,6 +503,8 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.recognition = n.life === old.life ? structuredClone(old.recognition) : freshRecognition();
+  n.cultivationRemainder = n.life === old.life && n.realm === old.realm ? old.cultivationRemainder : 0;
   n.qiJourney =
     n.life === old.life ? structuredClone(old.qiJourney) : freshQiJourney();
   if (n.status !== "alive") {
@@ -552,6 +564,8 @@ export function dispatch(input: State, c: Command): State {
 }
 function dispatchCommand(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (c.type === "recognition") return runRecognition(input, c.action, c.id, (s) =>
+    normalize(lift(chapter.travelMonth(base(s), "领队行程"), structuredClone(s.journey), structuredClone(s.social), structuredClone(s.adventure)), s));
   if (c.type === "qiJourney")
     return runQiJourney(input, c.action, c.id, (s) =>
       normalize(
@@ -1183,17 +1197,19 @@ function dispatchCommand(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 22);
+  return validWorldState(x, 24);
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
     (x as { version: unknown }).version !== version ||
+    (version >= 23 && (!Number.isInteger(s.cultivationRemainder) || s.cultivationRemainder < 0 || s.cultivationRemainder >= 240)) ||
+    (version >= 24 && !validRecognition(s.recognition, s.month, s.realm, s.journey?.branch)) ||
     !j ||
     !chapter.validState(base(s)) ||
     !validSocial(s) ||
@@ -1275,12 +1291,22 @@ function validWorldState(
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 23) {
+    if (!validWorldState(x, 23)) throw new Error("旧存档损坏，原档未修改。");
+    return { ...structuredClone(x) as State, version: 24, recognition: freshRecognition() };
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 22) {
+    if (!validWorldState(x, 22)) throw new Error("旧存档损坏，原档未修改。");
+    return migrateSave({ ...structuredClone(x) as State, version: 23, cultivationRemainder: 0 });
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 21) {
     if (!validWorldState(x, 21)) throw new Error("旧存档损坏，原档未修改。");
     const n = structuredClone(x) as State;
     // No invented milestones: earlier foundation runs must start a new character.
     if (n.realm === 1) throw new Error("筑基成长规则已重构，请备份原档并新建角色；原档未修改。");
-    n.version = 22;
+    n.version = 24;
+    n.recognition = freshRecognition();
+    n.cultivationRemainder = 0;
     n.foundationJourney.growth = freshFoundationGrowth();
     n.foundationJourney.heroine = freshHeroine();
     return n;

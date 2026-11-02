@@ -154,7 +154,7 @@ export function settlePerson(s: State, a: PersonAction) {
       "裴铸与你拆解阵枢，将古傀卸力之法化入护身诀。护身诀已通达；装配为辅修后，可在接下来的交锋中减伤。";
   }
 }
-export function personReply(s: State, who: "scout" | "smith") {
+function basePersonReply(s: State, who: "scout" | "smith") {
   const p = s.qiJourney.people;
   if (who === "scout") {
     if (!p.scout) return qiPeople.scout.intro;
@@ -180,6 +180,14 @@ export function personReply(s: State, who: "scout" | "smith") {
   return p.constructLesson
     ? "“看到假阵眼不要抢砸。辨清回光，再碰阵枢。”"
     : "“先把阵理读熟，备十枚灵石来试阵。别拿经脉硬扛。”";
+}
+export function personReply(s: State, who: "scout" | "smith") {
+  const known = s.qiJourney.people[who];
+  let greeting = "";
+  if (known && s.recognition.deeds.some(d => d.tier === 2)) greeting = who === "scout" ? "许照岚指着新来的药工：“他们想问你那段远路怎么走。可别把险处略了。”" : "裴铸将阵图让到你面前：“这回你先说，我听听哪处还得改。”";
+  else if (known && s.realm) greeting = who === "scout" ? "许照岚看了看你的气息：“筑基了。往后险处也能多照看几个人。”" : "裴铸将炉钳递来：“筑基了？那就自己压住炉火，别光站着看。”";
+  else if (known && s.recognition.deeds.some(d => d.tier === 0)) greeting = who === "scout" ? "“听说这趟是你领队。下次带新人，先把退路指给他们。”" : "“能独当一面了。出门前仍得验器，别嫌麻烦。”";
+  return greeting + basePersonReply(s, who);
 }
 export function validQiPeople(p: QiPeople) {
   return (

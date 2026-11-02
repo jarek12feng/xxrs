@@ -245,13 +245,13 @@ it("rejects malformed progress and future versions; 19 gains no invented route a
   } = s.qiJourney;
   const old = { ...s, version: 19, qiJourney: oldJourney };
   const migrated = migrateSave(old);
-  expect(migrated.version).toBe(22);
+  expect(migrated.version).toBe(24);
   expect(migrated.qiJourney.preparations).toEqual([
     freshPreparation(),
     freshPreparation(),
   ]);
   expect(migrated.qiJourney.people).toEqual(freshQiPeople());
-  expect(() => migrateSave({ ...s, version: 23 })).toThrow();
+  expect(() => migrateSave({ ...s, version: 25 })).toThrow();
 });
 it("learned beast and construct responses reduce real incoming damage", () => {
   let s = ready();

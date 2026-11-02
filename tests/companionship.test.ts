@@ -168,7 +168,7 @@ it("migration never invents shared adventures, preserves established pledges and
       companionship: { ...n.companionship, stage: "done", plan: "relay" },
     }),
   ).toBe(false);
-  expect(() => migrateSave({ ...n, version: 23 })).toThrow();
+  expect(() => migrateSave({ ...n, version: 25 })).toThrow();
   expect(companionshipView(n).options[0]?.disabled).toBe("");
 });
 it("established pledges remain intact and an already learned technique never duplicates", () => {

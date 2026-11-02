@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { advancementPromise } from "./recognition/view";
 import { foundationBlock } from "./foundation-journey/growth-state";
 import { computed } from "vue";
 import type { State } from "./world";
@@ -12,10 +13,12 @@ const props = withDefaults(
   }>(),
   { months: 3 },
 );
+defineEmits<{ standing: [] }>();
 const outlook = computed(() => cultivationProjection(props.game, props.target));
 </script>
 <template>
   <aside class="cultivation-outlook" aria-label="吐纳耗时与寿元">
+    <p>{{ advancementPromise(game) }}<button @click="$emit('standing')">查看亲历与任用</button></p>
     <p>
       剩余寿元 {{ formatLifeMonths(outlook.remainingMonths) }}。下月吐纳实际 +{{
         outlook.monthlyGain

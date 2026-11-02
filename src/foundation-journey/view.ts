@@ -95,7 +95,7 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
       } else if(!p.processed) {
         add(`自行处理${info.material} · 灵草 6、灵石 4、两月`,{kind:"routeProcess",route,method:"self"});
         add(`请当地修士处理${info.material} · 灵石 28、一月`,{kind:"routeProcess",route,method:"service"});
-        add(`借师门丹房处理${info.material} · 贡献 8、一月`,{kind:"routeProcess",route,method:"sect"});
+        add(`借师门丹房处理${info.material} · 贡献 ${s.recognition.innerMonth !== null ? 6 : 8}、一月`,{kind:"routeProcess",route,method:"sect"});
       } else if(!p.revisited)add(`回访${info.name} · ${route === "estate" ? "交灵草 2，领取药材订单报酬" : "交接行路记录，灵石 +12"}、一月`,{kind:"routeRevisit",route});
     }
     if(q.cultivation>=400 && !hasSteady(q)) {

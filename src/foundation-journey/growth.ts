@@ -42,7 +42,7 @@ export function growthQuote(s: State, a: GrowthAction) {
       if(!p.choice || !q.won.includes(routeInfo[r].foe) || p.processed || !['self','service','sect'].includes(a.method)) error='先赢得路线主材；每份只可处理一次';
       if(a.method==='self'){herbs=6;stones=4;months=2;}
       if(a.method==='service')stones=28;
-      if(a.method==='sect'){contribution=8;if(s.journey.branch==='none')error='加入师门后可借用丹房；也可自行处理或付费';}
+      if(a.method==='sect'){contribution=s.recognition.innerMonth !== null ? 6 : 8;if(s.journey.branch==='none')error='加入师门后可借用丹房；也可自行处理或付费';}
     }
     if(a.kind==='routeRevisit') {
       if(!p.processed || p.revisited) error='取材炼化后可回访一次';

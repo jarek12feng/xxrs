@@ -357,7 +357,7 @@ it("opens character and inventory overlays without advancing the world", async (
 
 it("shows routine sect work in place and offers equipment immediately after promotion", async () => {
   await mount(state());
-  await click("拜访师门");
+  await click("师门与委托");
   await click("拜入丹堂");
   await click("整理旧卷");
   expect(

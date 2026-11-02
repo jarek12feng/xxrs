@@ -45,7 +45,7 @@ it("new lifespan is one century and unsupported future saves stay protected", ()
   expect(createGame("医", "wood").limit).toBe(1200);
   expect(createGame("剑", "sword").limit).toBe(1200);
   expect(() =>
-    migrateSave({ ...createGame("未来", "wood"), version: 23 }),
+    migrateSave({ ...createGame("未来", "wood"), version: 25 }),
   ).toThrow();
 });
 it.each(["sturdy", "insightful", "perceptive"] as const)(

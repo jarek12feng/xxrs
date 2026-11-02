@@ -5,6 +5,10 @@ import { passSolutions } from "./pass-solutions";
 
 export function lifeReview(s: State) {
   const records: string[] = [];
+  const r = s.recognition;
+  if (r.innerMonth !== null) records.push(`修行第 ${r.innerMonth} 月，凭青嶂亲历受录内门。`);
+  for (const a of r.appointments) records.push(`修行第 ${a.month} 月，受任${a.tier === 1 ? '领队' : a.affiliation === 'dan' ? '丹房主事' : a.affiliation === 'jian' ? '护路执事' : '药队客卿'}。`);
+  for (const d of r.deeds) records.push(`修行第 ${d.month} 月，${['首次独领山口药队','首次主持筑基药运','首次统筹深山归路'][d.tier]}，${d.method === 'supplies' ? '以药护脉，稳行归来' : '凭亲习功法护住同行者'}。`);
   const unfinished: string[] = [];
   if (s.adventure.rescueChoice === "roots")
     records.push(
