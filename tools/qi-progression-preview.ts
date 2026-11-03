@@ -4,6 +4,8 @@ import CultivationStatus from "../src/CultivationStatus.vue";
 import { createGame, dispatch, validState, type Intent } from "../src/core";
 import { foundationStep } from "./foundation-playthrough";
 import "../src/style.css";
+import "../src/scene.css";
+import "../src/immersive.css";
 import "../src/readability.css";
 const game = shallowRef(createGame("关卡验收", "wood", 42, "insightful"));
 const notice = shallowRef("");
@@ -32,7 +34,7 @@ function checkpoint(gate: number, routePending = false) {
 checkpoint(0, true);
 createApp({
   setup: () => () =>
-    h("main", { style: "max-width:720px;margin:24px auto;padding:16px" }, [
+    h("main", { style: "max-width:none;margin:0;padding:0" }, [
       h("h1", "炼气成长关卡验收"),
       h(
         "p",

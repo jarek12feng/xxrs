@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { realmPressure, opponentRealmName } from "../realm-pressure";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import type { State, Intent } from "../core";
 import { encounters, moves, type Move } from "./content";
 import { expeditionError, readiness, type ExpeditionAction } from "./rules";
@@ -11,6 +11,7 @@ import BattleStage from "./BattleStage.vue";
 import { expeditionIntermission } from "./progression";
 const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent]; cultivate: [] }>();
+const preparing = ref(false);
 const style = computed(() => combatStyle(props.game));
 const advice = computed(() => preparationAdvice(props.game));
 const meters = computed(() => battleMeters(props.game));
@@ -43,6 +44,7 @@ const actions = computed<
 );
 </script>
 <template>
+  <Teleport to="body" :disabled="!q.duel">
   <section
     class="expedition-panel"
     :class="{ 'active-battle': q.duel }"
@@ -103,11 +105,11 @@ const actions = computed<
     </template>
     <template v-else>
       <h3>青嶂关 · 护送与旧阵</h3>
-      <ol>
+      <details><summary>药队行程</summary><ol>
         <li v-for="(e, i) in encounters" :key="e.name">
           {{ q.cleared > i ? "✓" : q.cleared === i ? "→" : "◇" }} {{ e.name }}
         </li>
-      </ol>
+      </ol></details>
       <p v-if="!q.accepted">
         药队需要同行之人。先以炼气之身护送、寻踪；随后药队回坊市、封阵休整，待你筑基再合力取出阵核里的证据。可随时在交锋外回洞府准备。
       </p>
@@ -138,11 +140,11 @@ const actions = computed<
           {{ power.damage }}、护体减伤 {{ beforeRealm.armor }} →
           {{ power.armor }}。无需精炼灵器即可受益。
         </p>
-        <aside class="combat-style">
+        <details><summary>检查功法与护体</summary><aside class="combat-style">
           <strong>{{ style.name }}</strong>
           <p>{{ style.description }}</p>
           <small>当前灵草 {{ game.herbs }}；功法效果与正确应对叠加。</small>
-        </aside>
+        </aside></details>
         <details class="combat-help">
           <summary>查看修行如何影响交锋</summary>
           <p>
@@ -173,7 +175,7 @@ const actions = computed<
         :quest="q"
         :foe="encounters[Math.max(0, q.cleared - 1)]!.foe"
       />
-      <p v-if="q.last" role="status">{{ q.last }}</p>
+      <details v-if="q.last"><summary>刚才的经过</summary><p role="status">{{ q.last }}</p></details>
       <div class="expedition-actions">
         <button
           v-for="a in actions"
@@ -184,7 +186,8 @@ const actions = computed<
           {{ a.label
           }}<small>{{ expeditionError(game, a.action) || a.hint }}</small>
         </button>
-        <button
+        <button :aria-expanded="preparing" @click="preparing = !preparing">{{ preparing ? "收起行装" : "检查行装与补给" }}</button>
+        <template v-if="preparing"><button
           v-for="tip in advice"
           :key="tip.label"
           :disabled="busy || !!game.pending || game.status !== 'alive'"
@@ -192,7 +195,7 @@ const actions = computed<
         >
           {{ tip.label }}<small>{{ tip.text }}</small>
         </button>
-        <button
+        </template><button
           v-if="!q.duel && q.accepted && q.cleared < 3"
           :disabled="busy"
           @click="emit('cultivate')"
@@ -206,6 +209,7 @@ const actions = computed<
       </p>
     </template>
   </section>
+  </Teleport>
 </template>
 <style scoped>
 .expedition-panel {

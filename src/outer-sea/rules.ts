@@ -1,3 +1,4 @@
+import { passageKey, passageError, passageMonths, advancePassage } from "../wayfaring/passage";
 import { goldenCap, goldenBlock } from "../conclave/state";
 import { conclaveGoal } from "../conclave/rules";
 import type { State } from "../world";
@@ -150,6 +151,9 @@ export function seaQuote(s: State, a: SeaAction) {
       error ||= "先取回机缘，在古渡与两位道友交接";
     else if (o.notice !== null) error ||= "约定与五十年会期已记入行囊";
   } else error ||= "未知外海操作";
+  const passage = passageKey('sea', a.kind);
+  error ||= passageError(s, passage);
+  months = passageMonths(s, passage, months);
   if (!error && (s.stones < stones || s.herbs < herbs))
     error = `需灵石 ${stones}、灵草 ${herbs}；可回山劳作或筹备`;
   if (!error && s.limit - s.age <= months) error = "余寿不足以完成此行";
@@ -209,12 +213,22 @@ export function runSea(
   const quote = seaQuote(input, a);
   if (quote.error) return input;
   let s = structuredClone(input);
+  const passage = passageKey('sea',a.kind);
+  if(passage) {
+    const result=advancePassage(input,passage,tick,n=>occupied(n) || (n.outerSea.reminded && !input.outerSea.reminded));
+    s=result.state;
+    if(result.stopped) {
+      record(`航程暂止，尚余 ${s.wayfaring.passage!.remaining} 月；处理眼前消息后继续，不重复扣除已耗年月。行装尚未扣除。`);
+      return finish();
+    }
+  } else {
   for (let i = 0; i < quote.months; i++) {
     s = tick(s);
     if (occupied(s) || (s.outerSea.reminded && !input.outerSea.reminded)) {
       record("行程暂止，尚未扣除物资或结算成果。");
       return finish();
     }
+  }
   }
   s.stones -= quote.stones;
   s.herbs -= quote.herbs;

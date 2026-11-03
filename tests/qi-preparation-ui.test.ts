@@ -32,11 +32,16 @@ it("shows three routes, keeps entry blocked and makes the first choices clickabl
       }),
   });
   app.mount(document.body.appendChild(document.createElement("div")));
-  expect(document.body.textContent).toContain("三条路线择一");
+  const hotspot = (text: string) => Array.from(document.querySelectorAll("button")).find(b => b.textContent?.includes(text))!;
+  hotspot("药谷淬脉泉").click();
+  await nextTick();
   const buttons = () => Array.from(document.querySelectorAll("button"));
   expect(
     buttons().find((b) => b.textContent?.startsWith("药理护身"))?.disabled,
   ).toBe(true);
+  hotspot("山道与历练").click();
+  await nextTick();
+  expect(document.body.textContent).toContain("三条路线择一");
   const section = document.querySelector('[aria-label="晋升成长路线"]')!;
   const medicine = Array.from(section.querySelectorAll("details")).find((d) =>
     d.querySelector("summary")?.textContent?.includes("药谷修行"),
@@ -64,6 +69,8 @@ it("shows three routes, keeps entry blocked and makes the first choices clickabl
   await nextTick();
   expect(game.value.qiJourney.preparations[0]!.medicine).toBe(2);
   expect(medicine.textContent).toContain("护药实战");
+  hotspot("药谷淬脉泉").click();
+  await nextTick();
   expect(
     buttons().find((b) => b.textContent?.startsWith("药理护身"))?.disabled,
   ).toBe(true);

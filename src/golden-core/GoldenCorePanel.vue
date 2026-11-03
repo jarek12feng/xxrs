@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
+import { goldenObject } from "../scene2d/golden-objects";
+import NarrativeStage from "../scene2d/NarrativeStage.vue";
 import { formatLifeMonths } from "../cultivation";
 import type { State, Intent } from "../core";
 import {
@@ -19,7 +21,9 @@ const visible = computed(
     props.game.realm >= 1 &&
     props.game.foundationJourney.cultivation >= 200,
 );
-const exitAge = computed(() => props.game.age + goldenQuote(props.game, { kind: "break" }).months);
+const exitAge = computed(
+  () => props.game.age + goldenQuote(props.game, { kind: "break" }).months,
+);
 const exitLife = computed(() => Math.max(0, props.game.limit - exitAge.value));
 const goal = computed(() => goldenGoal(props.game));
 const options = computed(() => {
@@ -97,159 +101,208 @@ const options = computed(() => {
 });
 const send = (action: GoldenAction) =>
   emit("act", { type: "goldenCore", action });
+
+// The selected object is presentation state; opening it never dispatches a command.
+const selected = ref("");
+const stageKey = computed(() => gameScene.value);
+const gameScene = computed(() =>
+  props.game.realm === 2
+    ? "cloud"
+    : g.value.expedition !== "idle"
+      ? "garden"
+      : "home",
+);
+const hotspots = computed(() => {
+  const ids = new Set<string>(
+    options.value.map((o) => goldenObject(o.action.kind)),
+  );
+  if (gameScene.value === "home") ids.add("chamber");
+  return [
+    {
+      id: "path",
+      label:
+        gameScene.value === "cloud"
+          ? "云壁"
+          : gameScene.value === "garden"
+            ? g.value.expedition === "won"
+              ? "凝露芝心"
+              : g.value.expedition === "prepared"
+                ? "柳知微与药床"
+                : "守药石偶"
+            : "凝露药圃山路",
+      x: 54,
+      y: 43,
+    },
+    { id: "furnace", label: "合药炉", x: 27, y: 60 },
+    {
+      id: "elder",
+      label: g.value.champion === "pending" ? "师门传讯" : "护关阵台",
+      x: 40,
+      y: 62,
+    },
+    { id: "chamber", label: "凝丹静室", x: 64, y: 58 },
+    { id: "exit", label: "归山小径", x: 18, y: 78 },
+  ].filter((o) => ids.has(o.id));
+});
+const shown = computed(() =>
+  g.value.duel
+    ? options.value
+    : options.value.filter(
+        (o) => goldenObject(o.action.kind) === selected.value,
+      ),
+);
+watch(stageKey, () => {
+  selected.value = "";
+});
+watch(hotspots, (objects) => {
+  if (selected.value && !objects.some((o) => o.id === selected.value))
+    selected.value = "";
+});
 </script>
 <template>
-  <section v-if="visible" class="golden-core" aria-label="凝丹机缘与金丹初行">
-    <h3>
-      {{
-        game.realm === 2 ? "金丹初成 · 云壁之外" : "凝丹筹备 · 争取自己的机缘"
-      }}
-    </h3>
-    <p>{{ goal }}</p>
-    <details
-      :open="
-        g.expedition !== 'idle' ||
-        game.foundationJourney.epilogue ||
-        game.realm === 2 ||
-        g.champion === 'pending'
-      "
+  <NarrativeStage
+    v-if="visible"
+    class="golden-core"
+    aria-label="凝丹机缘与金丹初行"
+    :stage-key="stageKey"
+    :image="
+      gameScene === 'cloud'
+        ? '/scenes/cloud-frontier.jpg'
+        : gameScene === 'garden'
+          ? '/scenes/mist-herb-garden.jpg'
+          : '/scenes/moon-terrace.png'
+    "
+    :title="
+      game.realm === 2
+        ? '金丹初成 · 云壁之外'
+        : gameScene === 'garden'
+          ? '凝露药圃'
+          : '听松行前居 · 凝丹筹备'
+    "
+    :goal="goal"
+    :hotspots="hotspots"
+    :active="selected"
+    :battle="!!g.duel"
+    @select="selected = $event"
+    @close="selected = ''"
+  >
+    <template #status
+      ><span v-if="game.realm === 1"
+        >主药 {{ g.medicine }} · 丹药 {{ g.pills }} · 灵地{{
+          g.site === "none" ? "未备" : "已备"
+        }}
+        · 护持{{ g.guard ? "已备" : "未备" }}</span
+      ></template
     >
-      <summary>
-        {{ game.realm === 2 ? "查看金丹初行" : "查看结丹缺口与取药路线" }}
-      </summary>
-      <template v-if="game.realm === 1">
-        <p>
-          主药凝露芝心 {{ g.medicine }} 份 · 凝丹丹药 {{ g.pills }} 枚 · 灵地{{
-            g.site === "none" ? "未备" : "已备"
-          }}
-          · 护持{{ g.guard ? "已备" : "未备" }}
-        </p>
-        <p>
-          筑基修行 {{ game.foundationJourney.cultivation }}/600 ·
-          {{
-            game.foundationJourney.epilogue
-              ? "本境考验与归山已完成"
-              : "还需完成稳脉、贯流、长风归流与归山"
-          }}
-        </p>
-        <p>
-          宗门内比两胜固定授一份主药；散修、失利或错过会期者，可在筑基后期赴药圃。主药用途相同，也可先参赛再转路。
-        </p>
-        <p>
-          预计出关年龄 {{ formatLifeMonths(exitAge) }}；按突破前寿限，届时余寿 {{ formatLifeMonths(exitLife) }}。成功后寿限再增三百年。
-        </p>
-        <p>
-          每次叩关消耗凝丹丹药 1 枚、六个月及已备护持。失败伤势
-          +2，保留灵地、功法与筑基成果；可重新取药，重复取药不再发首通额外物资。修复灵穴较慢但便宜，可用额外护持补足把握。
-        </p>
-      </template>
-      <template v-if="g.expedition !== 'idle'"
-        ><p>
-          凝露药圃 ·
-          有守药石偶与禁制，成功取药必得主药。探索途中可撤回；不能在阵中开炉、换装或接其他行程。
-        </p>
-        <p v-for="tell in goldenTells" :key="tell">{{ tell }}</p></template
-      >
-      <p v-if="g.duel">
-        第 {{ g.duel.turn + 1 }} 合 / 最多 16 合 · 你的气势 {{ g.duel.hp }} ·
-        石偶气势 {{ g.duel.enemy }}<br />{{ goldenTells[g.duel.turn % 3] }}
+    <h3>
+      {{ g.duel ? "守药石偶" : hotspots.find((o) => o.id === selected)?.label }}
+    </h3>
+    <p v-if="g.duel" role="status">
+      第 {{ g.duel.turn + 1 }} 合 / 最多 16 合 · 你的气势 {{ g.duel.hp }} ·
+      石偶气势 {{ g.duel.enemy }}<br />{{ goldenTells[g.duel.turn % 3] }}
+    </p>
+    <template v-if="selected === 'chamber' && game.realm === 1 && !g.duel">
+      <p>
+        筑基修行 {{ game.foundationJourney.cultivation }}/600 ·
+        {{
+          game.foundationJourney.epilogue
+            ? "本境考验与归山已完成"
+            : "还需完成稳脉、贯流、长风归流与归山"
+        }}
       </p>
-      <div v-for="o in options" :key="o.label" class="choice">
-        <button :disabled="busy || !!o.quote.error" @click="send(o.action)">
-          {{ o.label
-          }}<small v-if="o.quote.months"
-            >{{ o.quote.months }} 月 · 灵石 {{ o.quote.stones }} / 灵草
-            {{ o.quote.herbs }} / 护脉丹 {{ o.quote.ward }}</small
-          >
-        </button>
-        <small v-if="o.quote.error">{{ o.quote.error }}</small>
-      </div>
-      <p
-        v-if="
-          game.realm === 1 &&
-          g.expedition === 'idle' &&
-          game.foundationJourney.location !== 'home'
+      <p>
+        预计出关年龄 {{ formatLifeMonths(exitAge) }}；按突破前寿限，届时余寿
+        {{ formatLifeMonths(exitLife) }}。成功后寿限再增三百年。
+      </p>
+      <p>
+        每次叩关消耗凝丹丹药 1 枚、六个月及已备护持。失败伤势
+        +2，保留灵地、功法与筑基成果；可重新取药再试。
+      </p>
+    </template>
+    <p v-if="selected === 'path' && g.expedition !== 'idle' && !g.duel">
+      取药必过守药石偶。探索途中可撤回；不能在阵中开炉、换装或接其他行程。
+    </p>
+    <div v-for="o in shown" :key="o.label" class="scene-choice">
+      <button :disabled="busy || !!o.quote.error" @click="send(o.action)">
+        {{ o.label.split(" · ")[0] }}
+      </button>
+      <small v-if="o.label.includes(' · ')">{{
+        o.label.split(" · ").slice(1).join(" · ")
+      }}</small>
+      <small
+        v-if="o.quote.months || o.quote.stones || o.quote.herbs || o.quote.ward"
+        >{{ formatLifeMonths(o.quote.months) }} · 灵石 {{ o.quote.stones }} /
+        灵草 {{ o.quote.herbs }} / 护脉丹 {{ o.quote.ward }}</small
+      >
+      <small v-if="o.quote.error">{{ o.quote.error }}</small>
+    </div>
+    <template v-if="selected === 'chamber' && g.expedition === 'idle'">
+      <button
+        v-if="game.realm === 1 && game.foundationJourney.location !== 'home'"
+        :disabled="busy"
+        @click="
+          emit('act', {
+            type: 'foundationJourney',
+            action: { kind: 'travel', destination: 'home' },
+          })
         "
       >
-        <button
-          :disabled="busy"
-          @click="
-            emit('act', {
-              type: 'foundationJourney',
-              action: { kind: 'travel', destination: 'home' },
-            })
-          "
-        >
-          回听松行前居筹备
-        </button>
-      </p>
-      <template v-if="g.expedition === 'idle'">
-        <button
-          v-if="game.injury"
-          :disabled="busy"
-          @click="emit('act', { type: 'advance', activity: 'rest', months: 1 })"
-        >
-          静养一月 · 不耗灵石
-        </button>
-        <button
-          v-if="game.realm === 1"
-          :disabled="busy"
-          @click="emit('act', { type: 'advance', activity: 'work', months: 6 })"
-        >
-          劳作六个月筹资
-        </button>
-      </template>
-      <p v-if="g.last" role="status">{{ g.last }}</p>
+        回听松行前居筹备
+      </button>
+      <button
+        v-if="game.injury"
+        :disabled="busy"
+        @click="emit('act', { type: 'advance', activity: 'rest', months: 1 })"
+      >
+        静养一月 · 不耗灵石
+      </button>
+      <button
+        v-if="game.realm === 1"
+        :disabled="busy"
+        @click="emit('act', { type: 'advance', activity: 'work', months: 6 })"
+      >
+        劳作六个月筹资
+      </button>
+    </template>
+    <details v-if="g.last">
+      <summary>刚才的经过</summary>
+      <p role="status">{{ g.last }}</p>
     </details>
-  </section>
+    <template #notes>
+      <p>
+        宗门内比两胜固定授一份主药；散修、失利或错过会期者，可在筑基后期赴药圃。主药用途相同，也可先参赛再转路。
+      </p>
+      <p>
+        重复取药不再发首通额外物资。修复灵穴较慢但便宜，可用额外护持补足把握。
+      </p>
+      <p v-if="g.last">{{ g.last }}</p>
+    </template>
+  </NarrativeStage>
 </template>
 <style scoped>
-.golden-core {
-  margin: 16px 0;
-  padding: 18px;
-  border: 1px solid #ad9768;
-  border-radius: 10px;
-  background: #192d29;
-  color: #f8eedb;
-  line-height: 1.8;
-  overflow-wrap: anywhere;
-}
-.golden-core summary {
-  cursor: pointer;
-}
-.golden-core button {
-  background: #30483e;
-  color: #fff3db;
-  border: 1px solid #b9a477;
-  border-radius: 6px;
-  padding: 9px 12px;
-  white-space: normal;
-  max-width: 100%;
-  cursor: pointer;
-}
-.golden-core button:disabled {
-  color: #c2c8bf;
-  background: #303a35;
-  cursor: not-allowed;
-}
-.golden-core button:focus-visible {
-  outline: 2px solid #ffd884;
-}
-.choice {
+.scene-choice {
   margin: 12px 0;
 }
-.choice small {
+.scene-choice small {
   display: block;
+  color: #dfcfaa;
 }
-.choice > small {
-  color: #e3cfac;
+button {
+  display: block;
+  margin: 8px 0;
+  max-width: 100%;
+  padding: 10px 12px;
+  color: #fff2d4;
+  background: #283e39;
+  border: 1px solid #9fb2a1;
+  border-radius: 6px;
+  text-align: left;
+  white-space: normal;
 }
-@media (max-width: 480px) {
-  .golden-core {
-    padding: 12px;
-  }
-  .golden-core button {
-    width: 100%;
-  }
+button:disabled {
+  opacity: 0.58;
+}
+button:focus-visible {
+  outline: 2px solid #f9d480;
 }
 </style>

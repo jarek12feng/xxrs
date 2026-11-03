@@ -39,6 +39,16 @@ function crossing(solo = false) {
   s.pending = { id: "1:36:crossing", kind: "crossing" };
   return s;
 }
+it("赴约前显示实际修为门槛和退出后果，筑基不套用炼气门槛", () => {
+  const s = waiting(36);
+  s.qi = 166;
+  s.pending = { id: "1:36:departure", kind: "departure" };
+  const hint = eventView(s)!.options.find(o => o.id === "go")!.hint;
+  expect(hint).toContain("修为 180（当前 166）");
+  expect(hint).toContain("退出会失去护法机会");
+  s.realm = 1;
+  expect(eventView(s)!.options.find(o => o.id === "go")!.hint).not.toContain("修为 180");
+});
 it("uses the same choices in preparation and passage, with qi and resource gates intact", () => {
   for (const qi of [179, 180])
     for (const sense of [7, 8]) {

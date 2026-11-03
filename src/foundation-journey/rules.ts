@@ -1,3 +1,4 @@
+import { runTravel } from "../wayfaring/rules";
 import { resolvePactBattle } from "../secret-pact/rules";
 import { foundationCap, resourceRoutes } from "./growth-state";
 import { growthQuote, applyGrowth, isGrowthAction, routeInfo } from "./growth";
@@ -18,9 +19,10 @@ export function runFoundationJourney(
   id: string,
   tick: (s: State) => State,
 ) {
+  if (action?.kind === "travel") return runTravel(input,action.destination,action.mode ?? "land",id,tick);
   if (!action || journeyActionError(input, action)) return input;
   let s = structuredClone(input);
-  const months = isGrowthAction(action) ? growthQuote(input,action).months : isHeroineAction(action) ? (action.kind === "journeyPurpose" ? 0 : 1) : ["battle","travel","supply"].includes(action.kind) ? 1 : 0;
+  const months = isGrowthAction(action) ? growthQuote(input,action).months : isHeroineAction(action) ? (action.kind === "journeyPurpose" ? 0 : 1) : ["battle","supply"].includes(action.kind) ? 1 : 0;
   for (let month=0; month<months; month++) {
     s = tick(s);
     if (s.status !== "alive" || s.pending) {

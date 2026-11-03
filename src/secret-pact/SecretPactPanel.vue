@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
+import NarrativeStage from "../scene2d/NarrativeStage.vue";
 import type { State, Intent } from "../core";
+import { destinations } from "../foundation-journey/content";
 import { pactView } from "./view";
 import { pactQuote } from "./rules";
 import { journeyActionError } from "../foundation-journey/progression";
@@ -10,92 +12,153 @@ const view = computed(() => pactView(props.game));
 const fightError = computed(() =>
   journeyActionError(props.game, { kind: "battle", battle: "pactRival" }),
 );
+const active = ref("");
+watch(
+  () => props.game.secretPact.stage,
+  () => {
+    active.value = "";
+  },
+);
+const inside = computed(() =>
+  ["inside", "betrayed"].includes(props.game.secretPact.stage),
+);
+const hotspots = computed(() => [
+  { id: "terms", label: inside.value ? "封简石台" : "照玄来信", x: 47, y: 50 },
+  { id: "preparation", label: "阵图与退路", x: 25, y: 70 },
+  { id: "leave", label: "府门与归路", x: 78, y: 62 },
+]);
+const actionObject = (action: string) =>
+  ["leave", "decline"].includes(action)
+    ? "leave"
+    : ["enterAnchor", "enterLight"].includes(action)
+      ? "preparation"
+      : "terms";
+const shownActions = computed(() =>
+  view.value.actions.filter(
+    (option) => actionObject(option.action) === active.value,
+  ),
+);
 </script>
 <template>
-  <details
-    v-if="view.visible"
-    class="secret-pact"
-    :open="
-      ['inside', 'betrayed'].includes(game.secretPact.stage) ||
-      (game.foundationJourney.location === 'ferry' &&
-        game.secretPact.stage === 'none') ||
-      (game.foundationJourney.location === 'frontier' &&
-        game.secretPact.stage === 'promised')
-    "
-  >
-    <summary>照玄之约 · {{ view.relationship }}</summary>
-    <img
-      v-if="['inside', 'betrayed'].includes(game.secretPact.stage)"
-      class="chamber"
-      src="/art/secret-pact/zhaoxuan-chamber.webp"
-      alt="照玄遗府内室，石台上封存着一枚玉简"
-      loading="lazy"
-    />
-    <div class="companions" v-if="game.secretPact.stage !== 'resolved'">
-      <figure>
-        <img
-          src="/art/secret-pact/he-chong-dialogue.webp"
-          alt="贺崇，寻补脉法的剑修"
-          loading="lazy"
-        />
-        <figcaption>贺崇 · 寻法补旧伤</figcaption>
-      </figure>
-      <figure>
-        <img
-          src="/art/secret-pact/ye-zhao-dialogue.webp"
-          alt="叶照，重契约与退路的阵修"
-          loading="lazy"
-        />
-        <figcaption>叶照 · 勘阵留归路</figcaption>
-      </figure>
-    </div>
-    <p>{{ view.next }}</p>
-    <details v-if="!game.secretPact.manual && (game.secretPact.stage !== 'resolved' || view.fight)" class="pact-readiness" :open="game.secretPact.stage === 'promised'">
-      <summary>争宝前看一看</summary>
-      <p>贺崇 · 筑基中期：气势 {{ view.rival.hp }}，攻势 {{ view.rival.attack }}。你：气势 {{ view.power.hp }}，攻势 {{ view.power.damage }}，护持 {{ view.power.armor }}。</p>
-      <p>入府不等于得宝。胜负还看功法与临阵应对；败退伤势 +2，已用月份与补给不退。</p>
-      <ul><li v-for="hint in view.preparation" :key="hint">{{ hint }}</li></ul>
-    </details>
-    <p v-if="game.secretPact.last" role="status">{{ game.secretPact.last }}</p>
-    <p v-if="game.secretPact.manual">
-      <img
-        class="jade"
-        src="/art/secret-pact/zhaoxuan-jade-slip.webp"
-        alt="照玄玉简"
-        loading="lazy"
-      />
-      已得照玄护脉法：筑基交锋中，守势后接识阵，伤害 +6、承伤 −3。
-    </p>
-    <div class="pact-actions">
-      <button
-        v-for="option in view.actions"
-        :key="option.action"
-        :disabled="busy || !!pactQuote(game, option.action).error"
-        @click="emit('act', { type: 'secretPact', action: option.action })"
+  <section v-if="view.visible" class="secret-pact" aria-label="照玄之约">
+    <NarrativeStage
+      :image="
+        inside
+          ? '/art/secret-pact/zhaoxuan-chamber.webp'
+          : '/art/foundation-journey/' +
+            destinations[game.foundationJourney.location].image +
+            '.webp'
+      "
+      title="照玄之约"
+      :goal="view.relationship"
+      :stage-key="game.secretPact.stage"
+      :hotspots="hotspots"
+      :active="active"
+      @select="active = $event"
+      @close="active = ''"
+    >
+      <template #notes
+        ><p>{{ view.next }}</p>
+        <p v-if="game.secretPact.last">{{ game.secretPact.last }}</p></template
       >
-        {{ option.label }}<small>{{ option.detail }}</small
-        ><small v-if="pactQuote(game, option.action).error">{{
-          pactQuote(game, option.action).error
-        }}</small>
-      </button>
-      <button
-        v-if="view.fight"
-        :disabled="busy || !!fightError"
-        @click="
-          emit('act', {
-            type: 'foundationJourney',
-            action: { kind: 'battle', battle: 'pactRival' },
-          })
-        "
+      <template #status
+        ><span>{{
+          game.secretPact.manual ? "照玄护脉法已得" : view.relationship
+        }}</span
+        ><small
+          v-if="game.secretPact.last"
+          class="scene-recent"
+          role="status"
+          >{{ game.secretPact.last.split("。")[0] }}</small
+        ></template
       >
-        {{ game.secretPact.stage === "betrayed" ? "与贺崇争夺玉简" : "追索玉简"
-        }}<small
-          >一月，不耗灵石；败退伤势
-          +2，主动撤退不增伤。既有主材与其他传承保留。</small
-        ><small>{{ fightError }}</small>
-      </button>
-    </div>
-  </details>
+      <template v-if="active === 'terms'">
+        <div class="companions" v-if="game.secretPact.stage !== 'resolved'">
+          <figure>
+            <img
+              src="/art/secret-pact/he-chong-dialogue.webp"
+              alt="贺崇，寻补脉法的剑修"
+              loading="lazy"
+            />
+            <figcaption>贺崇 · 寻法补旧伤</figcaption>
+          </figure>
+          <figure>
+            <img
+              src="/art/secret-pact/ye-zhao-dialogue.webp"
+              alt="叶照，重契约与退路的阵修"
+              loading="lazy"
+            />
+            <figcaption>叶照 · 勘阵留归路</figcaption>
+          </figure>
+        </div>
+        <p>{{ view.next }}</p>
+        <p v-if="game.secretPact.last" role="status">
+          {{ game.secretPact.last }}
+        </p>
+        <p v-if="game.secretPact.manual">
+          <img
+            class="jade"
+            src="/art/secret-pact/zhaoxuan-jade-slip.webp"
+            alt="照玄玉简"
+            loading="lazy"
+          />
+          已得照玄护脉法：筑基交锋中，守势后接识阵，伤害 +6、承伤 −3。
+        </p>
+      </template>
+      <template
+        v-if="active === 'preparation' || (active === 'terms' && view.fight)"
+      >
+        <section class="pact-readiness">
+          <h3>争宝与退路</h3>
+          <p>
+            贺崇 · 筑基中期：气势 {{ view.rival.hp }}，攻势
+            {{ view.rival.attack }}。你：气势 {{ view.power.hp }}，攻势
+            {{ view.power.damage }}，护持 {{ view.power.armor }}。
+          </p>
+          <p>
+            入府不等于得宝。胜负还看功法与临阵应对；败退伤势
+            +2，已用月份与补给不退。
+          </p>
+          <ul>
+            <li v-for="hint in view.preparation" :key="hint">{{ hint }}</li>
+          </ul>
+        </section>
+      </template>
+      <p v-if="active === 'leave'">{{ view.next }}</p>
+      <div class="pact-actions">
+        <button
+          v-for="option in shownActions"
+          :key="option.action"
+          :disabled="busy || !!pactQuote(game, option.action).error"
+          @click="emit('act', { type: 'secretPact', action: option.action })"
+        >
+          {{ option.label }}<small>{{ option.detail }}</small
+          ><small v-if="pactQuote(game, option.action).error">{{
+            pactQuote(game, option.action).error
+          }}</small>
+        </button>
+        <button
+          v-if="view.fight && active === 'terms'"
+          :disabled="busy || !!fightError"
+          @click="
+            emit('act', {
+              type: 'foundationJourney',
+              action: { kind: 'battle', battle: 'pactRival' },
+            })
+          "
+        >
+          {{
+            game.secretPact.stage === "betrayed"
+              ? "与贺崇争夺玉简"
+              : "追索玉简"
+          }}<small
+            >一月，不耗灵石；败退伤势
+            +2，主动撤退不增伤。既有主材与其他传承保留。</small
+          ><small>{{ fightError }}</small>
+        </button>
+      </div>
+    </NarrativeStage>
+  </section>
 </template>
 <style scoped>
 .chamber {
@@ -140,10 +203,8 @@ const fightError = computed(() =>
 }
 
 .secret-pact {
-  margin: 12px 0;
-  padding: 14px;
-  border: 1px solid #9a866d;
-  border-radius: 8px;
+  margin: 0;
+  padding: 0;
   line-height: 1.7;
 }
 .pact-actions {
@@ -174,5 +235,18 @@ button:focus-visible {
 small {
   display: block;
   margin-top: 5px;
+}
+</style>
+
+<style scoped>
+.scene-recent {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-top: 8px;
+  color: #dfd4b9;
+  font-size: 12px;
+  line-height: 1.6;
 }
 </style>

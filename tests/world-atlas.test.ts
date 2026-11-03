@@ -16,7 +16,7 @@ function mount(game: State) {
   app.mount(root);
   return select;
 }
-it("only selects landmarks without mutating the save and shows future lands as noninteractive", async () => {
+it("only selects landmarks without mutating the save or retaining obsolete geography", async () => {
   const game = createGame("地图", "wood", 42),
     original = JSON.stringify(game);
   const select = mount(game);
@@ -29,10 +29,9 @@ it("only selects landmarks without mutating the save and shows future lands as n
   await nextTick();
   expect(select).toHaveBeenCalledWith("peak");
   expect(JSON.stringify(game)).toBe(original);
-  expect(document.querySelectorAll(".distant")).toHaveLength(3);
-  expect(
-    document.querySelector(".distant")?.getAttribute("aria-label"),
-  ).toContain("尚未开放");
+  expect(document.querySelectorAll(".distant")).toHaveLength(0);
+  for (const obsolete of ["昆仑雪域", "太虚古墟", "蓬莱仙境"])
+    expect(document.body.textContent).not.toContain(obsolete);
 });
 it("uses existing realm and story gates and marks completed landmarks", () => {
   const game = createGame("地图", "wood", 42);
@@ -71,9 +70,11 @@ it("reveals current-world geography without pretending distant lands are open or
   expect(catalogue.textContent).toContain("听松山及山下药路");
   expect(catalogue.textContent).toContain("青嶂关与云栈");
   expect(catalogue.textContent).toContain("雾岭与雾海");
-  expect(catalogue.querySelectorAll("article")).toHaveLength(6);
+  expect(catalogue.querySelectorAll("article")).toHaveLength(5);
   expect(catalogue.querySelectorAll("button")).toHaveLength(0);
-  expect(catalogue.textContent).toContain("青玄界外海群岛");
+  expect(catalogue.textContent).toContain("筑基内陆六地");
+  expect(catalogue.textContent).toContain("穿云壁与外海");
+  expect(catalogue.textContent).toContain("随金丹行旅展开");
   expect(document.querySelector(".atlas-boundary")?.textContent).toContain(
     "发现新的界域",
   );

@@ -34,6 +34,9 @@ import {
   landmarkLabel,
 } from "./landmarks";
 import WorldAtlas from "./WorldAtlas.vue";
+import TravelMap from "./wayfaring/TravelMap.vue";
+import { destinations } from "./foundation-journey/content";
+import { foundationGoal } from "./foundation-journey/progression";
 const selectedPlace = defineModel<Place>("selectedPlace", {
   default: "valley",
 });
@@ -62,6 +65,11 @@ const emit = defineEmits<{
 const atlasMode = defineModel<"story" | "explore">("atlasMode", {
   default: "story",
 });
+const orderedTechniques = computed(() => (Object.keys(techniques) as (keyof typeof techniques)[])
+  .sort((a,b) => {
+    const score=(id:keyof typeof techniques)=>props.game.journey[techniques[id].slot]===id?2:props.game.journey.known.includes(id)?1:0;
+    return score(b)-score(a);
+  }).map(id=>({id,t:techniques[id]})));
 const familyGoal = computed(() => familyQuestGoal(props.game));
 const current = computed(() => currentLandmark(props.game));
 const nodes = computed(() => routeNodes(props.game));
@@ -214,7 +222,7 @@ const mapImages = {
     <div v-else-if="tab === 'world'" class="world-content">
       <FoundationPanel
         :combat-feedback="combatFeedback"
-        v-if="game.realm === 1"
+        v-if="game.realm === 1 && atlasMode !== 'story'"
         :game="game"
         :busy="busy || running"
         @act="emit('act', $event)"
@@ -235,8 +243,8 @@ const mapImages = {
       </nav>
       <p class="atlas-objective">
         <template v-if="atlasMode === 'story'"
-          >主线现场 · {{ landmarkLabel(current.title) }}<br /><small>{{
-            current.goal
+          >主线现场 · {{ game.realm === 1 ? destinations[game.foundationJourney.location].name : landmarkLabel(current.title) }}<br /><small>{{
+            game.realm === 1 ? foundationGoal(game) : current.goal
           }}</small></template
         >
         <template v-else
@@ -245,7 +253,9 @@ const mapImages = {
           }}</small></template
         >
       </p>
+      <TravelMap v-if="game.realm === 1 && atlasMode === 'story'" :game="game" :busy="locked" @act="emit('act',$event)" @close="emit('resumeStory')" />
       <WorldAtlas
+        v-else
         :game="game"
         :selected="selectedPlace"
         :story="atlasMode === 'story'"
@@ -254,7 +264,7 @@ const mapImages = {
         @select-story="selectedRoute = $event"
       />
       <section
-        v-if="atlasMode === 'story'"
+        v-if="atlasMode === 'story' && game.realm !== 1"
         class="route-preview"
         aria-label="主线地标详情"
       >
@@ -299,7 +309,7 @@ const mapImages = {
           </button>
         </div>
       </section>
-      <template v-else>
+      <template v-if="atlasMode === 'explore'">
         <p class="muted">
           可选寻亲：替陆迟寻找父亲，送一封家书。回春谷 → 筑基后的雾岭 →
           雾海孤灯。每次探索用时一月；先处理待决事件，伤势不超过 2。
@@ -531,7 +541,7 @@ const mapImages = {
         每类同时生效一本。宗门与探索可授予功法；坊市也出售全部六本，需心得
         2，每本灵石 20。修为加成只在炼气阶段生效。
       </p>
-      <article v-for="(t, id) in techniques" :key="id" class="technique-card">
+      <article v-for="{t, id} in orderedTechniques" :key="id" class="technique-card">
         <div>
           <h3>
             <ItemArt :id="id" />

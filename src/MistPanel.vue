@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import MistWorld from "./scene2d/MistWorld.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
-import SceneBackdrop from "./SceneBackdrop.vue";
+import NarrativeStage from "./scene2d/NarrativeStage.vue";
 import SceneResponse from "./SceneResponse.vue";
 import type { ActionReceipt } from "./action-feedback";
 import {
@@ -314,61 +315,49 @@ const growth = computed(() => [
     months: 3,
   },
 ]);
-const invoke = (action: MistAction) => emit("act", { type: "mist", action });
+const active = ref("");
+const mistWorld = ref<InstanceType<typeof MistWorld>>();
+function selectHotspot(id: string) {
+  if(locked.value)return;
+  active.value='';
+  // Garden's right half is cliff and distant terrace: stay on the near path.
+  const x=({person:27,object:m.value.stage==='garden'?43:52,prepare:22,road:m.value.stage==='garden'?44:65} as Record<string,number>)[id]??32;
+  mistWorld.value?.approach({x,y:87},()=>{if(!locked.value)active.value=id;});
+}
+watch(locked,value=>{if(value){mistWorld.value?.cancel();mistWorld.value?.stop();}});
+const hotspots = computed(() => [
+  { id: "person", label: m.value.stage === "camp" ? "同行约定" : person.value.name, x: 31, y: 52 },
+  { id: "object", label: ({ letter: "来信", camp: "护归阵图", garden: "引灯草与石渠", station: "送信旧阵", gate: "回声阵", archive: "旧日记录", home: "探灵灯", shrine: "旧石墙", dormant: "来信" })[m.value.stage], x: 55, y: 43 },
+  { id: "prepare", label: "行装与补给", x: 18, y: 75 },
+  { id: "road", label: "山径与归路", x: 80, y: 57 },
+]);
+watch(() => m.value.stage, () => { active.value = ""; });
+const choiceGroup = (action: MistAction) => ["gate", "home", "shrine"].includes(action) ? "road" : action === "share" ? "person" : "object";
+function invoke(action: MistAction) {
+  if(locked.value || mistError(props.game,action))return;
+  const commit=()=>{if(!locked.value && !mistError(props.game,action))emit('act',{type:'mist',action});};
+  if(['camp','gate','home','shrine','garden','station'].includes(action)) {
+    active.value='';mistWorld.value?.approach({x:action==='camp'?20:m.value.stage==='garden'?44:65,y:87},commit);
+  } else {mistWorld.value?.cancel();mistWorld.value?.stop();commit();}
+}
 </script>
 
 <template>
   <section
     ref="panel"
-    class="adventure-panel mist-panel desktop-scene"
+    class="adventure-panel mist-panel world-story-panel"
     aria-label="雾海来信主线"
   >
-    <SceneBackdrop
-      :key="m.stage + String(m.revisited)"
-      :image="scene.image"
-      :title="scene.title"
-      eyebrow="筑基见闻 · 雾海来信"
-      :body="scene.body"
-      :speaker="person.name"
-      :portrait="person.portrait"
-      :quote="mistQuote(game)"
-    >
-      <SceneResponse
-        v-if="receipt"
-        :text="m.result"
-        :receipt="receipt?.scene?.chapter === 'mist' ? receipt : null"
-      />
-    </SceneBackdrop>
+    <NarrativeStage :image="scene.image" :title="scene.title" :body="scene.body" :goal="mistGoal(game)"
+      :stage-key="`mist-${m.stage}-${m.revisited}`" :hotspots="hotspots" :active="active" @select="selectHotspot" @close="active = ''; mistWorld?.cancel()">
+      <template #world><MistWorld ref="mistWorld" :game="game" @performing="active = ''" /></template>
+      <template #status><span>灵石 {{ game.stones }} · 灵草 {{ game.herbs }} · 伤势 {{ game.injury }}</span></template>
+      <div v-if="active === 'person'" class="mist-person"><img :src="person.portrait || undefined" :alt="person.name" /><h3>{{ person.name }}</h3><p>{{ mistQuote(game) }}</p></div>
+      <details v-if="m.result"><summary>刚才的经过</summary><SceneResponse :text="m.result" :receipt="receipt?.scene?.chapter === 'mist' ? receipt : null" /></details>
     <section class="scene-controls" aria-label="雾海探索操作区">
-      <ol class="chapter-track" aria-label="雾海来信进度">
-        <li class="passed">迟到的信</li>
-        <li :class="{ passed: m.garden || m.station }">分路寻证</li>
-        <li :class="{ passed: m.passed }">共渡雾海</li>
-        <li :class="{ passed: m.settled }">有人等归</li>
-        <li :class="{ passed: m.revisited }">旧地新生</li>
-      </ol>
-      <div class="adventure-task">
-        <span class="eyebrow">{{
-          m.revisited ? "这一段路，你改变了什么" : "此刻值得去做的事"
-        }}</span>
-        <h2>{{ mistGoal(game) }}</h2>
-        <p>
-          灵石 {{ game.stones }} · 灵草 {{ game.herbs }} · 伤势
-          {{ game.injury }} ·
-          {{
-            m.partner === "none"
-              ? "尚未约好同行"
-              : m.partner === "solo"
-                ? "独行"
-                : m.partner === "luchi"
-                  ? "陆迟同行"
-                  : `${companionName}同行`
-          }}
-        </p>
-      </div>
       <div v-if="m.stage === 'camp'" class="mist-camp">
         <details
-          v-if="!m.passed"
+          v-if="active === 'person' && !m.passed"
           :open="m.partner === 'none'"
           class="road-journal"
         >
@@ -386,11 +375,12 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
             >
               <span
                 >{{ c.label
-                }}<small>{{ mistError(game, c.action) || c.hint }}</small></span
+                }}<small>{{ c.hint }}</small><small v-if="mistError(game, c.action)">{{ mistError(game, c.action) }}</small></span
               ><span aria-hidden="true">→</span>
             </button>
           </div>
         </details>
+        <template v-if="active === 'road'">
         <h3>{{ m.passed ? "你还想去看看哪里？" : "你想先追哪条线索？" }}</h3>
         <p class="mist-route-note">
           {{
@@ -418,9 +408,10 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
             ><span aria-hidden="true">→</span>
           </button>
         </div>
+        </template>
         <section
           v-if="
-            game.adventure.road.solution === 'sword' && !m.ward && !m.passed
+            active === 'object' && game.adventure.road.solution === 'sword' && !m.ward && !m.passed
           "
           class="sheltered-hint"
         >
@@ -438,7 +429,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
             }}</small>
           </button>
         </section>
-        <section v-if="m.insight && !m.ward" class="sheltered-hint">
+        <section v-if="active === 'object' && m.insight && !m.ward" class="sheltered-hint">
           <h3>失败带回了有用的东西</h3>
           <p>
             阵眼情报已让把握 +10。研究护归法可再
@@ -454,7 +445,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
           </button>
         </section>
       </div>
-      <section v-if="m.stage === 'gate'" class="road-plan">
+      <section v-if="active === 'object' && m.stage === 'gate'" class="road-plan">
         <h3>
           {{
             m.hazard === "echo"
@@ -482,7 +473,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
       </section>
       <div class="adventure-actions">
         <button
-          v-for="c in choices"
+          v-for="c in choices.filter(c => choiceGroup(c.action) === active)"
           :key="c.action"
           :disabled="locked || !!mistError(game, c.action)"
           :aria-pressed="
@@ -494,11 +485,11 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
         >
           <span
             >{{ c.label
-            }}<small>{{ mistError(game, c.action) || c.hint }}</small></span
+            }}<small>{{ c.hint }}</small><small v-if="mistError(game, c.action)">{{ mistError(game, c.action) }}</small></span
           ><span aria-hidden="true">→</span>
         </button>
       </div>
-      <details v-if="m.stage === 'camp'" class="road-journal">
+      <details open v-if="active === 'prepare' && m.stage === 'camp'" class="road-journal">
         <summary>为选好的方向做准备 · 修行与补给</summary>
         <div class="road-preparations">
           <button
@@ -525,7 +516,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
           </button>
         </div>
       </details>
-      <details v-if="m.firstRoute !== 'none'" class="road-journal">
+      <details v-if="active === 'object' && m.firstRoute !== 'none'" class="road-journal">
         <summary>这次旅程留下了什么</summary>
         <p>
           最先追查：{{
@@ -556,7 +547,7 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
           旧山祠的避难室重新亮灯。陈渡来信的真相已明；其他山河见闻与家书进度仍然保留。
         </p>
       </details>
-      <div class="adventure-actions mist-secondary">
+      <div v-if="active === 'road' || active === 'prepare'" class="adventure-actions mist-secondary">
         <button
           v-if="
             ['garden', 'station', 'gate', 'home', 'shrine'].includes(m.stage)
@@ -573,5 +564,12 @@ const invoke = (action: MistAction) => emit("act", { type: "mist", action });
         探索与入阵不耗月份，修行仍会推进时间；遇来信或赴约时暂停。进度自动保存。
       </p>
     </section>
+    </NarrativeStage>
   </section>
 </template>
+
+<style scoped>
+.mist-panel { padding: 0; max-width: none; border: 0; background: transparent; }
+.scene-controls { padding: 0; background: transparent; border: 0; }
+.mist-person img { float: left; width: 90px; height: 110px; object-fit: cover; margin: 0 14px 8px 0; }
+</style>

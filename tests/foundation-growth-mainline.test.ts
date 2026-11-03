@@ -9,6 +9,19 @@ import { journeyActionError } from '../src/foundation-journey/progression';
 import { foundationGoal } from '../src/foundation-journey/progression';
 import { journeyOptions } from '../src/foundation-journey/view';
 import type { ResourceRoute } from '../src/foundation-journey/growth-state';
+it('updates the reunion goal when the agreed three months have elapsed', () => {
+ const s=journeyCheckpoint('male',false);
+ const q=s.foundationJourney;
+ q.heroine.purpose='longevity';q.heroine.map='public';q.contact='letters';q.reunion=false;q.whereabouts='away';q.departedAt=s.month;
+ expect(foundationGoal(s)).toContain('还需 3 个月');
+ s.month+=2;
+ expect(foundationGoal(s)).toContain('还需 1 个月');
+ expect(journeyActionError(s,{kind:'reunion'})).not.toBe('');
+ s.month++;
+ expect(journeyActionError(s,{kind:'reunion'})).toBe('');
+ expect(foundationGoal(s)).toContain('约定的重逢之期已到');
+ expect(foundationGoal(s)).not.toContain('三个月后');
+});
 function play(route: ResourceRoute, technique: 'spring'|'blade'|'breath') {
  const p=journeyPlayer(journeyCheckpoint('male',false,technique==='blade'?'sword':'wood',technique));
  const fund=()=>{while(p.state.stones<90)p.send({type:'advance',activity:'work',months:12});while(p.state.herbs<15)p.send({type:'supplies'});};
@@ -79,5 +92,5 @@ it('rejects corrupt earned milestones and does not silently import old foundatio
  for(const update of [(n:typeof s)=>n.foundationJourney.growth.refined=true,(n:typeof s)=>n.foundationJourney.heroine.supplied=true,(n:typeof s)=>n.foundationJourney.cultivation=200]){
   const n=structuredClone(s);update(n);expect(validState(n)).toBe(false);
  }
- const qi=createGame('存档','wood');const legacy={...qi,version:21};expect(migrateSave(legacy).version).toBe(31);
+ const qi=createGame('存档','wood');const legacy={...qi,version:21};expect(migrateSave(legacy).version).toBe(33);
 });

@@ -1,12 +1,18 @@
+// @vitest-environment happy-dom
 import { expect, it } from "vitest";
-import { createSSRApp } from "vue";
+import { createSSRApp, createApp, nextTick } from "vue";
 import { renderToString } from "vue/server-renderer";
 import RoadEpilogue from "../src/RoadEpilogue.vue";
 import RoadPanel from "../src/RoadPanel.vue";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
 import { dispatch, passSolutions, type State } from "../src/core";
-const render = (game: State) =>
-  renderToString(createSSRApp(RoadPanel, { game, busy: false }));
+const render = async (game: State) => {
+  const host = document.createElement("div");
+  const app = createApp(RoadPanel, { game, busy: false }); app.mount(host);
+  const hotspot = [...host.querySelectorAll("button")].find(b => b.textContent?.includes(game.adventure.road.surveyed ? "前路与归途" : "药队与行装"));
+  hotspot?.click(); await nextTick();
+  const html = host.innerHTML; app.unmount(); return html;
+};
 it("shows the epilogue only after recording the return route", async () => {
   let s = mistCheckpoint(42, "wood", "male", true);
   expect(await render(s)).not.toContain("Demo 篇章完成");

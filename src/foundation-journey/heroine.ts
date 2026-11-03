@@ -61,7 +61,15 @@ export function heroineGoal(s: State): string {
   if(h.meeting==='none')return '回听松行前居，商议青嶂石梁的勘路之事。';
   if(h.purpose==='none')return '与苏婉宁同往无名渡，在入井前交流各自来意。';
   if(q.growth.refined && h.map==='none')return '主材已炼化，回行前居与苏婉宁修订路图，避开沿途人家的住处。';
-  if(h.map!=='none' && !q.reunion) return q.whereabouts==='away'?'她已按约去复测一段旧路；你可继续修炼，三个月后回行前居重逢。':q.contact==='none'?'回行前居与苏婉宁约好联络，再各自远行。':'回行前居与苏婉宁道别，约好重逢之期。';
+  if(h.map!=='none' && !q.reunion) {
+    if(q.whereabouts==='away') {
+      const remaining=Math.max(0,(q.departedAt ?? s.month)+3-s.month);
+      return remaining>0
+        ? `她已按约去复测一段旧路；距重逢还需 ${remaining} 个月，可先继续修炼。`
+        : '约定的重逢之期已到，回听松行前居与苏婉宁互看修行所得。';
+    }
+    return q.contact==='none'?'回行前居与苏婉宁约好联络，再各自远行。':'回行前居与苏婉宁道别，约好重逢之期。';
+  }
   if(q.cultivation>=400 && !h.expedition)return '回行前居听苏婉宁说明下一次古道探路的计划与备用标记。';
   if(h.expedition && q.rescue===0)return '前往云外古道，与陶泊核实探路队的消息。';
   if(q.rescue===1)return '用你与苏婉宁约定的短线、双点标记问讯，先确认队伍处境。';

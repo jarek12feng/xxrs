@@ -35,10 +35,19 @@ export function retreatPlan(
   target?: number,
 ) {
   const duration = retreatDurations(s).find((x) => x.pace === pace);
-  const forecast = cultivationProjection(s, target, duration?.months ?? 0);
+  const untilMeeting = s.realm === 2 && s.month !== undefined &&
+    s.outerSea?.notice != null && !s.outerSea.reminded
+    ? s.outerSea.notice + 600 - s.month
+    : null;
+  const limit = untilMeeting !== null && untilMeeting > 0
+    ? Math.min(duration?.months ?? 0, untilMeeting)
+    : duration?.months ?? 0;
+  const forecast = cultivationProjection(s, target, limit);
   return {
     ...forecast,
     duration: duration?.months ?? 0,
+    stopsForMeeting: untilMeeting !== null && untilMeeting > 0 &&
+      forecast.batchMonths === untilMeeting,
     exitAge: s.age + forecast.batchMonths,
     remainingAtExit: forecast.remainingMonths - forecast.batchMonths,
     reachesTarget:

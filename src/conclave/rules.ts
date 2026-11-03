@@ -1,3 +1,4 @@
+import { passageKey, passageError, passageMonths, advancePassage } from "../wayfaring/passage";
 import type { State } from "../world";
 import type { Move } from "../expedition/content";
 import { foundationPower } from "../foundation-journey/combat";
@@ -174,6 +175,9 @@ export function conclaveQuote(s: State, a: ConclaveAction) {
     )
       error ||= "取回抱元凝神录后，在安全处参悟或转修";
   } else error ||= "未知诸宗会操作";
+  const passage = passageKey('conclave', a.kind);
+  error ||= passageError(s, passage);
+  months = passageMonths(s, passage, months);
   if (!error && (s.stones < stones || s.herbs < herbs))
     error = `需灵石 ${stones}、灵草 ${herbs}；可劳作或购药筹备`;
   if (!error && s.limit - s.age <= months) error = "余寿不足以完成此行";
@@ -245,6 +249,15 @@ export function runConclave(
   const q = conclaveQuote(input, a);
   if (q.error) return input;
   let s = structuredClone(input);
+  const passage = passageKey('conclave',a.kind);
+  if(passage) {
+    const result=advancePassage(input,passage,tick,n=>occupied(n) || (n.outerSea.reminded && !input.outerSea.reminded));
+    s=result.state;
+    if(result.stopped) {
+      record(`航程暂止，尚余 ${s.wayfaring.passage!.remaining} 月；处理眼前消息后继续，不重复扣除已耗年月。行装尚未扣除。`);
+      return finish();
+    }
+  } else {
   for (let i = 0; i < q.months; i++) {
     s = tick(s);
     if (occupied(s) || (s.outerSea.reminded && !input.outerSea.reminded)) {
@@ -255,6 +268,7 @@ export function runConclave(
       );
       return finish();
     }
+  }
   }
   s.stones -= q.stones;
   s.herbs -= q.herbs;

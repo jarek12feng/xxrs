@@ -230,8 +230,13 @@ export function goldenGoal(s: State) {
     return "凝露药圃交锋中：看清石偶阵眼，也可撤回，保留此前修行成果。";
   if (!g.medicine && !g.pills)
     return "争取凝露芝心：宗门内比两胜固定授予，或筑基后期赴凝露药圃取药；不必夺魁。";
-  if (!g.pills)
-    return "主药已备：自行炼制或委托丹师取得凝丹丹药。仍需筑基圆满与灵地。";
+  if (!g.pills) {
+    const cultivation = s.foundationJourney.epilogue
+      ? ""
+      : "继续筑基修行，完成长风归流与归山。";
+    const site = g.site === "none" ? "另需备好凝丹灵地。" : "";
+    return `主药已备：自行炼制或委托丹师取得凝丹丹药。${cultivation}${site}`;
+  }
   if (!s.foundationJourney.epilogue)
     return "凝丹丹药已备：继续筑基修行，完成长风归流与归山。";
   return g.site === "none"

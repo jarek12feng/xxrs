@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import GoldenWorld from "../golden-scene/GoldenWorld.vue";
+import CombatBar from "../scene2d/combat/CombatBar.vue";
+import { goldenCombat } from "../golden-scene/presentation";
+
+import { computed, ref, watch } from "vue";
+import { conclaveObject } from "../scene2d/golden-objects";
+import NarrativeStage from "../scene2d/NarrativeStage.vue";
 import type { State, Intent } from "../core";
 import { actionError } from "../core";
 import {
@@ -13,8 +19,12 @@ import {
 import { goldenCap } from "./state";
 import { rivals, tell } from "./content";
 import CultivationOutlook from "../CultivationOutlook.vue";
-const props = defineProps<{ game: State; busy: boolean }>();
-const emit = defineEmits<{ act: [intent: Intent] }>();
+const props = defineProps<{
+  game: State;
+  busy: boolean;
+  entryObject?: string;
+}>();
+const emit = defineEmits<{ act: [intent: Intent]; shore: []; meeting: [] }>();
 const c = computed(() => props.game.conclave);
 const active = computed(() => c.value.location !== "away");
 const due = computed(
@@ -120,82 +130,198 @@ const waitMonths = computed(() =>
     ),
   ),
 );
+
+// The selected object is presentation state; opening it never dispatches a command.
+const selected = ref(props.entryObject ?? "");
+const stageKey = computed(
+  () => `conclave-${c.value.location}-${c.value.depth}`,
+);
+const hotspots = computed(() => {
+  if (c.value.duel) return [];
+  const ids = new Set<string>(
+    choices.value.map((row) => conclaveObject(row.action.kind)),
+  );
+  if (safe.value) ids.add("chamber");
+  if (c.value.location === "away") ids.add("shore");
+  return [
+    { id: "shore", label: "古渡石道", x: 78, y: 77 },
+    {
+      id: "friends",
+      label: c.value.introduced ? "顾沧遥与叶问苓" : "顾沧遥 · 会谷来客",
+      x: 43,
+      y: 63,
+    },
+    {
+      id: "arena",
+      label:
+        c.value.location === "vault"
+          ? conclaveFoe(props.game).name
+          : c.value.wins < 3
+            ? rivals[c.value.wins]!.name + " · 斗法台"
+            : "斗法台",
+      x: 70,
+      y: 64,
+    },
+    { id: "path", label: "归潮秘境入口", x: 63, y: 65 },
+    { id: "treasure", label: "定神珠与抱元录", x: 45, y: 78 },
+    {
+      id: "chamber",
+      label: active.value ? "会谷歇脚处" : "临海静修处",
+      x: 20,
+      y: 45,
+    },
+    { id: "letter", label: "道友来信", x: 40, y: 57 },
+    {
+      id: "exit",
+      label: c.value.location === "vault" ? "回谷石阶" : "古渡归路",
+      x: 14,
+      y: 77,
+    },
+  ].filter((row) => ids.has(row.id));
+});
+const combat = computed(() => goldenCombat(props.game, "conclave"));
+const combatOptions = computed(() =>
+  choices.value
+    .filter((row) => row.action.kind === "move")
+    .map((row) => ({
+      id: row.action.kind === "move" ? row.action.move : "",
+      label: row.label.split(" · ")[0]!,
+      detail: row.label.split(" · ").slice(1).join(" · "),
+      disabled: !!row.quote.error,
+    })),
+);
+function move(id: string) {
+  const row = choices.value.find(
+    (row) => row.action.kind === "move" && row.action.move === id,
+  );
+  if (row && !props.busy && !row.quote.error)
+    emit("act", { type: "conclave", action: row.action });
+}
+const shown = computed(() =>
+  c.value.duel
+    ? []
+    : choices.value.filter(
+        (row) => conclaveObject(row.action.kind) === selected.value,
+      ),
+);
+watch(stageKey, () => {
+  selected.value = "";
+});
 </script>
 <template>
-  <section
+  <NarrativeStage
     v-if="
       game.realm === 2 &&
       (game.outerSea.notice !== null || game.outerSea.cleared === 2)
     "
     class="conclave"
     aria-label="诸宗会与凝婴机缘"
+    :stage-key="stageKey"
+    :image="
+      c.location === 'vault'
+        ? '/art/conclave/vault.webp'
+        : active
+          ? '/art/conclave/court-empty-v1.webp'
+          : '/art/outer-sea/ferry.webp'
+    "
+    :title="
+      c.location === 'vault'
+        ? '归潮秘境'
+        : active
+          ? conclaveSupplement(game)
+            ? '会谷补试 · 旧胜绩照录'
+            : '诸宗会 · 会谷石台'
+          : due
+            ? '古渡 · 道友来信'
+            : '古渡 · 道友之约'
+    "
+    :goal="conclaveGoal(game)"
+    :hotspots="hotspots"
+    :active="selected"
+    :battle="!!c.duel"
+    @select="$event === 'shore' ? emit('shore') : (selected = $event)"
+    @close="selected = ''"
   >
-    <img
-      v-if="active"
-      class="scene"
-      :src="
-        c.location === 'vault'
-          ? '/art/conclave/vault.webp'
-          : '/art/conclave/court.webp'
-      "
-      :alt="
-        c.location === 'vault' ? '归潮秘境的古阵石庭' : '山谷间的诸宗斗法石台'
-      "
-      loading="lazy"
-    />
-    <h3>
+    <template #world>
+      <GoldenWorld
+        :busy="busy"
+        :game="game"
+        domain="conclave"
+        :focus="selected"
+        @performed="selected = ''"
+      />
+      <CombatBar
+        v-if="combat && c.duel"
+        :turn="combat.turn"
+        :player="combat.player"
+        :player-max="combat.playerMax"
+        :enemy="combat.enemy"
+        :enemy-max="combat.enemyMax"
+        :enemy-name="combat.enemyName"
+        :tell="tell[conclaveFoe(game).pattern[c.duel.turn % 3]!]"
+        :options="combatOptions"
+        :busy="busy"
+        retreat-label="收势撤回 · 保留此前进度"
+        @move="move"
+        @retreat="
+          emit('act', { type: 'conclave', action: { kind: 'withdraw' } })
+        "
+      />
+    </template>
+    <template #status
+      ><span
+        >修为 {{ game.outerSea.cultivation }}/{{ goldenCap(game) }} · 入境胜绩
+        {{ Math.min(c.wins, 2) }}/2 · 秘境 {{ c.depth }}/2</span
+      ></template
+    >
+
+    <p v-if="selected === 'friends'">
       {{
-        c.location === "vault"
-          ? "归潮秘境"
-          : active
-            ? conclaveSupplement(game)
-              ? "会谷补试 · 旧胜绩照录"
-              : "诸宗会 · 会谷石台"
-            : "来信与下一段道途"
+        c.introduced
+          ? "与道友推演守势和潮阵，再选一条入境路线。"
+          : "石台旁，各宗来客正在商议入境之约。"
       }}
-    </h3>
-    <p>{{ conclaveGoal(game) }}</p>
-    <p v-if="c.last" role="status">{{ c.last }}</p>
-    <p>
-      修为 {{ game.outerSea.cultivation }} / {{ goldenCap(game) }} · 入境胜绩
-      {{ Math.min(c.wins, 2) }} / 2 · 秘境 {{ c.depth }} / 2
     </p>
-    <p>
+    <template
+      v-if="
+        selected === 'arena' && c.location === 'court' && !c.duel && c.wins < 3
+      "
+    >
+      <p>{{ rivals[c.wins]!.sect }} · {{ rivals[c.wins]!.aim }}</p>
+      <p>
+        两胜即可入境，第三场自愿争优。失利伤势
+        +2，半年后可再试；主动撤回不加伤。
+      </p>
+    </template>
+    <p v-if="selected === 'chamber'">
       灵石 {{ game.stones }} · 灵草 {{ game.herbs }} · 伤势 {{ game.injury }}
     </p>
-    <p v-if="game.outerSea.notice !== null && !due">
+    <p v-if="game.outerSea.notice !== null && !due && selected === 'chamber'">
       距约定会期还有
       {{ Math.floor((game.outerSea.notice + 600 - game.month) / 12) }} 年
       {{ (game.outerSea.notice + 600 - game.month) % 12 }}
       月。可先修行、温养与备战。
     </p>
-    <p v-if="due && !active">
+    <p v-if="selected === 'letter'">
       会谷来信已到古渡。正会之后仍有各宗补试，已有胜绩不作废。
     </p>
-    <div
-      v-if="c.introduced && c.location === 'court' && !c.duel"
-      class="people"
-    >
-      <p v-for="r in rivals" :key="r.name">
-        <strong>{{ r.name }} · {{ r.sect }}</strong
-        ><br />{{ r.aim }}
-      </p>
-    </div>
-    <div v-if="c.duel" aria-label="当前交锋">
-      <h4>{{ conclaveFoe(game).name }} · 金丹中期</h4>
-      <p>
-        你的气势 {{ c.duel.hp }} / 对手气势 {{ c.duel.enemy }} · 第
-        {{ c.duel.turn + 1 }} 合
-      </p>
-      <p>{{ tell[conclaveFoe(game).pattern[c.duel.turn % 3]!] }}</p>
-    </div>
-    <div v-for="row in choices" :key="row.label" class="conclave-choice">
+    <p v-if="selected === 'treasure'">
+      定神珠{{
+        c.attuned ? "已温养，护体 +5" : "温养后抵御深处识海阵压"
+      }}。抱元守神法与旧法招式不叠加；旧功法与研修保留。
+    </p>
+
+    <div v-for="row in shown" :key="row.label" class="scene-choice">
       <button
         :disabled="busy || !!row.quote.error"
         @click="emit('act', { type: 'conclave', action: row.action })"
       >
-        {{ row.label }}</button
-      ><small
+        {{ row.label.split(" · ")[0] }}
+      </button>
+      <small v-if="row.label.includes(' · ')">{{
+        row.label.split(" · ").slice(1).join(" · ")
+      }}</small>
+      <small
         v-if="
           row.quote.months ||
           row.quote.stones ||
@@ -209,14 +335,16 @@ const waitMonths = computed(() =>
         ></small
       >
     </div>
-    <template v-if="safe">
-      <CultivationOutlook
-        v-if="active"
-        :game="game"
-        :busy="busy"
-        automatic
-        @act="emit('act', $event)"
-      />
+    <template v-if="safe && selected === 'chamber'">
+      <details class="retreat-plan">
+        <summary>安排闭关</summary>
+        <CultivationOutlook
+          :game="game"
+          :busy="busy"
+          automatic
+          @act="emit('act', $event)"
+        />
+      </details>
       <button
         v-if="game.injury"
         :disabled="busy || !!actionError(game, 'rest')"
@@ -243,7 +371,8 @@ const waitMonths = computed(() =>
         :disabled="busy || !!conclaveQuote(game, { kind: 'wait' }).error"
         @click="emit('act', { type: 'conclave', action: { kind: 'wait' } })"
       >
-        留居候会 · 最多 {{ waitMonths }} 月，消耗同等寿元
+        留居候会 · 最多 {{ Math.floor(waitMonths / 12) }} 年
+        {{ waitMonths % 12 }} 月，消耗同等寿元
       </button>
       <button
         v-if="active && game.month < c.retryAt"
@@ -253,96 +382,92 @@ const waitMonths = computed(() =>
         候至可再登台 · 最多六月
       </button>
     </template>
-    <details>
-      <summary>凝婴所需与所得用途</summary>
-      <p>
-        定神珠：{{ c.depth ? "已取得" : "须在归潮外殿争取" }}；{{
-          c.attuned ? "已温养，护体 +5" : "温养后才能抵御深处阵压"
-        }}。
-      </p>
-      <p>
-        抱元凝神录：{{
-          c.depth === 2
-            ? "已取得，参悟或转修后可接续金丹后期"
-            : "须通过深处照神阵枢"
-        }}。
-      </p>
-      <p>
-        化婴丹：{{
-          c.depth === 2
-            ? "已取得一份主材凝婴灵髓，尚未炼成丹药"
-            : "主材可在归潮深处寻找"
-        }}。圆满试炼、化婴丹炼制与元婴叩关尚未开放，宝物不能代替丹药。
-      </p>
+
+    <details v-if="c.last">
+      <summary>刚才的经过</summary>
+      <p role="status">{{ c.last }}</p>
     </details>
-  </section>
+    <template #notes>
+      <p v-if="game.outerSea.notice !== null && !due">
+        距约定会期还有
+        {{ Math.floor((game.outerSea.notice + 600 - game.month) / 12) }} 年
+        {{ (game.outerSea.notice + 600 - game.month) % 12 }} 月。
+      </p>
+      <p v-for="r in c.introduced ? rivals : []" :key="r.name">
+        <strong>{{ r.name }} · {{ r.sect }}</strong
+        ><br />{{ r.aim }}
+      </p>
+      <details>
+        <summary>凝婴所需与所得用途</summary>
+        <p>
+          定神珠：{{ c.depth ? "已取得" : "须在归潮外殿争取" }}；{{
+            c.attuned ? "已温养，护体 +5" : "温养后才能抵御深处阵压"
+          }}。
+        </p>
+        <p>
+          抱元凝神录：{{
+            c.depth === 2
+              ? "已取得，参悟或转修后可接续金丹后期"
+              : "须通过深处照神阵枢"
+          }}。
+        </p>
+        <p>
+          化婴丹：{{
+            c.depth === 2
+              ? "已取得一份主材凝婴灵髓，尚未炼成丹药"
+              : "主材可在归潮深处寻找"
+          }}。圆满试炼、化婴丹炼制与元婴叩关尚未开放，宝物不能代替丹药。
+        </p>
+      </details>
+      <p v-if="c.last">{{ c.last }}</p>
+    </template>
+  </NarrativeStage>
 </template>
 <style scoped>
-.conclave {
-  margin: 16px 0;
-  padding: 18px;
-  background: #233c43;
-  color: #f4e7cb;
-  border: 1px solid #8da7a1;
-  border-radius: 10px;
-  display: flow-root;
+.conclave :deep(.battle-inspector) {
+  display: none;
 }
-.scene {
-  float: right;
-  width: min(43%, 480px);
-  aspect-ratio: 16/9;
-  object-fit: contain;
-  margin: 0 0 14px 18px;
-  border-radius: 8px;
+.conclave :deep(.narrative-inspector:not(.narrative-notes)) {
+  top: auto;
+  bottom: 24px;
+  max-height: 48%;
+  height: auto;
+  width: min(400px, 35%);
+  padding: 16px;
 }
-.conclave-choice {
+.conclave.in-combat :deep(.narrative-goal) {
+  display: none;
+}
+@media (max-width: 900px) {
+  .conclave :deep(.narrative-inspector:not(.narrative-notes)) {
+    width: auto;
+    max-height: 42%;
+  }
+}
+
+.scene-choice {
   margin: 12px 0;
 }
-.conclave-choice small {
+.scene-choice small {
   display: block;
   color: #dfcfaa;
 }
-.conclave button {
-  background: #304e56;
-  color: #fff2d4;
-  border: 1px solid #a8c1b8;
-  border-radius: 6px;
-  padding: 10px 12px;
+button {
+  display: block;
+  margin: 8px 0;
   max-width: 100%;
+  padding: 10px 12px;
+  color: #fff2d4;
+  background: #283e39;
+  border: 1px solid #9fb2a1;
+  border-radius: 6px;
   text-align: left;
   white-space: normal;
-  margin: 4px 0;
 }
-.conclave button:disabled {
-  background: #303c3c;
-  color: #c3ccc5;
+button:disabled {
+  opacity: 0.58;
 }
-.conclave button:focus-visible {
+button:focus-visible {
   outline: 2px solid #f9d480;
-}
-.people {
-  clear: both;
-}
-.people p {
-  padding: 10px;
-  background: #1d333a;
-  border-radius: 8px;
-}
-details {
-  clear: both;
-  margin-top: 14px;
-}
-@media (max-width: 600px) {
-  .conclave {
-    padding: 12px;
-  }
-  .scene {
-    float: none;
-    width: 100%;
-    margin: 0;
-  }
-  .conclave button {
-    width: 100%;
-  }
 }
 </style>

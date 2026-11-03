@@ -947,3 +947,146 @@
     flex-basis: 64px;
   }
 }
+
+/* Exploration uses the viewport itself, with HUD and contextual panels over it. */
+.immersive-shell.scene-first { padding:0; }
+.scene-first .game-hud { position:absolute; inset:0 0 auto; z-index:6; background:linear-gradient(#091b1cec,transparent); padding:12px 28px; border:0; }
+.immersive-shell.scene-first .game-layout { position:absolute; inset:0; overflow:hidden; margin:0; padding:0; display:block; }
+.scene-first .journey { height:100%; margin:0; padding:0; max-width:none; }
+.scene-first .journey>nav,.scene-first .quest-tracker { display:none; }
+.scene-first .quick-dock { z-index:6; background:#0c2422c9; backdrop-filter:blur(12px); }
+.scene-first .avatar-entry .cultivation-status,.scene-first .avatar-entry .life-remaining { display:none; }
+@media(max-width:600px) {
+ .scene-first .game-hud { padding:8px 12px; }
+ .scene-first .game-hud .avatar-entry { max-width:155px; }
+ .scene-first .location-entry { display:none; }
+ .scene-first .quick-dock { gap:2px; padding:6px; }
+ .scene-first .quick-dock button { padding:8px 6px; font-size:11px; }
+}
+
+.scene-first .location-entry { display:none; }
+
+/* Pending narrative keeps the current world behind its dialogue. */
+.overlay .modal.event-plane { width:min(1440px,96vw); max-width:none; max-height:calc(100dvh - 40px); padding:0; overflow:hidden; background:#102720; }
+
+.story-exploring .quest-tracker, .story-exploring .location-entry { display:none; }
+.story-exploring .journey { width:100%; max-width:none; }
+.story-exploring .game-layout.story-mode { display:block; }
+
+/* PC exploration occupies the remaining viewport; only the inspected object scrolls. */
+@media (min-width: 901px) {
+ .story-exploring:not(.scene-first) .game-layout.story-mode { overflow:hidden; }
+ .story-exploring:not(.scene-first) .journey { height:100%; display:flex; flex-direction:column; padding:0; }
+ .story-exploring:not(.scene-first) .story-scenes { flex:1; min-height:0; display:flex; flex-direction:column; }
+ .story-exploring:not(.scene-first) .story-scenes > :not(.story-chapters) { flex:1; min-height:0; height:100%; }
+ .story-exploring:not(.scene-first) .narrative-stage { height:100%; min-height:0; }
+ .story-exploring .story-chapters { flex-shrink:0; }
+}
+
+@media (min-width: 901px) {
+ .immersive-shell.story-exploring:not(.scene-first) { padding:0; }
+ .story-exploring:not(.scene-first) .game-hud { z-index:6; padding:10px 28px; background:linear-gradient(#091b1cf2,#091b1c66,transparent); }
+ .immersive-shell.story-exploring:not(.scene-first) .game-layout.story-mode { position:absolute; inset:0; margin:0; }
+ .story-exploring:not(.scene-first) .journey > nav { position:absolute; top:96px; left:28px; z-index:5; }
+ .story-exploring:not(.scene-first) .story-chapters { position:absolute; top:148px; left:28px; z-index:5; }
+ .story-exploring:not(.scene-first) .narrative-stage { border:0; border-radius:0; }
+ .story-exploring:not(.scene-first) .narrative-heading { top:210px; }
+ .story-exploring:not(.scene-first) .narrative-goal { top:110px; }
+ .story-exploring:not(.scene-first) .narrative-inspector { top:220px; bottom:88px; }
+ .story-exploring:not(.scene-first) .narrative-hint { bottom:90px; }
+}
+@media (min-width: 901px) {
+ .story-exploring:not(.scene-first) .narrative-stage.inspecting .narrative-goal { visibility:hidden; }
+}
+
+/* The mountain home is one scene; only its selected local panel scrolls. */
+.cultivation-exploring .game-layout { position:absolute; inset:0; margin:0; display:block; overflow:hidden; }
+.cultivation-exploring .journey { width:100%; max-width:none; height:100%; padding:0; }
+.cultivation-exploring .journey > nav { position:absolute; top:96px; left:28px; z-index:5; }
+.cultivation-exploring .cultivation-room.desktop-scene { position:absolute; inset:0; margin:0; min-height:0; display:block; overflow:hidden; }
+.cultivation-exploring .cultivation-room > .scene-backdrop { position:absolute; inset:0; padding:0; min-height:0; height:100%; }
+.cultivation-exploring .cultivation-room > .scene-backdrop .scene-narrative { display:none; }
+.cultivation-exploring .cultivation-room > .practice-stage { position:absolute; inset:0; margin:0; height:100%; max-width:none; border:0; border-radius:0; background:transparent; pointer-events:none; }
+.cultivation-exploring .practice-stage .practice-caption { top:175px; left:28px; max-width:38%; }
+.cultivation-exploring .practice-stage .practice-figure { left:15%; right:auto; bottom:19%; width:25%; height:48%; }
+.cultivation-exploring .practice-stage .practice-prop { left:37%; right:auto; bottom:20%; }
+.cultivation-exploring .practice-stage .qi-ring { left:18%; right:auto; bottom:18%; width:20%; }
+.cultivation-exploring .cultivation-summary { position:absolute; right:30px; top:140px; width:290px; padding:18px; color:#eee3c6; background:#0e251dca; border-right:2px solid #b89c61; }
+.cultivation-summary h2 { font-size:23px; margin:0 0 10px; }
+.cultivation-summary p { font-size:14px; line-height:1.7; }
+.cultivation-summary strong { font-size:14px; color:#d7c18c; }
+.cultivation-exploring .cultivation-objects { border:0; height:auto; margin:0; padding:0; background:none; align-items:center; position:absolute; left:5%; right:5%; bottom:115px; display:flex; flex-wrap:wrap; justify-content:center; gap:12px; z-index:4; }
+.cultivation-exploring .cultivation-objects button { min-height:44px; padding:10px 16px; color:#fff0c9; background:#123127; border:1px solid #cfb57a; cursor:pointer; box-shadow:0 3px 10px #0008; }
+.cultivation-exploring .cultivation-objects button[aria-pressed=true] { background:#3b5541; outline:1px solid #e3c281; }
+.cultivation-exploring .cultivation-panel.scene-controls { position:absolute; top:155px; right:24px; bottom:180px; width:min(470px,44%); max-height:none; overflow:auto; overscroll-behavior:contain; scrollbar-width:thin; padding:16px 20px; margin:0; z-index:5; box-sizing:border-box; }
+.cultivation-panel-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.cultivation-panel-heading h3 { margin:0; font-size:18px; }
+.cultivation-panel-heading button { min-height:36px; }
+.cultivation-exploring .cultivation-panel .progress-label h2 { font-size:16px; }
+.cultivation-exploring .cultivation-panel .next-goal { padding:8px 10px; font-size:13px; }
+.cultivation-exploring .cultivation-panel .activity-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.cultivation-exploring .cultivation-panel .activity-grid button { padding:10px; }
+.cultivation-exploring .cultivation-panel .cultivation-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.cultivation-exploring .cultivation-panel .cultivation-actions button { flex:1 1 100px; }
+.cultivation-exploring .cultivation-panel .facility-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.cultivation-exploring .cultivation-panel .foundation-journey { padding:10px; }
+.cultivation-exploring .cultivation-panel .fineprint { font-size:12px; }
+.cultivation-exploring .cultivation-panel .monthly-practice { padding:8px 0; }
+.cultivation-exploring .cultivation-panel .monthly-practice summary { cursor:pointer; }
+.cultivation-exploring .cultivation-pause { position:absolute; top:102px; left:45%; z-index:8; padding:10px 18px; background:#694c29; color:#fff0cb; border:1px solid #e5c07d; }
+.cultivation-exploring .journey > .opening-guide { position:absolute; top:145px; left:28px; width:min(360px,36%); z-index:7; background:#122b23f5; padding:14px; }
+.cultivation-exploring .quest-tracker { display:none; }
+@media(max-width:900px) {
+ .cultivation-exploring .cultivation-summary { top:150px; right:16px; width:210px; padding:12px; }
+ .cultivation-exploring .practice-stage .practice-caption { top:150px; left:16px; }
+ .cultivation-exploring .practice-stage .practice-figure { left:8%; bottom:32%; width:30%; height:38%; }
+ .cultivation-exploring .cultivation-objects { bottom:100px; gap:6px; left:2%; right:2%; }
+ .cultivation-exploring .cultivation-objects button { font-size:12px; padding:8px; }
+ .cultivation-exploring .cultivation-panel.scene-controls { top:150px; bottom:220px; left:12px; right:12px; width:auto; }
+ .cultivation-exploring .cultivation-pause { top:110px; left:auto; right:16px; }
+}
+
+.cultivation-exploring .cultivation-objects button:hover:not(:disabled) { background:#31513b; color:#fff7df; border-color:#f1d59c; }
+.cultivation-exploring .cultivation-objects button:focus-visible { outline:3px solid #ffe0a0; outline-offset:3px; background:#31513b; color:#fff7df; }
+
+/* Full-app combat: leave the battlefield and fixed commands unobstructed. */
+.immersive-shell.scene-combat .story-chapters,
+.immersive-shell.scene-combat .game-hud .avatar-entry,
+.immersive-shell.scene-combat .game-hud .location-entry,
+.immersive-shell.scene-combat .quest-tracker,
+.immersive-shell.scene-combat .hud-save { display:none; }
+.immersive-shell.scene-combat .game-hud { position:absolute; top:0; left:0; right:0; height:auto; min-height:0; justify-content:flex-end; pointer-events:none; background:linear-gradient(#091b1cc9,transparent); }
+.immersive-shell.scene-combat .game-hud button { pointer-events:auto; }
+.immersive-shell.scene-combat .narrative-heading { top:85px; }
+.immersive-shell.scene-combat .narrative-heading > small,
+.immersive-shell.scene-combat .narrative-heading > button { display:none; }
+.combat-receipt-entry { position:fixed; z-index:12; top:84px; left:50%; transform:translateX(-50%); max-width:280px; }
+.combat-receipt-entry button { min-height:38px; padding:8px 16px; color:#fff0c9; background:#16382fee; border:1px solid #bca574; box-shadow:0 2px 8px #0007; cursor:pointer; }
+.combat-receipt-entry button:hover,.combat-receipt-entry button:focus-visible { background:#34563f; outline:2px solid #ebce94; outline-offset:2px; }
+@media(max-width:900px) { .combat-receipt-entry { top:66px; max-width:200px; } .combat-receipt-entry button { font-size:12px; padding:6px 10px; } }
+
+/* Travel is a single desktop workspace between the HUD and the carry bar. */
+@media (min-width: 851px) {
+  .immersive-shell:has(.story-scenes .travel-map, .story-scenes .story-travel) .journey > nav,
+  .story-scenes:has(.travel-map, .story-travel) .story-chapters { visibility: hidden; }
+  .story-scenes .travel-map, .story-scenes .story-travel {
+    position: fixed; inset: 116px 24px 84px; z-index: 7;
+    display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+  }
+  .story-scenes .travel-layout, .story-scenes .travel-body {
+    flex: 1; min-height: 0; overflow: hidden; align-items: center;
+  }
+  .story-scenes .route-canvas { height: 100%; max-height: 100%; }
+  .story-scenes .travel-layout aside, .story-scenes .travel-body aside {
+    max-height: 100%; overflow-y: auto; min-height: 0;
+  }
+  .story-scenes .travel-map footer, .story-scenes .story-travel footer { flex-shrink: 0; }
+}
+@media (min-width: 851px) {
+  .immersive-shell.story-exploring .story-scenes .story-travel,
+  .immersive-shell.story-exploring .story-scenes .travel-map {
+    height: calc(100dvh - 200px); max-height: calc(100dvh - 200px);
+  }
+  .story-scenes .travel-map footer, .story-scenes .story-travel footer { display: block; }
+  .story-scenes .travel-actions { width: 100%; }
+}

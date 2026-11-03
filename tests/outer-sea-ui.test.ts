@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { clickSceneAction, openSceneNotes } from "./golden-scene-navigation";
 import { createApp, h, nextTick, shallowRef } from "vue";
 import { it, expect } from "vitest";
 import { dispatch, validState, type Intent } from "../src/core";
@@ -24,19 +25,13 @@ it("外海按钮从相识到探险、法宝与闭关均发送命令，显示五�
       }),
   });
   app.mount(host);
-  const click = async (text: string) => {
-    const b = [...host.querySelectorAll("button")].find((b) =>
-      b.textContent?.includes(text),
-    );
-    expect(b).toBeTruthy();
-    expect(b!.disabled).toBe(false);
-    b!.click();
-    await nextTick();
-  };
+
+  const click = (text: string) => clickSceneAction(host, text);
   try {
     await click("循海路");
     await click("与修堤者");
     await click("共享潮图");
+    expect(host.querySelector('[aria-label="现场操作"]')).toBeNull();
     await click("筹备避潮");
     await click("踏上退潮");
     await click("应对镇潮");
@@ -44,8 +39,10 @@ it("外海按钮从相识到探险、法宝与闭关均发送命令，显示五�
       await click(["辨影", "守势", "反击"][s.value.outerSea.duel.turn % 3]!);
     await click("先取镇潮印");
     await click("交接潮图");
+    await openSceneNotes(host);
     expect(host.textContent).toContain("尚余 600 月");
     await click("温养镇潮印");
+    await openSceneNotes(host);
     expect(host.textContent).toContain("已温养");
     await click("开始闭关");
     expect(s.value.outerSea.cultivation).toBeGreaterThan(30);

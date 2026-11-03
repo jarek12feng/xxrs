@@ -28,6 +28,8 @@ it("offers herbs without blocking entry, emits the purchase command, and refresh
   });
   app.mount(host);
   try {
+    host.querySelector<HTMLButtonElement>('[data-hotspot="prepare"]')!.click();
+    await nextTick();
     const buy = [...host.querySelectorAll("button")].find((b) =>
       b.textContent?.includes("购灵草 4"),
     )!;

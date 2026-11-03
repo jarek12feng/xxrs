@@ -31,7 +31,6 @@ const points: Record<Place, { x: number; y: number }> = {
   peak: { x: 49, y: 50 },
   sea: { x: 76, y: 64 },
 };
-const distant = worldMap.distant;
 </script>
 
 <template>
@@ -45,18 +44,15 @@ const distant = worldMap.distant;
     </header>
     <div class="atlas-scope">
       <p>{{ worldMap.overview }}</p>
-      <p class="atlas-scope-note">点选地标，查看去路与行前准备。</p>
+      <p class="atlas-scope-note">
+        点选地标，查看去路与行前准备。此图只作地域示意，距离与耗时以出发行程为准。
+      </p>
       <details class="atlas-regions">
         <summary>本界地域一览 · 听松山之外还有什么</summary>
         <div class="atlas-region-grid">
           <article v-for="region in worldMap.regions" :key="region.name">
             <strong>{{ region.name }}</strong
             ><small>{{ region.status }} · 按进展前往</small>
-            <p>{{ region.detail }}</p>
-          </article>
-          <article v-for="region in distant" :key="region.name">
-            <strong>{{ region.name }}</strong
-            ><small>本界远方 · 尚未开放</small>
             <p>{{ region.detail }}</p>
           </article>
         </div>
@@ -205,18 +201,6 @@ const distant = worldMap.distant;
             }}</small>
           </button>
         </template>
-        <div
-          v-for="place in distant"
-          :key="place.name"
-          class="atlas-pin distant"
-          :style="{ left: place.x + '%', top: place.y + '%' }"
-          role="img"
-          :aria-label="place.name + '，青玄界远方，尚未开放'"
-        >
-          <span class="atlas-pin-dot" aria-hidden="true">◇</span
-          ><strong>{{ place.name }}</strong
-          ><small>本界远方 · 尚未开放</small>
-        </div>
         <span class="atlas-inscription">山海未尽，仙途方始</span>
       </div>
     </div>

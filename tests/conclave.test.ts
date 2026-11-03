@@ -242,7 +242,7 @@ describe("诸宗会与凝婴机缘", () => {
     const v30 = { ...old, version: 30, conclave: undefined };
     const migrated = migrateSave(v30);
     expect(migrated.conclave).toEqual(freshConclave());
-    expect(migrated.version).toBe(31);
+    expect(migrated.version).toBe(33);
     expect(validState(migrated)).toBe(true);
     expect(() => migrateSave({ ...start, version: 999 })).toThrow();
   });

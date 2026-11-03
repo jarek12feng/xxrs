@@ -23,12 +23,10 @@ it.each(Object.keys(mistScenes).filter((k) => k !== "dormant") as MistStage[])(
     const html = await renderToString(
       createSSRApp({ render: () => h(MistPanel, { game, busy: false }) }),
     );
-    const index = html.indexOf('class="scene-controls"');
-    expect(index).toBeGreaterThan(0);
-    expect(html.slice(0, index)).toContain(mistScenes[stage].title);
-    expect(html.slice(html.indexOf('class="scene-backdrop"'), index)).not.toContain("<button");
-    expect(html.slice(index)).toContain("雾海探索操作区");
-    expect(html.slice(index)).toContain("<button");
+    expect(html).toContain(mistScenes[stage].title);
+    expect(html).toContain("山径与归路");
+    expect(html).toContain("行装与补给");
+    expect(html).not.toContain('aria-label="雾海探索操作区"');
   },
 );
 
@@ -72,17 +70,9 @@ it.each(["market", "pass"] as const)(
         render: () => h(RoadPanel, { game, busy: false, running: false }),
       }),
     );
-    expect(html).toContain(
-      stage === "market"
-        ? "/characters/yuqing.jpg"
-        : "/characters/qingzhang.jpg",
-    );
-    const index = html.indexOf('class="scene-controls"');
-    expect(html.slice(html.indexOf('class="scene-backdrop"'), index)).not.toContain("<button");
-    expect(html.slice(index)).toContain("环顾四周调查区");
-    expect(html.slice(index)).toContain(
-      stage === "market" ? "药队旧账册" : "石阶上的刻痕",
-    );
+    expect(html).toContain(stage === "market" ? "郁青" : "青嶂");
+    expect(html).toContain(stage === "market" ? "沿途痕迹" : "山口与阵纹");
+    expect(html).not.toContain('aria-label="行路与准备操作区"');
   },
 );
 it.each(["opening", "road", "relationship", "arena"] as const)(
@@ -102,10 +92,24 @@ it.each(["opening", "road", "relationship", "arena"] as const)(
           h(panel as Component, { game, busy: false, running: false, mode }),
       }),
     );
+    if (mode === "opening") {
+      expect(html).toContain('class="stage-world"');
+      expect(html).toContain('aria-label="冒险操作区"');
+      expect(html).toContain("漂回的药篓");
+      expect(html).toContain("沿途见闻与现场详情");
+      return;
+    }
+    if (mode === "road") {
+      expect(html).toContain("前路与归途");
+      expect(html).not.toContain('aria-label="行路与准备操作区"');
+      return;
+    }
     const index = html.indexOf('class="scene-controls"');
     expect(index).toBeGreaterThan(0);
     expect(html.slice(0, index)).toContain('class="scene-narrative"');
-    expect(html.slice(html.indexOf('class="scene-backdrop"'), index)).not.toContain("<button");
+    expect(
+      html.slice(html.indexOf('class="scene-backdrop"'), index),
+    ).not.toContain("<button");
     expect(html.slice(index)).toContain("操作区");
     expect(html.slice(index)).toContain("<button");
   },
@@ -134,8 +138,7 @@ it("puts the required market conversation before optional locked investigation",
   const html = await renderToString(
     createSSRApp({ render: () => h(RoadPanel, { game, busy: false }) }),
   );
-  expect(html.indexOf("与行脚人郁青交谈")).toBeGreaterThan(0);
-  expect(html.indexOf("与行脚人郁青交谈")).toBeLessThan(
-    html.indexOf('aria-label="环顾四周调查区"'),
-  );
+  expect(html.indexOf('data-hotspot="person"')).toBeGreaterThan(0);
+  expect(html.indexOf('data-hotspot="person"')).toBeLessThan(html.indexOf('data-hotspot="objects"'));
+  expect(html).not.toContain("与行脚人郁青交谈");
 });

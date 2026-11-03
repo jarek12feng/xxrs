@@ -15,6 +15,7 @@ const props = withDefaults(
     months?: number;
     automatic?: boolean;
     busy?: boolean;
+    compact?: boolean;
   }>(),
   { months: 3 },
 );
@@ -28,7 +29,7 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
 </script>
 <template>
   <aside class="cultivation-outlook" aria-label="吐纳耗时与寿元">
-    <p class="realm-promise">
+    <p v-if="!compact" class="realm-promise">
       {{ advancementPromise(game)
       }}<button v-if="game.realm < 2" :disabled="busy" @click="$emit('standing')">
         查看亲历与任用
@@ -36,7 +37,8 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
     </p>
     <p>剩余寿元 {{ formatLifeMonths(outlook.remainingMonths) }}。</p>
     <details>
-      <summary>逐月修行明细</summary>
+      <summary>{{ compact ? '修行成效与逐月明细' : '逐月修行明细' }}</summary>
+      <p v-if="compact" class="realm-promise">{{ advancementPromise(game) }}<button v-if="game.realm < 2" :disabled="busy" @click="$emit('standing')">查看亲历与任用</button></p>
       <p>
         剩余寿元 {{ formatLifeMonths(outlook.remainingMonths) }}。下月吐纳实际
         +{{ outlook.monthlyGain }}，寿元效率
@@ -60,7 +62,7 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
       {{
         game.realm === 2 ? goldenBlock(game) : game.realm === 1
           ? foundationBlock(game)
-          : "修为已抵当前瓶颈，去下方历练取得材料并炼化后，才能继续晋升。"
+          : "修为已抵当前瓶颈，出门历练取得材料并炼化后，才能继续晋升。"
       }}
     </p>
     <p v-else>
@@ -73,7 +75,7 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
       >
       <template v-else>可继续积累或寻找机缘。</template>
     </p>
-    <p>
+    <p v-if="!compact">
       <template v-if="game.realm === 2">闭关按下方所选年月逐月结算，到目标或会期来信时提前出关。</template>
       <template v-else-if="automatic"
         >逐月行动按钮每次
@@ -83,7 +85,7 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
       遇剧情或寿尽立即停下。估算逐月计入寿元衰减，未计入途中机缘或剧情耗时。
     </p>
     <section v-if="automatic && retreat.batchMonths > 0" aria-label="安排闭关">
-      <p>
+      <p v-if="!compact">
         目标：积累修为至
         {{ retreat.target }}；达到目标即出关，突破条件仍需另外完成。
       </p>
@@ -107,7 +109,9 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
         {{
           retreat.reachesTarget
             ? "本次预计达到目标。"
-            : "本次结束后仍需继续积累。"
+            : retreat.stopsForMeeting
+              ? "会期来信时出关，可从古渡赴约。"
+              : "本次结束后仍需继续积累。"
         }}
       </p>
       <p>

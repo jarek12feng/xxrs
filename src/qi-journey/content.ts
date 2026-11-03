@@ -53,7 +53,7 @@ export const qiSites = [
     fee: 10,
     image: "/art/qi-progression/qingshi-inner-platform.webp",
     intro:
-      "陆迟留下的丹方旁还有一幅内府图。成丹能助筑基，但要让经脉承受药力，还需取出石台中的凝元晶髓。",
+      "青石遗府的丹方旁藏有内府图，须先探府取得。成丹能助筑基，但要让经脉承受药力，还需取出石台中的凝元晶髓。",
     enemies: [
       {
         name: "巡廊石傀",

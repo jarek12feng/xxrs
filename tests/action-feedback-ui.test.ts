@@ -14,12 +14,17 @@ const flush = async () => {
 };
 function button(label: string) {
   const b = [...document.querySelectorAll("button")].find((b) =>
-    b.textContent?.includes(label),
+    b.textContent?.includes(label) || b.getAttribute("aria-label")?.includes(label),
   );
   if (!b) throw new Error(`Missing button ${label}`);
   return b;
 }
 async function click(label: string) {
+  // Follow the home scene's visible entry before using its local controls.
+  if (!document.querySelector('[role="dialog"]') && document.querySelector('.cultivation-room')) {
+    const entry = ["行动一月", "修行安排", "听松擂台", "师门与委托"].includes(label) ? "案几 · 修行与杂务" : ["炼筑基丹", "闭关固本", "叩问天关"].includes(label) ? "丹炉 · 突破筹备" : "";
+    if (entry && button(entry).getAttribute("aria-pressed") !== "true") { button(entry).click(); await flush(); }
+  }
   button(label).click();
   await flush();
 }
@@ -46,7 +51,10 @@ async function mount(s = state()) {
   app.mount(document.body.appendChild(document.createElement("div")));
   await flush();
   await click("继续游戏");
-  await click("洞府修行");
+  if (!s.foundationJourney.duel && !s.qiJourney.duel) {
+    await click("洞府修行");
+    await click("丹炉 · 突破筹备");
+  }
 }
 beforeEach(() => {
   vi.useFakeTimers();
@@ -108,7 +116,7 @@ it.each([1, 123456])(
     const s = state();
     s.seed = seed;
     s.qi = 360;
-  s.qiJourney.gates = 2;
+    s.qiJourney.gates = 2;
     s.pills = 1;
     const expected = dispatch(s, { type: "break", pill: true, id: "expected" });
     await mount(s);
@@ -216,18 +224,32 @@ it("automatic queued alchemy does not require dismissing a modal every tick", as
 it("keeps discoveries inside the scene and shows a named arrival without a blocking receipt", async () => {
   await mount(createGame("行者", "wood"));
   await click("当前冒险");
+  await click("漂回的药篓");
   await click("检查药篓");
-  expect(document.querySelector(".scene-response")?.textContent).toContain(
-    "发现青瘴粉与归路红绳",
+  expect(document.querySelector(".settled-response")?.textContent).toContain(
+    "青瘴粉",
   );
   expect(document.querySelector(".receipt-dock")).toBeNull();
+  await click("上山石阶");
   await click("带着线索前往药庐");
   expect(document.querySelector(".scene-arrival")?.textContent).toContain(
     "抵达 · 山门药庐",
   );
+  await click("温蘅 · 药炉");
   expect(button("请温蘅").disabled).toBe(false);
   await vi.advanceTimersByTimeAsync(4200);
   expect(document.querySelector(".scene-arrival")).toBeNull();
+  await click("请温蘅");
+  await click("文火温养");
+  await click("雾林入口");
+  await click("准备好了，进入雾林");
+  await click("枝上的红绳");
+  await click("循红绳寻找药工");
+  await click("崩裂的阵门");
+  await click("以药草安抚");
+  expect(document.querySelector(".scene-arrival")).toBeNull();
+  expect(text()).toContain("山祠药圃");
+  expect(text()).toContain("药工已脱险");
 });
 it("NPC choices have a named response, affection and memory before returning to interactions", async () => {
   await mount(mistCheckpoint());
@@ -431,15 +453,14 @@ it("foundation ranking shows actual reward after save, returns to its group and 
   const { moves } = await import("../src/expedition/content");
   const p = journeyPlayer(journeyCheckpoint());
   p.act({ kind: "battle", battle: "rank1" });
-  const {findCombatRoute} = await import("../tools/foundation-tactics-audit");
+  const { findCombatRoute } = await import("../tools/foundation-tactics-audit");
   const plan = findCombatRoute(p.state)!;
   expect(plan).not.toBeNull();
-  for (const move of plan.moves.slice(0, -1)) p.act({kind:"move",move});
+  for (const move of plan.moves.slice(0, -1)) p.act({ kind: "move", move });
   const finalMove = plan.moves.at(-1)!;
   expect(p.state.foundationJourney.duel).not.toBeNull();
   const before = p.state.stones;
   await mount(p.state);
-  await click("听松擂台");
   await click(moves[finalMove]);
   const result = document.querySelector('[role="dialog"]')?.textContent;
   expect(result).toContain("筑基试剑榜 · 第三十名");
@@ -476,7 +497,6 @@ it("combat numbers wait for persistence and a failed save produces no result ani
   p.act({ kind: "battle", battle: "rank1" });
   const hp = p.state.foundationJourney.duel!.hp;
   await mount(p.state);
-  await click("听松擂台");
   let reject!: (reason: Error) => void;
   vi.mocked(save).mockImplementationOnce(
     () =>

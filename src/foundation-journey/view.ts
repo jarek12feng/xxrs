@@ -125,7 +125,7 @@ export function journeyOptions(s: State, mode: "journey" | "relationship") {
     if (q.whereabouts === "away")
       add("按约重逢，交换修行所得", { kind: "reunion" });
     if (q.location !== "home")
-      add("回听松行前居 · 一月", { kind: "travel", destination: "home" });
+      add("回听松行前居 · 展开路图", { kind: "travel", destination: "home" });
     return actions;
   }
   if (q.location === "home" && q.won.includes("culmination") && !q.epilogue)

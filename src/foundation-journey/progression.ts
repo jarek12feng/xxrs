@@ -85,6 +85,7 @@ export function battleError(s: State, id: BattleId) {
 }
 export function journeyActionError(s: State, a: JourneyAction): string {
   const q = s.foundationJourney;
+  if (s.wayfaring?.trip && (a.kind !== "travel" || a.destination !== s.wayfaring.trip.to)) return "先结束途中行程";
   if (
     s.status !== "alive" ||
     s.pending ||

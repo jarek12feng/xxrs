@@ -73,7 +73,7 @@ it.each(["estate", "snow"] as const)(
     p.act({ kind: "travel", destination: side });
     expect(journeyPresentation(p.state).body).toBe(sideScene(saved, side));
     expect(p.state.foundationJourney.last).toBe(
-      `你来到${side === "estate" ? "晴川药庄" : "雪线旧门"}。`,
+      `你从听松行前居沿陆路抵达${side === "estate" ? "晴川药庄，全程 6" : "雪线旧门，全程 7"} 月。`,
     );
   },
 );
@@ -121,7 +121,7 @@ it("story receipts reveal the scene by default, remain collapsible, and reveal t
 it("returning after departure does not reenact an earlier obstruction in the visible receipt", () => {
   const p = journeyPlayer(journeyCheckpoint("male", true));
   p.act({ kind: "travel", destination: "ferry" });
-  expect(p.state.foundationJourney.last).toBe("你来到无名渡。");
+  expect(p.state.foundationJourney.last).toContain("抵达无名渡");
   expect(journeyPresentation(p.state).body).not.toMatch(
     /第三次被执卫赶回|先签了/,
   );
@@ -131,7 +131,7 @@ it("returning after departure does not reenact an earlier obstruction in the vis
   p.act({ kind: "sideResolve", side: "estate", outcome: "split" });
   p.act({ kind: "travel", destination: "home" });
   p.act({ kind: "travel", destination: "estate" });
-  expect(p.state.foundationJourney.last).toBe("你来到晴川药庄。");
+  expect(p.state.foundationJourney.last).toContain("抵达晴川药庄");
   expect(journeyPresentation(p.state).body).toContain("匾");
   expect(
     journeyPresentation(p.state).body + p.state.foundationJourney.last,

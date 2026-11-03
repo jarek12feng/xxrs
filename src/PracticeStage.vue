@@ -11,6 +11,7 @@ const props = defineProps<{
   playing: boolean;
   gender?: string | null;
   realm?: number;
+  location?: string;
 }>();
 const labels: Record<Activity, string> = {
   cultivate: "吐纳 · 周天行气",
@@ -45,7 +46,7 @@ const propItem = computed(() =>
     aria-label="洞府人物动作"
   >
     <div class="practice-caption">
-      <span>听松山居 · 修行日常</span>
+      <span>{{ location || '听松山居' }} · 修行日常</span>
       <h3>{{ labels[activity] }}</h3>
       <small role="status">{{
         playing ? "一招一息，皆是修行" : "选择修行，行功一月"

@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import CharacterSprite from "../presentation/CharacterSprite.vue";
-import { heroArt, heroBattlePose } from "../presentation/art";
+import QiWorld from "./QiWorld.vue";
+import CombatBar from "../scene2d/combat/CombatBar.vue";
 import { passageIds, passagePlan } from "./passage";
 import { preparationReady } from "./preparation";
 import QiPeoplePanel from "./QiPeoplePanel.vue";
 import QiPreparationPanel from "./QiPreparationPanel.vue";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
+import NarrativeStage from "../scene2d/NarrativeStage.vue";
 import type { State, Intent } from "../core";
 import { qiGoal, qiError, qiEnemy, qiPreview, qiPower, qiEnemyTell } from "./rules";
-import { qiTacticalCue, medicineOpening } from "./tactics";
+import { qiTacticalCue } from "./tactics";
 import { qiSites, qiRoutes, commissions, type QiAction } from "./content";
 import { moves, type Move } from "../expedition/content";
 const props = defineProps<{ game: State; busy: boolean }>();
@@ -22,83 +23,88 @@ const emit = defineEmits<{
 }>();
 const q = computed(() => props.game.qiJourney);
 const site = computed(() => qiSites[q.value.gates]);
+// Preparation trials occur on their own route, before entering the promotion site.
+const location = computed(() => {
+  if (q.value.trial) return {
+    medicine: { name: "药谷采药径", image: qiSites[0]!.image },
+    sect: { name: "护送山口", image: "/scenes/mist-path.jpg" },
+    wander: { name: "古阵外围", image: qiSites[1]!.image },
+  }[q.value.trial];
+  return q.value.node ? site.value : { name: "听松山下", image: "/scenes/mountain-market.jpg" };
+});
 const enemy = computed(() => qiEnemy(props.game));
 const locked = (a: QiAction) => props.busy || !!qiError(props.game, a);
-const act = (action: QiAction) => emit("act", { type: "qiJourney", action });
+function act(action: QiAction) {
+  if(locked(action))return;
+  const commit=()=>{if(!locked(action))emit("act",{type:"qiJourney",action});};
+  if(action.startsWith('enter:') || (action==='withdraw' && !q.value.duel)) {
+    active.value=''; world.value?.approach({x:action==='withdraw'?12:87,y:87},commit);
+  } else { world.value?.cancel(); world.value?.stop(); commit(); }
+}
 const passages = computed(() =>
   passageIds.map((action) => ({
     action,
     ...passagePlan(props.game, action, qiPower(props.game).hp),
   })),
 );
-const preview = (move: Move) => qiPreview(props.game, move);
+const active = ref("");
+const world = ref<InstanceType<typeof QiWorld>>();
+function select(id:string) {
+  if(props.busy || props.game.pending || props.game.status!=='alive' || q.value.duel)return;
+  active.value='';
+  const positions:Record<string,number>={journey:53,prepare:37,supplies:22,people:73};
+  world.value?.approach({x:positions[id]??35,y:87},()=>{
+    if(!props.busy && !props.game.pending && props.game.status==='alive' && !q.value.duel)active.value=id;
+  });
+}
+const stageKey = computed(() => `qi-${q.value.gates}-${q.value.node}-${!!q.value.essence}`);
+const hotspots = computed(() => q.value.duel ? [] : q.value.node ? [{ id: "journey", label: "灵流险地", x: 53, y: 45 }] : [
+  { id: "journey", label: q.value.essence ? "晋升灵材" : site.value?.name || "筑基前路", x: 60, y: 42 },
+  { id: "prepare", label: "山道与历练", x: 35, y: 50 },
+  { id: "supplies", label: "坊市摊位", x: 19, y: 72 },
+  { id: "people", label: "许照岚与裴铸", x: 78, y: 65 },
+]);
+watch(stageKey, () => { active.value = ""; });
+watch(()=>!!q.value.node, entered=>world.value?.reset({x:entered?18:30,y:87}));
+watch(()=>props.busy || !!props.game.pending || props.game.status!=='alive',locked=>{if(locked){world.value?.cancel();world.value?.stop();}});
+const combatOptions=computed(()=>Object.entries(moves).map(([id,label])=>{
+  const p=qiPreview(props.game,id as Move);
+  return {id,label,disabled:locked(id as QiAction),detail:`伤害 ${p?.damage} · 承伤 ${p?.incoming} · 回气 ${p?.healing} · 耗草 ${p?.herbs}`};
+}));
 </script>
 <template>
-  <section v-if="!game.realm" class="qi-journey" aria-label="炼气历练与晋升">
-    <h3>
+  <NarrativeStage class="qi-stage" v-if="!game.realm" :stage-key="stageKey" :image="location?.image || '/scenes/mist-path.jpg'"
+    :title="location?.name || '听松山道'" :goal="qiGoal(game) || ''" :hotspots="hotspots" :active="active" :battle="!!q.duel"
+    @select="select" @close="active = ''; world?.cancel()">
+    <template #world><QiWorld ref="world" :game="game" @performed="active = ''" />
+      <CombatBar v-if="q.duel && enemy" :turn="q.duel.turn" :player="q.duel.hp" :player-max="qiPower(game).hp" :enemy="q.duel.enemy" :enemy-max="enemy.hp" :enemy-name="enemy.name" :tell="qiEnemyTell(game)" :options="combatOptions" :busy="busy" :retreat-disabled="locked('withdraw')" retreat-label="撤回山下 · 已用补给不退" @move="act($event as QiAction)" @retreat="act('withdraw')" />
+      <details v-if="q.duel && enemy" class="qi-battle-notes"><summary>敌情与应对</summary><p>{{enemy.trait}}</p><p>{{qiTacticalCue(game,enemy.identity)}}</p><p v-if="enemy.kind==='妖兽'">守势可收力护身：伤害 −3、承伤 −4。</p></details>
+    </template>
+    <template #status><span>灵石 {{ game.stones }} · 灵草 {{ game.herbs }} · 伤势 {{ game.injury }}</span></template>
+  <section class="qi-journey" aria-label="炼气历练与晋升">
+    <h3 v-if="!q.duel">
       炼气道途 ·
       {{
         q.gates === 0 ? "淬脉入后期" : q.gates === 1 ? "凝元至圆满" : "准备筑基"
       }}
     </h3>
-    <p>{{ qiGoal(game) }}</p>
+
     <p v-if="game.qi < 120">
       先打坐积累修为，熟悉功法。中期再准备药谷历练；灵石留给研修、法器与补给。
     </p>
-    <p class="resources">
+    <p v-if="!q.duel" class="resources">
       灵石 {{ game.stones }} · 灵草 {{ game.herbs }} · 根基
       {{ game.foundation }} · 伤势 {{ game.injury }}
     </p>
-    <p v-if="q.last" role="status">{{ q.last }}</p>
-    <QiPreparationPanel
+    <p v-if="q.last.includes('暂缓') && !q.duel" role="status" class="interruption-note">{{ q.last }}</p>
+    <details v-if="q.last && !q.duel"><summary>刚才的经过</summary><p role="status">{{ q.last }}</p></details>
+    <QiPreparationPanel v-if="active === 'prepare'"
       :game="game"
       :busy="busy"
       @act="emit('act', $event)"
       @sect="emit('sect')"
     />
-    <template v-if="q.duel && enemy">
-      <h4>{{ enemy.name }} · 炼气{{ site?.stage === 1 ? "中期" : "后期" }}</h4>
-      <div class="combat-art">
-        <CharacterSprite
-          :character="heroArt(game.social.gender, game.realm)"
-          :pose="heroBattlePose(q.duel.effect)"
-          :label="game.name"
-        />
-        <img
-          class="enemy-art"
-          :src="enemy.image"
-          :alt="`${enemy.name} · ${enemy.kind}`"
-        />
-      </div>
-      <p>{{ enemy.trait }}</p>
-      <p v-if="enemy.kind === '妖兽'">守势可收力护身：伤害 −3、承伤 −4；抢攻则争取尽早结束交锋。</p>
-      <p>{{ qiEnemyTell(game) }}</p>
-      <p v-if="!medicineOpening(game, enemy.identity)">{{ qiTacticalCue(game, enemy.identity) }}</p>
-      <label
-        >自身气势 {{ q.duel.hp }} / {{ qiPower(game).hp
-        }}<progress :value="q.duel.hp" :max="qiPower(game).hp"
-      /></label>
-      <label
-        >敌方气势 {{ q.duel.enemy }} / {{ enemy.hp
-        }}<progress :value="q.duel.enemy" :max="enemy.hp"
-      /></label>
-      <div class="qi-actions">
-        <button
-          v-for="(label, move) in moves"
-          :key="move"
-          :disabled="busy"
-          @click="act(move)"
-        >
-          {{ label
-          }}<small
-            >伤害 {{ preview(move)?.damage }} · 承伤
-            {{ preview(move)?.incoming }} · 回气 {{ preview(move)?.healing }} ·
-            耗草 {{ preview(move)?.herbs }}</small
-          >
-        </button>
-      </div>
-    </template>
-    <template v-else-if="q.node === 2">
+    <template v-if="active === 'journey' && q.node === 2">
       <h4>灵流逆涌 · 剩余气势 {{ q.vigor }}</h4>
       <p>守关者就在前方。护脉丹最多恢复 26 气势，灵瓶与熟练功法可省下耗材；看看哪种已够用，择一即可。</p>
       <div class="qi-actions">
@@ -115,7 +121,7 @@ const preview = (move: Move) => qiPreview(props.game, move);
         </button>
       </div>
     </template>
-    <template v-else-if="q.essence">
+    <template v-else-if="active === 'journey' && q.essence">
       <h4>
         <img
           class="material-art"
@@ -141,12 +147,12 @@ const preview = (move: Move) => qiPreview(props.game, move);
         </button>
       </div>
     </template>
-    <template v-else-if="site && game.qi >= 120">
+    <template v-else-if="active === 'journey' && site && game.qi >= 120">
       <details :open="preparationReady(game)">
         <summary>
           晋升秘境 · {{ site.name
           }}{{
-            preparationReady(game) ? " · 已具备准备" : " · 先走通一条成长路线"
+            preparationReady(game) ? " · 成长路线已完成" : " · 先走通一条成长路线"
           }}
         </summary>
         <h4>{{ site.name }}</h4>
@@ -161,12 +167,13 @@ const preview = (move: Move) => qiPreview(props.game, move);
           两场交锋之间须穿过险地，气势不会自动补满。每次入内需一月、灵石
           {{ site.fee }}；可撤退准备后再来。
         </p>
-        <details>
+        <details :open="!game.journey.equipped || game.herbs < 8">
           <summary>行前准备建议</summary>
           <p>
             灵剑利于抢攻；灵瓶持续减伤，途中还能护脉通行。主修研至熟练后，具备神识 8、心得 2 可不耗材穿阵并恢复气势；护脉丹恢复更多，适合这次救急。长春诀守势会耗草回气。选择一项主要投入，留足盘缠即可尝试。
           </p>
         </details>
+        <p v-if="game.journey.main === 'spring' || game.herbs < 8" class="supply-note">药理护身先耗四株灵草，余下 {{ Math.max(0, game.herbs - 4) }} 株可留给战中回气。入境资格不代表能胜过两场交锋；可先准备法器、研修主修，或备一枚护脉丹供途中恢复。</p>
         <div class="qi-actions">
           <button
             v-for="(route, key) in qiRoutes"
@@ -176,7 +183,7 @@ const preview = (move: Move) => qiPreview(props.game, move);
           >
             {{ route.name }}<small>{{ key === 'medicine' && q.gates > 0 ? '灵草 4；入内耗草，气势上限 +12。内府傀儡不受药气诱引。' : route.hint }}</small
             ><small>{{
-              qiError(game, `enter:${key}`) || "准备就绪，出发"
+              qiError(game, `enter:${key}`) || "查看行程与消耗"
             }}</small>
           </button>
         </div>
@@ -185,7 +192,7 @@ const preview = (move: Move) => qiPreview(props.game, move);
     <button v-if="q.node" :disabled="busy" @click="act('withdraw')">
       撤回山下 · 保留修为，已用补给不退
     </button>
-    <template v-else-if="game.qi >= 120">
+    <template v-else-if="active === 'supplies' && game.qi >= 120">
       <details :open="game.stones < 24">
         <summary>筹措物资 · 山下委托</summary>
         <p>
@@ -247,33 +254,25 @@ const preview = (move: Move) => qiPreview(props.game, move);
     </template>
   </section>
   <QiPeoplePanel
-    v-if="!q.node"
+    v-if="active === 'people' && !q.node"
     :game="game"
     :busy="busy"
     @act="emit('act', $event)"
     @inventory="emit('inventory')"
     @facilities="emit('facilities')"
   />
+  </NarrativeStage>
 </template>
 <style scoped>
-.combat-art {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  gap: 12px;
-  height: 140px;
-  margin: 8px 0;
+.qi-stage :deep(.battle-inspector){display:none}
+.qi-battle-notes{position:absolute;left:24px;top:125px;max-width:300px;z-index:5;pointer-events:auto;color:#f3e7cb;background:#102720e8;padding:8px 12px;border:1px solid #b49d6a88}.qi-battle-notes p{font-size:13px;line-height:1.6}
+@media(min-width:901px){
+  .qi-stage :deep(.battle-inspector){width:330px;right:18px;top:90px;bottom:8px;padding:14px;}
+  .qi-stage :deep(.battle-inspector .qi-actions){grid-template-columns:1fr;margin:8px 0;}
+  .qi-stage :deep(.battle-inspector .qi-actions button){padding:8px 10px;}
 }
-.combat-art :deep(.character-sprite) {
-  width: 40%;
-  height: 140px;
-}
-.enemy-art {
-  width: 40%;
-  height: 140px;
-  object-fit: contain;
-  border-radius: 6px;
-}
+.enemy-tell{border-left:2px solid #ddc387;padding-left:10px;color:#ffe7ad}
+
 .site-art {
   width: 100%;
   height: auto;
@@ -288,11 +287,11 @@ const preview = (move: Move) => qiPreview(props.game, move);
   vertical-align: middle;
 }
 .qi-journey {
-  border: 1px solid #a9986d;
-  padding: 14px;
-  margin: 14px 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
   border-radius: 8px;
-  background: #14271fee;
+  background: transparent;
   color: #f4ead3;
 }
 .qi-journey h3,

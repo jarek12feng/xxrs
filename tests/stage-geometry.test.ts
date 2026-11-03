@@ -1,0 +1,26 @@
+import { describe, expect, it } from "vitest";
+import { approachPoint, approachDuration, groundScale } from "../src/scene2d/stage-geometry";
+
+describe("scene approach staging", () => {
+  it("keeps approach destinations on the visible foreground at PC sizes", () => {
+    for (const [width, height] of [[1280, 720], [1920, 1080], [2560, 1440]]) {
+      for (const [x, y] of [[0, 0], [100, 100], [51, 38]]) {
+        const point = approachPoint(width!, height!, x!, y!);
+        expect(point.x).toBeGreaterThanOrEqual(width! * .07);
+        expect(point.x).toBeLessThanOrEqual(width! * .93);
+        expect(point.y).toBeGreaterThanOrEqual(height! * .58);
+        expect(point.y).toBeLessThanOrEqual(height! * .9);
+      }
+    }
+  });
+  it("gives nearby approaches less waiting and bounds distant ones", () => {
+    expect(approachDuration(80, 1)).toBeLessThan(approachDuration(300, 1));
+    expect(approachDuration(9000, 1)).toBe(650);
+    expect(approachDuration(300, 1)).toBe(approachDuration(600, 2));
+  });
+  it("makes foreground actors larger without unbounded scaling", () => {
+    expect(groundScale(800, 1000)).toBeGreaterThan(groundScale(500, 1000));
+    expect(groundScale(-500, 1000)).toBe(.72);
+    expect(groundScale(5000, 1000)).toBe(1.12);
+  });
+});

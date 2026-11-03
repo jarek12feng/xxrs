@@ -29,6 +29,13 @@ it("keeps full receipts readable on demand and collapses a new outcome", async (
     await nextTick();
     expect(host.querySelector("details")!.open).toBe(false);
     expect(host.textContent).not.toContain("清心丹");
+    data.text = "“我没写名字。”苏婉宁放下刻刀。你们重新商量。";
+    await nextTick();
+    expect(host.querySelector('[role="status"]')!.textContent).toBe("“我没写名字。”");
+    data.text = "她说：“先辨药性。莫伤经脉。”随后递来药册。";
+    await nextTick();
+    expect(host.querySelector('[role="status"]')!.textContent).toBe("她说：“先辨药性。莫伤经脉。”");
+    expect(host.querySelector("details p")!.textContent).toBe("随后递来药册。");
   } finally {
     app.unmount();
     host.remove();

@@ -19,6 +19,8 @@ it("the passage button displays the predicted vigor and submits a real command w
   }) });
   app.mount(host);
   try {
+    [...host.querySelectorAll("button")].find(b => b.textContent?.includes("灵流险地"))!.click();
+    await nextTick();
     const button = [...host.querySelectorAll("button")].find(b => b.textContent?.includes("淬脉行气直穿"))!;
     expect(button.disabled).toBe(false); expect(button.textContent).toContain("22");
     button.click(); await nextTick();
@@ -42,12 +44,16 @@ it("snow exposes the time-for-supplies choice and replaces it with onward route 
   }) });
   app.mount(host);
   try {
+    host.querySelector<HTMLButtonElement>('[data-hotspot="prepare"]')!.click();
+    await nextTick();
     const button = [...host.querySelectorAll("button")].find(b => b.textContent?.includes("行功御寒"))!;
     expect(button.disabled).toBe(false); expect(button.textContent).toContain("六月");
     button.click(); await nextTick();
     expect(state.value.month - s.month).toBe(6);
     expect(state.value.stones).toBe(38);
     expect(state.value.workshop.ward).toBe(s.workshop.ward);
+    host.querySelector<HTMLButtonElement>('[data-hotspot="encounter"]')!.click();
+    await nextTick();
     expect(host.textContent).toContain("绕行缓坡");
     expect(host.textContent).toContain("抢过风口");
     expect(host.textContent).not.toContain("行功御寒 ·");

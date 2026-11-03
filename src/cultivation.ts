@@ -9,7 +9,8 @@ import { qiCap, type QiJourney } from "./qi-journey/state";
 export interface Cultivator {
   realm: number;
   conclave?: {stage:number;method:string};
-  outerSea?: { cultivation: number; method: string };
+  outerSea?: { cultivation: number; method: string; notice?: number | null; reminded?: boolean };
+  month?: number;
   cultivationRemainder?: number;
   qiJourney?: QiJourney;
   qi: number;
@@ -129,9 +130,13 @@ export function cultivationProjection(
         : s.qi;
   const cap = s.realm === 2 ? goldenCap(s) : s.realm === 1 ? foundationCap(s) : qiCap(s);
   const step = s.realm === 2 ? 300 : s.realm === 1 ? 200 : 120;
+  const nextTarget = s.realm === 1 && current >= 400 && current < 500 &&
+    s.foundationJourney && hasSteady(s.foundationJourney)
+    ? 500
+    : (cultivationStageIndex(s) + 1) * step;
   const target = Math.max(
     current,
-    Math.min(cap, requestedTarget ?? (cultivationStageIndex(s) + 1) * step),
+    Math.min(cap, requestedTarget ?? nextTarget),
   );
   const missing = target - current;
   const remainingMonths = remainingLifeMonths(s);

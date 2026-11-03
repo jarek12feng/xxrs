@@ -6,13 +6,14 @@ const props = defineProps<{
   expanded?: boolean;
 }>();
 const split = computed(() => {
-  const end = props.text.indexOf("。");
-  return end < 0
-    ? { brief: props.text, rest: "" }
-    : {
-        brief: props.text.slice(0, end + 1),
-        rest: props.text.slice(end + 1).trim(),
-      };
+  const sentences = props.text.match(/[^。！？]+[。！？]?[”」』]*/gu) ?? [props.text];
+  let end = 1;
+  let brief = sentences[0] ?? "";
+  const unclosed = () => [["“", "”"], ["「", "」"], ["『", "』"]].some(
+    ([open, close]) => brief.split(open!).length > brief.split(close!).length,
+  );
+  while (end < sentences.length && unclosed()) brief += sentences[end++];
+  return { brief, rest: sentences.slice(end).join("").trim() };
 });
 </script>
 <template>

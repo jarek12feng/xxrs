@@ -107,7 +107,7 @@ it("system help and feedback remain available during a pending story without cha
   await click("版本与反馈");
   expect(
     document.querySelector<HTMLTextAreaElement>("#feedback-summary")?.value,
-  ).toContain("存档格式：31");
+  ).toContain("存档格式：33");
   await click("打开本机记录工具");
   await flush();
   // Lazy observer must be opt-in; opening it must never persist game changes.
@@ -124,6 +124,7 @@ it("homecoming does not explain future pass rules; the actual pass does", async 
   expect(document.body.textContent).not.toContain("第二卷");
   props.game.adventure.road.stage = "pass";
   await flush();
+  await click("山口与阵纹");
   expect(document.body.textContent).toContain("三种解法满足条件后必定成功");
 });
 it("recovery button remains usable with more than twelve injuries and respects command limits", async () => {
@@ -141,6 +142,7 @@ it("recovery button remains usable with more than twelve injuries and respects c
   });
   app.mount(host());
   await flush();
+  await click("随身行囊");
   await click("免费静养");
   expect(intents).toEqual([{ type: "advance", activity: "rest", months: 12 }]);
   const n = dispatch(s, { ...intents[0]!, id: "recover" });

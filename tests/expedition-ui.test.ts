@@ -7,14 +7,17 @@ it("shows the real telegraph, costs and three response commands", async () => {
   const p = expeditionSession();
   p.prepare();
   p.send({ type: "expedition", action: "accept" });
+  const context: { teleports?: Record<string, string> } = {};
   let html = await renderToString(
-    createSSRApp(ExpeditionPanel, { game: p.state, busy: false }),
+    createSSRApp(ExpeditionPanel, { game: p.state, busy: false }), context,
   );
+  html += context.teleports?.body || "";
   expect(html).toContain("行前回山下休整、筹备一月（若遇旧约先赴约），灵石 2");
   p.send({ type: "expedition", action: "enter" });
   html = await renderToString(
-    createSSRApp(ExpeditionPanel, { game: p.state, busy: false }),
+    createSSRApp(ExpeditionPanel, { game: p.state, busy: false }), context,
   );
+  html += context.teleports?.body || "";
   expect(html).toContain("长刀高举");
   expect(html).toContain("守势化劲");
   expect(html).toContain("破绽反击");

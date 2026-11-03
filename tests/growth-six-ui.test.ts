@@ -38,6 +38,8 @@ async function mount(s: State) {
   await flush();
   button("洞府修行").click();
   await flush();
+  button("案几 · 修行与杂务").click();
+  await flush();
 }
 beforeEach(() => {
   vi.useFakeTimers();
@@ -130,6 +132,8 @@ it("explains the mandatory relic pill and blocks breakthrough without it", async
   s.qiJourney.gates = 2;
   s.pills = 0;
   await mount(s);
+  button("丹炉 · 突破筹备").click();
+  await flush();
   button("叩问天关").click();
   await flush();
   const panel = document.querySelector('[aria-label="突破操作区"]')!;
@@ -155,6 +159,8 @@ it("offers a sword cultivator the earned recipe, with material costs and real co
   expect(
     document.querySelector('[aria-label="筑基机缘"]')?.textContent,
   ).toContain("剑修也可");
+  button("丹炉 · 突破筹备").click();
+  await flush();
   button("依方补炼筑基丹").click();
   await flush();
   expect(vi.mocked(save).mock.calls.at(-1)?.[0].pills).toBe(1);
@@ -174,6 +180,8 @@ it("foundation preparation submits a bounded command and persists only to the ne
   await mount(s);
   const panel = document.querySelector('[aria-label="筑基机缘"]')!;
   expect(panel.textContent).toContain("破阵手段已具备");
+  button("丹炉 · 突破筹备").click();
+  await flush();
   button("边劳作边候约").click();
   await flush();
   const saved = vi.mocked(save).mock.calls.at(-1)![0];
@@ -198,6 +206,8 @@ it("foundation shortcut confirms crossing the appointment and cancelling never s
   s.memories.letter = s.memories.visit = true;
   await mount(s);
   const before = vi.mocked(save).mock.calls.length;
+  button("丹炉 · 突破筹备").click();
+  await flush();
   button("自行闭关固本").click();
   await flush();
   expect(vi.mocked(save).mock.calls.length).toBe(before);

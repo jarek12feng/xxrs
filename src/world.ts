@@ -1,3 +1,6 @@
+import { isPassageContinuation } from "./wayfaring/passage";
+import { freshWayfaring, validWayfaring, type Wayfaring } from "./wayfaring/state";
+import { runWayfaring, type WayfaringAction } from "./wayfaring/rules";
 import { freshConclave, validConclave, goldenCap, goldenBlock, type Conclave } from "./conclave/state";
 import { runConclave, conclaveActive, type ConclaveAction } from "./conclave/rules";
 import {freshOuterSea, validOuterSea, type OuterSea} from "./outer-sea/state";
@@ -223,7 +226,8 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 31;
+  version: 33;
+  wayfaring: Wayfaring;
   conclave: Conclave;
   outerSea: OuterSea;
   goldenCore: GoldenCore;
@@ -243,12 +247,13 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | {id:string;type:"wayfaring";action:WayfaringAction}
   | {id:string;type:"conclave";action:ConclaveAction}
   | {id:string;type:"outerSea";action:SeaAction}
   | { id: string; type: "goldenCore"; action: GoldenAction }
   | { id: string; type: "sectContest"; action: ContestAction }
   | { id: string; type: "treasure"; action: TreasureAction }
-  | { id: string; type: "learning"; choice: LearningChoice }
+  | { id: string; type: "learning"; choice: LearningChoice; equip?: boolean }
   | {id:string; type:"secretPact"; action:PactAction}
   | { id: string; type: "recognition"; action: RecognitionAction }
   | { id: string; type: "qiJourney"; action: QiAction }
@@ -306,6 +311,7 @@ const fresh = (): Journey => ({
 });
 function base(s: State): chapter.State {
   const {
+    wayfaring: _wayfaring,
     journey: _,
     social: __,
     adventure: ___,
@@ -335,7 +341,8 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 31,
+    version: 33,
+    wayfaring: freshWayfaring(),
     conclave: freshConclave(),
     outerSea: freshOuterSea(),
     goldenCore: freshGoldenCore(),
@@ -524,6 +531,7 @@ export function nextGoal(s: State) {
   if (s.adventure.mist.stage !== "dormant" && !s.adventure.mist.revisited)
     return mistGoal(s);
   if (s.adventure.road.map && !s.adventure.road.surveyed) return roadGoal(s);
+  if (s.realm === 1) return foundationGoal(s);
   if (s.story.stage === "unmet" && s.adventure.step === "done")
     return "药工已平安归家。先修炼与休整，第三个月赴渡口，再听陆迟未说完的心事。";
   if (s.realm === 0 || s.story.stage !== "resolved")
@@ -554,6 +562,7 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.wayfaring = n.life === old.life ? structuredClone(old.wayfaring) : freshWayfaring();
   n.conclave = n.life === old.life ? structuredClone(old.conclave) : freshConclave();
   if(n.status!=="alive") n.conclave.duel=null;
   n.outerSea = n.life === old.life ? structuredClone(old.outerSea) : freshOuterSea();
@@ -615,6 +624,9 @@ function normalize(n: State, old: State) {
   }
   return n;
 }
+function wayfaringMonth(s: State): State {
+  return normalize(lift(chapter.travelMonth(base(s), "御剑研习"),structuredClone(s.journey),structuredClone(s.social),structuredClone(s.adventure)),s);
+}
 function workshopMonth(s: State): State {
   return normalize(lift(chapter.travelMonth(base(s), "开炉筹备"), structuredClone(s.journey), structuredClone(s.social), structuredClone(s.adventure)), s);
 }
@@ -631,6 +643,9 @@ export function dispatch(input: State, c: Command): State {
 }
 function dispatchCommand(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (input.wayfaring.passage && !(c.type === "choose" || (c.type === "wayfaring" && c.action.kind === "cancel") || isPassageContinuation(input,c))) return input;
+  if (input.wayfaring.trip && !(c.type === "choose" || c.type === "wayfaring" || (c.type === "foundationJourney" && c.action.kind === "travel"))) return input;
+  if (c.type === "wayfaring") return runWayfaring(input,c.action,c.id,wayfaringMonth);
   if(c.type === "conclave") return runConclave(input,c.action,c.id,workshopMonth);
   if(input.conclave.duel || input.conclave.location === "vault") return input;
   if(conclaveActive(input) && ["outerSea","goldenCore","foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest","beginChapter","next"].includes(c.type)) return input;
@@ -643,7 +658,7 @@ function dispatchCommand(input: State, c: Command): State {
   if (input.sectContest.duel) return input;
   if (c.type === "treasure") return runTreasure(input,c.action,c.id,workshopMonth);
   if (input.treasures.auction?.entered && !input.treasures.auction.closed) return input;
-  if (c.type === "learning") return runLearning(input, c.choice, c.id);
+  if (c.type === "learning") return runLearning(input, c.choice, c.id, c.equip);
   if (c.type === "secretPact") return runPact(input,c.action,c.id,(s) => normalize(lift(chapter.travelMonth(base(s),"秘境赴约"),structuredClone(s.journey),structuredClone(s.social),structuredClone(s.adventure)),s));
   if (c.type === "recognition") return runRecognition(input, c.action, c.id, (s) =>
     normalize(lift(chapter.travelMonth(base(s), "领队行程"), structuredClone(s.journey), structuredClone(s.social), structuredClone(s.adventure)), s));
@@ -1271,17 +1286,18 @@ function dispatchCommand(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 31);
+  return validWorldState(x, 33);
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
     (x as { version: unknown }).version !== version ||
+    (version >= 32 && !validWayfaring(s)) ||
     (version >= 31 && !validConclave(s)) ||
     (version >= 30 && !validOuterSea(s)) ||
     (version >= 29 && !validGoldenCore(s)) ||
@@ -1371,33 +1387,48 @@ function validWorldState(
     })
   );
 }
-export function migrateSave(x: unknown): State {
-  if (validState(x)) return structuredClone(x);
+export function migrateSave(x:unknown):State {
+  if(validState(x)) return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && x.version===32) {
+    const previous=x as State;
+    if(!previous.wayfaring || Object.hasOwn(previous.wayfaring,'passage')) throw new Error("旧旅行存档损坏，原档未修改。");
+    const next={...structuredClone(previous),version:33 as const,wayfaring:{...structuredClone(previous.wayfaring),passage:null}};
+    if(!validState(next)) throw new Error("旧旅行存档损坏，原档未修改。");
+    return next;
+  }
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=32) throw new Error("未知或损坏的存档，原档未修改。");
+  const old=migratePrevious(x);
+  const next={...old,version:33 as const,wayfaring:freshWayfaring()};
+  if(!validState(next)) throw new Error("旧存档损坏，原档未修改。");
+  return next;
+}
+function migratePrevious(x: unknown): State {
+  if (validWorldState(x,31)) return structuredClone(x) as State;
   if(x && typeof x === "object" && "version" in x && x.version===30){
     const candidate={...structuredClone(x),conclave:freshConclave()} as State;
     if(!validWorldState(candidate,30)) throw new Error("旧存档损坏，原档未修改。");
-    return {...candidate,version:31};
+    return {...candidate,version:33};
   }
   if(x && typeof x === "object" && "version" in x && x.version===29){
     if(!validWorldState(x,29)) throw new Error("旧存档损坏，原档未修改。");
-    return {...structuredClone(x) as State,version:31,conclave:freshConclave(),outerSea:freshOuterSea()};
+    return {...structuredClone(x) as State,version:33,conclave:freshConclave(),outerSea:freshOuterSea()};
   }
   if (x && typeof x === "object" && "version" in x && x.version === 28) {
     if (!validWorldState(x,28)) throw new Error("旧存档损坏，原档未修改。");
-    return {...structuredClone(x) as State,version:31,conclave:freshConclave(),outerSea:freshOuterSea(),goldenCore:freshGoldenCore()};
+    return {...structuredClone(x) as State,version:33,conclave:freshConclave(),outerSea:freshOuterSea(),goldenCore:freshGoldenCore()};
   }
   if (x && typeof x === "object" && "version" in x && x.version === 27) {
     if (!validWorldState(x,27)) throw new Error("旧存档损坏，原档未修改。");
-    return {...structuredClone(x) as State,version:31,conclave:freshConclave(),outerSea:freshOuterSea(),goldenCore:freshGoldenCore(),sectContest:freshSectContest()};
+    return {...structuredClone(x) as State,version:33,conclave:freshConclave(),outerSea:freshOuterSea(),goldenCore:freshGoldenCore(),sectContest:freshSectContest()};
   }
   if (x && typeof x === "object" && "version" in x && x.version === 26) {
     if (!validWorldState(x,26)) throw new Error("旧存档损坏，原档未修改。");
-    return migrateSave({...structuredClone(x) as State,version:27,treasures:freshTreasures()});
+    return migratePrevious({...structuredClone(x) as State,version:27,treasures:freshTreasures()});
   }
   if (x && typeof x === "object" && "version" in x && x.version === 25) {
     if (!validWorldState(x, 25)) throw new Error("旧存档损坏，原档未修改。");
     const n = structuredClone(x) as State;
-    n.version = 31;
+    n.version = 33;
     n.conclave = freshConclave();
     n.outerSea = freshOuterSea();
     n.goldenCore = freshGoldenCore();
@@ -1408,22 +1439,22 @@ export function migrateSave(x: unknown): State {
   }
   if (x && typeof x === "object" && "version" in x && x.version === 24) {
     if (!validWorldState(x,24)) throw new Error("旧存档损坏，原档未修改。");
-    return migrateSave({...structuredClone(x) as State,version:25,secretPact:freshSecretPact()});
+    return migratePrevious({...structuredClone(x) as State,version:25,secretPact:freshSecretPact()});
   }
   if (x && typeof x === "object" && "version" in x && x.version === 23) {
     if (!validWorldState(x, 23)) throw new Error("旧存档损坏，原档未修改。");
-    return migrateSave({ ...structuredClone(x) as State, version: 24, recognition: freshRecognition() });
+    return migratePrevious({ ...structuredClone(x) as State, version: 24, recognition: freshRecognition() });
   }
   if (x && typeof x === "object" && "version" in x && x.version === 22) {
     if (!validWorldState(x, 22)) throw new Error("旧存档损坏，原档未修改。");
-    return migrateSave({ ...structuredClone(x) as State, version: 23, cultivationRemainder: 0 });
+    return migratePrevious({ ...structuredClone(x) as State, version: 23, cultivationRemainder: 0 });
   }
   if (x && typeof x === "object" && "version" in x && x.version === 21) {
     if (!validWorldState(x, 21)) throw new Error("旧存档损坏，原档未修改。");
     const n = structuredClone(x) as State;
     // No invented milestones: earlier foundation runs must start a new character.
     if (n.realm === 1) throw new Error("筑基成长规则已重构，请备份原档并新建角色；原档未修改。");
-    n.version = 31;
+    n.version = 33;
     n.conclave = freshConclave();
     n.outerSea = freshOuterSea();
     n.goldenCore = freshGoldenCore();
@@ -1439,13 +1470,13 @@ export function migrateSave(x: unknown): State {
   }
   if (x && typeof x === "object" && "version" in x && x.version === 20) {
     if (!validWorldState(x, 20)) throw new Error("旧存档损坏，原档未修改。");
-    return migrateSave({ ...structuredClone(x) as State, version: 21, workshop: freshWorkshop() });
+    return migratePrevious({ ...structuredClone(x) as State, version: 21, workshop: freshWorkshop() });
   }
   if (x && typeof x === "object" && "version" in x && x.version === 19) {
     if (!validWorldState(x, 19)) throw new Error("旧存档损坏，原档未修改。");
     const old = structuredClone(x) as State;
     // No invented contacts or route completions. Current playtest rules start unearned.
-    return migrateSave({
+    return migratePrevious({
       ...old,
       version: 20,
       qiJourney: {
@@ -1469,7 +1500,7 @@ export function migrateSave(x: unknown): State {
       qiJourney: q,
       limit: old.limit,
     };
-    if (validWorldState(upgraded, 20)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 20)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 17) {
@@ -1488,7 +1519,7 @@ export function migrateSave(x: unknown): State {
           : null,
       },
     };
-    if (validWorldState(upgraded, 18)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 18)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 16) {
@@ -1498,7 +1529,7 @@ export function migrateSave(x: unknown): State {
       version: 17,
       foundationJourney: freshFoundationJourney(),
     };
-    if (validWorldState(upgraded, 17)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 17)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 15) {
@@ -1508,7 +1539,7 @@ export function migrateSave(x: unknown): State {
       version: 16,
       companionship: freshCompanionship(),
     };
-    if (validWorldState(upgraded, 16)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 16)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 14) {
@@ -1519,12 +1550,12 @@ export function migrateSave(x: unknown): State {
       version: 15 as const,
       social: { ...old.social, origins: [] },
     };
-    if (validWorldState(upgraded, 15)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 15)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 13) {
     if (!validWorldState(x, 13)) throw new Error("旧存档损坏，原档未修改。");
-    return migrateSave({ ...(structuredClone(x) as State), version: 14 });
+    return migratePrevious({ ...(structuredClone(x) as State), version: 14 });
   }
   if (x && typeof x === "object" && "version" in x && x.version === 12) {
     if (!validWorldState(x, 12)) throw new Error("旧存档损坏，原档未修改。");
@@ -1533,7 +1564,7 @@ export function migrateSave(x: unknown): State {
       version: 14,
       growth: freshGrowth(),
     };
-    if (validWorldState(upgraded, 14)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 14)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 11) {
@@ -1543,7 +1574,7 @@ export function migrateSave(x: unknown): State {
       version: 12,
       expedition: freshExpedition(),
     };
-    if (validWorldState(upgraded, 12)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 12)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 10) {
@@ -1557,7 +1588,7 @@ export function migrateSave(x: unknown): State {
         rescueChoice: old.adventure.step === "done" ? "legacy" : "none",
       },
     };
-    if (validWorldState(upgraded, 11)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 11)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 9) {
@@ -1579,7 +1610,7 @@ export function migrateSave(x: unknown): State {
         },
       },
     };
-    if (validWorldState(upgraded, 10)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 10)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原档未修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 8) {
@@ -1591,7 +1622,7 @@ export function migrateSave(x: unknown): State {
       version: 9,
       adventure: { ...structuredClone(old.adventure), mist: freshMist() },
     };
-    return migrateSave(upgraded);
+    return migratePrevious(upgraded);
   }
   if (x && typeof x === "object" && "version" in x && x.version === 7) {
     const old = x as State;
@@ -1614,7 +1645,7 @@ export function migrateSave(x: unknown): State {
         },
       },
     };
-    return migrateSave(upgraded);
+    return migratePrevious(upgraded);
   }
   if (x && typeof x === "object" && "version" in x && x.version === 6) {
     const old = x as State;
@@ -1629,7 +1660,7 @@ export function migrateSave(x: unknown): State {
         mist: freshMist(),
       },
     };
-    if (validWorldState(upgraded, 10)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 10)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原始数据未被修改。");
   }
   if (x && typeof x === "object" && "version" in x && x.version === 5) {
@@ -1638,11 +1669,11 @@ export function migrateSave(x: unknown): State {
       version: 10,
       adventure: freshAdventure(true),
     };
-    if (validWorldState(upgraded, 10)) return migrateSave(upgraded);
+    if (validWorldState(upgraded, 10)) return migratePrevious(upgraded);
     throw new Error("旧存档损坏，原始数据未被修改。");
   }
   if (validV4(x))
-    return migrateSave({
+    return migratePrevious({
       ...structuredClone(x),
       version: 10,
       social: freshSocial(),

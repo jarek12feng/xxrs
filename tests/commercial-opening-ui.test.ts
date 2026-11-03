@@ -37,6 +37,10 @@ it("the actual panel offers a bounded preparation command and a single homecomin
   app.mount(host);
   await nextTick();
   try {
+    host
+      .querySelector<HTMLButtonElement>('[data-hotspot="encounter"]')!
+      .click();
+    await nextTick();
     expect(host.querySelectorAll('[aria-label="筑基篇尾声"]')).toHaveLength(1);
     expect(host.textContent?.split("你独自走完归流阵")).toHaveLength(2);
     expect(host.textContent).toContain("可在凝丹筹备中争取主药、炼丹并叩关");
@@ -52,14 +56,14 @@ it("shows future combo effects and lethal risk before emitting a single move com
   p.act({ kind: "battle", battle: "culmination" });
   const state = structuredClone(p.state);
   state.foundationJourney.duel!.hp = 1;
-  state.journey.support=null;
-  state.journey.equipped=null;
-  state.foundation=0;
-  state.growth.training.spring=0;
-  state.growth.training.guard=0;
-  state.foundationJourney.rescue=0;
-  state.foundationJourney.growth.steady="none";
-  state.foundationJourney.inheritance="none";
+  state.journey.support = null;
+  state.journey.equipped = null;
+  state.foundation = 0;
+  state.growth.training.spring = 0;
+  state.growth.training.guard = 0;
+  state.foundationJourney.rescue = 0;
+  state.foundationJourney.growth.steady = "none";
+  state.foundationJourney.inheritance = "none";
   const before = structuredClone(state);
   const intents: Intent[] = [];
   const host = document.body.appendChild(document.createElement("div"));

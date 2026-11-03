@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { clickSceneAction, openSceneNotes } from "./golden-scene-navigation";
 import { createApp, h, nextTick, shallowRef } from "vue";
 import { it, expect } from "vitest";
 import { dispatch, validState, type Intent } from "../src/core";
@@ -26,15 +27,8 @@ it("来信赴会、两胜入境、温养与深处取法均通过真实按钮提�
       }),
   });
   app.mount(host);
-  const click = async (text: string) => {
-    const b = [...host.querySelectorAll("button")].find((b) =>
-      b.textContent?.includes(text),
-    );
-    expect(b).toBeTruthy();
-    expect(b!.disabled).toBe(false);
-    b!.click();
-    await nextTick();
-  };
+
+  const click = (text: string) => clickSceneAction(host, text);
   const fund = async (n: number) => {
     while (s.value.stones < n) await click("劳作半年");
   };
@@ -57,6 +51,7 @@ it("来信赴会、两胜入境、温养与深处取法均通过真实按钮提�
     }
   };
   try {
+    await openSceneNotes(host);
     expect(host.textContent).toContain("会期还有");
     await click("留居候会");
     await click("循道友来信");
@@ -69,6 +64,8 @@ it("来信赴会、两胜入境、温养与深处取法均通过真实按钮提�
     await click("登台争取");
     await fight();
     expect(s.value.conclave.wins).toBe(2);
+    host.querySelector<HTMLButtonElement>("[data-hotspot=arena]")!.click();
+    await nextTick();
     expect(host.textContent).toContain("自愿争优");
     await click("背潮石道");
     await fund(10);
@@ -88,6 +85,7 @@ it("来信赴会、两胜入境、温养与深处取法均通过真实按钮提�
     expect(s.value.conclave.depth).toBe(2);
     await click("参悟抱元录");
     expect(s.value.conclave.method).toBe("inherit");
+    await openSceneNotes(host);
     expect(host.textContent).toContain("尚未炼成丹药");
     expect(host.textContent).toContain("抱元凝神录");
   } finally {

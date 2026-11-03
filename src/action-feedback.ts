@@ -203,6 +203,7 @@ export function actionReceipt(
     title = labels[effective.type]!;
   if (effective.type === "workshop" && !dead)
     title = failed ? "制作中断 · 未扣材料" : "丹药与法器 · 准备完成";
+  if (effective.type === "wayfaring" && !dead) title = after.pending ? "行程暂歇" : "御剑与行路";
   if (effective.type === "promote") title = "晋升外门 · 师门谢礼";
   if (after.realm > before.realm) {
     const qi = changes.find((c) => c.label === "修为");

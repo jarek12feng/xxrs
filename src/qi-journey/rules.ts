@@ -12,6 +12,7 @@ import {
   preparationRoutes,
 } from "./preparation";
 import type { State } from "../world";
+import { hasFoundationRecipe } from "../foundation";
 import { readiness, tacticalExchange } from "../expedition/combat";
 import type { Move } from "../expedition/content";
 import { qiSites, commissions, type QiAction } from "./content";
@@ -32,6 +33,8 @@ export function qiGoal(s: State) {
     return "经脉与凝元已稳：备齐圆满修为与筑基丹，再考虑固本和疗伤后叩关。";
   if (s.qi >= qiSites[q.gates]!.qi && !preparationReady(s))
     return "药谷采药、师门护送、独闯古阵，择一历练，再入秘境取材。";
+  if (q.gates === 1 && preparationReady(s) && !hasFoundationRecipe(s))
+    return "先赴青石遗府取得丹方与内府图：回洞府丹炉查看遗府之约与探府准备。";
   return s.qi < qiSites[q.gates]!.qi
     ? `先修炼到 ${qiSites[q.gates]!.qi} 修为，准备${qiSites[q.gates]!.name}。`
     : `突破${q.gates === 0 ? "后期" : "圆满"}瓶颈：准备功法、法器与补给，进入${qiSites[q.gates]!.name}取得${qiSites[q.gates]!.material}。`;
@@ -86,8 +89,7 @@ export function qiError(s: State, a: QiAction): string {
     if (s.qi < qiSites[q.gates]!.qi) return `需要修为 ${qiSites[q.gates]!.qi}`;
     if (
       q.gates === 1 &&
-      !["self", "gift"].includes(s.story.choice) &&
-      !s.crafted
+      !hasFoundationRecipe(s)
     )
       return "先赴青石遗府取得丹方与内府图";
     if (s.injury >= 3) return "先养伤至 2 以下";
@@ -205,7 +207,7 @@ export function runQiJourney(
     if (s.status !== "alive" || s.pending) {
       s.qiJourney.last =
         s.status === "alive"
-          ? "行前有信，暂缓出发。物资未动，报酬未领。"
+          ? "行前来信，原行动暂缓：已过一月，物资未动、准备进度未增加。处理来信后需重新安排。"
           : "寿元已尽，此行未成。";
       s.seen = [...input.seen, id].slice(-512);
       return s;

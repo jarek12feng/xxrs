@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import RoadWorld from "./scene2d/RoadWorld.vue";
 import OriginNotes from "./OriginNotes.vue";
-import ItemArt from "./presentation/ItemArt.vue";
 import { expeditionIntermission } from "./expedition/progression";
 import { computed, ref, watch, nextTick, onMounted } from "vue";
 import ExpeditionPanel from "./expedition/ExpeditionPanel.vue";
 import RoadEpilogue from "./RoadEpilogue.vue";
-import SceneBackdrop from "./SceneBackdrop.vue";
+import NarrativeStage from "./scene2d/NarrativeStage.vue";
 import SceneResponse from "./SceneResponse.vue";
 import type { ActionReceipt } from "./action-feedback";
 import {
@@ -48,6 +48,34 @@ const reveal = async () => {
 };
 onMounted(reveal);
 watch(() => props.game.adventure.road.stage, reveal);
+const active = ref("");
+const world = ref<InstanceType<typeof RoadWorld>>();
+function selectObject(id:string){
+  if(locked.value)return;
+  active.value='';world.value?.approach(id,()=>{if(!locked.value)active.value=id;});
+}
+function invoke(action:RoadAction){
+  if(locked.value || roadError(props.game,action))return;
+  const commit=()=>{if(!locked.value && !roadError(props.game,action))emit('act',{type:'road',action});};
+  if(['market','pass','camp','lookout','back'].includes(action)){
+    active.value='';world.value?.approach(['market','camp','back'].includes(action)?'back':'forward',commit);
+  }else{world.value?.cancel();world.value?.skip();commit();}
+}
+function continueMist(){
+  if(locked.value)return;
+  active.value='';world.value?.approach('forward',()=>{if(!locked.value)emit('mist');});
+}
+const hotspots = computed(() => [
+  { id: "person", label: person.value.name, x: 32, y: 52 },
+  { id: "objects", label: road.value.stage === "pass" ? "山口与阵纹" : "沿途痕迹", x: 56, y: 42 },
+  { id: "prepare", label: ["pass", "camp"].includes(road.value.stage) ? "药队与行装" : "随身行装", x: 22, y: 76 },
+  { id: "road", label: "前路与归途", x: 79, y: 57 },
+]);
+watch(() => props.game.adventure.road.stage, () => { active.value = ""; });
+const choiceGroup = (action: RoadAction) =>
+  ["thanks", "talk", "accept", "deliver", "verify", "invite"].includes(action) ? "person" :
+  ["inspect", "challenge", "shelteredChallenge", "survey"].includes(action) ? "objects" :
+  ["art", "relic", "friend"].includes(action) ? "prepare" : "road";
 const showLegacy = ref(false);
 const epilogueDismissed = ref(false);
 const showEpilogue = computed(
@@ -69,6 +97,8 @@ function keyboard(event: KeyboardEvent) {
   )
     return;
   if (event.key === "Escape") {
+    active.value = "";
+    world.value?.cancel();
     showLegacy.value = false;
     panel.value
       ?.querySelectorAll("details[open]")
@@ -77,6 +107,7 @@ function keyboard(event: KeyboardEvent) {
   }
   if (
     locked.value ||
+    active.value !== "objects" ||
     road.value.stage !== "pass" ||
     road.value.obstacle === "none" ||
     road.value.passed
@@ -87,7 +118,7 @@ function keyboard(event: KeyboardEvent) {
   const action = passSolutions[key].prepare;
   if (!roadError(props.game, action)) {
     event.preventDefault();
-    emit("act", { type: "road", action });
+    invoke(action);
   }
 }
 const solutionKeys = Object.keys(passSolutions) as PassSolution[];
@@ -128,6 +159,7 @@ const locked = computed(
     !!props.game.social.scene ||
     !!props.game.social.arena.duel,
 );
+watch(locked,value=>{if(value){world.value?.cancel();world.value?.skip();}});
 const observations = computed(() =>
   (Object.keys(roadClues) as RoadClue[])
     .filter((key) => roadClues[key].stage === road.value.stage)
@@ -300,80 +332,27 @@ const person = computed(() =>
   <section
     ref="panel"
     tabindex="0"
-    class="adventure-panel road-panel desktop-scene"
+    class="adventure-panel road-panel world-story-panel"
     :data-weather="scene.mood"
     :data-reading-size="readingSize"
     @keydown="keyboard"
     aria-label="走出听松山主线"
   >
-    <div class="road-toolbar">
-      <span>青嶂行路</span>
-      <label
-        >阅读字号
-        <select v-model="readingSize" aria-label="阅读字号">
-          <option value="standard">标准</option>
-          <option value="large">大</option>
-          <option value="largest">特大</option>
-        </select>
-      </label>
-    </div>
-    <RoadEpilogue
-      v-if="showEpilogue"
-      :game="game"
-      :locked="locked"
-      @return="epilogueDismissed = true"
-      @continue="emit('mist')"
-    />
-    <template v-else>
-      <SceneBackdrop
-        :key="road.stage"
-        :image="scene.image"
-        :title="scene.name"
-        eyebrow="青嶂行路 · 航图之外"
-        :body="scene.body"
-        :speaker="person.name"
-        :portrait="person.image"
-        :quote="person.line"
-      >
-        <div aria-hidden="true">
-          <ItemArt v-if="road.thanked" id="map" /><ItemArt
-            v-if="road.commission"
-            id="tag"
-          />
+      <NarrativeStage :image="scene.image" :title="scene.name" :goal="roadGoal(game)" :body="scene.body"
+        :stage-key="`road-${road.stage}`" :hotspots="hotspots" :active="active" :battle="!!game.expedition.duel"
+        @select="selectObject" @close="active = ''; world?.cancel()">
+      <template #world><RoadWorld v-show="!game.expedition.duel" ref="world" :game="game" @performed="active = ''" /></template>
+        <template #status><span>灵石 {{ game.stones }} · 灵草 {{ game.herbs }}</span></template>
+        <template #notes><OriginNotes :game="game" :busy="busy" @act="emit('act', $event)" /></template>
+        <RoadEpilogue v-if="active === 'road' && showEpilogue" :game="game" :locked="locked" @return="epilogueDismissed = true" @continue="continueMist" />
+        <div v-if="active === 'person'" class="road-person">
+          <img :src="person.image || undefined" :alt="person.name" /><h3>{{ person.name }}</h3><p>{{ person.line }}</p>
         </div>
-        <SceneResponse
-          v-if="receipt"
-          :text="road.result"
-          :receipt="
-            receipt?.scene?.chapter === 'road' ||
-            (receipt?.scene?.chapter === 'adventure' &&
-              game.adventure.step === 'done')
-              ? receipt
-              : null
-          "
-        />
-      </SceneBackdrop>
+        <details v-if="road.result"><summary>刚才的经过</summary><SceneResponse :text="road.result" :receipt="receipt?.scene?.chapter === 'road' ? receipt : null" /></details>
       <section class="scene-controls" aria-label="行路与准备操作区">
-        <OriginNotes :game="game" :busy="busy" @act="emit('act', $event)" />
-        <h3 class="controls-heading">行路与准备</h3>
-        <ol class="chapter-track" aria-label="青嶂行路进度">
-          <li :class="{ passed: road.thanked }">归家回访</li>
-          <li :class="{ passed: road.map }">坊市补图</li>
-          <li :class="{ passed: road.obstacle !== 'none' }">看清险阻</li>
-          <li :class="{ passed: road.passed }">越过山口</li>
-          <li :class="{ passed: road.surveyed }">为后来者记路</li>
-        </ol>
-        <div class="adventure-task">
-          <span class="eyebrow">眼下要做的事</span>
-          <h2>{{ roadGoal(game) }}</h2>
-          <p>
-            {{ game.realm ? "筑基" : "炼气" }} · 灵石 {{ game.stones }} · 灵草
-            {{ game.herbs }} · 神识 {{ game.sense }} · 心得 {{ game.study }}
-          </p>
-        </div>
         <ExpeditionPanel
           v-if="
-            ['pass', 'camp'].includes(road.stage) &&
+            (active === 'prepare' || !!game.expedition.duel) && ['pass', 'camp'].includes(road.stage) &&
             road.map &&
             (!road.passed || game.expedition.accepted)
           "
@@ -384,10 +363,10 @@ const person = computed(() =>
         />
         <div class="adventure-actions">
           <button
-            v-for="choice in visibleChoices"
+            v-for="choice in visibleChoices.filter(c => choiceGroup(c.action) === active)"
             :key="choice.action"
             :disabled="locked || !!roadError(game, choice.action)"
-            @click="emit('act', { type: 'road', action: choice.action })"
+            @click="invoke(choice.action)"
           >
             <span
               >{{ choice.label
@@ -398,13 +377,13 @@ const person = computed(() =>
           </button>
         </div>
         <button
-          v-if="road.surveyed && road.stage === 'lookout'"
+          v-if="active === 'road' && road.surveyed && road.stage === 'lookout'"
           class="full"
           @click="epilogueDismissed = false"
         >
           回看青嶂关篇章结语
         </button>
-        <section v-if="road.surveyed" class="mist-invitation">
+        <section v-if="active === 'road' && road.surveyed" class="mist-invitation">
           <span class="eyebrow">筑基见闻 · 雾海来信</span>
           <h3>
             {{
@@ -420,7 +399,7 @@ const person = computed(() =>
                 : "返回本章保留的地点、线索与同行约定。"
             }}
           </p>
-          <button class="primary full" :disabled="locked" @click="emit('mist')">
+          <button class="primary full" :disabled="locked" @click="continueMist">
             {{
               game.adventure.mist.stage === "dormant"
                 ? "拆开来信 · 前往雾海"
@@ -431,7 +410,7 @@ const person = computed(() =>
         </section>
         <section
           v-if="
-            road.stage === 'pass' && road.obstacle !== 'none' && !road.passed
+            active === 'objects' && road.stage === 'pass' && road.obstacle !== 'none' && !road.passed
           "
           class="pass-solutions"
           aria-label="选择留给后来人的归路"
@@ -460,10 +439,7 @@ const person = computed(() =>
                 locked || !!roadError(game, passSolutions[key].prepare)
               "
               @click="
-                emit('act', {
-                  type: 'road',
-                  action: passSolutions[key].prepare,
-                })
+                invoke(passSolutions[key].prepare)
               "
             >
               观察：{{ passSolutions[key].observe }}
@@ -480,10 +456,7 @@ const person = computed(() =>
                   locked || !!roadError(game, passSolutions[key].finish)
                 "
                 @click="
-                  emit('act', {
-                    type: 'road',
-                    action: passSolutions[key].finish,
-                  })
+                  invoke(passSolutions[key].finish)
                 "
               >
                 {{ passSolutions[key].commit }}
@@ -496,7 +469,7 @@ const person = computed(() =>
           </article>
         </section>
         <details
-          v-if="observations.length"
+          v-if="active === 'objects' && observations.length"
           class="scene-investigation"
           aria-label="环顾四周调查区"
         >
@@ -508,7 +481,7 @@ const person = computed(() =>
             v-for="object in observations"
             :key="object.key"
             :disabled="locked || !!roadError(game, object.action)"
-            @click="emit('act', { type: 'road', action: object.action })"
+            @click="invoke(object.action)"
           >
             <span class="clue-symbol" aria-hidden="true">{{
               road.discoveries.includes(object.key) ? "✓" : "◇"
@@ -521,7 +494,7 @@ const person = computed(() =>
             ><span aria-hidden="true">→</span>
           </button>
         </details>
-        <details v-if="road.discoveries.length" class="road-journal">
+        <details v-if="active === 'objects' && road.discoveries.length" class="road-journal">
           <summary>
             行路手记 · {{ road.discoveries.length }} 处发现{{
               hasShelteredRoute(game) ? " · 已找到避风路" : ""
@@ -533,7 +506,7 @@ const person = computed(() =>
           </article>
         </details>
         <aside
-          v-if="echo && road.solution !== 'none' && road.solution !== 'legacy'"
+          v-if="active === 'objects' && echo && road.solution !== 'none' && road.solution !== 'legacy'"
           class="road-plan"
           aria-label="这段旅程归路"
         >
@@ -541,7 +514,7 @@ const person = computed(() =>
           <p>{{ passSolutions[road.solution].consequence }}</p>
         </aside>
         <button
-          v-if="['pass', 'camp'].includes(road.stage) && !road.passed"
+          v-if="['prepare', 'objects'].includes(active) && ['pass', 'camp'].includes(road.stage) && !road.passed"
           class="quiet"
           :aria-expanded="showLegacy"
           @click="showLegacy = !showLegacy"
@@ -551,7 +524,7 @@ const person = computed(() =>
         </button>
         <div
           v-if="
-            showLegacy &&
+            ['prepare', 'objects'].includes(active) && showLegacy &&
             ['pass', 'camp'].includes(road.stage) &&
             road.obstacle !== 'none' &&
             !road.passed
@@ -599,7 +572,7 @@ const person = computed(() =>
         </div>
 
         <section
-          v-if="road.stage === 'market' || road.stage === 'camp'"
+          v-if="active === 'prepare' && (road.stage === 'market' || road.stage === 'camp')"
           class="road-plan"
           aria-label="在场景中准备"
         >
@@ -685,7 +658,7 @@ const person = computed(() =>
             <button
               v-if="road.stage === 'camp' && road.route === 'friend'"
               :disabled="locked || !!roadError(game, 'invite')"
-              @click="emit('act', { type: 'road', action: 'invite' })"
+              @click="invoke('invite')"
             >
               请郁青同行<small>{{
                 roadError(game, "invite") || "朋友辨路，你仍需自己筑基"
@@ -755,7 +728,7 @@ const person = computed(() =>
           </button>
         </section>
         <div class="adventure-actions">
-          <button @click="road.surveyed ? emit('map') : emit('cultivate')">
+          <button v-if="active === 'prepare' || active === 'road'" @click="road.surveyed ? emit('map') : emit('cultivate')">
             {{
               road.surveyed
                 ? "展开山河见闻，寻访回春谷与雾海"
@@ -772,12 +745,16 @@ const person = computed(() =>
           <span v-if="road.passed">青嶂关已通，可免费往返。</span>
         </p>
       </section>
-    </template>
+      </NarrativeStage>
   </section>
 </template>
 
 <style scoped>
+.field-traveler { position: absolute; left: 34%; bottom: 10%; width: 190px; height: 250px; filter: drop-shadow(0 10px 8px #0009); }
+.road-person img { float: left; width: 90px; height: 110px; object-fit: cover; margin: 0 14px 8px 0; }
+.scene-controls { padding: 0; background: transparent; border: 0; }
 .road-panel {
+  padding: 0; max-width: none; border: 0; background: transparent;
   --road-reading: 16px;
 }
 .road-panel[data-reading-size="large"] {
@@ -822,32 +799,6 @@ const person = computed(() =>
 }
 .keyboard-hint {
   color: #52684f;
-}
-@media (min-width: 1100px) {
-  .road-panel {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    align-items: start;
-    overflow: visible;
-  }
-  .road-toolbar {
-    grid-column: 1 / -1;
-  }
-  .road-panel :deep(.scene-backdrop) {
-    position: sticky;
-    top: 16px;
-    min-height: min(760px, calc(100dvh - 32px));
-    border-radius: 0 0 0 10px;
-  }
-  .road-panel :deep(.scene-narrative) {
-    padding: 64px 28px 28px;
-  }
-  .scene-controls {
-    min-width: 0;
-    border-top: 0;
-    border-left: 1px solid #c6cbb9;
-    border-radius: 0 0 10px 0;
-  }
 }
 @media (max-width: 600px) {
   .keyboard-hint {

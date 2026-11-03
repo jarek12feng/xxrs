@@ -1,5 +1,6 @@
+// @vitest-environment happy-dom
 import { expect, it } from "vitest";
-import { createSSRApp, h } from "vue";
+import { createApp, nextTick, createSSRApp, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 import RoadPanel from "../src/RoadPanel.vue";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
@@ -290,24 +291,22 @@ it("rejects invented outcomes, missing fields and impossible preparation in curr
 });
 it("shows all three tradeoffs before commitment and persistent characters after returning", async () => {
   const p = session();
-  let html = await renderToString(
-    createSSRApp({
-      render: () => h(RoadPanel, { game: p.state, busy: false }),
-    }),
-  );
+  const render = async (target: string) => {
+    const host = document.createElement("div");
+    const app = createApp(RoadPanel, { game: p.state, busy: false }); app.mount(host);
+    [...host.querySelectorAll("button")].find(b => b.textContent?.includes(target))?.click();
+    await nextTick(); const html = host.innerHTML; app.unmount(); return html;
+  };
+  let html = await render("山口与阵纹");
   for (const key of keys)
     expect(html).toContain(passSolutions[key].consequence);
   expect(html).toContain("满足条件即成功，不掷骰");
   p.equip("sword");
   p.road("markCut");
   p.road("cutPass");
-  html = await renderToString(
-    createSSRApp({
-      render: () => h(RoadPanel, { game: p.state, busy: false }),
-    }),
-  );
+  html = await render("青嶂");
   expect(html).toContain("青嶂");
-  expect(html).toContain("没有摆出茶碗");
+  expect(html).toContain("茶……今日没烧");
   expect(html).not.toContain("选择留给后来人的归路");
 });
 

@@ -1,0 +1,97 @@
+/** Presentation snapshots must come from successfully saved domain state. */
+export interface CombatSnapshot {
+  id: string;
+  turn: number;
+  player: number;
+  enemy: number;
+  enemyName: string;
+  enemyImage?: string;
+  effect: string;
+}
+export type CombatPhase = "approach" | "strike" | "impact" | "return";
+export interface CombatBeat {
+  phase: CombatPhase;
+  snapshot: CombatSnapshot;
+  playerLost: number;
+  enemyLost: number;
+}
+export function combatExchange(
+  before: CombatSnapshot | null,
+  after: CombatSnapshot | null,
+) {
+  if (
+    !before ||
+    !after ||
+    before.id !== after.id ||
+    after.turn !== before.turn + 1
+  )
+    return null;
+  return {
+    snapshot: { ...after },
+    playerLost: Math.max(0, before.player - after.player),
+    enemyLost: Math.max(0, before.enemy - after.enemy),
+  };
+}
+export function createCombatSequence<T>(options: {
+  initial: CombatSnapshot | null;
+  schedule: (ms: number, callback: () => void) => T;
+  cancel: (timer: T) => void;
+  reduced: () => boolean;
+  show: (beat: CombatBeat | null) => void;
+}) {
+  let baseline = options.initial ? { ...options.initial } : null;
+  let timer: T | undefined,
+    revision = 0,
+    disposed = false;
+  function stop() {
+    revision++;
+    if (timer !== undefined) options.cancel(timer);
+    timer = undefined;
+    options.show(null);
+  }
+  return {
+    stop,
+    sync(next: CombatSnapshot | null) {
+      if (disposed) return;
+      const exchange = combatExchange(baseline, next);
+      const changed =
+        baseline?.id !== next?.id ||
+        baseline?.turn !== next?.turn ||
+        baseline?.player !== next?.player ||
+        baseline?.enemy !== next?.enemy;
+      baseline = next ? { ...next } : null;
+      if (!changed) return;
+      stop();
+      if (!exchange || options.reduced()) return;
+      const token = revision;
+      const phases: readonly CombatPhase[] = [
+        "approach",
+        "strike",
+        "impact",
+        "return",
+      ];
+      const durations = [180, 240, 300, 220];
+      function frame(i: number) {
+        if (disposed || token !== revision) return;
+        const phase = phases[i];
+        if (!phase) {
+          stop();
+          return;
+        }
+        options.show({ ...exchange!, phase });
+        if (disposed || token !== revision) return;
+        timer = options.schedule(durations[i]!, () => {
+          if (disposed || token !== revision) return;
+          timer = undefined;
+          frame(i + 1);
+        });
+      }
+      frame(0);
+    },
+    dispose() {
+      if (disposed) return;
+      disposed = true;
+      stop();
+    },
+  };
+}

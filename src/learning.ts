@@ -23,6 +23,7 @@ export function runLearning(
   input: State,
   choice: LearningChoice,
   id: string,
+  equip = false,
 ): State {
   if (!id || input.seen.includes(id) || learningBlocked(input)) return input;
   const book = ["spring", "blade", "breath"].includes(choice);
@@ -40,6 +41,7 @@ export function runLearning(
     if (owned) s.stones += 20;
     else s.journey.known.push(t);
     s.journey.learning.book = true;
+    if (equip) s.journey.main = t;
     s.adventure.result += owned
       ? "你已学过所选功法，药工将谢礼折为灵石 20。"
       : `你收下${{ spring: "长春诀", blade: "听松剑经", breath: "归元息" }[t]}，开始依诀修行；以后仍可学习其他功法。`;

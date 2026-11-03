@@ -111,7 +111,7 @@ export type JourneyAction =
 
   | { kind: "revisit"; side: Side }
   | { kind: "sharedMoment" | "epilogue" }
-  | { kind: "travel"; destination: Destination }
+  | { kind: "travel"; destination: Destination; mode?: import("../wayfaring/routes").TravelMode }
   | { kind: "battle"; battle: BattleId }
   | { kind: "move"; move: Move }
   | { kind: "withdraw" }

@@ -62,6 +62,7 @@ async function mount(s: State) {
 beforeEach(() => {
   vi.useFakeTimers();
   vi.clearAllMocks();
+  localStorage.clear();
   vi.mocked(save).mockResolvedValue();
 });
 afterEach(() => {
@@ -90,9 +91,8 @@ it("shows both irreversible consequences before committing, and waits for persis
   await flush();
   expect(audio.cue).toHaveBeenCalledWith("choice");
   expect(document.querySelector(".feedback-layer")).toBeNull();
-  expect(
-    document.querySelector(".scene-response .reply-person")?.textContent,
-  ).toContain("陆迟");
+  expect(document.querySelector('[aria-label="挑选谢礼"]')?.textContent).toContain("药工");
+  expect(document.body.textContent).toContain("药工留下的功法木匣");
 });
 it("keeps the decision available with no success audio when saving fails", async () => {
   vi.mocked(save).mockRejectedValue(new Error("磁盘不可写"));
@@ -111,13 +111,9 @@ it("restores choice consequences and contextual guidance without replaying rewar
     action: "return",
   });
   await mount(s);
-  expect(
-    document.querySelector('[aria-label="初入仙途指引"]')?.textContent,
-  ).toContain("护根");
-  expect(
-    document.querySelector('[aria-label="初入仙途指引"] > div > strong')
-      ?.textContent === "挑选入门功法",
-  ).toBe(true);
+  expect(document.body.textContent).toContain("护根");
+  expect(document.querySelector('[aria-label="挑选谢礼"]')).not.toBeNull();
+  expect(document.querySelector('[aria-label="初入仙途指引"]')).toBeNull();
   expect(save).not.toHaveBeenCalled();
   expect(audio.cue).not.toHaveBeenCalled();
 });
@@ -151,18 +147,33 @@ it("first guidance equips earned power before returning to the promised revisit"
     action: "return",
   });
   await mount(s);
-  button("挑选第一册功法").click();
-  await flush();
   expect(save).not.toHaveBeenCalled();
-  document.querySelector<HTMLButtonElement>('[role="dialog"] [aria-label="挑选入门功法"] button')!.click();
+  button("药工留下的功法木匣").click();
   await flush();
-  expect(vi.mocked(save).mock.calls.at(-1)![0].journey.known).toContain("spring");
-  button("装配长春诀").click();
+  button("学会并主修 · 长春诀").click();
   await flush();
+  expect(vi.mocked(save).mock.calls.at(-1)![0].journey.known).toContain(
+    "spring",
+  );
   expect(vi.mocked(save).mock.calls.at(-1)![0].journey.main).toBe("spring");
-  document.querySelector<HTMLButtonElement>('[aria-label="关闭面板"]')!.click();
+  const calls = vi.mocked(save).mock.calls.length;
+
+  button("守势").click();
   await flush();
-  button("回访药工，看看后来").click();
+  expect(
+    document.querySelector('[aria-label="第一册功法试招"]')?.textContent,
+  ).toContain("不耗年月与物资");
+  expect(vi.mocked(save).mock.calls).toHaveLength(calls);
+  button("结束试招").click();
+  await flush();
+  expect(document.querySelector('[aria-label="洞府当前目标"]')).not.toBeNull();
+  button("当前冒险").click();
+  await flush();
+  button("当前行旅").click();
+  await flush();
+  button("温蘅").click();
+  await flush();
+  button("回访药工与温蘅").click();
   await flush();
   expect(vi.mocked(save).mock.calls.at(-1)![0].adventure.road.thanked).toBe(
     true,
@@ -195,8 +206,8 @@ it("travels from the map only after a successful save and exposes local scenery"
   button("沿路前往").click();
   await flush();
   expect(document.querySelector('[aria-label="主线地标详情"]')).toBeNull();
-  expect(document.querySelector(".landmark-presence")?.textContent).toContain(
-    "瓷碗",
+  expect(document.querySelector(".opening-stage")?.textContent).toContain(
+    "温蘅 · 药炉",
   );
   expect(audio.scene).toHaveBeenLastCalledWith("warm", null);
 });
@@ -237,6 +248,8 @@ it("plays the corresponding cultivation figure only after persistence succeeds, 
   s.story.stage = "waiting";
   await mount(s);
   button("洞府修行").click();
+  await flush();
+  button("案几 · 修行与杂务").click();
   await flush();
   button("劳作").click();
   await flush();
@@ -280,6 +293,8 @@ it("automatic work emits a single death cue rather than a routine work cue", asy
   await mount(s);
   button("洞府修行").click();
   await flush();
+  button("案几 · 修行与杂务").click();
+  await flush();
   button("劳作").click();
   await flush();
   audio.cue.mockClear();
@@ -305,12 +320,17 @@ it("returns from the cave to the unfinished expedition after breakthrough withou
   await mount(p.state);
   button("洞府修行").click();
   await flush();
+  button("案几 · 修行与杂务").click();
+  await flush();
   const savesBefore = vi.mocked(save).mock.calls.length;
   const links = [...document.querySelectorAll("button")].filter((b) =>
     b.textContent?.includes("回到行路，重返旧阵"),
   );
   expect(links.length).toBe(2);
   links[1]!.click();
+  await flush();
+  expect(document.querySelector('.story-scenes')?.getAttribute('data-chapter')).toBe('road');
+  document.querySelector<HTMLButtonElement>('.road-panel [data-hotspot="prepare"]')!.click();
   await flush();
   expect(document.body.textContent).toContain("蚀阵傀儡");
   expect(vi.mocked(save).mock.calls.length).toBe(savesBefore);
@@ -328,6 +348,10 @@ it("first relic coaching opens equipment and equips the earned item through a sa
   expect(p.state.expedition.cleared).toBe(1);
   expect(p.state.realm).toBe(0);
   await mount(p.state);
+  button("洞府修行").click();
+  await flush();
+  button("案几 · 修行与杂务").click();
+  await flush();
   button("查看并装配首件灵器").click();
   await flush();
   expect(
@@ -355,17 +379,27 @@ it("completes the companion field test through persisted UI commands and the act
   expect(relation).toBeDefined();
   relation!.click();
   await flush();
+  document.querySelector<HTMLButtonElement>('.companionship-panel [data-hotspot="companion"]')!.click();
+  await flush();
   button("商量这次同行").click();
+  await flush();
+  document.querySelector<HTMLButtonElement>('.companionship-panel [data-hotspot="route"]')!.click();
   await flush();
   button("辨认回流阵眼").click();
   await flush();
+  document.querySelector<HTMLButtonElement>('.companionship-panel [data-hotspot="companion"]')!.click();
+  await flush();
   button("两名渡工轮流试灯").click();
+  await flush();
+  document.querySelector<HTMLButtonElement>('.companionship-panel [data-hotspot="route"]')!.click();
   await flush();
   button("打开功法，装配护身诀").click();
   await flush();
   expect(document.querySelector('[data-panel="skills"]')).not.toBeNull();
   const guard = [...document.querySelectorAll("article")].find(
-    (a) => a.querySelector("h3")?.textContent?.includes("护身诀") && a.querySelector("button"),
+    (a) =>
+      a.querySelector("h3")?.textContent?.includes("护身诀") &&
+      a.querySelector("button"),
   );
   const equip = [...(guard?.querySelectorAll("button") || [])].find((b) =>
     b.textContent?.includes("装配"),
@@ -387,10 +421,32 @@ it("completes the companion field test through persisted UI commands and the act
   );
   reopen!.click();
   await flush();
+  document.querySelector<HTMLButtonElement>('.companionship-panel [data-hotspot="route"]')!.click();
+  await flush();
   button("亲自试走归路").click();
   await flush();
   expect(vi.mocked(save).mock.calls.at(-1)![0].companionship.stage).toBe(
     "done",
   );
   expect(document.body.textContent).toContain("一人报信，一人验船");
+});
+
+it('restores the selected qi journey on reload without a game command', async () => {
+  let s = dispatch(home(), {id:'resume-gift', type:'adventure', action:'return'});
+  s.journey.learning.book=true; s.journey.main='spring'; s.journey.known=['spring'];
+  await mount(s);
+  button('炼气历练').click(); await flush();
+  expect(document.querySelector('.story-scenes')?.getAttribute('data-chapter')).toBe('qi');
+  app.unmount(); document.body.innerHTML='';
+  await mount(s);
+  expect(document.querySelector('.story-scenes')?.getAttribute('data-chapter')).toBe('qi');
+  expect(save).not.toHaveBeenCalled();
+});
+it('foundation cave no longer presents qi breakthrough actions', async () => {
+  const s=home();s.realm=1;s.adventure.step='done';
+  await mount(s);button('洞府修行').click();await flush();
+  button('丹炉 · 突破筹备').click();await flush();
+  expect(document.querySelector('[aria-label="突破与固本准备"]')).toBeNull();
+  expect(button('山门 · 筑基行旅').disabled).toBe(false);
+  expect(document.body.textContent).toContain('先以筑基之力走通青嶂关');
 });

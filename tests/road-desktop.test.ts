@@ -24,6 +24,8 @@ it("keyboard previews routes but never commits, and respects locks and input con
     target.dispatchEvent(
       new KeyboardEvent("keydown", { key: value, bubbles: true, repeat }),
     );
+  document.querySelector<HTMLButtonElement>('[data-hotspot="objects"]')!.click();
+  await nextTick();
   key("1");
   expect(act).toHaveBeenLastCalledWith({
     type: "road",
@@ -32,7 +34,8 @@ it("keyboard previews routes but never commits, and respects locks and input con
   props.game.adventure.road.prepared = "medicine";
   key("1");
   key("2", panel, true);
-  key("2", document.querySelector("select")!);
+  const input = document.createElement("input"); panel.append(input);
+  key("2", input);
   panel.setAttribute("inert", "");
   key("2");
   panel.removeAttribute("inert");

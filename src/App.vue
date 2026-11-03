@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import ConclavePanel from "./conclave/ConclavePanel.vue";
+import StoryScenes from "./scene2d/StoryScenes.vue";
+import EventScene from "./scene2d/EventScene.vue";
 import {goldenCap} from "./conclave/state";
 import { goldenGoal } from "./golden-core/rules";
-import OuterSeaPanel from "./outer-sea/OuterSeaPanel.vue";
 import {seaGoal} from "./outer-sea/rules";
-import GoldenCorePanel from "./golden-core/GoldenCorePanel.vue";
-import SectContestScene from "./sect-contest/SectContestScene.vue";
 import LearningChoices from "./LearningChoices.vue";
+import FirstPractice from "./scene2d/FirstPractice.vue";
 import { techniques } from "./core";
 import GrowthPreview from "./GrowthPreview.vue";
 import InjuryImpact from "./InjuryImpact.vue";
@@ -125,16 +124,12 @@ import { writeSlot } from "./save-slots";
 import { adventureScenes, adventureGoal } from "./adventure";
 import { roadScenes, roadGoal } from "./road";
 import { mistScenes, mistGoal } from "./mist";
-import AdventurePanel from "./AdventurePanel.vue";
-import RoadPanel from "./RoadPanel.vue";
-import MistPanel from "./MistPanel.vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import PracticeStage from "./PracticeStage.vue";
 import CultivationOutlook from "./CultivationOutlook.vue";
 import { retreatPlan } from "./retreat";
 import CultivationStatus from "./CultivationStatus.vue";
-import QiJourneyPanel from "./qi-journey/QiJourneyPanel.vue";
 import {
   realmStageLabel,
   remainingLifeMonths,
@@ -168,6 +163,7 @@ async function closeReceipt() {
   clearTimeout(receiptTimer);
   if (
     returnPanel &&
+    !(returnPanel === "world" && view.value === "story") &&
     (returnPanel !== "relationship" || game.value?.social.met) &&
     !game.value?.pending &&
     !game.value?.social.scene
@@ -196,6 +192,28 @@ function inspectReceipt() {
 const atlasMode = ref<"story" | "explore">("story");
 const selectedPlace = ref<"valley" | "peak" | "sea">("valley");
 const view = ref<"story" | "cultivation">("story");
+const cultivationPane = ref<"" | "practice" | "chores" | "prepare" | "notes">("");
+const storyEntry = ref("");
+watch(view, (next) => { cultivationPane.value = ""; if (next === "cultivation") storyEntry.value = ""; });
+function leaveCultivation() {
+  if (!game.value || ui.busy || receiptExpanded.value) return;
+  ui.running = false;
+  ui.history = false;
+  storyEntry.value = game.value.realm === 0 ? "qi" : game.value.realm === 1 ? "foundation" : "sea";
+  view.value = "story";
+}
+let cultivationReturnFocus: HTMLElement | null = null;
+function closeCultivationPane() {
+  cultivationPane.value = "";
+  nextTick(() => { if (cultivationReturnFocus?.isConnected) cultivationReturnFocus.focus(); });
+}
+function openCultivationPane(pane: "practice" | "chores" | "prepare" | "notes") {
+  if (pane === "practice" && (ui.running || ui.busy)) return;
+  cultivationReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  if (cultivationPane.value === pane) { closeCultivationPane(); return; }
+  cultivationPane.value = pane;
+  if (pane === "practice") activity.value = "cultivate";
+}
 const showRoad = ref(false);
 const titleScreen = ref(true);
 const creating = ref(false);
@@ -266,6 +284,7 @@ async function followOpening() {
   ui.running = false;
   switch (opening.value.action) {
     case "road":
+      storyEntry.value = "road";
       view.value = "story";
       showRoad.value = true;
       if (game.value?.adventure.road.stage === "home")
@@ -356,6 +375,10 @@ const useSession = defineStore("session", {
 });
 const ui = useSession(),
   game = shallowRef<State | null>(null);
+const sceneCombat = computed(() => !!game.value && !titleScreen.value && !ui.history && view.value === "story" && !!(
+  game.value.qiJourney.duel || game.value.foundationJourney.duel || game.value.expedition.duel ||
+  game.value.sectContest.duel || game.value.goldenCore.duel || game.value.outerSea.duel || game.value.conclave.duel
+));
 const ready = ref(false),
   loadError = ref(false),
   name = ref("沈青禾"),
@@ -551,7 +574,7 @@ async function act(intent: Intent) {
     arrivalFinished.value = false;
     receiptSerial.value++;
     receiptExpanded.value =
-      (!!receipt.value?.ritual || !!receipt.value?.spotlight) && !automatic;
+      (!!receipt.value?.ritual || !!receipt.value?.spotlight) && !automatic && intent.type !== "adventure";
     if (receiptExpanded.value) {
       ui.running = false;
       dialog.value = "";
@@ -687,11 +710,16 @@ function keyboard(e: KeyboardEvent) {
     return;
   }
   if (!modal.value) {
+    if (e.key === "Escape" && view.value === "cultivation" && cultivationPane.value) {
+      e.preventDefault();
+      closeCultivationPane();
+      return;
+    }
     if (e.key === "Escape") {
       e.preventDefault();
       openPanel("system");
     } else if (
-      !titleScreen.value &&
+      !titleScreen.value && !sceneCombat.value &&
       !target?.closest("input, textarea, select, [contenteditable=true]")
     ) {
       const id = (
@@ -875,7 +903,7 @@ onUnmounted(() => {
   <div v-if="notice" class="notice" role="alert">{{ notice }}</div>
   <div
     class="shell immersive-shell"
-    :class="{ playing: game && !titleScreen }"
+    :class="{ playing: game && !titleScreen, 'scene-combat': sceneCombat, 'cultivation-exploring': game && !titleScreen && !ui.history && view === 'cultivation', 'story-exploring': game && !titleScreen && !ui.history && view === 'story', 'scene-first': game && !titleScreen && game.realm < 2 && game.adventure.step !== 'done' && game.goldenCore.expedition === 'idle' && !atContest && !ui.history && view === 'story' && (showRoad || game.adventure.mist.stage === 'dormant') }"
     :inert="!!modal"
   >
     <div
@@ -1021,43 +1049,6 @@ onUnmounted(() => {
           <p>你还在拍卖会场。结束竞拍或离场后，再继续修行与行旅。</p>
           <button @click="openPanel('inventory')">返回拍卖会 · 继续竞拍或离场</button>
         </aside>
-        <ConclavePanel :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
-        <OuterSeaPanel :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
-        <GoldenCorePanel v-if="game.realm < 2 || !game.goldenCore.farShore" :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
-        <SectContestScene :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
-        <LearningChoices :game="game" :busy="ui.busy" @act="worldAct" />
-        <details
-          v-if="horizon && game.realm < 2 && !ui.history"
-          class="opening-guide"
-          aria-label="行旅目标"
-        >
-          <summary>这一程 · {{ horizon.stage }}</summary>
-          <p>青玄界 · 听松山行旅</p>
-          <p><strong>本篇终点：</strong>{{ horizon.chapter }}</p>
-          <button
-            :disabled="ui.busy || receiptExpanded"
-            @click="openPanel('arena')"
-          >
-            可选志向 · 听松试剑榜
-          </button>
-          <small>十八岁后可登台；行路、救人与修行都不要求上榜。</small>
-        </details>
-        <aside
-          v-if="opening && !ui.history"
-          class="opening-guide"
-          aria-label="初入仙途指引"
-        >
-          <div>
-            <strong>{{ opening.title }}</strong>
-            <p>{{ opening.body }}</p>
-            <button
-              :disabled="ui.busy || receiptExpanded"
-              @click="followOpening"
-            >
-              {{ opening.label }}
-            </button>
-          </div>
-        </aside>
         <aside
           v-if="pauseReason && !ui.running"
           class="opening-guide"
@@ -1070,7 +1061,7 @@ onUnmounted(() => {
           </button>
           <button class="quiet" @click="pauseReason = null">收起</button>
         </aside>
-        <nav>
+        <nav v-if="!sceneCombat">
           <button
             :class="{ active: !ui.history && view === 'story' }"
             @click="
@@ -1092,52 +1083,21 @@ onUnmounted(() => {
             人生卷宗
           </button>
         </nav>
-        <MistPanel
-          v-if="
-            game.realm < 2 && game.goldenCore.expedition === 'idle' && !atContest && !ui.history &&
-            view === 'story' &&
-            !showRoad &&
-            game.adventure.mist.stage !== 'dormant'
-          "
-          :game="game"
-          :receipt="receipt"
-          :busy="ui.busy || ui.running"
-          @act="worldAct"
-          @cultivate="view = 'cultivation'"
-          @road="showRoad = true"
-        />
-        <RoadPanel
-          v-else-if="
-            game.realm < 2 && game.goldenCore.expedition === 'idle' && !atContest && !ui.history && view === 'story' && game.adventure.step === 'done'
-          "
-          :game="game"
-          :receipt="receipt"
-          :busy="ui.busy || ui.running"
-          @act="worldAct"
-          @cultivate="view = 'cultivation'"
-          @mist="openMist"
-          @map="openPanel('world')"
-          @breakthrough="dialog = 'break'"
-        />
-        <AdventurePanel
-          v-else-if="game.realm < 2 && game.goldenCore.expedition === 'idle' && !atContest && !ui.history && view === 'story'"
-          :game="game"
-          :receipt="receipt"
-          :busy="ui.busy || ui.running"
-          @act="worldAct"
-          @cultivate="view = 'cultivation'"
-        />
+        <StoryScenes :entry-chapter="storyEntry" v-if="!ui.history && view === 'story'" :game="game" :busy="ui.busy || ui.running" :show-road="showRoad" :receipt="receipt" :combat-feedback="combatFeedback"
+          @act="worldAct" @cultivate="view = 'cultivation'" @map="openPanel('world')" @breakthrough="dialog = 'break'" @mist="openMist" @road="showRoad = true" @equipment="openPanel('gear')" @board="openPanel('arena')" @sect="openPanel('sect')" @inventory="openPanel('inventory')" />
         <template v-if="!ui.history && view === 'cultivation'"
           ><section
             class="cultivation-room desktop-scene"
             aria-label="洞府场景与修行"
           >
             <SceneBackdrop
-              image="/scenes/moon-terrace.png"
-              title="听松山居"
+              :image="currentScene.image"
+              :title="currentScene.name"
               eyebrow="一念长生 · 一诺千金"
               :body="
-                game.realm
+                game.realm === 2 && game.outerSea.location !== 'home'
+                  ? '暂歇此地，调匀丹元，整理下一程所需。'
+                  : game.realm
                   ? '云路已经向你展开。今夜在洞府整理行装，明日带着更稳的气息，再赴山外。'
                   : '山风穿过石台，灯火照着未读完的丹经。你知道山外有人在等，也知道每一次凝神，都是为了走得更远。'
               "
@@ -1147,17 +1107,71 @@ onUnmounted(() => {
               :key="practiceSerial"
               :gender="game.social.gender"
               :realm="game.realm"
+              :location="currentScene.name"
               :activity="practice ?? activity"
               :playing="!!practice && !modal"
             />
+            <aside v-show="!cultivationPane" class="cultivation-summary" aria-label="洞府当前目标">
+              <h2>{{ currentScene.name }}</h2>
+              <strong>{{ realmStageLabel(game) }} · {{ game.realm === 0 ? game.qi : game.realm === 1 ? game.foundationJourney.cultivation : game.outerSea.cultivation }} 修行</strong>
+              <p>{{ nextGoal(game) }}</p>
+              <button v-if="game.injury" @click="openCultivationPane('chores')">伤势 {{ game.injury }} · 查看调养</button>
+            </aside>
+            <nav class="cultivation-objects" aria-label="洞府现场入口">
+              <button :disabled="ui.busy || ui.running" :aria-pressed="cultivationPane === 'practice'" @click="openCultivationPane('practice')">蒲团 · 打坐修行</button>
+              <button :aria-pressed="cultivationPane === 'chores'" @click="openCultivationPane('chores')">案几 · 修行与杂务</button>
+              <button :aria-pressed="cultivationPane === 'prepare'" @click="openCultivationPane('prepare')">丹炉 · 突破筹备</button>
+              <button :aria-pressed="cultivationPane === 'notes'" @click="openCultivationPane('notes')">灯下 · 道途见闻</button>
+              <button :disabled="ui.busy || receiptExpanded" @click="leaveCultivation">山门 · {{ game.realm === 0 ? '炼气历练' : game.realm === 1 ? '筑基行旅' : '外海行旅' }}</button>
+            </nav>
+            <button v-if="ui.running" class="cultivation-pause" @click="ui.running = false">暂停当前修行</button>
             <fieldset
+              v-show="cultivationPane"
               class="cultivation-panel scene-controls"
               :disabled="
                 !!game.social.arena.duel || !!game.foundationJourney.duel
               "
               aria-label="洞府修行"
             >
-              <h3 class="controls-heading">洞府修行 · 操作区</h3>
+              <div class="cultivation-panel-heading"><h3>{{ {practice:'打坐修行',chores:'修行与杂务',prepare:'突破筹备',notes:'道途见闻'}[cultivationPane || 'practice'] }}</h3><button aria-label="收起洞府操作" @click="closeCultivationPane">收起 ×</button></div>
+              <div v-show="cultivationPane === 'notes'" class="cultivation-notes">
+        <LearningChoices  :game="game" :busy="ui.busy" @act="worldAct" />
+        <FirstPractice  :game="game" :busy="ui.busy" />
+        <details
+          v-if="horizon && game.realm < 2 && !ui.history && game.adventure.step === 'done' && game.journey.learning.book"
+          class="opening-guide"
+          aria-label="行旅目标"
+        >
+          <summary>这一程 · {{ horizon.stage }}</summary>
+          <p>青玄界 · 听松山行旅</p>
+          <p><strong>本篇终点：</strong>{{ horizon.chapter }}</p>
+          <button
+            :disabled="ui.busy || receiptExpanded"
+            @click="openPanel('arena')"
+          >
+            可选志向 · 听松试剑榜
+          </button>
+          <small>十八岁后可登台；行路、救人与修行都不要求上榜。</small>
+        </details>
+        <aside
+          v-if="opening && !ui.history && game.journey.learning.book"
+          class="opening-guide"
+          aria-label="初入仙途指引"
+        >
+          <div>
+            <strong>{{ opening.title }}</strong>
+            <p>{{ opening.body }}</p>
+            <button
+              :disabled="ui.busy || receiptExpanded"
+              @click="followOpening"
+            >
+              {{ opening.label }}
+            </button>
+          </div>
+        </aside>
+
+              </div>
+              <div v-show="cultivationPane !== 'notes'">
               <div class="progress-label">
                 <h2>
                   {{ game.realm === 2 ? realmStageLabel(game) + " · 外海道途" : game.realm ? "筑基已成 · 构筑与历练" : "炼气 → 筑基" }}
@@ -1197,26 +1211,18 @@ onUnmounted(() => {
                 }}
                 淬脉、凝元与筑基丹是必需准备；固本与护法可进一步提高把握，不要求全部完成。伤势会降低成功率，可先静养。
               </p>
-              <QiJourneyPanel
-                :game="game"
-                :busy="ui.busy || ui.running"
-                @act="act"
-                @facilities="openPanel('skills')"
-                @board="openPanel('arena')"
-                @gear="openPanel('gear')"
-                @sect="openPanel('sect')"
-                @inventory="openPanel('inventory')"
-              />
               <CultivationOutlook @standing="openPanel('sect')"
+                v-show="cultivationPane === 'practice'"
                 v-if="activity === 'cultivate'"
+                compact
                 :game="game"
                 :months="3"
                 automatic
                 :busy="ui.busy || ui.running"
                 @act="act"
               />
-              <InjuryImpact :game="game" :busy="ui.busy || ui.running" @act="act" />
-              <div class="activity-grid">
+              <InjuryImpact v-show="cultivationPane === 'chores'" :game="game" :busy="ui.busy || ui.running" @act="act" />
+              <div v-show="cultivationPane === 'chores'" class="activity-grid">
                 <button
                   v-for="a in activities"
                   :key="a.id"
@@ -1242,6 +1248,8 @@ onUnmounted(() => {
                   }}</small>
                 </button>
               </div>
+              <details v-show="cultivationPane === 'practice' || cultivationPane === 'chores'" :open="cultivationPane === 'chores'" class="monthly-practice">
+                <summary>逐月行动与自动修行</summary>
               <div class="cultivation-actions">
                 <button
                   class="primary"
@@ -1276,6 +1284,8 @@ onUnmounted(() => {
                     : "劳作或完成委托赚取灵石；修炼不产生灵石。"
                 }}自动每 0.8 秒推进一月，遇关键剧情、修为满或切后台暂停。
               </p>
+              </details>
+              <section v-if="game.realm === 0" v-show="cultivationPane === 'prepare'" aria-label="突破与固本准备">
               <div class="preparations">
                 <button
                   class="secondary"
@@ -1309,15 +1319,23 @@ onUnmounted(() => {
               >
                 叩问天关 · 尝试筑基 ↗
               </button>
-              <p v-if="game.result" class="last-result">{{ game.result }}</p>
-            </fieldset>
-          </section>
-          <nav class="facility-actions" aria-label="山居设施">
+              </section>
+              <section v-if="game.realm > 0" v-show="cultivationPane === 'prepare'" aria-label="当前境界筹备">
+                <button :disabled="ui.busy" @click="openPanel('gear')">准备丹药与灵器</button>
+                <button :disabled="ui.busy" @click="openPanel('skills')">研修功法</button>
+                <button :disabled="ui.busy" @click="leaveCultivation">前往{{ game.realm === 1 ? '筑基' : '外海' }}行旅</button>
+              </section>
+              <details v-if="game.result" class="last-result"><summary>最近修行经过</summary><p>{{ game.result }}</p></details>
+              </div>
+          <nav v-show="cultivationPane === 'chores'" class="facility-actions" aria-label="山居设施">
             <button @click="openPanel('sect')">师门与委托</button
             ><button @click="openPanel('gear')">丹药与法器准备</button
             ><button @click="openPanel('arena')">听松擂台</button
             ><button @click="openPanel('queue')">修行安排</button>
           </nav>
+            </fieldset>
+          </section>
+
         </template>
         <div
           v-if="ui.history"
@@ -1365,7 +1383,7 @@ onUnmounted(() => {
           任务与见闻
         </button>
       </aside>
-      <nav class="quick-dock" aria-label="随身功能">
+      <nav v-if="!sceneCombat" class="quick-dock" aria-label="随身功能">
         <button @click="openPanel('inventory')">储物袋 <kbd>B</kbd></button
         ><button @click="openPanel('skills')">功法 <kbd>K</kbd></button
         ><button @click="openPanel('world')">地图 <kbd>M</kbd></button
@@ -1394,6 +1412,7 @@ onUnmounted(() => {
     v-else-if="
       receipt?.scene &&
       receipt.scene.from !== receipt.scene.to &&
+      !(receipt.scene.chapter === 'adventure' && game?.adventure.step === 'home') &&
       !modal &&
       !arrivalFinished
     "
@@ -1402,6 +1421,9 @@ onUnmounted(() => {
     :to="receipt.scene.to"
     @finish="arrivalFinished = true"
   />
+  <div v-else-if="receipt && !receipt.scene && !modal && sceneCombat" class="combat-receipt-entry">
+    <button @click="inspectReceipt" aria-label="查看本合结果与消耗">本合结果 · 查看明细</button>
+  </div>
   <div v-else-if="receipt && !receipt.scene && !modal" class="receipt-dock">
     <ActionFeedback
       :key="receiptSerial"
@@ -1420,6 +1442,7 @@ onUnmounted(() => {
       class="modal"
       :data-panel="dialog"
       :class="{
+        'event-plane': !!event && !titleScreen && !dialog,
         'story-dialog':
           !!event ||
           dialog === 'break' ||
@@ -1711,10 +1734,9 @@ onUnmounted(() => {
         </div>
       </template>
       <template v-else-if="event && game && !titleScreen">
-        <SceneBackdrop
+        <EventScene
           :image="eventScene || '/scenes/mist-path.jpg'"
           :title="event.title"
-          eyebrow="前缘 · 时光暂驻"
           :body="event.body"
           :portrait="soloRelic ? null : (heart?.portrait ?? npc?.portrait)"
           :speaker="soloRelic ? undefined : (heart?.name ?? '陆迟')"
@@ -1723,11 +1745,7 @@ onUnmounted(() => {
               ? undefined
               : (heart?.title ?? npc?.quote.replace(/[“”]/g, ''))
           "
-          heading-id="modal-title"
-          compact
-        />
-        <section class="scene-controls" aria-label="剧情选择操作区">
-          <h3 class="controls-heading">此刻，如何回应</h3>
+        >
           <button
             v-for="o in event.options"
             :key="o.id"
@@ -1745,7 +1763,7 @@ onUnmounted(() => {
               >{{ o.label }}<small>{{ o.disabled || o.hint }}</small></span
             ><b>→</b>
           </button>
-        </section></template
+        </EventScene></template
       >
       <template v-else-if="game?.status === 'legacy'"
         ><h2 id="modal-title" tabindex="-1">旧卷珍藏，新篇启程</h2>

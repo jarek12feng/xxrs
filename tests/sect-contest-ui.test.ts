@@ -35,15 +35,19 @@ it("actual scene buttons announce, defer, attend, duel, reward and disappear; no
     await nextTick();
   };
   try {
+    await click("同门口信");
     expect(host.textContent).toContain("十年");
     expect(host.textContent).toContain("120 月后");
     expect(host.textContent).not.toContain("行礼上台");
+    await click("下山路");
     await click("暂不参加");
     expect(host.children.length).toBe(0);
     state.value = contestCheckpoint(true);
     await nextTick();
+    await click("同门口信");
     await click("前往松间石台");
     for (let i = 0; i < 3; i++) {
+      await click("松间石台");
       await click("行礼上台");
       state.value = migrateSave(JSON.parse(JSON.stringify(state.value)));
       await nextTick();
@@ -52,8 +56,10 @@ it("actual scene buttons announce, defer, attend, duel, reward and disappear; no
         await click(moves[contestFoes[i]!.pattern[t.duel!.turn % 3]!]);
       }
     }
+    await click("记名与补给");
     expect(host.textContent).toContain("本届魁首");
     await click("领取灵草");
+    await click("下山路");
     await click("与同门道别");
     expect(host.children.length).toBe(0);
   } finally {

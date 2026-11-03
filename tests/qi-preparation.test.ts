@@ -13,8 +13,16 @@ import {
   preparationReady,
   type PreparationRoute,
 } from "../src/qi-journey/preparation";
-import { qiError, qiPreview, qiEnemy } from "../src/qi-journey/rules";
+import { qiError, qiPreview, qiEnemy, qiGoal } from "../src/qi-journey/rules";
 import { freshQiPeople } from "../src/qi-journey/people";
+it("凝元历练后缺少内府图时指向取图，不提前声称可进入内府", () => {
+  const s = createGame("取图指引", "wood");
+  s.qi = 256; s.qiJourney.gates = 1;
+  s.qiJourney.preparations[1]!.medicine = 3;
+  expect(qiGoal(s)).toContain("先赴青石遗府取得丹方与内府图");
+  s.story.choice = "self";
+  expect(qiGoal(s)).toContain("凝元晶髓");
+});
 function run(route: PreparationRoute, path: "wood" | "sword", seed: number) {
   let s = createGame("路线验收", path, seed);
   const trace: Intent[] = [];
@@ -245,7 +253,7 @@ it("rejects malformed progress and future versions; 19 gains no invented route a
   } = s.qiJourney;
   const old = { ...s, version: 19, qiJourney: oldJourney };
   const migrated = migrateSave(old);
-  expect(migrated.version).toBe(31);
+  expect(migrated.version).toBe(33);
   expect(migrated.qiJourney.preparations).toEqual([
     freshPreparation(),
     freshPreparation(),

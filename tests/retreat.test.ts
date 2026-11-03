@@ -6,6 +6,34 @@ import {
   type RetreatPace,
 } from "../src/retreat";
 import { journeyCheckpoint } from "../tools/foundation-journey-checkpoint";
+import { conclaveCheckpoint } from "../tools/conclave-checkpoint";
+
+it("forecasts the known gathering letter interruption instead of the full retreat", () => {
+  const s = conclaveCheckpoint();
+  s.month = s.outerSea.notice! + 559;
+  s.outerSea.reminded = false;
+  const p = retreatPlan(s, 'regular');
+  expect(p.batchMonths).toBe(41);
+  expect(p.stopsForMeeting).toBe(true);
+  const next = dispatch(s, {id:'letter-retreat',type:'advance',activity:'cultivate',months:p.batchMonths});
+  expect(next.age).toBe(p.exitAge);
+  expect(next.outerSea.cultivation - s.outerSea.cultivation).toBe(p.batchGain);
+  expect(next.outerSea.reminded).toBe(true);
+  expect(retreatPlan(next, 'regular').batchMonths).toBe(60);
+});
+
+it("stops the default late-foundation retreat at the circulation milestone", () => {
+  const s = journeyCheckpoint('male', true);
+  s.foundationJourney.cultivation = 492;
+  s.foundationJourney.condensation = false;
+  s.foundationJourney.won = s.foundationJourney.won.filter(x => x !== 'culmination');
+  const plan = retreatPlan(s, 'long');
+  expect(plan.target).toBe(500);
+  const next = dispatch(s, { id:'circulation-retreat', type:'advance', activity:'cultivate', months:plan.batchMonths });
+  expect(next.foundationJourney.cultivation).toBe(500);
+  expect(next.age).toBe(plan.exitAge);
+  expect(retreatPlan(s, 'long', 599).target).toBe(599);
+});
 
 it("scales player choices by realm and stage including golden early practice", () => {
   const s = createGame("闭关", "wood");
