@@ -1,3 +1,5 @@
+import { freshConclave, validConclave, goldenCap, goldenBlock, type Conclave } from "./conclave/state";
+import { runConclave, conclaveActive, type ConclaveAction } from "./conclave/rules";
 import {freshOuterSea, validOuterSea, type OuterSea} from "./outer-sea/state";
 import {runSea,seaGoal,updateSeaCalendar,type SeaAction} from "./outer-sea/rules";
 import { freshGoldenCore, validGoldenCore, type GoldenCore } from "./golden-core/state";
@@ -221,7 +223,8 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 30;
+  version: 31;
+  conclave: Conclave;
   outerSea: OuterSea;
   goldenCore: GoldenCore;
   sectContest: SectContest;
@@ -240,6 +243,7 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | {id:string;type:"conclave";action:ConclaveAction}
   | {id:string;type:"outerSea";action:SeaAction}
   | { id: string; type: "goldenCore"; action: GoldenAction }
   | { id: string; type: "sectContest"; action: ContestAction }
@@ -318,6 +322,7 @@ function base(s: State): chapter.State {
     sectContest: ______________,
     goldenCore: _______________,
     outerSea: ________________,
+    conclave: _________________,
     ...rest
   } = s;
   return { ...rest, version: 3 };
@@ -330,7 +335,8 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 30,
+    version: 31,
+    conclave: freshConclave(),
     outerSea: freshOuterSea(),
     goldenCore: freshGoldenCore(),
     sectContest: freshSectContest(),
@@ -384,9 +390,10 @@ export const breakthroughDetails = (s: State, pill = false) =>
 export const refineCost = (s: State) => chapter.refineCost(base(s));
 export const replayHints = (s: State) => chapter.replayHints(base(s));
 export const actionError = (s: State, a: chapter.Activity) =>
+  s.conclave.duel || s.conclave.location === "vault" ? "先结束诸宗交锋或撤出秘境" :
   s.outerSea.location === "ruins" ? "先结束遗迹探索或撤回古渡" :
   s.goldenCore.expedition !== "idle" ? "先结束药圃探索或撤回" :
-  s.realm === 2 && a === "cultivate" ? (s.status !== "alive" || s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel || s.foundationJourney.duel ? "先处理眼前事件或结束交锋" : !s.outerSea.met ? "先赴外海古渡，与当地道友相识" : s.outerSea.cultivation >= 299 ? "已至金丹前期瓶颈，中期历练尚未开放" : "") :
+  s.realm === 2 && a === "cultivate" ? (s.status !== "alive" || s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel || s.foundationJourney.duel ? "先处理眼前事件或结束交锋" : !s.outerSea.met ? "先赴外海古渡，与当地道友相识" : s.outerSea.cultivation >= goldenCap(s) ? goldenBlock(s) : "") :
   s.sectContest.duel ? "先结束内比斗法" :
   s.realm === 1 && s.sectContest.stage === "invited" && s.sectContest.reminded && s.month < s.sectContest.starts + 12 ? "内比传来开场消息，请先决定赴会或暂不参加" :
   a === "gather" && !canGather(s) ? "先学长春诀或辨草录，再去采药"
@@ -547,6 +554,8 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.conclave = n.life === old.life ? structuredClone(old.conclave) : freshConclave();
+  if(n.status!=="alive") n.conclave.duel=null;
   n.outerSea = n.life === old.life ? structuredClone(old.outerSea) : freshOuterSea();
   updateSeaCalendar(n);
   n.goldenCore = n.life === old.life ? structuredClone(old.goldenCore) : freshGoldenCore();
@@ -616,12 +625,15 @@ export function dispatch(input: State, c: Command): State {
     updateContestCalendar(next);
     discoverContest(next,c);
     if (!next.realm) next.qi = Math.min(next.qi, qiCap(next));
-    if ((!next.realm && next.qi === qiCap(next)) || (next.realm === 1 && next.foundationJourney.cultivation === foundationCap(next)) || (next.realm === 2 && next.outerSea.cultivation === 299)) next.cultivationRemainder = 0;
+    if ((!next.realm && next.qi === qiCap(next)) || (next.realm === 1 && next.foundationJourney.cultivation === foundationCap(next)) || (next.realm === 2 && next.outerSea.cultivation === goldenCap(next))) next.cultivationRemainder = 0;
   }
   return next;
 }
 function dispatchCommand(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if(c.type === "conclave") return runConclave(input,c.action,c.id,workshopMonth);
+  if(input.conclave.duel || input.conclave.location === "vault") return input;
+  if(conclaveActive(input) && ["outerSea","goldenCore","foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest","beginChapter","next"].includes(c.type)) return input;
   if(c.type === "outerSea") return runSea(input,c.action,c.id,workshopMonth);
   if(input.outerSea.location === "ruins") return input;
   if(input.outerSea.location !== "home" && ["foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest"].includes(c.type)) return input;
@@ -778,8 +790,8 @@ function dispatchCommand(input: State, c: Command): State {
             n.study = Math.min(4, n.study + 1);
           if (n.realm === 2) {
             n.qi=old.qi;
-            n.outerSea.cultivation=Math.min(299,old.outerSea.cultivation+(cultivation?.gain??0));
-            if(cultivation?.gain) log(n,`金丹修行 +${n.outerSea.cultivation-old.outerSea.cultivation}（${n.outerSea.cultivation}/299，前期瓶颈）。`);
+            n.outerSea.cultivation=Math.min(goldenCap(n),old.outerSea.cultivation+(cultivation?.gain??0));
+            if(cultivation?.gain) log(n,`金丹修行 +${n.outerSea.cultivation-old.outerSea.cultivation}（${n.outerSea.cultivation}/${goldenCap(n)}）。`);
           }
           if (n.realm === 1) {
             n.qi = old.qi;
@@ -1025,7 +1037,7 @@ function dispatchCommand(input: State, c: Command): State {
         !n.journey.queue[0].remaining ||
         (task.action === "rest" && n.injury === 0) ||
         (task.action === "cultivate" &&
-          (n.realm === 2 ? n.outerSea.cultivation >= 299 : n.realm === 1
+          (n.realm === 2 ? n.outerSea.cultivation >= goldenCap(n) : n.realm === 1
             ? n.foundationJourney.cultivation >= foundationCap(n)
             : n.qi >= qiCap(n)))
       )
@@ -1259,17 +1271,18 @@ function dispatchCommand(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 30);
+  return validWorldState(x, 31);
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
     (x as { version: unknown }).version !== version ||
+    (version >= 31 && !validConclave(s)) ||
     (version >= 30 && !validOuterSea(s)) ||
     (version >= 29 && !validGoldenCore(s)) ||
     (version < 29 && s.realm > 1) ||
@@ -1360,17 +1373,22 @@ function validWorldState(
 }
 export function migrateSave(x: unknown): State {
   if (validState(x)) return structuredClone(x);
+  if(x && typeof x === "object" && "version" in x && x.version===30){
+    const candidate={...structuredClone(x),conclave:freshConclave()} as State;
+    if(!validWorldState(candidate,30)) throw new Error("旧存档损坏，原档未修改。");
+    return {...candidate,version:31};
+  }
   if(x && typeof x === "object" && "version" in x && x.version===29){
     if(!validWorldState(x,29)) throw new Error("旧存档损坏，原档未修改。");
-    return {...structuredClone(x) as State,version:30,outerSea:freshOuterSea()};
+    return {...structuredClone(x) as State,version:31,conclave:freshConclave(),outerSea:freshOuterSea()};
   }
   if (x && typeof x === "object" && "version" in x && x.version === 28) {
     if (!validWorldState(x,28)) throw new Error("旧存档损坏，原档未修改。");
-    return {...structuredClone(x) as State,version:30,outerSea:freshOuterSea(),goldenCore:freshGoldenCore()};
+    return {...structuredClone(x) as State,version:31,conclave:freshConclave(),outerSea:freshOuterSea(),goldenCore:freshGoldenCore()};
   }
   if (x && typeof x === "object" && "version" in x && x.version === 27) {
     if (!validWorldState(x,27)) throw new Error("旧存档损坏，原档未修改。");
-    return {...structuredClone(x) as State,version:30,outerSea:freshOuterSea(),goldenCore:freshGoldenCore(),sectContest:freshSectContest()};
+    return {...structuredClone(x) as State,version:31,conclave:freshConclave(),outerSea:freshOuterSea(),goldenCore:freshGoldenCore(),sectContest:freshSectContest()};
   }
   if (x && typeof x === "object" && "version" in x && x.version === 26) {
     if (!validWorldState(x,26)) throw new Error("旧存档损坏，原档未修改。");
@@ -1379,7 +1397,8 @@ export function migrateSave(x: unknown): State {
   if (x && typeof x === "object" && "version" in x && x.version === 25) {
     if (!validWorldState(x, 25)) throw new Error("旧存档损坏，原档未修改。");
     const n = structuredClone(x) as State;
-    n.version = 30;
+    n.version = 31;
+    n.conclave = freshConclave();
     n.outerSea = freshOuterSea();
     n.goldenCore = freshGoldenCore();
     n.sectContest = freshSectContest();
@@ -1404,7 +1423,8 @@ export function migrateSave(x: unknown): State {
     const n = structuredClone(x) as State;
     // No invented milestones: earlier foundation runs must start a new character.
     if (n.realm === 1) throw new Error("筑基成长规则已重构，请备份原档并新建角色；原档未修改。");
-    n.version = 30;
+    n.version = 31;
+    n.conclave = freshConclave();
     n.outerSea = freshOuterSea();
     n.goldenCore = freshGoldenCore();
     n.sectContest = freshSectContest();

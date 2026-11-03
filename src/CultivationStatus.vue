@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import {goldenCap} from "./conclave/state";
+import {realmStageLabel} from "./cultivation";
 import { foundationCap } from "./foundation-journey/growth-state";
 import { computed } from "vue";
 import type { State } from "./core";
@@ -26,8 +28,8 @@ const progress = computed(() => {
 <template>
   <small class="cultivation-status" aria-label="当前修为">
     <span v-if="game.realm === 2"
-      >金丹前期 · 修为 {{ game.outerSea.cultivation }} / 299 ·
-      {{ game.outerSea.cultivation >= 299 ? "前期瓶颈" : "积累丹元" }}</span
+      >{{realmStageLabel(game)}} · 修为 {{ game.outerSea.cultivation }} / {{goldenCap(game)}} ·
+      {{ game.outerSea.cultivation >= goldenCap(game) ? "瓶颈待破" : "积累丹元" }}</span
     >
     <template v-else>
       <span>修为 {{ progress.current }} / {{ progress.cap }}</span>

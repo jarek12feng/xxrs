@@ -182,7 +182,7 @@ describe("剧情中的十年内比之约", () => {
     const old = { ...s, version: 27 } as Record<string, unknown>;
     delete old.sectContest;
     const n = migrateSave(old);
-    expect(n.version).toBe(30);
+    expect(n.version).toBe(31);
     expect(n.sectContest.stage).toBe("unheard");
     expect(n.foundationJourney).toEqual(s.foundationJourney);
     expect(old.version).toBe(27);

@@ -1,3 +1,4 @@
+import {goldenCap} from "./conclave/state";
 import {
   foundationCap,
   hasSteady,
@@ -7,6 +8,7 @@ import { qiCap, type QiJourney } from "./qi-journey/state";
 /** Shared pure cultivation rules; optional fields also support the first-volume core. */
 export interface Cultivator {
   realm: number;
+  conclave?: {stage:number;method:string};
   outerSea?: { cultivation: number; method: string };
   cultivationRemainder?: number;
   qiJourney?: QiJourney;
@@ -30,7 +32,7 @@ export interface Cultivator {
 }
 export const minorStageNames = ["前期", "中期", "后期", "圆满"] as const;
 export function cultivationStageIndex(s: Cultivator): 0 | 1 | 2 | 3 {
-  if (s.realm === 2) return 0;
+  if (s.realm === 2) return (s.conclave?.stage ?? 0) as 0|1|2;
   return Math.min(
     3,
     Math.floor(
@@ -60,9 +62,9 @@ export function cultivationBaseGain(s: Cultivator) {
   const training = main ? (s.growth?.training[main] ?? 0) : 0;
   if (s.realm === 2)
     return (
-      3 +
+      6 +
       (training >= 2 ? 1 : 0) +
-      (s.outerSea?.method && s.outerSea.method !== "none" ? 2 : 0)
+      (s.outerSea?.method && s.outerSea.method !== "none" ? 2 : 0) + (s.conclave?.method && s.conclave.method !== "none" ? 2 : 0)
     );
   if (s.realm === 1)
     return (
@@ -106,7 +108,7 @@ export function cultivationGainAtAge(s: Cultivator) {
 export const cultivationMonthlyGain = (s: Cultivator) =>
   (
     s.realm === 2
-      ? (s.outerSea?.cultivation ?? 0) >= 299
+      ? (s.outerSea?.cultivation ?? 0) >= goldenCap(s)
       : s.realm === 1
         ? (s.foundationJourney?.cultivation ?? 0) >= foundationCap(s)
         : s.qi >= qiCap(s)
@@ -125,7 +127,7 @@ export function cultivationProjection(
       : s.realm === 1
         ? (s.foundationJourney?.cultivation ?? 0)
         : s.qi;
-  const cap = s.realm === 2 ? 299 : s.realm === 1 ? foundationCap(s) : qiCap(s);
+  const cap = s.realm === 2 ? goldenCap(s) : s.realm === 1 ? foundationCap(s) : qiCap(s);
   const step = s.realm === 2 ? 300 : s.realm === 1 ? 200 : 120;
   const target = Math.max(
     current,

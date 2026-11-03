@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ConclavePanel from "./conclave/ConclavePanel.vue";
+import {goldenCap} from "./conclave/state";
 import { goldenGoal } from "./golden-core/rules";
 import OuterSeaPanel from "./outer-sea/OuterSeaPanel.vue";
 import {seaGoal} from "./outer-sea/rules";
@@ -232,6 +234,7 @@ const currentScene = computed(() => {
   const g = game.value;
   if (!g || titleScreen.value || (view.value === "cultivation" && g.outerSea.location === "home"))
     return { image: "/scenes/moon-terrace.png", name: "听松山居" };
+  if(g.realm===2 && g.conclave.location!=="away") return {image:g.conclave.location==="vault"?"/art/conclave/vault.webp":"/art/conclave/court.webp",name:g.conclave.location==="vault"?"归潮秘境":"诸宗会谷"};
   if(g.realm===2 && g.outerSea.location!=="home") return {image:g.outerSea.location==="ruins" ? (g.outerSea.cleared?"/art/outer-sea/inner.webp":"/art/outer-sea/ruins.webp"):"/art/outer-sea/ferry.webp",name:g.outerSea.location==="ruins"?"退潮遗迹":"外海古渡"};
   if(g.realm===2) return {image:"/scenes/moon-terrace.png",name:g.outerSea.met?"听松行前居":"云外石台"};
   if (atContest.value) return { image: "/art/sect-contest/tingsong.webp", name: "听松山 · 松间石台" };
@@ -1018,6 +1021,7 @@ onUnmounted(() => {
           <p>你还在拍卖会场。结束竞拍或离场后，再继续修行与行旅。</p>
           <button @click="openPanel('inventory')">返回拍卖会 · 继续竞拍或离场</button>
         </aside>
+        <ConclavePanel :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
         <OuterSeaPanel :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
         <GoldenCorePanel v-if="game.realm < 2 || !game.goldenCore.farShore" :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
         <SectContestScene :game="game" :busy="ui.busy || ui.running" @act="worldAct" />
@@ -1156,7 +1160,7 @@ onUnmounted(() => {
               <h3 class="controls-heading">洞府修行 · 操作区</h3>
               <div class="progress-label">
                 <h2>
-                  {{ game.realm === 2 ? "金丹初成 · 云壁之外" : game.realm ? "筑基已成 · 构筑与历练" : "炼气 → 筑基" }}
+                  {{ game.realm === 2 ? realmStageLabel(game) + " · 外海道途" : game.realm ? "筑基已成 · 构筑与历练" : "炼气 → 筑基" }}
                 </h2>
                 <strong v-if="game.realm === 0"
                   >{{ game.qi }} / {{ MAX_QI }}</strong
@@ -1165,7 +1169,7 @@ onUnmounted(() => {
                   >筑基修行 {{ game.foundationJourney.cultivation }} /
                   600</strong
                 >
-                <strong v-else>金丹修行 {{ game.outerSea.cultivation }} / 299</strong>
+                <strong v-else>金丹修行 {{ game.outerSea.cultivation }} / {{goldenCap(game)}}</strong>
               </div>
               <div v-if="game.realm === 0" class="qi-track">
                 <i :style="{ width: (game.qi / MAX_QI) * 100 + '%' }"></i>

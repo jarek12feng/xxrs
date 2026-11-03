@@ -217,7 +217,7 @@ describe("宝物与有境界限制的拍卖", () => {
     const old = { ...ready(), version: 26 };
     delete (old as Partial<State>).treasures;
     const migrated = migrateSave(old);
-    expect(migrated.version).toBe(30);
+    expect(migrated.version).toBe(31);
     expect(migrated.treasures.auction).toBeNull();
     expect(validState(migrated)).toBe(true);
   });

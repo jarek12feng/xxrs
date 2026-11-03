@@ -15,4 +15,4 @@ export const build =
       }
     : __BUILD_INFO__;
 export const playableScope =
-  "免费试玩 · 炼气至结丹与金丹初行；金丹中后期及更高境界尚未开放。";
+  "免费试玩 · 炼气至金丹后期，含诸宗会与归潮秘境；金丹圆满和元婴尚未开放。";

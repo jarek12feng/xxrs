@@ -1,3 +1,5 @@
+import { goldenCap, goldenBlock } from "../conclave/state";
+import { conclaveGoal } from "../conclave/rules";
 import type { State } from "../world";
 import type { Move } from "../expedition/content";
 import { tacticalExchange } from "../expedition/combat";
@@ -164,6 +166,7 @@ export function seaExchange(s: State, move: Move) {
 }
 export function seaGoal(s: State) {
   const o = s.outerSea;
+  if(s.conclave.location !== "away") return conclaveGoal(s);
   if (o.duel) return "看清石卫来势再出手；也可撤回古渡，已通进度保留。";
   if (o.location === "ruins")
     return "应对眼前石卫，取得封存机缘；退路仍然畅通。";
@@ -181,7 +184,7 @@ export function seaGoal(s: State) {
             ? "回古渡分取镇潮印或澄息篇，先用上所得。"
             : o.cleared < 2
               ? `${!o.attuned && o.method === "none" ? "先温养法宝或参悟功法，" : ""}${o.cultivation < 60 ? "修至 60 后再探内府。" : "已能承受内府潮压，可整备后重返遗迹。"}${o.notice === null ? "回古渡交接，还可听闻诸宗会期。" : ""}`
-              : "退潮内府已通，法宝与功法都已得手；可修炼至前期瓶颈，后续中期历练尚未开放。";
+              : s.conclave.stage ? conclaveGoal(s) : goldenBlock(s);
 }
 export function updateSeaCalendar(s: State) {
   const o = s.outerSea;
@@ -192,7 +195,7 @@ export function updateSeaCalendar(s: State) {
   if (o.notice !== null && !o.reminded && s.month >= o.notice + 600) {
     o.reminded = true;
     o.last =
-      "五十年前约定的诸宗会期已至。来信记在行囊中；本次版本尚未开放赴会斗法，不消耗资格或奖励。";
+      "五十年前约定的诸宗会期已至。顾沧遥来信邀你从古渡赴会；两场胜绩便能争取归潮秘境资格。若暂时无暇，各宗会留下轮值补试，旧胜绩仍认。";
     s.log.unshift({ month: s.month, kind: "major", text: o.last });
     s.log = s.log.slice(0, 180);
   }
@@ -282,7 +285,7 @@ export function runSea(
       o.prepared = false;
       o.location = "ferry";
       o.cultivation = Math.min(
-        299,
+        goldenCap(s),
         o.cultivation + (o.cleared === 1 ? 30 : 45),
       );
       if (o.cleared === 1) {
@@ -348,7 +351,7 @@ export function runSea(
   if (a.kind === "report") {
     o.notice = s.month;
     record(
-      "交接观潮图时，顾沧遥提起五十年后的诸宗会：“照霜门也会来。争到名次，可求取法门与凝婴药材的机缘；各宗到时才定分配。”叶问苓约你届时带新见闻再叙。会期已记下，不替你报名；本次版本尚未开放比赛。",
+      "交接观潮图时，顾沧遥提起五十年后的诸宗会：“照霜门也会来。争到名次，可求取法门与凝婴药材的机缘；各宗到时才定分配。”叶问苓约你届时带新见闻再叙。会期已记下，不替你报名。两场胜绩可争取入境资格，归潮秘境藏有凝婴宝物；这五十年可先凝炼丹元、温养法宝。",
     );
   }
   return finish();

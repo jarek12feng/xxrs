@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import {goldenCap} from "../conclave/state";
+import {realmStageLabel} from "../cultivation";
 import { computed } from "vue";
 import type { State, Intent } from "../core";
 import { actionError } from "../core";
@@ -88,7 +90,7 @@ const send = (action: SeaAction) => emit("act", { type: "outerSea", action });
 </script>
 <template>
   <section
-    v-if="game.realm === 2 && game.goldenCore.farShore"
+    v-if="game.realm === 2 && game.goldenCore.farShore && game.conclave.location === 'away'"
     class="outer-sea"
     aria-label="金丹外海行旅"
   >
@@ -192,7 +194,7 @@ const send = (action: SeaAction) => emit("act", { type: "outerSea", action });
       </p>
     </details>
     <p v-if="o.met">
-      金丹前期修为 {{ o.cultivation }} / 299 · 遗迹已通 {{ o.cleared }} / 2 层
+      {{realmStageLabel(game)}}修为 {{ o.cultivation }} / {{goldenCap(game)}} · 遗迹已通 {{ o.cleared }} / 2 层
     </p>
     <p v-if="o.seal || o.manual">
       镇潮印：{{
@@ -218,7 +220,7 @@ const send = (action: SeaAction) => emit("act", { type: "outerSea", action });
         o.reminded
           ? "会期已至"
           : `尚余 ${Math.max(0, o.notice + 600 - game.month)} 月`
-      }}。消息来自交接时的约定，未替你报名；本次版本尚未开放比赛。
+      }}。消息来自交接时的约定，未替你报名；会期到来可循道友来信赴会。
     </p>
     <p v-if="o.duel">
       {{ seaFoe(o.duel.depth).name }} · 金丹前期 · 第
@@ -248,7 +250,7 @@ const send = (action: SeaAction) => emit("act", { type: "outerSea", action });
         :game="game"
         :busy="busy"
         automatic
-        :target="o.cultivation < 60 ? 60 : 299"
+        :target="o.cultivation < 60 ? 60 : goldenCap(game)"
         @act="emit('act', $event)"
       />
       <button

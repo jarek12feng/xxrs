@@ -1,3 +1,4 @@
+import { goldenCap } from "../conclave/state";
 import type { State } from "../world";
 export interface OuterSea {
   location: "home" | "ferry" | "ruins";
@@ -50,7 +51,7 @@ export function validOuterSea(s: State) {
     !["none", "seal", "manual"].includes(o.reward) ||
     !["none", "continue", "clear"].includes(o.method) ||
     !int(o.cleared, 2) ||
-    !int(o.cultivation, 299) ||
+    !int(o.cultivation, goldenCap(s)) ||
     ["met", "prepared", "seal", "manual", "attuned", "reminded"].some(
       (k) => typeof o[k as keyof OuterSea] !== "boolean",
     ) ||

@@ -7,7 +7,7 @@ export type WorkshopCommand = {
   order: WorkshopOrder;
 };
 export function workshopLock(s: State): string {
-  return s.outerSea?.location === "ruins" || s.goldenCore?.duel || s.sectContest.duel || s.status !== "alive" ||
+  return s.conclave?.duel || s.conclave?.location === "vault" || s.outerSea?.location === "ruins" || s.goldenCore?.duel || s.sectContest.duel || s.status !== "alive" ||
     s.pending ||
     s.social.scene ||
     s.social.arena.duel ||

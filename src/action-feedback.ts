@@ -63,6 +63,7 @@ export function actionReceipt(
   )
     return null;
   if (
+    (intent.type === "conclave" && !!after.conclave.duel) ||
     (intent.type === "outerSea" && !!after.outerSea.duel) ||
     (intent.type === "foundationJourney" && !!after.foundationJourney.duel) ||
     (intent.type === "arenaTurn" && after.social.arena.duel) ||
@@ -213,6 +214,7 @@ export function actionReceipt(
   if (effective.type === "trainTechnique") title = "功法研修完成";
   const growthNotes = [
     "outerSea",
+    "conclave",
     "equip",
     "equipRelic",
     "trainTechnique",
@@ -231,6 +233,7 @@ export function actionReceipt(
     if (before.realm === after.realm && !dead) title = advancement[0]!;
     growthNotes.push(...advancement);
   }
+  if(effective.type === "conclave" && !dead){title=after.conclave.stage>before.conclave.stage?"丹元凝成 · 境界精进":after.conclave.depth>before.conclave.depth?"归潮取宝":"诸宗会谷";growthNotes.push(after.conclave.last);}
   if (effective.type === "outerSea" && !dead) {title=after.outerSea.cleared>before.outerSea.cleared?"遗迹告捷 · 机缘入手":"外海行旅";growthNotes.push(after.outerSea.last);}
   if (effective.type === "treasure" && !dead) { title = failed ? "宝物行程中断" : "宝物与拍卖会"; growthNotes.push(after.treasures.last); }
   if (effective.type === "secretPact" && !dead) title = "照玄之约";

@@ -62,7 +62,7 @@ export function recognitionView(s: State) {
   };
 }
 export function advancementPromise(s: State) {
-  if(s.realm === 2) return "金丹初成：丹元护体已可穿过云壁，独自远行。";
+  if(s.realm === 2) return s.conclave.stage===0?"金丹中期：凝炼丹元后可与诸宗修士斗法，争取凝婴秘境资格。":s.conclave.stage===1?"金丹后期：以护神宝物与新法融汇丹元，继续筹备凝婴。":"护神宝物与新法已兑现；圆满试炼与化婴丹仍待后续道途。";
   if (!s.realm)
     return cultivationStageIndex(s) === 0
       ? "下一境 · 炼气中期：可走药谷、宗门或散修历练；亲自闯关后，受邀领队，赚取护送报酬。"

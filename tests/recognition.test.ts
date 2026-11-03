@@ -152,7 +152,7 @@ it("saves preserve earned history; v23 migration creates no fictitious appointme
   old.version = 23;
   delete old.recognition;
   const migrated = migrateSave(old)!;
-  expect(migrated.version).toBe(30);
+  expect(migrated.version).toBe(31);
   expect(migrated.recognition.appointments).toEqual([]);
   expect(migrated.cultivationRemainder).toBe(s.cultivationRemainder);
   expect(old.version).toBe(23);

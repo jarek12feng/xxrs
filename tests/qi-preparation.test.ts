@@ -245,7 +245,7 @@ it("rejects malformed progress and future versions; 19 gains no invented route a
   } = s.qiJourney;
   const old = { ...s, version: 19, qiJourney: oldJourney };
   const migrated = migrateSave(old);
-  expect(migrated.version).toBe(30);
+  expect(migrated.version).toBe(31);
   expect(migrated.qiJourney.preparations).toEqual([
     freshPreparation(),
     freshPreparation(),

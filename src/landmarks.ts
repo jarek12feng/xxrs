@@ -1,3 +1,4 @@
+import {conclaveGoal} from "./conclave/rules";
 import {seaGoal} from "./outer-sea/rules";
 // Read-only scene presentation. Travel still goes through existing core commands.
 import {
@@ -134,6 +135,7 @@ export function currentLandmark(s: State): {
   image: string;
   goal: string;
 } {
+  if(s.realm===2 && s.conclave.location!=='away')return {chapter:'road',key:s.conclave.location==='court'?'conclave-court':'conclave-vault',title:s.conclave.location==='court'?'诸宗会谷':'归潮秘境',image:s.conclave.location==='court'?'/art/conclave/court.webp':'/art/conclave/vault.webp',goal:conclaveGoal(s)};
   if(s.realm===2){const o=s.outerSea;return {chapter:"road",key:o.location==='home'?'home':o.location==='ferry'?'outer-ferry':'outer-ruins',title:o.location==='home'?'听松行前居':o.location==='ferry'?'外海古渡':'退潮遗迹',image:o.location==='home'?'/scenes/moon-terrace.png':o.location==='ferry'?'/art/outer-sea/ferry.webp':'/art/outer-sea/ruins.webp',goal:seaGoal(s)};}
   const a = s.adventure;
   if (a.step !== "done")
@@ -358,7 +360,7 @@ export function routeNodes(s: State): RouteNode[] {
       image: node?.image ?? image,
       x: place.x,
       y: place.y,
-      current: s.realm===2 ? s.outerSea.location==='home' && place.key==='home' : node?.current ?? false,
+      current: s.realm===2 ? s.conclave.location==='away' && s.outerSea.location==='home' && place.key==='home' : node?.current ?? false,
       active: !!node,
       visited: !!visited[place.key] || !!node?.visited,
       intent: node?.intent,
@@ -369,7 +371,8 @@ export function routeNodes(s: State): RouteNode[] {
           : "本界已知地标。当前通路尚未开启，沿眼前的行程逐步探索。"),
     };
   });
-  if(s.realm===2)nodes.push(...(['ferry','ruins'] as const).map((location,i)=>({key:location==='ferry'?'outer-ferry':'outer-ruins',title:location==='ferry'?'外海古渡':'退潮遗迹',image:location==='ferry'?'/art/outer-sea/ferry.webp':'/art/outer-sea/ruins.webp',x:88,y:30+i*16,current:s.outerSea.location===location,active:s.outerSea.met,visited:location==='ferry'?s.outerSea.met:s.outerSea.cleared>0,condition:'外海行程从当前冒险出发，退潮时入遗迹；地图查看不会移动角色。'})));
+  if(s.realm===2 && s.outerSea.notice!==null)nodes.push(...(['court','vault'] as const).map((location,i)=>({key:location==='court'?'conclave-court':'conclave-vault',title:location==='court'?'诸宗会谷':'归潮秘境',image:location==='court'?'/art/conclave/court.webp':'/art/conclave/vault.webp',x:70+i*12,y:20,current:s.conclave.location===location,active:location==='court'?s.outerSea.reminded:s.conclave.wins>=2,visited:location==='court'?s.conclave.introduced:s.conclave.depth>0,condition:'循古渡来信赴会，两场胜绩争得入境资格；地图查看不改变行程。'})));
+  if(s.realm===2)nodes.push(...(['ferry','ruins'] as const).map((location,i)=>({key:location==='ferry'?'outer-ferry':'outer-ruins',title:location==='ferry'?'外海古渡':'退潮遗迹',image:location==='ferry'?'/art/outer-sea/ferry.webp':'/art/outer-sea/ruins.webp',x:88,y:30+i*16,current:s.conclave.location==='away' && s.outerSea.location===location,active:s.outerSea.met,visited:location==='ferry'?s.outerSea.met:s.outerSea.cleared>0,condition:'外海行程从当前冒险出发，退潮时入遗迹；地图查看不会移动角色。'})));
   return nodes;
 }
 

@@ -129,7 +129,7 @@ it("migrates v12 conservatively, rejects corrupt growth, and retains it across m
   const old = { ...rest, version: 12 };
   const copy = structuredClone(old);
   const n = migrateSave(old);
-  expect(n.version).toBe(30);
+  expect(n.version).toBe(31);
   expect(old).toEqual(copy);
   expect(n.seed).toBe(old.seed);
   expect(

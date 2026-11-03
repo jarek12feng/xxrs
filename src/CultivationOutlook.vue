@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {goldenBlock} from "./conclave/state";
 import { advancementPromise } from "./recognition/view";
 import { foundationBlock } from "./foundation-journey/growth-state";
 import { computed, ref } from "vue";
@@ -57,7 +58,7 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
     </p>
     <p v-else-if="outlook.bottleneck">
       {{
-        game.realm === 2 ? "金丹前期瓶颈；中期历练尚未开放。" : game.realm === 1
+        game.realm === 2 ? goldenBlock(game) : game.realm === 1
           ? foundationBlock(game)
           : "修为已抵当前瓶颈，去下方历练取得材料并炼化后，才能继续晋升。"
       }}
