@@ -1,15 +1,5 @@
 import { foundationStep } from "./foundation-playthrough";
-import {
-  createGame,
-  dispatch,
-  validState,
-  type State,
-  type Intent,
-  type Path,
-  type Aptitude,
-  type AdventureAction,
-  type RoadAction,
-} from "../src/core";
+import { createGame, dispatch, validState, type Intent, type Path, type Aptitude, type AdventureAction, type RoadAction } from "../src/core";
 import { encounters } from "../src/expedition/content";
 export function expeditionSession(
   seed = 42,

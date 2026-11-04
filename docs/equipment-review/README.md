@@ -55,7 +55,7 @@
 - 成长预览共用变更与效果规则，不再自行拼接换装和刻纹状态；未满足装备条件时返回具体原因。
 - 寻亲遭遇、青嶂器物路线、雾海阵势、筑基吐纳、越阶支撑及指定器物的剧情条件。
 - 战斗聊天负责 `src/combat/game.ts`，使用统一基础/招式能力并移除原温养重复加成。装备聊天不覆盖战斗引擎。
-- `world`、`workshop/state`、`treasures/catalog` 保留旧配置导出；旧 `workshop/equipment`、`workshop/combat` 为兼容转发，`treasures/combat` 为辅器单独效果投影。新调用统一从 `equipment` 导入。
+- `world`、`workshop/state`、`treasures/catalog` 保留旧配置导出；初次提炼留下的 `workshop/equipment`、`workshop/combat` 和 `treasures/combat` 已在后续接入审查中清理；应用与测试统一从 `equipment` 导入，见 [审查记录](../module-integration-audit-20261104.md)。
 
 界面仍可读取装备持有事实和旧配置兼容导出；存档验证器仍负责原格式校验；剧情模块继续拥有获得/温养前置和结果。这些并非另建一套装备数值。
 

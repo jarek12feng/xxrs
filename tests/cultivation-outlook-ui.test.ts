@@ -8,7 +8,7 @@ import {
   cultivationMonthlyGain,
   cultivationProjection,
   formatLifeMonths,
-} from "../src/cultivation";
+} from "../src/progression";
 import { challenges } from "../src/foundation-journey/content";
 
 it("shows actual life-adjusted gains and changes from a forecast to an explicit lifetime warning", async () => {

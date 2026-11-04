@@ -1,6 +1,6 @@
 import { hasEquippedRelic } from "./equipment";
 import type { State } from "./world";
-import { cultivationStageIndex } from "./cultivation";
+import { cultivationStageIndex } from "./progression";
 import { mainTraining } from "./growth";
 
 export interface OpponentRealm {

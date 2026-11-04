@@ -1,7 +1,12 @@
 export type Resource =
-  "stones" | "herbs" | "iron" | "ward" | "pills" | "healing" | "clarity";
+  "stones" | "herbs" | "iron" | "ward" | "pills" | "healing" | "clarity" | "contribution";
 export type ResourceAmounts = Partial<Record<Resource, number>>;
+export interface ResourceSettlement {
+  cost: ResourceAmounts;
+  reward: ResourceAmounts;
+}
 export const resourceNames: Record<Resource, string> = {
+  contribution: "贡献",
   stones: "灵石",
   herbs: "灵草",
   iron: "玄铁料",
@@ -11,6 +16,7 @@ export const resourceNames: Record<Resource, string> = {
   clarity: "清心丹",
 };
 export interface ResourceContext {
+  journey?: { contribution: number };
   stones: number;
   herbs: number;
   pills?: number;
@@ -18,12 +24,14 @@ export interface ResourceContext {
   growth?: { medicines?: { healing: number; clarity: number } };
 }
 function balance(s: ResourceContext, key: Resource): number | undefined {
+  if (key === "contribution") return s.journey?.contribution;
   if (key === "stones" || key === "herbs" || key === "pills") return s[key];
   if (key === "iron" || key === "ward") return s.workshop?.[key];
   return s.growth?.medicines?.[key];
 }
 function write(s: ResourceContext, key: Resource, value: number) {
-  if (key === "stones" || key === "herbs" || key === "pills") s[key] = value;
+  if (key === "contribution") s.journey!.contribution = value;
+  else if (key === "stones" || key === "herbs" || key === "pills") s[key] = value;
   else if (key === "iron" || key === "ward") s.workshop![key] = value;
   else s.growth!.medicines![key] = value;
 }

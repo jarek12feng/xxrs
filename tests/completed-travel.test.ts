@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { dispatch, type State, type Intent } from "../src/core";
+import { dispatch, type Intent } from "../src/core";
 import { condensationCheckpoint } from "../tools/golden-core-checkpoint";
 import { outerSeaCheckpoint } from "../tools/outer-sea-checkpoint";
 import { completedStoryRoute } from "../src/wayfaring/completed-routes";

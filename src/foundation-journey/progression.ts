@@ -1,8 +1,8 @@
 import { pactFightError } from "../secret-pact/rules";
 import { heroineGoal, isHeroineAction, heroineError, maleMainline, sharedJourneyDone } from "./heroine";
-import { foundationCap, foundationBlock, hasSteady } from "./growth-state";
+import { foundationBlock, hasSteady } from "./growth-state";
 import { isGrowthAction, growthQuote, routeForBattle } from "./growth";
-import { realmStageLabel } from "../cultivation";
+import { realmStageLabel } from "../progression";
 import type { State } from "../world";
 import { challenges, rankIds, sideChoices } from "./content";
 import type { BattleId, JourneyAction } from "./state";

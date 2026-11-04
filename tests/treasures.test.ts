@@ -7,8 +7,8 @@ import {
   type State,
 } from "../src/core";
 import { treasureQuote, type TreasureAction } from "../src/treasures/rules";
-import { treasureIds, bookIds, type Treasure } from "../src/treasures/catalog";
-import { temperEffect } from "../src/workshop/combat";
+import { treasureIds, type Treasure } from "../src/treasures/catalog";
+import { equipmentTurnEffect } from "../src/equipment";
 function ready(seed = 823) {
   const s = createGame("争宝", "wood", seed);
   s.month = 4;
@@ -164,12 +164,12 @@ describe("宝物与有境界限制的拍卖", () => {
     let n = act(s, { kind: "commission", item: "bell" });
     expect(n.stones).toBe(s.stones - 28);
     expect(validState(n)).toBe(true);
-    expect(temperEffect(n, "guard", true).incoming).toBe(0);
+    expect(equipmentTurnEffect(n, "guard", true).incoming).toBe(0);
     n = act(n, { kind: "equip", item: "bell" });
-    expect(temperEffect(n, "guard", true).incoming).toBe(-2);
-    expect(temperEffect(n, "strike", true).damage).toBe(-1);
+    expect(equipmentTurnEffect(n, "guard", true).incoming).toBe(-2);
+    expect(equipmentTurnEffect(n, "strike", true).damage).toBe(-1);
     n = act(n, { kind: "unequip" });
-    expect(temperEffect(n, "guard", true).incoming).toBe(0);
+    expect(equipmentTurnEffect(n, "guard", true).incoming).toBe(0);
     n.realm = 1;
     n.workshop.iron = 1;
     n = act(n, { kind: "refine", item: "bell" });
@@ -179,7 +179,7 @@ describe("宝物与有境界限制的拍卖", () => {
     for (const item of treasureIds) {
       n.treasures.owned[item] = 2;
       n.treasures.equipped = item;
-      const effect = temperEffect(
+      const effect = equipmentTurnEffect(
         n,
         item === "bell" ? "guard" : item === "cord" ? "strike" : "discern",
         true,
@@ -188,7 +188,7 @@ describe("宝物与有境界限制的拍卖", () => {
         item === "mirror" ? 3 : -3,
       );
     }
-    expect(temperEffect(n, "discern", false).damage).toBe(0);
+    expect(equipmentTurnEffect(n, "discern", false).damage).toBe(0);
   });
   it("事件、死亡、交锋期间不能操作；非法领域存档拒绝", () => {
     for (const change of [
@@ -259,4 +259,25 @@ battle: duel,
 effect: 'none'
 })).toEqual(a);
   }
+});
+
+it.each(["healing", "clarity", "ward"] as const)("full %s inventory rejects bids without moving the auction; retry delivers once", (item) => {
+  const s = enter();
+  const lot = s.treasures.auction!.lots[0];
+  Object.assign(lot, { item, rival: lot.opening, price: lot.opening - lot.step });
+  if (item === "ward") s.workshop.ward = 1e9;
+  else s.growth.medicines[item] = 1e9;
+  const snapshot = structuredClone(s);
+  expect(treasureQuote(s, { kind: "bid" }).error).toBe("资源超过可保存上限");
+  expect(act(s, { kind: "bid" }, "capacity-bid")).toBe(s);
+  expect(s).toEqual(snapshot);
+  if (item === "ward") s.workshop.ward--;
+  else s.growth.medicines[item]--;
+  const n = act(s, { kind: "bid" }, "capacity-bid");
+  expect(n.treasures.auction!.index).toBe(1);
+  expect(n.treasures.auction!.lots[0].result).toBe("won");
+  expect(n.stones).toBe(s.stones - lot.opening);
+  expect(item === "ward" ? n.workshop.ward : n.growth.medicines[item]).toBe(1e9);
+  expect(validState(n)).toBe(true);
+  expect(act(migrateSave(n), { kind: "bid" }, "capacity-bid")).toEqual(n);
 });

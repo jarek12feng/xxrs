@@ -9,7 +9,7 @@ import {
 } from "./world";
 import { growthComparison } from "./growth-feedback";
 import { tempers, type Temper } from "./workshop/state";
-import { formatLifeMonths } from "./cultivation";
+import { formatLifeMonths } from "./progression";
 export type GrowthPreviewRequest =
   | { kind: "relic"; id: Relic }
   | { kind: "refine"; id: Relic }

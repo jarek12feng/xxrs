@@ -4,7 +4,6 @@ import NarrativeStage from "../scene2d/NarrativeStage.vue";
 import type { State, Intent } from "../core";
 import { destinations } from "../foundation-journey/content";
 import { pactView } from "./view";
-import { pactQuote } from "./rules";
 import { journeyActionError } from "../foundation-journey/progression";
 const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent] }>();
@@ -129,12 +128,12 @@ const shownActions = computed(() =>
         <button
           v-for="option in shownActions"
           :key="option.action"
-          :disabled="busy || !!pactQuote(game, option.action).error"
+          :disabled="busy || !option.available"
           @click="emit('act', { type: 'secretPact', action: option.action })"
         >
           {{ option.label }}<small>{{ option.detail }}</small
-          ><small v-if="pactQuote(game, option.action).error">{{
-            pactQuote(game, option.action).error
+          ><small v-if="option.error">{{
+            option.error
           }}</small>
         </button>
         <button

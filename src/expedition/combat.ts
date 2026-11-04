@@ -1,6 +1,6 @@
 import type { State } from "../world";
 import { encounters, type Move } from "./content";
-import { readiness, tacticalPreview } from "../combat/game";
+import { tacticalPreview } from "../combat/game";
 export function exchangePreview(s: State, move: Move) {
   const q = s.expedition;
   if (!q.duel) return null;

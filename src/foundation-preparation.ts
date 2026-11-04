@@ -1,4 +1,4 @@
-import { incidentalQiGain } from "./cultivation";
+import { incidentalQiGain } from "./progression";
 import { retreatPlan } from "./retreat";
 import {
   actionError,

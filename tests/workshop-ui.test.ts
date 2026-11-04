@@ -2,7 +2,7 @@
 import { afterEach, expect, it } from "vitest";
 import { createApp, h, nextTick, shallowRef, type App } from "vue";
 import WorkshopPanel from "../src/workshop/WorkshopPanel.vue";
-import { createGame, dispatch, type State, type Intent } from "../src/core";
+import { createGame, dispatch, type Intent } from "../src/core";
 import { workshopQuote } from "../src/workshop/rules";
 let app: App | undefined;
 afterEach(() => {

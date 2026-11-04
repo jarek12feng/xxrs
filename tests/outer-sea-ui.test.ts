@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { clickSceneAction, openSceneNotes } from "./golden-scene-navigation";
-import { createApp, h, nextTick, shallowRef } from "vue";
+import { createApp, h, shallowRef } from "vue";
 import { it, expect } from "vitest";
 import { dispatch, validState, type Intent } from "../src/core";
 import { outerSeaCheckpoint } from "../tools/outer-sea-checkpoint";

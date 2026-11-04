@@ -114,9 +114,8 @@ export function runCompanionship(
           supplies:
             "你用四份灵草调出护脉药液，顶住回流稳住阵石；尹照川守着灯讯引空船入泊。灵草 −4。",
         };
-    const learned = !s.journey.known.includes("guard");
-    if (learned) grantTechnique(s, "guard");
-    else s.study = Math.min(4, s.study + 2);
+    const learned = grantTechnique(s, "guard");
+    if (!learned) s.study = Math.min(4, s.study + 2);
     n.last =
       methods[action as Method] +
       (learned

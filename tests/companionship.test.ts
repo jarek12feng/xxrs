@@ -7,12 +7,7 @@ import {
   type State,
 } from "../src/core";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
-import {
-  freshCompanionship,
-  type CompanionAction,
-  type Method,
-  type Plan,
-} from "../src/companionship/rules";
+import { freshCompanionship, type CompanionAction, type Method } from "../src/companionship/rules";
 import { companionshipView } from "../src/companionship/view";
 const send = (s: State, action: CompanionAction) =>
   dispatch(s, {

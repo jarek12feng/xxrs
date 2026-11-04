@@ -190,3 +190,26 @@ it("minor breakthroughs report the actual newly usable ability", () => {
     })?.returnTo,
   ).toBe("sect");
 });
+
+it.each(['stones', 'contribution'] as const)('rejects work before spending time or herbs when %s rewards overflow', (resource) => {
+  let s = mid();
+  s.journey.branch = 'dan';
+  s.herbs = 20;
+  s = send(s, { kind: 'appoint' });
+  if (resource === 'stones') s.stones = 1e9;
+  else s.journey.contribution = 1e9;
+  const action = { kind: 'undertake', tier: 0, method: 'supplies' } as const;
+  const snapshot = structuredClone(s);
+  const quote = recognitionQuote(s, action);
+  expect(quote.error).toBe('资源超过可保存上限');
+  expect(send(s, action, 'capacity-work')).toBe(s);
+  expect(s).toEqual(snapshot);
+  if (resource === 'stones') s.stones -= quote.stones;
+  else s.journey.contribution--;
+  const n = send(s, action, 'capacity-work');
+  expect(n.recognition.deeds).toHaveLength(1);
+  expect(n.herbs).toBe(s.herbs - quote.herbs);
+  expect(n.stones).toBe(s.stones + quote.stones);
+  expect(n.journey.contribution).toBe(s.journey.contribution + 1);
+  expect(validState(n)).toBe(true);
+});

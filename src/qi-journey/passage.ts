@@ -1,3 +1,4 @@
+import { settleResources } from "../economy";
 import { quoteMedicineUse } from "../medicines";
 import { hasEquippedRelic } from "../equipment";
 import type { State } from "../world";
@@ -64,8 +65,9 @@ export function passagePlan(s: State, action: Passage, maxVigor: number) {
 }
 export function settlePassage(s: State, action: Passage, maxVigor: number) {
   const p = passagePlan(s, action, maxVigor);
-  s.herbs -= p.herbs;
-  s.workshop.ward -= p.ward;
+  if (p.error) return p;
+  const paid = settleResources(s, { herbs: p.herbs, ward: p.ward });
+  if (paid.error) return { ...p, error: paid.error };
   s.injury = Math.min(6, s.injury + p.injury);
   return p;
 }

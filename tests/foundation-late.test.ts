@@ -10,7 +10,7 @@ import {
   journeyCheckpoint,
   journeyPlayer,
 } from "../tools/foundation-journey-checkpoint";
-import { freshFoundationJourney } from "../src/foundation-journey/state";
+
 import {
   challenges,
   rankIds,

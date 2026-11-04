@@ -1,3 +1,5 @@
+import { quoteSettlement, settleResources, type ResourceSettlement } from "../economy";
+import { inspectInteraction } from "../story-interactions";
 import type { CombatAdjustment } from "../combat";
 import { resolveTurn, startBattle } from "../combat";
 import {
@@ -8,10 +10,11 @@ import {
 } from "./passage";
 import { medicineOpening, qiExpectedMove, qiTacticalCue } from "./tactics";
 import { runWorkshop, workshopQuote } from "../workshop/rules";
-import { isPersonAction, personError, settlePerson } from "./people";
+import { isPersonAction, personError, personQuote, settlePerson } from "./people";
 import {
   isPreparationAction,
   preparationError,
+  preparationQuote,
   settlePreparation,
   preparationReady,
   preparationEnemy,
@@ -46,7 +49,7 @@ export function qiGoal(s: State) {
     ? `先修炼到 ${qiSites[q.gates]!.qi} 修为，准备${qiSites[q.gates]!.name}。`
     : `突破${q.gates === 0 ? "后期" : "圆满"}瓶颈：准备功法、法器与补给，进入${qiSites[q.gates]!.name}取得${qiSites[q.gates]!.material}。`;
 }
-export function qiError(s: State, a: QiAction): string {
+function qiRequirementError(s: State, a: QiAction): string {
   const q = s.qiJourney;
   if (
     s.status !== "alive" ||
@@ -123,6 +126,42 @@ export function qiError(s: State, a: QiAction): string {
   }
   return "未知行动";
 }
+export function qiQuote(s: State, a: QiAction) {
+  const error = qiRequirementError(s, a);
+  const settlement: ResourceSettlement = { cost: {}, reward: {} };
+  if (isPersonAction(a)) return { ...personQuote(s, a), error };
+  if (isPreparationAction(a)) return { ...preparationQuote(s, a), error };
+  if (s.qiJourney.node === 2 && passageIds.includes(a as Passage)) {
+    const p = passagePlan(s, a as Passage, qiPower(s).hp);
+    return { error, months: 0, settlement: { cost: { herbs: p.herbs, ward: p.ward }, reward: {} } };
+  }
+  if (a === "buy:healing" || a === "buy:sword" || a === "buy:vial") {
+    const p = workshopQuote(s, { product: a.slice(4) as "healing" | "sword" | "vial", method: "buy" });
+    return { error, months: p.months, settlement: { cost: { stones: p.stones, herbs: p.herbs, iron: p.iron }, reward: a === "buy:healing" ? { healing: 1 } : {} } };
+  }
+  if (a.startsWith("enter:")) {
+    settlement.cost.stones = qiSites[s.qiJourney.gates]?.fee ?? 0;
+    if (a === "enter:medicine") settlement.cost.herbs = 4;
+  }
+  if (["refine", "mentor", "artisan"].includes(a)) {
+    settlement.cost.stones = a === "refine" ? 24 : a === "mentor" ? 12 : 48;
+    if (a === "refine") settlement.cost.herbs = 4;
+    if (a === "mentor") settlement.cost.contribution = 4;
+  }
+  if (a === "commission:herbs") { settlement.cost.herbs = 4; settlement.reward.stones = 16; }
+  if (a === "commission:healing") {
+    settlement.cost.healing = 2;
+    settlement.reward.stones = 24;
+    if (s.journey.branch !== "none") settlement.reward.contribution = 2;
+  }
+  if (a === "commission:survey") settlement.reward.stones = 20;
+  return {
+    error: error || quoteSettlement(s, settlement.cost, settlement.reward).error,
+    months: s.qiJourney.node || a === "withdraw" || a.startsWith("buy:") ? 0 : 1,
+    settlement,
+  };
+}
+export const qiError = (s: State, a: QiAction) => qiQuote(s, a).error;
 export function qiEnemy(s: State) {
   const q = s.qiJourney;
   if (q.trial) return preparationEnemy(s);
@@ -205,7 +244,8 @@ export function runQiJourney(
   id: string,
   tick: (s: State) => State,
 ): State {
-  if (qiError(input, a)) return input;
+  const { quote } = inspectInteraction(input, a, qiQuote);
+  if (quote.error) return input;
   if (a === "buy:healing" || a === "buy:sword" || a === "buy:vial")
     return runWorkshop(
       input,
@@ -227,15 +267,16 @@ export function runQiJourney(
     }
   }
   const q = s.qiJourney;
+  if (!isPersonAction(a) && !isPreparationAction(a) && q.node !== 2 && settleResources(s, quote.settlement.cost, quote.settlement.reward).error) return input;
   if (a === "withdraw") {
     q.node = 0;
     q.duel = null;
     q.trial = null;
     q.last = "撤回山下。已用补给不返还，已炼化的成果保留；准备后可再来。";
   } else if (isPersonAction(a)) {
-    settlePerson(s, a);
+    if (!settlePerson(s, a)) return input;
   } else if (isPreparationAction(a)) {
-    settlePreparation(s, a);
+    if (!settlePreparation(s, a)) return input;
     if (s.qiJourney.trial)
       s.qiJourney.duel = {
         ...startBattle(qiPower(s).hp, qiEnemy(s)!.hp),
@@ -243,22 +284,10 @@ export function runQiJourney(
       };
   } else if (a.startsWith("commission:")) {
     const k = a.slice(11) as keyof typeof commissions;
-    if (k === "herbs") {
-      s.herbs -= 4;
-      s.stones += 16;
-    }
-    if (k === "healing") {
-      s.growth.medicines.healing -= 2;
-      s.stones += 24;
-      if (s.journey.branch !== "none") s.journey.contribution += 2;
-    }
-    if (k === "survey") s.stones += 20;
     q.commissions.push(k);
     q.last = commissions[k].text;
   } else if (a.startsWith("enter:")) {
     q.route = a.slice(6) as QiRoute;
-    s.stones -= qiSites[q.gates]!.fee;
-    if (q.route === "medicine") s.herbs -= 4;
     q.node = 1;
     q.duel = {
       ...startBattle(qiPower(s).hp, qiEnemy(s)!.hp),
@@ -306,13 +335,11 @@ export function runQiJourney(
     }
   } else if (q.node === 2) {
     const p = settlePassage(s, a as Passage, qiPower(s).hp);
+    if (p.error) return input;
     q.node = 3;
     q.duel = { ...startBattle(p.vigor, qiEnemy(s)!.hp), effect: "none" };
     q.last = `${p.label}：${p.cost}，以气势 ${p.vigor} 进入深处。`;
   } else {
-    s.stones -= a === "refine" ? 24 : a === "mentor" ? 12 : 48;
-    if (a === "refine") s.herbs -= 4;
-    if (a === "mentor") s.journey.contribution -= 4;
     q.gates++;
     q.essence = false;
     q.route = null;

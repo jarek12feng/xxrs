@@ -16,7 +16,7 @@ import { readiness, tacticalPreview } from "../src/combat/game";
 import {
   cultivationProjection,
   cultivationStageIndex,
-} from "../src/cultivation";
+} from "../src/progression";
 import { currentLandmark, routeNodes } from "../src/landmarks";
 const start = conclaveCheckpoint();
 const send = (

@@ -1,5 +1,5 @@
 import { grantTechnique } from "../techniques";
-import { settleResources } from "../economy";
+import { quoteSettlement, settleResources, type ResourceAmounts } from "../economy";
 import { advanceMonths } from "../timeline";
 import { equipmentChangeError, applyEquipmentChange } from "../equipment";
 import type { State, Technique } from "../world";
@@ -21,6 +21,9 @@ export type TreasureAction =
   | { kind: "catalog"; venue: Venue }
   | { kind: "enter" | "bid" | "pass" | "leave" }
   | { kind: "budget"; value: number };
+function lotReward(item: LotItem): ResourceAmounts {
+  return item === "ward" || item === "healing" || item === "clarity" ? { [item]: 1 } : {};
+}
 export function treasureQuote(s: State, a: TreasureAction) {
   let error = workshopLock(s),
     stones = 0,
@@ -80,6 +83,7 @@ export function treasureQuote(s: State, a: TreasureAction) {
         stones = l.price + l.step;
         error ||=
           stones > active.budget ? "本次出价超过预算；可调整上限或放弃" : "";
+        error ||= quoteSettlement(s, { stones }, lotReward(l.item)).error;
         if (
           treasureIds.includes(l.item as Treasure) &&
           s.treasures.owned[l.item as Treasure]
@@ -151,16 +155,16 @@ export function runTreasure(
   const t = s.treasures;
   if (a.kind === "commission" || a.kind === "refine") {
     if (settleResources(s, { stones: quote.stones, iron: quote.iron }).error) return input;
-    applyEquipmentChange(s, {
+    if (applyEquipmentChange(s, {
       kind: a.kind === "commission" ? "acquire" : "refine",
       id: a.item,
-    });
+    }).error) return input;
     t.last = `${treasures[a.item].name}${a.kind === "refine" ? "精炼完成" : "已收入储物袋"}，花费灵石 ${quote.stones}。装配后才生效。`;
   } else if (a.kind === "equip") {
-    applyEquipmentChange(s, { kind: "equip", id: a.item });
+    if (applyEquipmentChange(s, { kind: "equip", id: a.item }).error) return input;
     t.last = `已装配${treasures[a.item].name}。${treasures[a.item].hint}`;
   } else if (a.kind === "unequip") {
-    applyEquipmentChange(s, { kind: "unequip", slot: "auxiliary" });
+    if (applyEquipmentChange(s, { kind: "unequip", slot: "auxiliary" }).error) return input;
     t.last = "已卸下辅器。";
   } else if (a.kind === "catalog") {
     const gear = treasureIds.filter(
@@ -215,13 +219,12 @@ export function runTreasure(
         l.price = offer;
         l.paid = offer;
         l.result = "won";
-        if (settleResources(s, { stones: offer }).error) return input;
-        if (treasureIds.includes(l.item as Treasure))
-          applyEquipmentChange(s, { kind: "acquire", id: l.item as Treasure });
-        else if (bookIds.includes(l.item as Technique))
-          grantTechnique(s, l.item as Technique);
-        else if (l.item === "ward") s.workshop.ward++;
-        else s.growth.medicines[l.item as "healing" | "clarity"]++;
+        if (settleResources(s, { stones: offer }, lotReward(l.item)).error) return input;
+        if (treasureIds.includes(l.item as Treasure)) {
+          if (applyEquipmentChange(s, { kind: "acquire", id: l.item as Treasure }).error) return input;
+        } else if (bookIds.includes(l.item as Technique)) {
+          if (!grantTechnique(s, l.item as Technique)) return input;
+        }
         t.last = `${lotInfo(l.item).name}以 ${offer} 灵石落槌，已交付。`;
       }
     }

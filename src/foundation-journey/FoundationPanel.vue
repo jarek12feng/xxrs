@@ -35,7 +35,7 @@ import { foundationBoard, journeyOptions, journeyPresentation } from "./view";
 import JourneyResult from "./JourneyResult.vue";
 import { chapterEnding } from "./aftermath";
 import { journeyPreparation } from "./preparation";
-import { formatLifeMonths } from "../cultivation";
+import { formatLifeMonths } from "../progression";
 import { foundationBattleCue, foundationMoveSetup } from "./battle-cues";
 import CultivationOutlook from "../CultivationOutlook.vue";
 const props = withDefaults(

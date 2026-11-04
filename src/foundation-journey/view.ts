@@ -1,4 +1,4 @@
-import { foundationCap, foundationBlock, resourceRoutes, hasSteady } from "./growth-state";
+import { foundationCap, resourceRoutes, hasSteady } from "./growth-state";
 import { routeInfo } from "./growth";
 import { awaitingFerryConversation, maleMainline } from "./heroine";
 import { opponentRealmName } from "../realm-pressure";

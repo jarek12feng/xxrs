@@ -158,8 +158,7 @@ function complete(s: State) {
   }
   if (q.cleared === 2) q.last += e.story + expeditionIntermission(s);
   if (q.cleared === 3) {
-    if (!s.journey.known.includes("guard")) {
-      grantTechnique(s, "guard");
+    if (grantTechnique(s, "guard")) {
       q.last += "获得护身诀（可在功法面板装配）。";
     } else {
       s.stones += 12;

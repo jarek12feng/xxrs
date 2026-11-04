@@ -255,3 +255,23 @@ it("treasure mitigates a later battle only after guard into discern", () => {
   expect(actual.incoming).toBe(Math.max(0, baseline.incoming - 3));
   expect(foundationExchange(p.state, "strike")).toEqual(foundationExchange(without, "strike"));
 });
+
+it('keeps compensation and mailed supplies unclaimed when storage is full', () => {
+  const s = send(ready(), 'enterLight');
+  s.stones = 1e9;
+  expect(pactView(s).actions.find(x => x.action === 'yield')?.error).toBe('资源超过可保存上限');
+  expect(send(s, 'yield', 'capacity-yield')).toBe(s);
+  expect(s.secretPact.stage).toBe('inside');
+  s.stones -= 24;
+  const paid = send(s, 'yield', 'capacity-yield');
+  expect(paid.stones).toBe(1e9);
+  expect(paid.secretPact.outcome).toBe('yield');
+  paid.growth.medicines.healing = 1e9 - 1;
+  expect(send(paid, 'supplies', 'capacity-supplies')).toBe(paid);
+  expect(paid.secretPact.supplies).toBe(false);
+  paid.growth.medicines.healing--;
+  const n = send(paid, 'supplies', 'capacity-supplies');
+  expect(n.growth.medicines.healing).toBe(1e9);
+  expect(n.secretPact.supplies).toBe(true);
+  expect(send(migrateSave(n), 'supplies', 'another-claim')).toEqual(n);
+});

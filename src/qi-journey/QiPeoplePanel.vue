@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { projectInteractions } from "../story-interactions";
 import type { State, Intent } from "../core";
 import { qiPeople, personReply, type PersonAction } from "./people";
-import { qiError } from "./rules";
-defineProps<{ game: State; busy: boolean }>();
+import { qiQuote } from "./rules";
+const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{
   act: [intent: Intent];
   inventory: [];
@@ -22,6 +24,10 @@ const actions = {
     ["reward:core-training", "保留至筑基后交付 · 护身诀通达"],
   ],
 } as const;
+const options = computed(() => {
+  const project = (key: keyof typeof actions) => projectInteractions(props.game, actions[key].map(([action, label]) => ({ action, label })), qiQuote);
+  return { scout: project("scout"), smith: project("smith") };
+});
 </script>
 <template>
   <section
@@ -62,15 +68,15 @@ const actions = {
       </p>
       <div class="person-actions">
         <button
-          v-for="[action, label] in actions[key]"
-          :key="action"
-          :disabled="busy || !!qiError(game, action)"
+          v-for="option in options[key]"
+          :key="option.id"
+          :disabled="busy || !option.available"
           @click="
-            emit('act', { type: 'qiJourney', action: action as PersonAction })
+            emit('act', { type: 'qiJourney', action: option.action as PersonAction })
           "
         >
-          {{ label
-          }}<small>{{ qiError(game, action) || "耗时一月" }}</small>
+          {{ option.label
+          }}<small>{{ option.error || "耗时一月" }}</small>
         </button>
       </div>
     </details>

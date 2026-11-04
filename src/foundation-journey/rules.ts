@@ -1,3 +1,4 @@
+import { advanceMonths } from "../timeline";
 import { completeChallenge } from "./outcome";
 import { resolveTurn, startBattle } from "../combat";
 import { runTravel } from "../wayfaring/rules";
@@ -44,15 +45,17 @@ export function runFoundationJourney(
       : ["battle", "supply"].includes(action.kind)
         ? 1
         : 0;
-  for (let month = 0; month < months; month++) {
-    s = tick(s);
-    if (s.status !== "alive" || s.pending) {
-      s.foundationJourney.last =
-        s.status === "dead"
-          ? "行前准备耗去最后一月寿元，此生已经结束。未扣挑战补给，也未开始交锋或领取奖励。"
-          : "行前准备耗去一月，眼前事件打断了出发。尚未扣挑战补给，原进度保留；先处理事件。";
-      return accept(input, s, id);
-    }
+  const elapsed = advanceMonths(s, months, {
+    tick,
+    interrupt: s => s.status !== "alive" || s.pending ? "interrupted" : "",
+  });
+  s = elapsed.state;
+  if (elapsed.stopped) {
+    s.foundationJourney.last =
+      s.status === "dead"
+        ? "行前准备耗去最后一月寿元，此生已经结束。未扣挑战补给，也未开始交锋或领取奖励。"
+        : "行前准备耗去一月，眼前事件打断了出发。尚未扣挑战补给，原进度保留；先处理事件。";
+    return accept(input, s, id);
   }
   const q = s.foundationJourney;
   if (action.kind === "battle") {
@@ -101,7 +104,9 @@ export function runFoundationJourney(
         if (rankIds.includes(d.id)) q.board.last = q.last;
       }
     }
-  } else if (isGrowthAction(action)) applyGrowth(s, action);
+  } else if (isGrowthAction(action)) {
+    if (!applyGrowth(s, action)) return input;
+  }
   else if (isHeroineAction(action)) applyHeroine(s, action);
   else advancePlot(s, action);
   return accept(input, s, id);

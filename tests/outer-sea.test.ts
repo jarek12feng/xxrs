@@ -4,9 +4,9 @@ import { dispatch, validState, migrateSave } from "../src/core";
 import { seaFoe, seaQuote } from "../src/outer-sea/rules";
 import {currentLandmark,routeNodes} from "../src/landmarks";
 import { readiness, tacticalPreview } from "../src/combat/game";
-import { cultivationProjection } from "../src/cultivation";
+import { cultivationProjection } from "../src/progression";
 const start = outerSeaCheckpoint();
-function trip(pact: "share" | "private", reward: "seal" | "manual") {
+function trip(pact: "share" | "private") {
   const p = seaPlayer(structuredClone(start));
   p.work(40);
   p.herbs(12);
@@ -38,7 +38,7 @@ describe("外海开篇", () => {
   ] as const)(
     "%s/%s 两层遗迹、真实成长、机缘兑现与五十年告知",
     (pact, reward) => {
-      const p = trip(pact, reward);
+      const p = trip(pact);
       win(p);
       expect(currentLandmark(p.state).title).toBe("外海古渡");
     expect(routeNodes(p.state).filter(n=>n.current).map(n=>n.key)).toEqual(["outer-ferry"]);
@@ -81,7 +81,7 @@ describe("外海开篇", () => {
     },
   );
   it("遗迹互斥、撤回不丢行装，双修不叠加且保留旧功法", () => {
-    const p = trip("share", "manual");
+    const p = trip("share");
     const s = p.state;
     for (const i of [
       { type: "advance", activity: "work", months: 1 },
@@ -123,7 +123,7 @@ effect: ""
     bad.outerSea.seal = true;
     expect(validState(bad)).toBe(false);
     expect(() => migrateSave({ ...start, version: 999 })).toThrow();
-    const p = trip("share", "seal");
+    const p = trip("share");
     const c = {
       id: "once",
       type: "outerSea",
@@ -139,7 +139,7 @@ effect: ""
     ).toBe("dead");
   });
   it("长关在五十年会期消息处停下，前期瓶颈不可跨境", () => {
-    const p = trip("share", "seal");
+    const p = trip("share");
     win(p);
     p.send({ type: "outerSea", action: { kind: "reward", reward: "seal" } });
     p.send({ type: "outerSea", action: { kind: "report" } });

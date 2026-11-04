@@ -9,7 +9,7 @@ import {
   type State,
   type Intent,
 } from "../src/core";
-import { cultivationMonthlyGain } from "../src/cultivation";
+import { cultivationMonthlyGain } from "../src/progression";
 const send = (s: State, c: Intent, id = `lesson-${s.seen.length}`) =>
   dispatch(s, { ...c, id });
 function rescued(path: "wood" | "sword" = "wood") {
@@ -129,4 +129,20 @@ it("v25 migration marks past rewards settled without grants and rejects invalid 
     }),
   ).toBe(false);
   expect(() => migrateSave({ ...n, version: 999 })).toThrow();
+});
+
+it.each(["spring", "vial"] as const)("keeps %s compensation claimable if the wallet is full", (choice) => {
+  const s = rescued();
+  s.journey.known = ["spring"];
+  s.expedition.cleared = 1;
+  s.journey.relics.vial = 1;
+  s.stones = 1e9;
+  const snapshot = structuredClone(s);
+  expect(send(s, { type: "learning", choice }, "full-wallet")).toBe(s);
+  expect(s).toEqual(snapshot);
+  s.stones -= 20;
+  const n = send(s, { type: "learning", choice }, "full-wallet");
+  expect(n.journey.learning[choice === "spring" ? "book" : "relic"]).toBe(true);
+  expect(n.stones).toBe(s.stones + (choice === "spring" ? 20 : 12));
+  expect(send(n, { type: "learning", choice }, "claim-again")).toBe(n);
 });

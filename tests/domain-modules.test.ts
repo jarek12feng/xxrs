@@ -244,7 +244,7 @@ describe("story interaction protocol", () => {
     ];
     const quote = (
       s: { stones: number },
-      a: { kind: string; site: string },
+      _a: { kind: string; site: string },
     ) => ({ error: s.stones < 8 ? "缺少灵石" : "", stones: 8, months: 1 });
     const offers = projectInteractions({ stones: 8 }, specs, quote);
     expect(offers[0]).toMatchObject({
@@ -262,4 +262,15 @@ describe("story interaction protocol", () => {
       selectInteraction({ stones: 8 }, [], offers[0]!.id, quote).action,
     ).toBeNull();
   });
+});
+
+it('explicit settlement separates income from costs and projections cannot mutate the quote', () => {
+  const settlement = { cost: { herbs: 2 }, reward: { stones: 18, contribution: 1 } };
+  const quote = () => ({ error: '', months: 1, herbs: 2, stones: 18, contribution: 1, settlement });
+  const option = projectInteractions({}, [{ label:'护药',action:'work' }], quote)[0]!;
+  expect(option.cost).toEqual({ herbs: 2 });
+  expect(option.reward).toEqual({ stones: 18, contribution: 1 });
+  option.reward.stones = 0;
+  option.cost.herbs = 0;
+  expect(settlement).toEqual({ cost: { herbs: 2 }, reward: { stones: 18, contribution: 1 } });
 });

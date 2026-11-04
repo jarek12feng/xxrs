@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { createGame, dispatch, migrateSave, validState } from "../src/core";
-import { cultivationProjection, incidentalQiGain } from "../src/cultivation";
+import { cultivationProjection, incidentalQiGain } from "../src/progression";
 import { foundationCombatFixture } from "../tools/foundation-combat-fixture";
 import {
   findCombatRoute,

@@ -1,3 +1,4 @@
+import { quoteSettlement, settleResources, type ResourceAmounts } from "../economy";
 import type { State } from "../world";
 import { qiSites } from "./content";
 export const preparationIds = ["medicine", "sect", "wander"] as const;
@@ -44,7 +45,7 @@ export function preparationReady(s: State) {
 export function isPreparationAction(a: string): a is PreparationAction {
   return /^prep:(medicine|sect|wander):(prepare|careful|bold|trial)$/.test(a);
 }
-export function preparationError(s: State, a: PreparationAction) {
+function preparationRequirementError(s: State, a: PreparationAction) {
   const [, route, step] = a.split(":") as [string, PreparationRoute, string];
   const q = s.qiJourney;
   if (q.gates >= 2 || q.essence) return "当前材料已取得，不再需要准备路线";
@@ -99,14 +100,25 @@ export function preparationError(s: State, a: PreparationAction) {
   if (s.injury >= 3) return "先养伤至 2 以下";
   return "";
 }
+export function preparationQuote(s: State, a: PreparationAction) {
+  const [, route, step] = a.split(":");
+  const cost: ResourceAmounts = {};
+  if (step === "prepare") {
+    if (route === "medicine") cost.herbs = 3;
+    if (route === "sect") cost.contribution = 2;
+    if (route === "wander") cost.stones = 6;
+  } else if (step === "careful" && (route === "medicine" || route === "sect")) cost.herbs = 2;
+  else if (step === "bold" && route === "wander") cost.stones = 8;
+  return { months: 1, settlement: { cost, reward: {} }, error: preparationRequirementError(s, a) || quoteSettlement(s, cost).error };
+}
+export const preparationError = (s: State, a: PreparationAction) => preparationQuote(s, a).error;
 export function settlePreparation(s: State, a: PreparationAction) {
+  const quote = preparationQuote(s, a);
+  if (quote.error || settleResources(s, quote.settlement.cost).error) return false;
   const [, route, step] = a.split(":") as [string, PreparationRoute, string];
   const q = s.qiJourney,
     p = q.preparations[q.gates]!;
   if (step === "prepare") {
-    if (route === "medicine") s.herbs -= 3;
-    if (route === "sect") s.journey.contribution -= 2;
-    if (route === "wander") s.stones -= 6;
     p[route] = 1;
     q.last =
       route === "medicine"
@@ -115,14 +127,8 @@ export function settlePreparation(s: State, a: PreparationAction) {
           ? "你领下护送差事，贡献 −2。药队中有人脚伤未愈，先决定怎样过山口。"
           : "你花灵石 6 整备行装。外围石阵有两处缺口，先选辨阵绕行或强破。";
   } else if (step === "careful" || step === "bold") {
-    if (
-      (route === "medicine" && step === "careful") ||
-      (route === "sect" && step === "careful")
-    )
-      s.herbs -= 2;
     if ((route === "sect" || route === "wander") && step === "bold")
       s.injury = Math.min(6, s.injury + 1);
-    if (route === "wander" && step === "bold") s.stones -= 8;
     p[route] = 2;
     q.last =
       route === "medicine"
@@ -150,6 +156,7 @@ export function settlePreparation(s: State, a: PreparationAction) {
     q.node = 1;
     q.last = `${preparationRoutes[route].name}：最后一场须由你独自应对。失败可恢复后重试，不必重做已完成的准备。`;
   }
+  return true;
 }
 export function preparationEnemy(s: State) {
   const q = s.qiJourney;

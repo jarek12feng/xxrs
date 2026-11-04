@@ -41,7 +41,9 @@ export function runLearning(
   if (book) {
     const t = choice as "spring" | "blade" | "breath";
     const owned = s.journey.known.includes(t);
-    if (owned) claimResources(s, s.journey.learning.book, { stones: 20 });
+    if (owned) {
+      if (claimResources(s, s.journey.learning.book, { stones: 20 }).error) return input;
+    }
     else grantTechnique(s, t);
     s.journey.learning.book = true;
     if (equip) applyTechnique(s, { kind: "equip", id: t });
@@ -50,8 +52,9 @@ export function runLearning(
       : `你收下${{ spring: "长春诀", blade: "听松剑经", breath: "归元息" }[t]}，开始依诀修行；以后仍可学习其他功法。`;
   } else {
     const r = choice as "vial" | "sword";
-    if (s.journey.relics[r]) claimResources(s, s.journey.learning.relic, { stones: 12 });
-    else applyEquipmentChange(s, { kind: "acquire", id: r });
+    if (s.journey.relics[r]) {
+      if (claimResources(s, s.journey.learning.relic, { stones: 12 }).error) return input;
+    } else if (applyEquipmentChange(s, { kind: "acquire", id: r }).error) return input;
     s.journey.learning.relic = true;
     s.expedition.last = `你选了${r === "sword" ? "听松灵剑" : "归元灵瓶"}作为谢礼；已有同件法器时折为灵石 12。可在储物袋装配。`;
   }

@@ -32,7 +32,6 @@ export const freshQiJourney = (): QiJourney => ({
   duel: null,
   last: "",
 });
-import { qiCap } from "../progression/caps";
 export { qiCap } from "../progression/caps";
 export function validQiJourney(
   s: {

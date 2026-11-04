@@ -1,6 +1,6 @@
 import { pactEarnedTrust } from "../secret-pact/rules";
 import type { State } from "../world";
-import { cultivationStageIndex, realmStageLabel } from "../cultivation";
+import { cultivationStageIndex, realmStageLabel } from "../progression";
 import {
   currentOffice,
   eligibleOffice,

@@ -1,3 +1,4 @@
+import { quoteSettlement, settleResources, type ResourceAmounts } from "../economy";
 import { hasEquippedRelic, inspectEquipment } from "../equipment";
 import type { State } from '../world';
 import type { JourneyAction, BattleId } from './state';
@@ -14,6 +15,11 @@ export function isGrowthAction(a: JourneyAction): a is GrowthAction {
 export function routeForBattle(id: BattleId): ResourceRoute | undefined {
   return resourceRoutes.find(r => routeInfo[r].foe===id);
 }
+function growthReward(s: State, a: GrowthAction): ResourceAmounts {
+  if (a.kind === "rankGift") return a.reward === "medicine" ? { ward: 2 } : { stones: 16, herbs: 4 };
+  if (a.kind === "routeRevisit") return { stones: a.route === "estate" ? (s.foundationJourney.growth.routes.estate.choice === "careful" ? 22 : 12) : 12 };
+  return {};
+}
 export function growthQuote(s: State, a: GrowthAction) {
   const q=s.foundationJourney,g=q.growth;
   let stones=0,herbs=0,ward=0,contribution=0,months=1,error='';
@@ -26,7 +32,7 @@ export function growthQuote(s: State, a: GrowthAction) {
     if(a.method==='medicine'){stones=18;herbs=2;}else {stones=4;months=3;}
   } else {
     const r=a.route;
-    if(!resourceRoutes.includes(r)) return {stones,herbs,ward,contribution,months,error:'未知机缘路线'};
+    if(!resourceRoutes.includes(r)) return {stones,herbs,ward,contribution,months,error:'未知机缘路线',settlement:{cost:{},reward:{} as ResourceAmounts}};
     const p=g.routes[r];
     if(q.location!==r || q.ferry<4 || q.cultivation<200) error='完成离渡并修至筑基中期，到对应地点准备';
     if(a.kind==='routePrepare') {
@@ -59,15 +65,17 @@ export function growthQuote(s: State, a: GrowthAction) {
     }
   }
   if(!error && (s.stones<stones || s.herbs<herbs || s.workshop.ward<ward || s.journey.contribution<contribution)) error=`需灵石 ${stones}、灵草 ${herbs}、护脉丹 ${ward}、贡献 ${contribution}；可劳作、采药或到工坊筹备`;
-  return {stones,herbs,ward,contribution,months,error};
+  const settlement = { cost: { stones, herbs, ward, contribution }, reward: growthReward(s, a) };
+  error ||= quoteSettlement(s, settlement.cost, settlement.reward).error;
+  return {stones,herbs,ward,contribution,months,error,settlement};
 }
 export function applyGrowth(s: State,a: GrowthAction) {
   const q=s.foundationJourney,g=q.growth,cost=growthQuote(s,a);
-  s.stones-=cost.stones;s.herbs-=cost.herbs;s.workshop.ward-=cost.ward;s.journey.contribution-=cost.contribution;
+  if (cost.error || settleResources(s, cost.settlement.cost, cost.settlement.reward).error) return false;
   if(a.kind==='rankGift') {
     g.rankGift=true;
-    if(a.reward==='medicine'){s.workshop.ward+=2;q.last='记名执事交给你两瓶护脉丹，可留作历练整备。';}
-    else {s.stones+=16;s.herbs+=4;q.last='你领下灵石 16、灵草 4，准备下一程。';}
+    if(a.reward==='medicine'){q.last='记名执事交给你两瓶护脉丹，可留作历练整备。';}
+    else {q.last='你领下灵石 16、灵草 4，准备下一程。';}
   } else if(a.kind==='steadyStudy') {
     g.steadyStudy=a.method;
     q.last=a.method==='medicine'?'岑霁让你按药性缓急运气：“先稳住，再辨逆流。”疗程已备，亲自完成调息考验才能学会稳脉。':'你照着古道阵纹练了三月，将乱流引向空处。行功之法已记下，还需独自调息一试。';
@@ -78,11 +86,12 @@ export function applyGrowth(s: State,a: GrowthAction) {
     if(a.kind==='routeProcess'){p.processed=true;g.refined=true;if(s.social.gender === "male" && q.heroine.route === "none")q.heroine.route=a.route;q.last=`${info.material}经处理融入灵元。灵元凝练已成，修行至 400 可入后期，至 599 再遇瓶颈。后期前往古道时，凝练灵元可抵住外缘与接应交锋的前两合冲击，承伤 −3；不必另找主材。`;}
     if(a.kind==='routeRevisit'){
       p.revisited=true;
-      const reward=a.route==='estate'?(p.choice==='careful'?22:12):12;s.stones+=reward;
+      const reward=cost.settlement.reward.stones!;
       q.last=a.route==='estate'?`岑霁收下两份灵草补齐药性记录。${p.choice==='careful'?'根床保住了，药工接下下一季的订单。':'当季可采药量减少，许芦先留下救急的份额。'}本次药材报酬灵石 +${reward}。`:a.route==='snow'?`你将采髓点的退路留给山下药队，护送报酬灵石 +${reward}。鹿群仍在雪线上，没有人追杀它们。`:`裴铸看过阵髓的断面，将${p.choice==='careful'?'修复支点的接法':'单向裂隙的危险'}记在工单上。陶泊付你勘路报酬灵石 +${reward}。`;
     }
   }
   if(s.social.gender === "male" && q.heroine.map === "none" && 'route' in a && ['routePrepare','routeChoose'].includes(a.kind))
     q.last += {estate:'苏婉宁在药床边复核背篓可走的窄路，把住户的井口暂留在未公开的草图上。',snow:'苏婉宁先试绳距，再与你核对风口落点：“我们过得去，还得看背粮的人能不能过。”',frontier:'苏婉宁复测退路，在单向裂隙旁补上止步记号：“这条不能画成来回都通。”'}[a.route];
   q.last+=`（本次灵石 −${cost.stones}、灵草 −${cost.herbs}、护脉丹 −${cost.ward}、贡献 −${cost.contribution}，${cost.months} 月）`;
+  return true;
 }

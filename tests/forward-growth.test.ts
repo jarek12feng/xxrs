@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { createGame, dispatch, migrateSave, validState, type State } from "../src/core";
+import { createGame, dispatch, migrateSave, validState } from "../src/core";
 import { foundationStep } from "../tools/foundation-playthrough";
 import { qiEnemyTell, qiPreview, qiPower, qiError } from "../src/qi-journey/rules";
 import { passagePlan } from "../src/qi-journey/passage";

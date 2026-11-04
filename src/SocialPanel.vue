@@ -69,7 +69,7 @@ const resolving = ref(false);
 let impactTimer: ReturnType<typeof setTimeout> | undefined;
 watch(
   () => duel.value?.turn,
-  async (turn, old) => {
+  async (turn) => {
     clearTimeout(impactTimer);
     if (turn === undefined) {
       resolving.value = false;

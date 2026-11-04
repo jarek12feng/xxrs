@@ -1,4 +1,4 @@
-import { freshQiJourney } from "../src/qi-journey/state";
+
 import { foundationStep } from "../tools/foundation-playthrough";
 import { expect, it } from "vitest";
 import {

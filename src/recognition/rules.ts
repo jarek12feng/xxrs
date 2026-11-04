@@ -1,6 +1,7 @@
+import { quoteSettlement, settleResources } from "../economy";
 import { pactEarnedTrust } from "../secret-pact/rules";
 import type { State } from "../world";
-import { cultivationStageIndex } from "../cultivation";
+import { cultivationStageIndex } from "../progression";
 import { workshopLock } from "../workshop/rules";
 import type { DeedTier, Method, Office } from "./state";
 export type RecognitionAction =
@@ -94,6 +95,7 @@ export function recognitionQuote(s: State, a: RecognitionAction) {
         herbs,
         stones,
         contribution,
+        settlement: { cost: {}, reward: {} },
       };
     const done = s.recognition.deeds.some((d) => d.tier === a.tier);
     error ||=
@@ -149,7 +151,9 @@ export function recognitionQuote(s: State, a: RecognitionAction) {
     contribution = s.journey.branch === "none" ? 0 : 1;
     if (s.journey.branch === "none") stones += 2;
   } else error ||= "未知任用事项";
-  return { error, months, herbs, stones, contribution };
+  const settlement = { cost: { herbs }, reward: { stones, contribution } };
+  error ||= quoteSettlement(s, settlement.cost, settlement.reward).error;
+  return { error, months, herbs, stones, contribution, settlement };
 }
 export function runRecognition(
   input: State,
@@ -208,9 +212,7 @@ export function runRecognition(
     r.last =
       "你交还行牌，腾出时间闭关远行。旧日亲历仍记在册中，日后也可再来受职。";
   } else if (a.kind === "undertake" || a.kind === "routine") {
-    s.herbs -= quote.herbs;
-    s.stones += quote.stones;
-    s.journey.contribution += quote.contribution;
+    if (settleResources(s, quote.settlement.cost, quote.settlement.reward).error) return input;
     if (a.kind === "undertake")
       r.deeds.push({
         tier: a.tier,

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {goldenCap} from "./conclave/state";
-import {realmStageLabel} from "./cultivation";
+import {realmStageLabel} from "./progression";
 import { foundationCap } from "./foundation-journey/growth-state";
 import { computed } from "vue";
 import type { State } from "./core";
-import { cultivationStageIndex, minorStageNames } from "./cultivation";
+import { cultivationStageIndex, minorStageNames } from "./progression";
 const props = defineProps<{ game: State }>();
 const progress = computed(() => {
   const s = props.game;

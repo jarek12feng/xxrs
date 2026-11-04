@@ -9,7 +9,7 @@ import { travelWalkSheet } from "../presentation/movement/appearance";
 import PathTraveler from "../presentation/movement/PathTraveler.vue";
 import { sites, roads, type TravelMode } from "./routes";
 import { preferredTravelMode, travelQuote, studyError } from "./rules";
-import { formatLifeMonths } from "../cultivation";
+import { formatLifeMonths } from "../progression";
 const props = defineProps<{
   game: State;
   busy: boolean;

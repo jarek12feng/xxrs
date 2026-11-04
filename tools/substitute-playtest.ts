@@ -1,14 +1,7 @@
 import { foundationCap } from "../src/foundation-journey/growth-state";
 import { growthQuote } from "../src/foundation-journey/growth";
-import { cultivationProjection } from "../src/cultivation";
-import {
-  createGame,
-  dispatch,
-  validState,
-  type Intent,
-  type State,
-  type Aptitude,
-} from "../src/core";
+import { cultivationProjection } from "../src/progression";
+import { createGame, dispatch, validState, type Intent, type Aptitude } from "../src/core";
 import { foundationStep } from "./foundation-playthrough";
 import { foundationExchange } from "../src/foundation-journey/combat";
 import { foundationGoal } from "../src/foundation-journey/progression";

@@ -1,14 +1,7 @@
-import { freshQiJourney } from "../src/qi-journey/state";
-import { freshFoundationJourney } from "../src/foundation-journey/state";
+
+
 import { expect, it } from "vitest";
-import {
-  createGame,
-  dispatch,
-  migrateSave,
-  validState,
-  type State,
-  type Technique,
-} from "../src/core";
+import { createGame, dispatch, migrateSave, validState, type Technique } from "../src/core";
 import { mistDetails } from "../src/mist";
 import { growthComparison } from "../src/growth-feedback";
 import { turnPreview, duelIntent } from "../src/social";

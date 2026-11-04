@@ -3,7 +3,7 @@ import { projectInteractions } from "../story-interactions";
 import { computed, ref, watch } from "vue";
 import { goldenObject } from "../scene2d/golden-objects";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
-import { formatLifeMonths } from "../cultivation";
+import { formatLifeMonths } from "../progression";
 import type { State, Intent } from "../core";
 import {
   goldenGoal,

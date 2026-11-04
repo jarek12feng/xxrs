@@ -102,3 +102,42 @@ it('rejects corrupt earned milestones and does not silently import old foundatio
  }
  const qi=createGame('存档','wood');const legacy={...qi,version:21};expect(migrateSave(legacy).version).toBe(34);
 });
+
+it('does not grant a preparation result when death interrupts its final month', () => {
+ const s=journeyCheckpoint('male',true);
+ const q=s.foundationJourney;
+ q.growth.steady='none';q.rescue=2;q.won=q.won.filter(x=>x!=='rescue');q.whereabouts='shelter';q.condensation=false;
+ const action={kind:'steadyStudy',method:'practice'} as const;
+ const quote=growthQuote(s,action);
+ expect(quote.error).toBe('');
+ expect(quote.months).toBeGreaterThan(1);
+ s.age=s.limit-quote.months;
+ const snapshot=structuredClone(s);
+ const n=dispatch(s,{id:'final-preparation-month',type:'foundationJourney',action});
+ expect(n.month-s.month).toBe(quote.months);
+ expect(n.status).toBe('dead');
+ expect(n.foundationJourney.growth.steadyStudy).toBe('none');
+ expect(n.stones).toBe(s.stones);
+ expect(n.herbs).toBe(s.herbs);
+ expect(s).toEqual(snapshot);
+ expect(dispatch(structuredClone(s),{id:'final-preparation-month',type:'foundationJourney',action})).toEqual(n);
+});
+
+it.each(['medicine', 'supplies'] as const)('does not consume the one-time rank gift when %s storage is full', reward => {
+ const s=journeyCheckpoint('female',true);
+ s.foundationJourney.board.wins=['rank1','rank2','rank3'];
+ s.foundationJourney.growth.rankGift=false;
+ if(reward==='medicine')s.workshop.ward=1e9-1;
+ else s.herbs=1e9-3;
+ const action={kind:'rankGift',reward} as const;
+ expect(journeyOptions(s,'journey').find(x=>x.action.kind==='rankGift' && x.action.reward===reward)?.error).toBe('资源超过可保存上限');
+ const snapshot=structuredClone(s);
+ expect(dispatch(s,{type:'foundationJourney',action,id:'rank-capacity'})).toBe(s);
+ expect(s).toEqual(snapshot);
+ if(reward==='medicine')s.workshop.ward--;
+ else s.herbs--;
+ const n=dispatch(s,{type:'foundationJourney',action,id:'rank-capacity'});
+ expect(n.foundationJourney.growth.rankGift).toBe(true);
+ expect(reward==='medicine'?n.workshop.ward:n.herbs).toBe(1e9);
+ expect(dispatch(n,{type:'foundationJourney',action,id:'other-rank-gift'})).toBe(n);
+});

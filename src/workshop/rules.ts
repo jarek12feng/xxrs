@@ -1,4 +1,4 @@
-import { settleResources } from "../economy";
+import { quoteSettlement, settleResources, type ResourceAmounts } from "../economy";
 import { advanceMonths } from "../timeline";
 import { applyEquipmentChange } from "../equipment";
 import type { State } from "../world";
@@ -25,6 +25,15 @@ export function workshopLock(s: State): string {
     ? "先处理眼前事件或结束历练，再回炉房准备"
     : "";
 }
+function workshopReward(order: WorkshopOrder): ResourceAmounts {
+  if ("relic" in order) return {};
+  switch (order.product) {
+    case "foundation": return { pills: 1 };
+    case "healing": case "clarity": case "ward": case "iron":
+      return { [order.product]: 1 };
+    default: return {};
+  }
+}
 export function workshopQuote(s: State, o: WorkshopOrder) {
   const { name, effect, stones, herbs, iron, months, study, reason } =
     planOrder(s, o);
@@ -43,7 +52,8 @@ export function workshopQuote(s: State, o: WorkshopOrder) {
       : "") ||
     (s.stones < stones || s.herbs < herbs || s.workshop.iron < iron
       ? `需要${cost}；灵草和玄铁料可在坊市购入`
-      : "");
+      : "") ||
+    quoteSettlement(s, { stones, herbs, iron }, workshopReward(o)).error;
   return { name, effect, stones, herbs, iron, months, study, cost, error };
 }
 export function runWorkshop(
@@ -69,34 +79,24 @@ export function runWorkshop(
       return s;
 
   }
-  if (settleResources(s, { stones: quote.stones, herbs: quote.herbs, iron: quote.iron }).error) return input;
+  const reward = workshopReward(order);
+  if (settleResources(s, { stones: quote.stones, herbs: quote.herbs, iron: quote.iron }, reward).error) return input;
   if ("relic" in order) {
-    applyEquipmentChange(s, {
+    if (applyEquipmentChange(s, {
       kind: "temper",
       id: order.relic,
       temper: order.temper,
-    });
+    }).error) return input;
   } else
     switch (order.product) {
-      case "healing":
-      case "clarity":
-        s.growth.medicines[order.product]++;
-        break;
-      case "ward":
-        s.workshop.ward++;
-        break;
-      case "iron":
-        s.workshop.iron++;
-        break;
       case "sword":
       case "vial":
-        applyEquipmentChange(s, {
+        if (applyEquipmentChange(s, {
           kind: s.journey.relics[order.product] ? "refine" : "acquire",
           id: order.product,
-        });
+        }).error) return input;
         break;
       case "foundation":
-        s.pills++;
         if (order.method === "craft") s.crafted++;
         break;
     }

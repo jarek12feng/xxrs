@@ -2,7 +2,7 @@ import { quoteMedicineUse } from "./medicines";
 import { breakthroughDetails, breakthroughSuccess, foundationFailure } from "./progression";
 export { breakthroughDetails, breakthroughSuccess } from "./progression";
 import { foundationCost } from "./workshop/catalog";
-import { cultivationGainAtAge, cultivationMonthlyGain } from "./cultivation";
+import { cultivationGainAtAge, cultivationMonthlyGain } from "./progression";
 import {
   hasFoundationRecipe,
   breakthroughError,

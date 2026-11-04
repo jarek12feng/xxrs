@@ -396,3 +396,26 @@ effect: "none"
     expect(() => migrateSave({ ...n, version: 999 })).toThrow();
   });
 });
+
+it.each(["healing", "clarity", "ward", "iron", "foundation"] as const)(
+  "rejects %s production atomically at the inventory limit",
+  (product) => {
+    const s = ready();
+    if (product === "foundation") s.pills = 1e9;
+    else if (product === "healing" || product === "clarity") s.growth.medicines[product] = 1e9;
+    else s.workshop[product] = 1e9;
+    if (product === "foundation") s.crafted = 1;
+    const purchase = { product, method: product === "foundation" ? "commission" : "buy" } as const;
+    expect(workshopQuote(s, purchase).error).toBe("资源超过可保存上限");
+    const snapshot = structuredClone(s);
+    expect(order(s, purchase)).toBe(s);
+    expect(s).toEqual(snapshot);
+    if (product === "foundation") s.pills--;
+    else if (product === "healing" || product === "clarity") s.growth.medicines[product]--;
+    else s.workshop[product]--;
+    const n = order(s, purchase);
+    expect(n).not.toBe(s);
+    expect(n.stones).toBe(s.stones - workshopQuote(s, purchase).stones);
+    expect(validState(n)).toBe(true);
+  },
+);

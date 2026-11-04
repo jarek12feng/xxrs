@@ -389,9 +389,8 @@ function finishDuel(s: State, win: boolean, withdrawal = false) {
     d = a.duel!;
   if (win) {
     const reward = (["breath", "guard", "lantern"] as const)[d.opponent];
-    const duplicate = s.journey.known.includes(reward);
-    if (!duplicate) grantTechnique(s, reward);
-    else s.stones += 12;
+    const duplicate = !grantTechnique(s, reward);
+    if (duplicate) s.stones += 12;
     s.stones += [8, 12, 20][d.opponent];
     a.wins++;
     a.last = `击败${rivals[d.opponent].name}：${duplicate ? `功法已掌握，折为灵石 12；另得胜场灵石 ${[8, 12, 20][d.opponent]}${d.opponent === 2 ? "、听松试剑魁首" : ""}` : rivals[d.opponent].prize}。`;

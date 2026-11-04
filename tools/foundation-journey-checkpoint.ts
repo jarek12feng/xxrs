@@ -1,12 +1,5 @@
-import {
-  dispatch,
-  validState,
-  type State,
-  type Intent,
-  type Gender,
-  type Path,
-} from "../src/core";
-import { cultivationProjection } from "../src/cultivation";
+import { dispatch, validState, type Intent, type Gender, type Path } from "../src/core";
+import { cultivationProjection } from "../src/progression";
 import { mistCheckpoint } from "./mist-checkpoint";
 import { challenges } from "../src/foundation-journey/content";
 import type { BattleId, JourneyAction } from "../src/foundation-journey/state";

@@ -1,3 +1,4 @@
+import { quoteSettlement, settleResources, type ResourceSettlement } from "../economy";
 import { grantTechnique } from "../techniques";
 import type { State } from "../world";
 export type PersonAction =
@@ -57,7 +58,7 @@ export function isPersonAction(a: string): a is PersonAction {
     "reward:core-training",
   ].includes(a);
 }
-export function personError(s: State, a: PersonAction) {
+function personRequirementError(s: State, a: PersonAction) {
   const p = s.qiJourney.people;
   if (s.adventure.step !== "done" || (!s.realm && s.qi < 120))
     return "先完成寻人历练，修至炼气中期";
@@ -98,8 +99,20 @@ export function personError(s: State, a: PersonAction) {
   }
   return "";
 }
+export function personQuote(s: State, a: PersonAction) {
+  const settlement: ResourceSettlement = { cost: {}, reward: {} };
+  if (a === "lesson:scout") settlement.cost.herbs = 3;
+  if (a === "lesson:smith") settlement.cost.stones = 10;
+  if (a === "reward:scales-money") settlement.reward.stones = 24;
+  if (a === "reward:core-money") settlement.reward.stones = 32;
+  if (a === "reward:scales-medicine") settlement.reward = { healing: 2, herbs: 4 };
+  return { months: 1, settlement, error: personRequirementError(s, a) || quoteSettlement(s, settlement.cost, settlement.reward).error };
+}
+export const personError = (s: State, a: PersonAction) => personQuote(s, a).error;
 // Caller validates shared locks and advances time before any settlement.
 export function settlePerson(s: State, a: PersonAction) {
+  const quote = personQuote(s, a);
+  if (quote.error || settleResources(s, quote.settlement.cost, quote.settlement.reward).error) return false;
   const q = s.qiJourney,
     p = q.people;
   if (a === "person:scout") {
@@ -113,13 +126,11 @@ export function settlePerson(s: State, a: PersonAction) {
       "裴铸敲了敲旧阵盘：“石傀不知痛，打碎外壳费力。读懂阵枢，就能少挨几下。备十枚灵石作试阵耗材，我教你。”";
   }
   if (a === "lesson:scout") {
-    s.herbs -= 3;
     p.beastLesson = true;
     q.last =
       "你跟许照岚沿兽径练了一个月。学会识兽护身：药谷交锋中，正确守势承伤再减 2。她托你留意泉边蟒蜕，胜过守泉青蟒再取，别为找蜕冒进。";
   }
   if (a === "lesson:smith") {
-    s.stones -= 10;
     p.constructLesson = true;
     q.last =
       "你花灵石 10，在旧阵盘上反复练习辨枢。内府交锋中，正确辨影承伤再减 2。裴铸想要一枚完整旧阵枢，愿付钱收，也可在你筑基后用它教护身诀。";
@@ -127,33 +138,30 @@ export function settlePerson(s: State, a: PersonAction) {
   if (a === "reward:scales-money") {
     p.scales = false;
     p.scoutReward = "money";
-    s.stones += 24;
     q.last =
       "许照岚付下灵石 24，准备把蟒蜕裁成护袖：“这趟钱，留着温养经脉。泉口平静些，采药人也能少受伤。”";
   }
   if (a === "reward:scales-medicine") {
     p.scales = false;
     p.scoutReward = "medicine";
-    s.growth.medicines.healing += 2;
-    s.herbs += 4;
     q.last =
       "你用蟒蜕换回春散 2、灵草 4。许照岚把药包扎好：“先养伤，再淬脉。药路我会继续照看。”";
   }
   if (a === "reward:core-money") {
     p.core = false;
     p.smithReward = "money";
-    s.stones += 32;
     q.last =
       "裴铸收下旧阵枢，付清灵石 32：“你拿钱去凝元，我慢慢拆解。下回进山，记得先检查法器。”";
   }
   if (a === "reward:core-training") {
     p.core = false;
     p.smithReward = "training";
-    if (!s.journey.known.includes("guard")) grantTechnique(s, "guard");
+    grantTechnique(s, "guard");
     s.growth.training.guard = 2;
     q.last =
       "裴铸与你拆解阵枢，将古傀卸力之法化入护身诀。护身诀已通达；装配为辅修后，可在接下来的交锋中减伤。";
   }
+  return true;
 }
 function basePersonReply(s: State, who: "scout" | "smith") {
   const p = s.qiJourney.people;

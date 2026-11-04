@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { expect, it } from "vitest";
-import { createApp, nextTick, createSSRApp, h } from "vue";
-import { renderToString } from "vue/server-renderer";
+import { createApp, nextTick } from "vue";
+
 import RoadPanel from "../src/RoadPanel.vue";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
 import {

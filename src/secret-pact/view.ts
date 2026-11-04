@@ -1,3 +1,5 @@
+import { projectInteractions } from "../story-interactions";
+import { pactQuote } from "./rules";
 import { hasEquippedRelic } from "../equipment";
 import type { State } from "../world";
 import { challenges } from "../foundation-journey/content";
@@ -103,7 +105,7 @@ export function pactView(s: State) {
     power,
     rival: challenges.pactRival,
     next,
-    actions,
+    actions: projectInteractions(s, actions, pactQuote),
     visible: s.realm === 1 && (q.location === "ferry" || p.stage !== "none"),
     fight: p.stage === "betrayed" || (p.outcome === "retreated" && !p.settled),
     relationship: p.settled

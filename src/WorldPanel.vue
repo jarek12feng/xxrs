@@ -17,7 +17,6 @@ import {
   places,
   trainingError,
   encounterDescription,
-  opponents,
   techniques,
   explorationError,
   promotionError,

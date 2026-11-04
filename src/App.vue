@@ -13,7 +13,7 @@ import FirstPractice from "./scene2d/FirstPractice.vue";
 import { techniques } from "./core";
 import GrowthPreview from "./GrowthPreview.vue";
 import InjuryImpact from "./InjuryImpact.vue";
-import { incidentalQiGain } from "./cultivation";
+import { incidentalQiGain } from "./progression";
 import {
   ref,
   defineAsyncComponent,
@@ -105,7 +105,6 @@ import {
   type Gender,
   refineCost,
   growthGoals,
-  mainTraining,
   type Aptitude,
   createGame,
   dispatch,
@@ -139,7 +138,7 @@ import {
   remainingLifeMonths,
   formatLifeMonths,
   cultivationMonthlyGain,
-} from "./cultivation";
+} from "./progression";
 import ActionFeedback from "./ActionFeedback.vue";
 import CombatFeedbackView from "./foundation-journey/CombatFeedback.vue";
 import {

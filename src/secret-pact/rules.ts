@@ -1,3 +1,5 @@
+import { quoteSettlement, settleResources, type ResourceAmounts } from "../economy";
+import { inspectInteraction } from "../story-interactions";
 import type { State } from "../world";
 import { workshopLock } from "../workshop/rules";
 export type PactAction =
@@ -96,7 +98,10 @@ export function pactQuote(s: State, a: PactAction) {
       : s.stones < stones
         ? `需灵石 ${stones}`
         : "";
-  return { error, herbs, stones, months };
+  const reward: ResourceAmounts = a === "yield" ? { stones: 24 } : a === "supplies" ? { healing: 2 } : {};
+  const settlement = { cost: { herbs, stones }, reward };
+  error ||= quoteSettlement(s, settlement.cost, settlement.reward).error;
+  return { error, herbs, stones, months, settlement };
 }
 export function runPact(
   input: State,
@@ -104,7 +109,7 @@ export function runPact(
   id: string,
   tick: (s: State) => State,
 ) {
-  const quote = pactQuote(input, a);
+  const { quote } = inspectInteraction(input, a, pactQuote);
   if (quote.error) return input;
   let s = structuredClone(input);
   if (quote.months) {
@@ -118,8 +123,7 @@ export function runPact(
     }
   }
   const p = s.secretPact;
-  s.herbs -= quote.herbs;
-  s.stones -= quote.stones;
+  if (settleResources(s, quote.settlement.cost, quote.settlement.reward).error) return input;
   if (a === "promise") {
     p.stage = "promised";
     p.promisedMonth = s.month;
@@ -139,7 +143,6 @@ export function runPact(
   } else if (a === "yield") {
     p.stage = "resolved";
     p.outcome = "yield";
-    s.stones += 24;
     p.last =
       "贺崇交出约定的二十四枚灵石，才伸手取简。叶照看着他受法，将这一笔分取记清。贺崇郑重一揖：“你让的是机缘，我记着。”你未得照玄护脉法，保住了一位愿意相助的同道。";
   } else if (a === "insist" || a === "seize") {
@@ -163,7 +166,6 @@ export function runPact(
       : "你传信言明不再追索玉简，贺崇也应下互不寻仇。旧怨暂了，双方不再同行。";
   } else if (a === "supplies") {
     p.supplies = true;
-    s.growth.medicines.healing += 2;
     p.last =
       "贺崇托药队送来两份回春散：“旧伤正在调治。下次行路，莫省这点护身药。”补给已收下，此信不另占行程。";
   }

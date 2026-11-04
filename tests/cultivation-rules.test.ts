@@ -5,7 +5,7 @@ import {
   cultivationMonthlyGain,
   cultivationProjection,
   lifeEfficiency,
-} from "../src/cultivation";
+} from "../src/progression";
 function player(realm: 0 | 1 = 1): State {
   const s = createGame("修行验证", "sword", 42);
   s.adventure.step = "done";

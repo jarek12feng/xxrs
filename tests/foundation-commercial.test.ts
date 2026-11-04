@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { dispatch, validState, migrateSave, type State } from "../src/core";
+import { dispatch, validState, migrateSave } from "../src/core";
 import {
   journeyCheckpoint,
   journeyPlayer,

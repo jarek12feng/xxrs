@@ -41,7 +41,7 @@ export function applyHeroine(s: State,a: HeroineAction) {
     const knewGuard=s.journey.known.includes('guard');
     h.meeting=a.method;
     if(a.method==='supplies')s.herbs-=4;
-    if(!knewGuard)grantTechnique(s, 'guard');
+    grantTechnique(s, 'guard');
     s.social.met=true;s.social.metMonth=s.month;s.social.affection=Math.max(8,s.social.affection);s.social.answers.meet='bridge';
     q.last=({strength:'你卸去松石的力道，稳住石梁。',insight:'你循灵流辨出承力处，避开空壳石。',supplies:'你用灵草 4 护住根系，让石梁不再下沉。'}[a.method])+'崖下的女修收紧尺绳，测出能背粮通行的落脚处。“苏婉宁。”她将新标记画给你看，“我想画一张不用御剑也走得通的图。你若去无名渡，这段路我们正好同行。”'+(knewGuard?'你以已学的护身诀稳住灵流，与她核对了护根的手法。':'你记下护住周身灵流的方法，习得护身诀。')+(s.social.origins.includes('route-map')?'你认出了药庐旧图上同样的改线。她听你提起，笑着将错过的浅滩也补了上去。':'');
   } else if(a.kind==='journeyPurpose') {

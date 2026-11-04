@@ -7,7 +7,7 @@ import { retreatDurations, retreatPlan, type RetreatPace } from "./retreat";
 import type { Intent } from "./core";
 import { actionError } from "./core";
 import type { State } from "./world";
-import { cultivationProjection, formatLifeMonths } from "./cultivation";
+import { cultivationProjection, formatLifeMonths } from "./progression";
 const props = withDefaults(
   defineProps<{
     game: State;

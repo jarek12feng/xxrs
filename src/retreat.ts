@@ -4,7 +4,7 @@ import {
   cultivationProjection,
   cultivationStageIndex,
   type Cultivator,
-} from "./cultivation";
+} from "./progression";
 
 export type RetreatPace = "short" | "regular" | "long";
 /** Player-facing durations only. The world clock and fractional gains remain monthly. */

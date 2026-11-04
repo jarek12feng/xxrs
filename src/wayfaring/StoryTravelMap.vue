@@ -3,7 +3,7 @@ import { computed, nextTick, ref, watch } from "vue";
 import type { State } from "../world";
 import type { StoryRoute } from "./story-routes";
 import { characterArt, heroArt } from "../presentation/art";
-import { formatLifeMonths } from "../cultivation";
+import { formatLifeMonths } from "../progression";
 import PathTraveler from "../presentation/movement/PathTraveler.vue";
 import RouteCanvas from "../presentation/movement/RouteCanvas.vue";
 import { travelWalkSheet } from "../presentation/movement/appearance";

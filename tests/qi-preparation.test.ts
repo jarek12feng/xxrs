@@ -1,12 +1,5 @@
 import { expect, it } from "vitest";
-import {
-  createGame,
-  dispatch,
-  validState,
-  migrateSave,
-  type State,
-  type Intent,
-} from "../src/core";
+import { createGame, dispatch, validState, migrateSave, type Intent } from "../src/core";
 import { foundationStep } from "../tools/foundation-playthrough";
 import {
   freshPreparation,
@@ -290,4 +283,38 @@ it("learned beast and construct responses reduce real incoming damage", () => {
   expect(qiPreview(s, "discern")!.incoming).toBe(
     Math.max(0, plain.incoming - 2),
   );
+});
+
+it('preserves trade goods and both rewards when one NPC reward would overflow', () => {
+  const s = ready();
+  s.qiJourney.people.scout = true;
+  s.qiJourney.people.scales = true;
+  s.herbs = 1e9 - 3;
+  const action = 'reward:scales-medicine' as const;
+  expect(qiError(s, action)).toBe('资源超过可保存上限');
+  const snapshot = structuredClone(s);
+  expect(dispatch(s, {type:'qiJourney',action,id:'full-reward'})).toBe(s);
+  expect(s).toEqual(snapshot);
+  s.herbs--;
+  const n = dispatch(s, {type:'qiJourney',action,id:'full-reward'});
+  expect(n.herbs).toBe(1e9);
+  expect(n.growth.medicines.healing).toBe(s.growth.medicines.healing + 2);
+  expect(n.qiJourney.people.scales).toBe(false);
+  expect(n.qiJourney.people.scoutReward).toBe('medicine');
+  expect(dispatch(n, {type:'qiJourney',action,id:'other-reward'})).toBe(n);
+});
+
+it('commission rewards cannot consume goods or record completion if the wallet is full', () => {
+  const s = ready();
+  s.stones = 1e9;
+  const action = 'commission:herbs' as const;
+  const snapshot = structuredClone(s);
+  expect(dispatch(s, {type:'qiJourney',action,id:'full-commission'})).toBe(s);
+  expect(s).toEqual(snapshot);
+  s.stones -= 16;
+  const n = dispatch(s, {type:'qiJourney',action,id:'full-commission'});
+  expect(n.stones).toBe(1e9);
+  expect(n.herbs).toBe(s.herbs - 4);
+  expect(n.qiJourney.commissions).toContain('herbs');
+  expect(dispatch(n, {type:'qiJourney',action,id:'repeat-commission'})).toBe(n);
 });

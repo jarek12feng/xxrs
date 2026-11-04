@@ -1,7 +1,8 @@
-import { resourceNames, type Resource, type ResourceAmounts } from "../economy";
+import { resourceNames, type Resource, type ResourceAmounts, type ResourceSettlement } from "../economy";
 export interface InteractionQuote {
   error: string;
   months?: number;
+  settlement?: ResourceSettlement;
 }
 export interface InteractionSpec<A> {
   label: string;
@@ -31,7 +32,8 @@ export function inspectInteraction<S, A, Q extends InteractionQuote>(
     available: !quote.error,
     error: quote.error,
     months: quote.months ?? 0,
-    cost,
+    cost: quote.settlement ? { ...quote.settlement.cost } : cost,
+    reward: { ...quote.settlement?.reward },
     quote,
   };
 }

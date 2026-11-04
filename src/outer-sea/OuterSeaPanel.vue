@@ -5,7 +5,7 @@ import CombatBar from "../scene2d/combat/CombatBar.vue";
 import { goldenCombat } from "../golden-scene/presentation";
 
 import { goldenCap } from "../conclave/state";
-import { realmStageLabel } from "../cultivation";
+import { realmStageLabel } from "../progression";
 import { computed, ref, watch } from "vue";
 import { seaObject } from "../scene2d/golden-objects";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
@@ -28,7 +28,6 @@ const options = computed(() => {
   const a: { label: string; action: SeaAction }[] = [];
   const add = (label: string, action: SeaAction) => a.push({ label, action });
   if (t.duel) {
-    const foe = seaFoe(t.duel.depth);
     for (const [move, name] of [
       ["discern", "辨影"],
       ["guard", "守势"],

@@ -21,7 +21,7 @@ import { freshSecretPact, validSecretPact, type SecretPact } from "./secret-pact
 import { runPact, type PactAction } from "./secret-pact/rules";
 import { freshRecognition, validRecognition, type Recognition } from "./recognition/state";
 import { runRecognition, type RecognitionAction } from "./recognition/rules";
-import { cultivationMonth, incidentalQiGain } from "./cultivation";
+import { cultivationMonth, incidentalQiGain } from "./progression";
 import { freshHeroine } from "./foundation-journey/heroine";
 import { foundationCap, foundationBlock, freshFoundationGrowth } from "./foundation-journey/growth-state";
 import { freshWorkshop, validWorkshop, type Workshop } from "./workshop/state";
@@ -35,7 +35,7 @@ import {
   type QiJourney,
   type QiAction,
 } from "./qi-journey/rules";
-import { cultivationMonthlyGain } from "./cultivation";
+import { cultivationMonthlyGain } from "./progression";
 import {
   freshFoundationJourney,
   type FoundationJourney,
@@ -61,7 +61,6 @@ import {
   medicines,
   validGrowth,
   runGrowth,
-  mainTraining,
   type Growth,
   type GrowthCommand,
 } from "./growth";
@@ -403,8 +402,7 @@ function log(s: State, text: string) {
   s.log = s.log.slice(0, 180);
 }
 function learn(s: State, t: Technique) {
-  if (!s.journey.known.includes(t)) {
-    grantTechnique(s, t);
+  if (grantTechnique(s, t)) {
     log(s, `领悟「${techniques[t].name}」。可在功法栏装配。`);
   } else {
     s.stones += 12;
