@@ -1,29 +1,6 @@
 import type { State, Technique } from "../world";
-export const treasures = {
-  bell: {
-    name: "镇岳钟",
-    realm: 0,
-    price: 28,
-    hint: "守势承伤 −2；反击伤害 −1。精炼后守势承伤 −3。",
-    quality: "中品灵器",
-  },
-  cord: {
-    name: "缚风索",
-    realm: 0,
-    price: 28,
-    hint: "反击承伤 −2、伤害 −1。精炼后反击承伤 −3。",
-    quality: "中品灵器",
-  },
-  mirror: {
-    name: "照隙镜",
-    realm: 1,
-    price: 42,
-    hint: "正确辨影伤害 +2；精炼后 +3。辨错不生效。",
-    quality: "上品灵器",
-  },
-} as const;
-export type Treasure = keyof typeof treasures;
-export const treasureIds = Object.keys(treasures) as Treasure[];
+import { treasures, treasureIds, type Treasure } from "../equipment";
+export { treasures, treasureIds, type Treasure } from "../equipment";
 export const books: Record<Technique, string> = {
   spring: "长春诀",
   blade: "听松剑经",

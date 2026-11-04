@@ -8,7 +8,7 @@ import {
 } from "../tools/foundation-tactics-audit";
 import { growthQuote } from "../src/foundation-journey/growth";
 import { planOrder } from "../src/workshop/recipes";
-import { readiness } from "../src/expedition/combat";
+import { readiness } from "../src/combat/game";
 import { journeyCheckpoint } from "../tools/foundation-journey-checkpoint";
 import { fullBalanceJourney } from "../tools/balance-review";
 

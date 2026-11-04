@@ -12,7 +12,7 @@ import {
   type State,
 } from "./core";
 import { expeditionGoal } from "./expedition/progression";
-import { readiness } from "./expedition/combat";
+import { readiness } from "./combat/game";
 import { routePayoff } from "./route-payoff";
 import { growthComparison } from "./growth-feedback";
 import { enrichReceipt } from "./journey-feedback";

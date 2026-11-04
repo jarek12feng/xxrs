@@ -1,3 +1,4 @@
+import { evaluateEquipment, hasEquippedRelic } from "./equipment";
 import { expeditionGoal } from "./expedition/progression";
 import { expeditionBlocksPass } from "./expedition/rules";
 import { rescueEcho } from "./adventure";
@@ -186,9 +187,8 @@ export function roadDetails(
   const routeBonus =
     r.route === "art" && (s.journey.main || s.journey.support)
       ? 20
-      : r.route === "relic" && s.journey.equipped
-        ? s.journey.relics[s.journey.equipped] * 10 +
-          (s.journey.equipped === "vial" ? 10 : 0)
+      : r.route === "relic" && hasEquippedRelic(s)
+        ? evaluateEquipment(s, { kind: "road" }).chance
         : r.route === "friend" && r.ally
           ? 20
           : 0;
@@ -319,7 +319,7 @@ export function roadError(s: State, action: RoadAction): string {
     if (r.route === "none") return "回行营选择一种准备方向";
     if (r.route === "art" && !s.journey.main && !s.journey.support)
       return "先学会并装配一本功法";
-    if (r.route === "relic" && !s.journey.equipped)
+    if (r.route === "relic" && !hasEquippedRelic(s))
       return "先炼制并装配一件灵器";
     if (r.route === "friend" && !r.ally) return "先邀请郁青同行";
     if (action === "shelteredChallenge" && !hasShelteredRoute(s))

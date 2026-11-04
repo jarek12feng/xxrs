@@ -1,16 +1,5 @@
-export const tempers = {
-  sword: {
-    plain: { name: "原纹", hint: "保留原有攻守，无额外修正。" },
-    keen: { name: "锐锋纹", hint: "反击伤害 +3、承伤 +1；其他招式不变。" },
-    array: { name: "照隙纹", hint: "正确辨影伤害 +4；反击伤害 −1。" },
-  },
-  vial: {
-    plain: { name: "原纹", hint: "保留原有攻守，无额外修正。" },
-    shell: { name: "镇守纹", hint: "守势承伤 −3、伤害 −1；其他招式不变。" },
-    flow: { name: "流转纹", hint: "正确辨影承伤 −2、伤害 +1；反击承伤 +1。" },
-  },
-} as const;
-export type Temper = "plain" | "keen" | "array" | "shell" | "flow";
+import { tempers } from "../equipment";
+export { tempers, type Temper } from "../equipment";
 export interface Workshop {
   iron: number;
   ward: number;

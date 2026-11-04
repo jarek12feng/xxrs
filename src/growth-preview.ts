@@ -1,3 +1,4 @@
+import { previewEquipment } from "./equipment";
 import {
   breakthroughSuccess,
   relics,
@@ -25,27 +26,26 @@ export function growthPreview(s: State, request: GrowthPreviewRequest) {
       title = `${s.journey.relics[id] ? "精炼" : "取得"}${relics[id].name}后`;
       if (s.journey.relics[id] >= 2)
         return { title, note: "已精炼至二阶。", lines: [] };
-      next = {
-        ...s,
-        journey: {
-          ...s.journey,
-          relics: { ...s.journey.relics, [id]: s.journey.relics[id] + 1 },
-        },
-      };
+      const preview = previewEquipment(s, [
+        { kind: s.journey.relics[id] ? "refine" : "acquire", id },
+        ...(s.journey.equipped !== id ? [{ kind: "equip" as const, id }] : []),
+      ]);
+      if (preview.error) return { title, note: preview.error, lines: [] };
+      next = preview.next;
     } else {
       title = `${relics[id].name}刻纹后`;
       if (!Object.hasOwn(tempers[id], request.temper))
         return { title, note: "此器无法使用该器纹。", lines: [] };
-      next = {
-        ...s,
-        workshop: {
-          ...s.workshop,
-          temper: { ...s.workshop.temper, [id]: request.temper },
-        },
-      } as State;
+      const preview = previewEquipment(s, [
+        ...(s.workshop.temper[id] !== request.temper
+          ? [{ kind: "temper" as const, id, temper: request.temper }]
+          : []),
+        ...(s.journey.equipped !== id ? [{ kind: "equip" as const, id }] : []),
+      ]);
+      if (preview.error) return { title, note: preview.error, lines: [] };
+      next = preview.next;
     }
     note = `仅比较成品效果，费用与工期见下方报价。${s.journey.equipped === id ? "此器已装备，完成后生效。" : "此器未装备；以下比较完成后再装备的效果，不会自动换装。"}`;
-    next = { ...next, journey: { ...next.journey, equipped: id } };
   } else if (request.kind === "relic") {
     const id = request.id;
     title = `换上${relics[id].name}`;
@@ -53,7 +53,12 @@ export function growthPreview(s: State, request: GrowthPreviewRequest) {
       s.journey.equipped === id
         ? "当前已装备。"
         : `当前：${s.journey.equipped ? relics[s.journey.equipped].name : "未装备"}。入袋不生效，装配后才替换当前灵器。`;
-    next = { ...s, journey: { ...s.journey, equipped: id } };
+    const preview = previewEquipment(
+      s,
+      s.journey.equipped === id ? [] : [{ kind: "equip", id }],
+    );
+    if (preview.error) return { title, note: preview.error, lines: [] };
+    next = preview.next;
   } else if (request.kind === "technique" || request.kind === "training") {
     const id = request.id,
       slot = techniques[id].slot;

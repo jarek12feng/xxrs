@@ -217,7 +217,7 @@ describe("宝物与有境界限制的拍卖", () => {
     const old = { ...ready(), version: 26 };
     delete (old as Partial<State>).treasures;
     const migrated = migrateSave(old);
-    expect(migrated.version).toBe(33);
+    expect(migrated.version).toBe(34);
     expect(migrated.treasures.auction).toBeNull();
     expect(validState(migrated)).toBe(true);
   });
@@ -234,14 +234,29 @@ it("对手不能超出既定预算加价，玩家出价追平其预算即可落�
 });
 
 it('三辅器进入共用交锋结算，未装配不生效，正确辨影才加伤',async()=>{
-  const {tacticalExchange}=await import('../src/expedition/combat');
+  const {tacticalPreview}=await import('../src/combat/game');
   const {qiSites}=await import('../src/qi-journey/content');
   const s=ready();s.realm=1;
   const enemy={...qiSites[0].enemies[0],hp:1000,attack:50};
   for(const [item,move,turn,damage,incoming] of [['bell','guard',0,0,-2],['cord','strike',1,-1,-2],['mirror','discern',2,2,0]] as const){
     const n=structuredClone(s);n.treasures.owned[item]=1;n.treasures.equipped=item;
-    const duel={hp:100,enemy:1000,turn};const a=tacticalExchange(s,move,enemy,duel,'none')!,b=tacticalExchange(n,move,enemy,duel,'none')!;
+    const duel={hp:100,enemy:1000,turn};const a=tacticalPreview(s, {
+move: move,
+encounter: enemy,
+battle: duel,
+effect: 'none'
+})!,b=tacticalPreview(n, {
+move: move,
+encounter: enemy,
+battle: duel,
+effect: 'none'
+})!;
     expect(b.damage-a.damage).toBe(damage);expect(b.incoming-a.incoming).toBe(incoming);
-    n.treasures.equipped=null;expect(tacticalExchange(n,move,enemy,duel,'none')).toEqual(a);
+    n.treasures.equipped=null;expect(tacticalPreview(n, {
+move: move,
+encounter: enemy,
+battle: duel,
+effect: 'none'
+})).toEqual(a);
   }
 });

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { equipmentCategoryLabel } from "../equipment";
 import { computed, ref } from "vue";
 import { techniques, type State, type Intent, type Technique } from "../world";
 import ItemArt from "../presentation/ItemArt.vue";
@@ -41,7 +42,7 @@ const venueIds: Venue[] = ["market", "foundation"];
         <ItemArt :id="id" :size="72" />
         <h4>{{ treasures[id].name }}</h4>
         <p>
-          {{ treasures[id].quality }} ·
+          {{ treasures[id].quality }} · {{ equipmentCategoryLabel(id) }} ·
           {{
             game.treasures.owned[id] === 2
               ? "已精炼"

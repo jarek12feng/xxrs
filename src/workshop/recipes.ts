@@ -1,3 +1,4 @@
+import { equipmentChangeError } from "../equipment";
 import type { State } from "../world";
 import { hasFoundationRecipe } from "../foundation";
 import {
@@ -38,9 +39,11 @@ export function planOrder(s: State, o: WorkshopOrder) {
       iron = 1;
       months = 1;
       study = method === "craft" ? 2 : 0;
-      if (!s.journey.relics[o.relic]) reason = "先取得此器";
-      else if (!s.realm) reason = "筑基后可刻纹与重铸";
-      else if (s.workshop.temper[o.relic] === o.temper) reason = "已是此器纹";
+      reason = equipmentChangeError(s, {
+        kind: "temper",
+        id: o.relic,
+        temper: o.temper,
+      });
     }
   } else if (!Object.hasOwn(products, o.product)) reason = "未知丹方或器谱";
   else {
@@ -52,14 +55,26 @@ export function planOrder(s: State, o: WorkshopOrder) {
       if (method !== "buy") reason = "玄铁料从坊市购入";
     } else if (p === "sword" || p === "vial") {
       const rank = s.journey.relics[p];
-      stones = method === "craft" ? (rank ? 16 : 24) : method === "commission" ? (rank ? 20 : 28) : 40;
+      stones =
+        method === "craft"
+          ? rank
+            ? 16
+            : 24
+          : method === "commission"
+            ? rank
+              ? 20
+              : 28
+            : 40;
       herbs = method === "buy" ? 0 : 4;
       months = method === "buy" ? 0 : 1;
       study = method === "craft" ? 2 : 0;
       name = `${rank ? "精炼" : ""}${name}`;
       if (method === "buy" && rank) reason = "已持有此器，可选择精炼或刻纹";
-      else if (rank >= 2) reason = "已精炼至二阶";
-      else if (rank === 1 && !s.realm) reason = "筑基后可精炼";
+      else
+        reason = equipmentChangeError(s, {
+          kind: rank ? "refine" : "acquire",
+          id: p,
+        });
       // Ordinary metal and furnace fuel are included in the fee; herbs temper the spirit channels.
     } else {
       const cost =

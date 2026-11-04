@@ -95,3 +95,34 @@ it("companion route keeps material costs and supports preparation without issuin
     app.unmount();
   }
 });
+
+it('offers a free explicit road exit before the foundation route is surveyed', async () => {
+  const state=createGame('初筑基','wood',42);state.realm=1;state.social.gender='male';
+  const before=structuredClone(state),commands:Intent[]=[];let exits=0;
+  const host=document.createElement('div');
+  const app=createApp(FoundationPanel,{game:state,busy:false,onAct:(i:Intent)=>commands.push(i),onRoad:()=>exits++});
+  app.mount(host);
+  try {
+    host.querySelector<HTMLButtonElement>('[data-hotspot="encounter"]')!.click();await nextTick();
+    expect(host.textContent).toContain('先到云栈旅亭踏勘归路');
+    const exit=Array.from(host.querySelectorAll('button')).find(b=>b.textContent==='前往青嶂旧路')!;
+    exit.click();expect(exits).toBe(1);expect(commands).toEqual([]);expect(state).toEqual(before);
+  } finally {app.unmount();}
+});
+
+it('destination shortcuts quote the same preferred flight as the travel map', async () => {
+  const s=journeyCheckpoint('male',false);
+  s.foundationJourney.location='home';
+  s.wayfaring.swordFlight='learned';
+  const host=document.createElement('div');
+  const app=createApp(FoundationPanel,{game:s,busy:false});app.mount(host);
+  try {
+    host.querySelector<HTMLButtonElement>('[data-hotspot="road"]')!.click();await nextTick();
+    const destination=[...host.querySelectorAll('button')].find(b=>b.textContent?.includes('无名渡 ·'));
+    expect(destination?.textContent).toContain('无名渡 · 1 月');
+    destination!.click();await nextTick();
+    expect(host.textContent).toContain('2400');
+    expect(host.textContent).toContain('3600');
+    expect(host.textContent).toContain('1 月');
+  } finally {app.unmount();}
+});

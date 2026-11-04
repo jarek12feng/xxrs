@@ -1,30 +1,33 @@
+import { additionalDomains } from "./additional-story";
+import { completedStoryRoute } from "./completed-routes";
 import { computed, ref, watch } from "vue";
 import type { State, Intent } from "../world";
 import {
   resumedStoryRoute,
-  storyLocation,
+  storyArrived,
   storyRoute,
   type StoryRoute,
 } from "./story-routes";
 /** UI state only. The parent publishes a new game only after persistence succeeds. */
 export function useStoryTravel(
-  game: () => State,
+  game: () => State | null,
   busy: () => boolean,
   send: (i: Intent) => void,
+  includeAdditional = false,
 ) {
   const selected = ref<StoryRoute | null>(null),
     arrived = ref(false),
     submitted = ref(false);
   const route = computed(() =>
-    selected.value && !arrived.value
-      ? (storyRoute(game(), selected.value.intent) ?? selected.value)
+    selected.value && game() && !arrived.value
+      ? (storyRoute(game()!, selected.value.intent) ?? selected.value)
       : selected.value,
   );
   watch(
-    () => game().wayfaring.passage,
+    () => game()?.wayfaring.passage,
     (p) => {
-      if (p && !selected.value) {
-        selected.value = resumedStoryRoute(game());
+      if (p && !selected.value && !includeAdditional) {
+        selected.value = resumedStoryRoute(game()!);
         arrived.value = false;
       }
     },
@@ -37,15 +40,15 @@ export function useStoryTravel(
     submitted.value = false;
   }
   function depart() {
-    if (busy() || !route.value || route.value.error) return;
+    if (busy() || arrived.value || !route.value || route.value.error) return;
     selected.value = route.value;
     submitted.value = true;
     send(route.value.intent);
   }
   function act(intent: Intent) {
-    if (busy()) return;
-    const next = storyRoute(game(), intent);
-    if (!next) {
+    if (busy() || !game()) return;
+    const next = storyRoute(game()!, intent);
+    if (!next || (!includeAdditional && additionalDomains.has(next.domain))) {
       send(intent);
       return;
     }
@@ -56,13 +59,24 @@ export function useStoryTravel(
     if (!next.months && !next.stones && !next.herbs && !next.error) depart();
   }
   watch(game, (next, old) => {
-    if (!selected.value || !submitted.value || next === old) return;
+    if (!next) {
+      selected.value = null;
+      arrived.value = false;
+      submitted.value = false;
+      return;
+    }
+    if (includeAdditional && old && !selected.value) {
+      const completed = completedStoryRoute(next, old);
+      if (completed) {
+        selected.value = completed;
+        arrived.value = true;
+        return;
+      }
+    }
+    if (!next || !old || !selected.value || !submitted.value || next === old)
+      return;
     const plan = selected.value;
-    if (
-      !next.wayfaring.passage &&
-      storyLocation(next, plan.domain) === plan.to &&
-      storyLocation(old, plan.domain) !== plan.to
-    )
+    if (!next.wayfaring.passage && storyArrived(next, old, plan))
       arrived.value = true;
   });
   function cancel() {
@@ -71,7 +85,7 @@ export function useStoryTravel(
     send({ type: "wayfaring", action: { kind: "cancel" } });
   }
   watch(
-    () => game().wayfaring.passage,
+    () => game()?.wayfaring.passage,
     (next, old) => {
       if (old && !next && !submitted.value) close();
     },

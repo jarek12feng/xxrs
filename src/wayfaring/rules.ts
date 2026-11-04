@@ -1,9 +1,13 @@
+import { advanceJourney } from './engine';
+import { travelProfile } from './profile';
 import type { State } from "../world";
 import type { Destination } from "../foundation-journey/state";
 import { journeyActionError } from "../foundation-journey/progression";
 import { advancePlot } from "../foundation-journey/plot";
-import { routeBetween, sites, type TravelMode } from "./routes";
+import { inlandTravel, sites, type TravelMode } from "./routes";
 export type WayfaringAction = { kind: "study" } | { kind: "cancel" };
+export const preferredTravelMode = (s: State): TravelMode =>
+  s.wayfaring.trip?.mode ?? (s.wayfaring.swordFlight === "none" ? "land" : "flight");
 export const travelLocked = (s: State) =>
   !!s.wayfaring.passage ||
   s.status !== "alive" ||
@@ -44,7 +48,10 @@ export function travelQuote(
 ) {
   const t = s.wayfaring.trip,
     from = t?.from ?? s.foundationJourney.location;
-  const route = routeBetween(from, to, mode, s.realm);
+  const planned = inlandTravel.plan({from,to,mode,traveler:travelProfile(s)});
+  const matching = t?.to === to && t.mode === mode;
+  const plan = matching ? t.plan : planned.ok ? planned.plan : null;
+  const route = plan ? {...plan,path:plan.path as Destination[]} : {path:[] as Destination[],distance:0,speed:0,months:0};
   const error = travelLocked(s)
     ? "先处理眼前事件或结束交锋"
     : !["land", "flight"].includes(mode)
@@ -53,12 +60,13 @@ export function travelQuote(
         ? "先继续当前行程，或折返出发地"
         : mode === "flight" && s.wayfaring.swordFlight === "none"
           ? "先研习御剑术"
-          : journeyActionError(s, { kind: "travel", destination: to });
+          : !plan ? (!planned.ok ? planned.error : "无有效行程") : journeyActionError(s, { kind: "travel", destination: to });
   return {
+    ...route,
     from,
     to,
     mode,
-    ...route,
+    plan,
     remaining: t?.to === to && t.mode === mode ? t.remaining : route.months,
     error,
   };
@@ -127,22 +135,16 @@ export function runTravel(
     mode,
     total: quote.months,
     remaining: quote.months,
+    plan: quote.plan!,
   };
-  while (s.wayfaring.trip!.remaining > 0) {
-    const reminded = s.sectContest.reminded;
-    s = tick(s);
-    s.wayfaring.trip!.remaining--;
-    if (
-      s.status !== "alive" ||
-      s.pending ||
-      (!reminded && s.sectContest.reminded)
-    )
-      return accept(
-        s,
-        id,
-        `前往${sites[to].name}的行程暂停，尚余 ${s.wayfaring.trip!.remaining} 月。${s.status === "dead" ? "寿元已尽，未抵达目的地。" : "处理眼前消息后，可继续剩余路程；也可放弃此行。"}`,
-      );
-  }
+  const result=advanceJourney(s,{
+    remaining:n=>n.wayfaring.trip!.remaining,
+    consume:n=>{n.wayfaring.trip!.remaining--;},tick,
+    interrupted:(before,n)=>n.status!=="alive" || n.pending || (!before.sectContest.reminded && n.sectContest.reminded),
+  });
+  s=result.state;
+  if(result.stopped) return accept(s,id,
+    `前往${sites[to].name}的行程暂停，尚余 ${s.wayfaring.trip!.remaining} 月。${s.status === "dead" ? "寿元已尽，未抵达目的地。" : "处理眼前消息后，可继续剩余路程；也可放弃此行。"}`);
   const total = s.wayfaring.trip!.total;
   advancePlot(s, { kind: "travel", destination: to });
   s.wayfaring.trip = null;

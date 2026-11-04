@@ -1,14 +1,20 @@
+import { completeChallenge } from "./outcome";
+import { resolveTurn, startBattle } from "../combat";
 import { runTravel } from "../wayfaring/rules";
 import { resolvePactBattle } from "../secret-pact/rules";
 import { foundationCap, resourceRoutes } from "./growth-state";
 import { growthQuote, applyGrowth, isGrowthAction, routeInfo } from "./growth";
-import { isHeroineAction, applyHeroine, sharedJourneyDone, maleMainline } from "./heroine";
+import {
+  isHeroineAction,
+  applyHeroine,
+  sharedJourneyDone,
+  maleMainline,
+} from "./heroine";
 import type { State } from "../world";
 import { challenges, rankIds, sideChoices } from "./content";
 import {
   foundationPower,
   foundationExchange,
-  completeChallenge,
 } from "./combat";
 import { journeyActionError } from "./progression";
 import { advancePlot } from "./plot";
@@ -19,11 +25,26 @@ export function runFoundationJourney(
   id: string,
   tick: (s: State) => State,
 ) {
-  if (action?.kind === "travel") return runTravel(input,action.destination,action.mode ?? "land",id,tick);
+  if (action?.kind === "travel")
+    return runTravel(
+      input,
+      action.destination,
+      action.mode ?? "land",
+      id,
+      tick,
+    );
   if (!action || journeyActionError(input, action)) return input;
   let s = structuredClone(input);
-  const months = isGrowthAction(action) ? growthQuote(input,action).months : isHeroineAction(action) ? (action.kind === "journeyPurpose" ? 0 : 1) : ["battle","supply"].includes(action.kind) ? 1 : 0;
-  for (let month=0; month<months; month++) {
+  const months = isGrowthAction(action)
+    ? growthQuote(input, action).months
+    : isHeroineAction(action)
+      ? action.kind === "journeyPurpose"
+        ? 0
+        : 1
+      : ["battle", "supply"].includes(action.kind)
+        ? 1
+        : 0;
+  for (let month = 0; month < months; month++) {
     s = tick(s);
     if (s.status !== "alive" || s.pending) {
       s.foundationJourney.last =
@@ -36,14 +57,16 @@ export function runFoundationJourney(
   const q = s.foundationJourney;
   if (action.kind === "battle") {
     const e = challenges[action.battle];
-    const cost = action.battle === "frontier" && q.growth.routes.frontier.choice === "careful" ? 0 : e.cost;
+    const cost =
+      action.battle === "frontier" &&
+      q.growth.routes.frontier.choice === "careful"
+        ? 0
+        : e.cost;
     s.stones -= cost;
     q.duel = {
       ruleset: 2,
       id: action.battle,
-      hp: foundationPower(s).hp,
-      enemy: e.hp,
-      turn: 0,
+      ...startBattle(foundationPower(s).hp, e.hp),
       effect: "none",
       aid: q.aid,
     };
@@ -55,32 +78,31 @@ export function runFoundationJourney(
     q.duel = null;
     q.last =
       "你按原定退路撤回，没有新增伤势；已用补给不退，传承、线索与已完成的小关保留。";
-    if (pactDuel) resolvePactBattle(s,false);
+    if (pactDuel) resolvePactBattle(s, false);
     if (ranked) q.board.last = q.last + "既有名次与首胜奖励保留。";
   } else if (action.kind === "move") {
     const d = q.duel!,
       p = foundationExchange(s, action.move);
     if (!p) return input;
-    d.turn++;
-    d.enemy = Math.max(0, d.enemy - p.damage);
-    s.herbs -= p.herbs;
+    const turn = resolveTurn(d, p, { turnLimit: 12, resolution: "journey" });
+    Object.assign(d, turn.battle);
+    s.herbs -= turn.herbs;
     q.last = `第 ${d.turn} 合：伤敌 ${p.damage}，承伤 ${p.incoming}${p.healing ? `，耗草 ${p.herbs} 回复 ${p.healing}` : ""}。${p.note}`;
     d.effect = action.move;
-    if (d.enemy === 0) completeChallenge(s);
+    if (turn.outcome === "win") completeChallenge(s);
     else {
-      d.hp = Math.max(0, d.hp - p.incoming) + p.healing;
-      if (d.hp === 0 || d.turn >= 12) {
+      if (turn.outcome === "loss") {
         if (rankIds.includes(d.id)) q.board.losses++;
         s.injury = Math.min(6, s.injury + 2);
         q.duel = null;
         q.last +=
           "本场败退，伤势 +2；免费静养、调整功法灵器后可再来。线索、已得传承与既有排名保留，不判人物死亡。";
-        if(d.id === "pactRival") resolvePactBattle(s,false);
+        if (d.id === "pactRival") resolvePactBattle(s, false);
         if (rankIds.includes(d.id)) q.board.last = q.last;
       }
     }
-  } else if (isGrowthAction(action)) applyGrowth(s,action);
-  else if (isHeroineAction(action)) applyHeroine(s,action);
+  } else if (isGrowthAction(action)) applyGrowth(s, action);
+  else if (isHeroineAction(action)) applyHeroine(s, action);
   else advancePlot(s, action);
   return accept(input, s, id);
 }
@@ -94,7 +116,11 @@ function accept(input: State, s: State, id: string) {
   s.log = s.log.slice(0, 180);
   return s;
 }
-export function validFoundationJourney(s: State, legacy = false, previousGrowth = false) {
+export function validFoundationJourney(
+  s: State,
+  legacy = false,
+  previousGrowth = false,
+) {
   const q = s.foundationJourney,
     integer = (v: unknown, max = 1e9) =>
       Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= max;
@@ -199,12 +225,18 @@ export function validFoundationJourney(s: State, legacy = false, previousGrowth 
     q.bond !== "none" &&
     (!s.social.bonded ||
       q.contact === "none" ||
-      (!previousGrowth ? !sharedJourneyDone(s) : s.companionship.stage !== "done"))
+      (!previousGrowth
+        ? !sharedJourneyDone(s)
+        : s.companionship.stage !== "done"))
   )
     return false;
   if (
     q.contact !== "none" &&
-    (!s.social.met || (!maleMainline(s) && s.age < 216) || (!previousGrowth ? !sharedJourneyDone(s) : s.companionship.stage !== "done"))
+    (!s.social.met ||
+      (!maleMainline(s) && s.age < 216) ||
+      (!previousGrowth
+        ? !sharedJourneyDone(s)
+        : s.companionship.stage !== "done"))
   )
     return false;
   if (q.whereabouts !== "home" && q.departedAt === null) return false;
@@ -215,12 +247,21 @@ export function validFoundationJourney(s: State, legacy = false, previousGrowth 
     return false;
   if (q.target === "none" ? q.rescue !== 0 : q.rescue === 0 || q.ferry < 4)
     return false;
-  if (q.target === "companion" && ((!previousGrowth && maleMainline(s) ? !q.heroine.expedition : q.bond !== "covenant") || !q.reunion))
+  if (
+    q.target === "companion" &&
+    ((!previousGrowth && maleMainline(s)
+      ? !q.heroine.expedition
+      : q.bond !== "covenant") ||
+      !q.reunion)
+  )
     return false;
   if (
     (q.rescue >= 3 && !q.won.includes("frontier")) ||
     (q.rescue === 4 && !q.won.includes("rescue")) ||
-    (q.condensation && (previousGrowth ? (q.rescue !== 4 || q.cultivation !== 600) : (q.cultivation < 500 || !q.growth.refined)))
+    (q.condensation &&
+      (previousGrowth
+        ? q.rescue !== 4 || q.cultivation !== 600
+        : q.cultivation < 500 || !q.growth.refined))
   )
     return false;
   if (
@@ -243,14 +284,18 @@ export function validFoundationJourney(s: State, legacy = false, previousGrowth 
   if (q.ferry >= 3 && q.inheritance === "none") return false;
   if (q.evidence.includes("control") && q.ferry < 2) return false;
   if (
-    (q.won.includes("frontier") && q.rescue < 2 && (previousGrowth || !q.growth.routes.frontier.choice)) ||
+    (q.won.includes("frontier") &&
+      q.rescue < 2 &&
+      (previousGrowth || !q.growth.routes.frontier.choice)) ||
     (q.won.includes("rescue") && q.rescue !== 4)
   )
     return false;
   if (
     q.aid &&
     (!s.social.met ||
-      (!previousGrowth ? !sharedJourneyDone(s) : s.companionship.stage !== "done") ||
+      (!previousGrowth
+        ? !sharedJourneyDone(s)
+        : s.companionship.stage !== "done") ||
       ["away", "missing", "shelter"].includes(q.whereabouts))
   )
     return false;
@@ -312,33 +357,100 @@ export function validFoundationJourney(s: State, legacy = false, previousGrowth 
 }
 
 function validGrowthProgress(s: State) {
-  const q=s.foundationJourney,g=q.growth,h=q.heroine;
-  if(!g || !h || !g.routes || typeof g.refined !== "boolean" || typeof g.rankGift !== "boolean" ||
-    !["none","mentor","medicine","practice"].includes(g.steady) || !["none","medicine","practice"].includes(g.steadyStudy))return false;
-  if(!resourceRoutes.every(r=> {
-    const p=g.routes[r];
-    return p && typeof p.prepared === "boolean" && ["","careful","swift"].includes(p.choice) && typeof p.processed === "boolean" && typeof p.revisited === "boolean" &&
-      (!p.choice || p.prepared) && (!p.processed || (p.choice && q.won.includes(routeInfo[r].foe))) && (!p.revisited || p.processed);
-  }))return false;
-  if(g.refined !== resourceRoutes.some(r=>g.routes[r].processed) || q.cultivation>foundationCap(s))return false;
-  if(g.rankGift && q.board.wins.length<3)return false;
-  if(g.steady === "mentor" && q.rescue<3)return false;
-  if(["medicine","practice"].includes(g.steady) && (!q.won.includes("steady") || g.steadyStudy !== g.steady))return false;
-  if(q.won.includes("steady") && !["medicine","practice"].includes(g.steady))return false;
-  if(q.won.includes("application") && q.inheritance === "none")return false;
-  if(q.won.includes("salamander") && (!g.routes.estate.choice || !q.won.includes("estate")))return false;
-  if(q.won.includes("deer") && !g.routes.snow.choice)return false;
-  if(!["none","strength","insight","supplies"].includes(h.meeting) || !["none","longevity","strength","private"].includes(h.purpose) ||
-    !["none",...resourceRoutes].includes(h.route) || !["none","public","detour"].includes(h.map) || typeof h.expedition !== "boolean" || typeof h.supplied !== "boolean")return false;
-  if(h.meeting !== "none" && (!maleMainline(s) || !s.social.met || s.social.answers.meet !== "bridge" || !s.adventure.road.surveyed))return false;
-  if(h.purpose !== "none" && h.meeting === "none")return false;
-  if(h.route !== "none" && (h.purpose === "none" || !g.routes[h.route].processed))return false;
-  if(h.map !== "none" && h.route === "none")return false;
-  if(h.expedition && (!q.reunion || h.map === "none" || q.cultivation<400))return false;
-  if(h.supplied && (!q.won.includes("frontier") || q.rescue<2))return false;
-  if(q.rescue>=3 && !h.supplied)return false;
-  if(q.epilogue && q.cultivation!==600)return false;
-  if(maleMainline(s) && ((q.ferry>0 && h.meeting === "none") || (q.won.includes("well") && h.purpose === "none") || (q.won.includes("culmination") && q.rescue !== 4)))return false;
-  if(s.realm===0 && (h.meeting !== "none" || g.refined || g.steadyStudy !== "none" || g.rankGift || resourceRoutes.some(r=>g.routes[r].prepared)))return false;
+  const q = s.foundationJourney,
+    g = q.growth,
+    h = q.heroine;
+  if (
+    !g ||
+    !h ||
+    !g.routes ||
+    typeof g.refined !== "boolean" ||
+    typeof g.rankGift !== "boolean" ||
+    !["none", "mentor", "medicine", "practice"].includes(g.steady) ||
+    !["none", "medicine", "practice"].includes(g.steadyStudy)
+  )
+    return false;
+  if (
+    !resourceRoutes.every((r) => {
+      const p = g.routes[r];
+      return (
+        p &&
+        typeof p.prepared === "boolean" &&
+        ["", "careful", "swift"].includes(p.choice) &&
+        typeof p.processed === "boolean" &&
+        typeof p.revisited === "boolean" &&
+        (!p.choice || p.prepared) &&
+        (!p.processed || (p.choice && q.won.includes(routeInfo[r].foe))) &&
+        (!p.revisited || p.processed)
+      );
+    })
+  )
+    return false;
+  if (
+    g.refined !== resourceRoutes.some((r) => g.routes[r].processed) ||
+    q.cultivation > foundationCap(s)
+  )
+    return false;
+  if (g.rankGift && q.board.wins.length < 3) return false;
+  if (g.steady === "mentor" && q.rescue < 3) return false;
+  if (
+    ["medicine", "practice"].includes(g.steady) &&
+    (!q.won.includes("steady") || g.steadyStudy !== g.steady)
+  )
+    return false;
+  if (q.won.includes("steady") && !["medicine", "practice"].includes(g.steady))
+    return false;
+  if (q.won.includes("application") && q.inheritance === "none") return false;
+  if (
+    q.won.includes("salamander") &&
+    (!g.routes.estate.choice || !q.won.includes("estate"))
+  )
+    return false;
+  if (q.won.includes("deer") && !g.routes.snow.choice) return false;
+  if (
+    !["none", "strength", "insight", "supplies"].includes(h.meeting) ||
+    !["none", "longevity", "strength", "private"].includes(h.purpose) ||
+    !["none", ...resourceRoutes].includes(h.route) ||
+    !["none", "public", "detour"].includes(h.map) ||
+    typeof h.expedition !== "boolean" ||
+    typeof h.supplied !== "boolean"
+  )
+    return false;
+  if (
+    h.meeting !== "none" &&
+    (!maleMainline(s) ||
+      !s.social.met ||
+      s.social.answers.meet !== "bridge" ||
+      !s.adventure.road.surveyed)
+  )
+    return false;
+  if (h.purpose !== "none" && h.meeting === "none") return false;
+  if (
+    h.route !== "none" &&
+    (h.purpose === "none" || !g.routes[h.route].processed)
+  )
+    return false;
+  if (h.map !== "none" && h.route === "none") return false;
+  if (h.expedition && (!q.reunion || h.map === "none" || q.cultivation < 400))
+    return false;
+  if (h.supplied && (!q.won.includes("frontier") || q.rescue < 2)) return false;
+  if (q.rescue >= 3 && !h.supplied) return false;
+  if (q.epilogue && q.cultivation !== 600) return false;
+  if (
+    maleMainline(s) &&
+    ((q.ferry > 0 && h.meeting === "none") ||
+      (q.won.includes("well") && h.purpose === "none") ||
+      (q.won.includes("culmination") && q.rescue !== 4))
+  )
+    return false;
+  if (
+    s.realm === 0 &&
+    (h.meeting !== "none" ||
+      g.refined ||
+      g.steadyStudy !== "none" ||
+      g.rankGift ||
+      resourceRoutes.some((r) => g.routes[r].prepared))
+  )
+    return false;
   return true;
 }

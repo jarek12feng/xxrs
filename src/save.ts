@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from './save-version';
 import { migrateSave, validState, type State } from "./core";
 function database(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -13,7 +14,7 @@ function newer(value: unknown) {
     typeof value === "object" &&
     "version" in value &&
     typeof value.version === "number" &&
-    value.version > 33
+    value.version > SAVE_VERSION
   );
 }
 function read(value: unknown) {
@@ -67,9 +68,7 @@ export async function save(state: State) {
       }
       if (read(old.result)) store.put(old.result, "previous");
       if (
-        [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-        ].includes(old.result?.version) &&
+        Number.isInteger(old.result?.version) && old.result.version >= 1 && old.result.version < SAVE_VERSION &&
         read(old.result)
       ) {
         const key = `original-v${old.result.version}`;

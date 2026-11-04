@@ -1,9 +1,21 @@
-import { passageKey, passageError, passageMonths, advancePassage } from "../wayfaring/passage";
+import { methodQuote } from "../techniques";
+import { inspectInteraction } from "../story-interactions";
+import { settleResources } from "../economy";
+import { advanceMonths } from "../timeline";
+import { dueDeadlines } from "../timeline";
+import { seaSchedule } from "./calendar";
+import { resolveTurn, startBattle } from "../combat";
+import {
+  passageKey,
+  passageError,
+  passageMonths,
+  advancePassage,
+} from "../wayfaring/passage";
 import { goldenCap, goldenBlock } from "../conclave/state";
 import { conclaveGoal } from "../conclave/rules";
 import type { State } from "../world";
 import type { Move } from "../expedition/content";
-import { tacticalExchange } from "../expedition/combat";
+import { tacticalPreview } from "../combat/game";
 import { foundationPower } from "../foundation-journey/combat";
 export type SeaAction =
   | {
@@ -138,20 +150,15 @@ export function seaQuote(s: State, a: SeaAction) {
     if (!o.seal || o.attuned || o.location === "ruins")
       error ||= "需已取得镇潮印，且在安全处首次温养";
   } else if (a.kind === "method") {
-    months = o.method === "none" ? 12 : 3;
-    if (
-      !o.manual ||
-      o.location === "ruins" ||
-      !["continue", "clear"].includes(a.method) ||
-      o.method === a.method
-    )
-      error ||= "需澄息篇，在安全处选择未启用的运功方式";
+    const method = methodQuote("sea", o.method, a.method, o.manual, o.location !== "ruins");
+    months = method.months;
+    error ||= method.error;
   } else if (a.kind === "report") {
     if (o.location !== "ferry" || o.reward === "none")
       error ||= "先取回机缘，在古渡与两位道友交接";
     else if (o.notice !== null) error ||= "约定与五十年会期已记入行囊";
   } else error ||= "未知外海操作";
-  const passage = passageKey('sea', a.kind);
+  const passage = passageKey("sea", a.kind);
   error ||= passageError(s, passage);
   months = passageMonths(s, passage, months);
   if (!error && (s.stones < stones || s.herbs < herbs))
@@ -162,15 +169,22 @@ export function seaQuote(s: State, a: SeaAction) {
 export function seaExchange(s: State, move: Move) {
   const d = s.outerSea.duel;
   return d
-    ? tacticalExchange(s, move, seaFoe(d.depth), d, d.effect, true, {
-        ...foundationPower(s),
-        hp: foundationPower(s).hp + (s.outerSea.pact === "share" ? 12 : 0),
+    ? tacticalPreview(s, {
+        move: move,
+        encounter: seaFoe(d.depth),
+        battle: d,
+        effect: d.effect,
+        arrayCore: true,
+        power: foundationPower(s),
+        adjustments: [
+          { phase: "power", hp: s.outerSea.pact === "share" ? 12 : 0 },
+        ],
       })
     : null;
 }
 export function seaGoal(s: State) {
   const o = s.outerSea;
-  if(s.conclave.location !== "away") return conclaveGoal(s);
+  if (s.conclave.location !== "away") return conclaveGoal(s);
   if (o.duel) return "看清石卫来势再出手；也可撤回古渡，已通进度保留。";
   if (o.location === "ruins")
     return "应对眼前石卫，取得封存机缘；退路仍然畅通。";
@@ -188,7 +202,9 @@ export function seaGoal(s: State) {
             ? "回古渡分取镇潮印或澄息篇，先用上所得。"
             : o.cleared < 2
               ? `${!o.attuned && o.method === "none" ? "先温养法宝或参悟功法，" : ""}${o.cultivation < 60 ? "修至 60 后再探内府。" : "已能承受内府潮压，可整备后重返遗迹。"}${o.notice === null ? "回古渡交接，还可听闻诸宗会期。" : ""}`
-              : s.conclave.stage ? conclaveGoal(s) : goldenBlock(s);
+              : s.conclave.stage
+                ? conclaveGoal(s)
+                : goldenBlock(s);
 }
 export function updateSeaCalendar(s: State) {
   const o = s.outerSea;
@@ -196,7 +212,7 @@ export function updateSeaCalendar(s: State) {
     o.duel = null;
     return;
   }
-  if (o.notice !== null && !o.reminded && s.month >= o.notice + 600) {
+  if (dueDeadlines(s.month, seaSchedule(s)).length > 0) {
     o.reminded = true;
     o.last =
       "五十年前约定的诸宗会期已至。顾沧遥来信邀你从古渡赴会；两场胜绩便能争取归潮秘境资格。若暂时无暇，各宗会留下轮值补试，旧胜绩仍认。";
@@ -210,28 +226,35 @@ export function runSea(
   id: string,
   tick: (s: State) => State,
 ) {
-  const quote = seaQuote(input, a);
-  if (quote.error) return input;
+  const offer = inspectInteraction(input, a, seaQuote);
+  if (!offer.available) return input;
+  const quote = offer.quote;
   let s = structuredClone(input);
-  const passage = passageKey('sea',a.kind);
-  if(passage) {
-    const result=advancePassage(input,passage,tick,n=>occupied(n) || (n.outerSea.reminded && !input.outerSea.reminded));
-    s=result.state;
-    if(result.stopped) {
-      record(`航程暂止，尚余 ${s.wayfaring.passage!.remaining} 月；处理眼前消息后继续，不重复扣除已耗年月。行装尚未扣除。`);
+  const passage = passageKey("sea", a.kind);
+  if (passage) {
+    const result = advancePassage(
+      input,
+      passage,
+      tick,
+      (n) => occupied(n) || (n.outerSea.reminded && !input.outerSea.reminded),
+    );
+    s = result.state;
+    if (result.stopped) {
+      record(
+        `航程暂止，尚余 ${s.wayfaring.passage!.remaining} 月；处理眼前消息后继续，不重复扣除已耗年月。行装尚未扣除。`,
+      );
       return finish();
     }
   } else {
-  for (let i = 0; i < quote.months; i++) {
-    s = tick(s);
-    if (occupied(s) || (s.outerSea.reminded && !input.outerSea.reminded)) {
-      record("行程暂止，尚未扣除物资或结算成果。");
-      return finish();
+    const elapsed = advanceMonths(s, quote.months, { tick, interrupt: s => (occupied(s) || (s.outerSea.reminded && !input.outerSea.reminded)) ? "interrupted" : "" });
+    s = elapsed.state;
+    if (elapsed.stopped) {
+        record("行程暂止，尚未扣除物资或结算成果。");
+        return finish();
+
     }
   }
-  }
-  s.stones -= quote.stones;
-  s.herbs -= quote.herbs;
+  if (settleResources(s, { stones: quote.stones, herbs: quote.herbs }).error) return input;
   const o = s.outerSea;
   if (a.kind === "sail") {
     o.location = "ferry";
@@ -273,9 +296,10 @@ export function runSea(
     const depth = (o.cleared + 1) as 1 | 2;
     o.duel = {
       depth,
-      hp: foundationPower(s).hp + (o.pact === "share" ? 12 : 0),
-      enemy: seaFoe(depth).hp,
-      turn: 0,
+      ...startBattle(
+        foundationPower(s).hp + (o.pact === "share" ? 12 : 0),
+        seaFoe(depth).hp,
+      ),
       effect: "",
     };
     record(
@@ -285,15 +309,17 @@ export function runSea(
   if (a.kind === "move") {
     const p = seaExchange(s, a.move)!,
       d = o.duel!;
-    s.herbs -= p.herbs;
-    d.hp = Math.max(0, d.hp - p.incoming + p.healing);
-    d.enemy = Math.max(0, d.enemy - p.damage);
-    d.turn++;
+    const turn = resolveTurn(d, p, {
+      turnLimit: 16,
+      resolution: "simultaneous",
+    });
+    Object.assign(d, turn.battle);
+    s.herbs -= turn.herbs;
     d.effect = a.move;
     record(
       `削去气势 ${p.damage}，承受 ${p.incoming}${p.healing ? `，耗灵草 ${p.herbs} 回气 ${p.healing}` : ""}。${p.note}`,
     );
-    if (!d.enemy) {
+    if (turn.outcome === "win") {
       o.cleared = d.depth;
       o.duel = null;
       o.prepared = false;
@@ -318,7 +344,7 @@ export function runSea(
               : "叶问苓收回原卷，顾沧遥按约只使用旧图；你勘出的支路仍由你自己掌握。"),
         );
       }
-    } else if (!d.hp || d.turn >= 16) {
+    } else if (turn.outcome === "loss") {
       o.duel = null;
       o.location = "ferry";
       s.injury = Math.min(6, s.injury + 2);

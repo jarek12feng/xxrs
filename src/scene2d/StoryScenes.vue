@@ -55,7 +55,7 @@ defineExpose({ choose });
   <RoadPanel v-else-if="chapter==='road'" :game="game" :busy="busy" :receipt="receipt" @act="travel.act($event)" @cultivate="emit('cultivate')" @map="emit('map')" @breakthrough="emit('breakthrough')" @mist="preferred = 'mist'; emit('mist')" />
   <MistPanel v-else-if="chapter==='mist'" :game="game" :busy="busy" :receipt="receipt" @act="travel.act($event)" @cultivate="emit('cultivate')" @road="preferred = 'road'; emit('road')" />
   <QiJourneyPanel v-else-if="chapter==='qi'" :game="game" :busy="busy" @act="travel.act($event)" @facilities="emit('cultivate')" @board="emit('board')" @gear="emit('equipment')" @sect="emit('sect')" @inventory="emit('inventory')" />
-  <FoundationPanel v-else-if="chapter==='foundation'" :game="game" :busy="busy" :combat-feedback="combatFeedback" @act="travel.act($event)" @equipment="emit('equipment')" />
+  <FoundationPanel @road="preferred='road'" v-else-if="chapter==='foundation'" :game="game" :busy="busy" :combat-feedback="combatFeedback" @act="travel.act($event)" @equipment="emit('equipment')" />
   <SectContestScene v-else-if="chapter==='contest'" :game="game" :busy="busy" @act="travel.act($event)" />
   <GoldenCorePanel v-else-if="chapter==='golden'" :game="game" :busy="busy" @act="travel.act($event)" />
   <OuterSeaPanel @meeting="preferred='conclave'" v-else-if="chapter==='sea'" :game="game" :busy="busy" @act="travel.act($event)" />

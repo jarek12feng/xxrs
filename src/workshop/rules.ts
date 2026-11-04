@@ -1,3 +1,6 @@
+import { settleResources } from "../economy";
+import { advanceMonths } from "../timeline";
+import { applyEquipmentChange } from "../equipment";
 import type { State } from "../world";
 import { planOrder, type WorkshopOrder } from "./recipes";
 export type { WorkshopOrder } from "./recipes";
@@ -7,7 +10,12 @@ export type WorkshopCommand = {
   order: WorkshopOrder;
 };
 export function workshopLock(s: State): string {
-  return s.conclave?.duel || s.conclave?.location === "vault" || s.outerSea?.location === "ruins" || s.goldenCore?.duel || s.sectContest.duel || s.status !== "alive" ||
+  return s.conclave?.duel ||
+    s.conclave?.location === "vault" ||
+    s.outerSea?.location === "ruins" ||
+    s.goldenCore?.duel ||
+    s.sectContest.duel ||
+    s.status !== "alive" ||
     s.pending ||
     s.social.scene ||
     s.social.arena.duel ||
@@ -48,9 +56,9 @@ export function runWorkshop(
   if (quote.error) return input;
   let s = structuredClone(input);
   // Interruptions advance only time. No debit or product until the whole undertaking completes.
-  for (let m = 0; m < quote.months; m++) {
-    s = tick(s);
-    if (s.status !== "alive" || s.pending) {
+  const elapsed = advanceMonths(s, quote.months, { tick, interrupt: s => (s.status !== "alive" || s.pending) ? "interrupted" : "" });
+  s = elapsed.state;
+  if (elapsed.stopped) {
       s.log.unshift({
         month: s.month,
         kind: "warning",
@@ -59,18 +67,15 @@ export function runWorkshop(
       s.seen = [...input.seen, id].slice(-512);
       s.log = s.log.slice(0, 180);
       return s;
-    }
+
   }
-  s.stones -= quote.stones;
-  s.herbs -= quote.herbs;
-  s.workshop.iron -= quote.iron;
+  if (settleResources(s, { stones: quote.stones, herbs: quote.herbs, iron: quote.iron }).error) return input;
   if ("relic" in order) {
-    if (order.relic === "sword")
-      s.workshop.temper.sword =
-        order.temper as State["workshop"]["temper"]["sword"];
-    else
-      s.workshop.temper.vial =
-        order.temper as State["workshop"]["temper"]["vial"];
+    applyEquipmentChange(s, {
+      kind: "temper",
+      id: order.relic,
+      temper: order.temper,
+    });
   } else
     switch (order.product) {
       case "healing":
@@ -85,7 +90,10 @@ export function runWorkshop(
         break;
       case "sword":
       case "vial":
-        s.journey.relics[order.product]++;
+        applyEquipmentChange(s, {
+          kind: s.journey.relics[order.product] ? "refine" : "acquire",
+          id: order.product,
+        });
         break;
       case "foundation":
         s.pills++;

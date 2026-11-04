@@ -1,10 +1,19 @@
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from 'vue';
 import { afterEach, expect, it, vi } from 'vitest';
-import { createGame } from '../src/core';
+import { createGame, dispatch } from '../src/core';
+import { journeyCheckpoint } from '../tools/foundation-journey-checkpoint';
 import FoundationWorld from '../src/foundation-journey/FoundationWorld.vue';
 import { foundationCompanionPresent, foundationSceneSnapshot, foundationSceneTransition } from '../src/foundation-journey/scene-performance';
 afterEach(()=>vi.useRealTimers());
+it('arrival keeps Su present for the required conversation, then she stays outside the well',()=>{
+ const s=journeyCheckpoint('male',false);s.foundationJourney.heroine.purpose='none';
+ const arrived=dispatch(s,{id:'arrive',type:'foundationJourney',action:{kind:'travel',destination:'ferry'}});
+ expect(arrived).not.toBe(s);expect(arrived.foundationJourney.ferry).toBe(1);
+ expect(foundationCompanionPresent(arrived,'journey')).toBe(true);
+ const spoken=dispatch(arrived,{id:'speak',type:'foundationJourney',action:{kind:'journeyPurpose',purpose:'longevity'}});
+ expect(foundationCompanionPresent(spoken,'journey')).toBe(false);
+});
 function initial(){const s=createGame('行者','wood',42);s.realm=1;s.social.gender='male';return s;}
 it('presence follows location and whereabouts, never a missing or inside-well companion',()=>{
  const s=initial();expect(foundationCompanionPresent(s,'journey')).toBe(true);

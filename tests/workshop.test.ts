@@ -14,7 +14,7 @@ import { passagePlan } from "../src/qi-journey/passage";
 import { qiPower, qiPreview } from "../src/qi-journey/rules";
 import { foundationStep } from "../tools/foundation-playthrough";
 import { expeditionSession } from "../tools/expedition-simulation";
-import { tacticalExchange } from "../src/expedition/combat";
+import { tacticalPreview } from "../src/combat/game";
 import { qiSites } from "../src/qi-journey/content";
 import { actionReceipt } from "../src/action-feedback";
 function ready() {
@@ -228,8 +228,18 @@ describe("workshop public commands", () => {
     expect(validState(n)).toBe(true);
     const enemy = { ...qiSites[0].enemies[0], hp: 1000 };
     const duel = { hp: 40, enemy: 1000, turn: 1 };
-    const a = tacticalExchange(s, "strike", enemy, duel, "none")!;
-    const b = tacticalExchange(n, "strike", enemy, duel, "none")!;
+    const a = tacticalPreview(s, {
+move: "strike",
+encounter: enemy,
+battle: duel,
+effect: "none"
+})!;
+    const b = tacticalPreview(n, {
+move: "strike",
+encounter: enemy,
+battle: duel,
+effect: "none"
+})!;
     expect(b.damage - a.damage).toBe(3);
     expect(b.incoming - a.incoming).toBe(1);
     expect(qiPreview(n, "strike")).toBeNull();
@@ -272,16 +282,36 @@ describe("workshop public commands", () => {
       expect(n.workshop.temper[relic]).toBe(temper);
       const enemy = { ...qiSites[0].enemies[0], hp: 1000, attack: 50 };
       const d = { hp: 100, enemy: 1000, turn };
-      const a = tacticalExchange(s, move, enemy, d, "none")!;
-      const b = tacticalExchange(n, move, enemy, d, "none")!;
+      const a = tacticalPreview(s, {
+move: move,
+encounter: enemy,
+battle: d,
+effect: "none"
+})!;
+      const b = tacticalPreview(n, {
+move: move,
+encounter: enemy,
+battle: d,
+effect: "none"
+})!;
       expect(b.damage - a.damage).toBe(damage);
       expect(b.incoming - a.incoming).toBe(incoming);
       const unarmed = structuredClone(n);
       unarmed.journey.equipped = null;
       const plainUnarmed = structuredClone(s);
       plainUnarmed.journey.equipped = null;
-      expect(tacticalExchange(unarmed, move, enemy, d, "none")).toEqual(
-        tacticalExchange(plainUnarmed, move, enemy, d, "none"),
+      expect(tacticalPreview(unarmed, {
+move: move,
+encounter: enemy,
+battle: d,
+effect: "none"
+})).toEqual(
+        tacticalPreview(plainUnarmed, {
+move: move,
+encounter: enemy,
+battle: d,
+effect: "none"
+}),
       );
     },
   );

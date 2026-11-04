@@ -1,4 +1,11 @@
-import { passageIds, passagePlan, settlePassage, type Passage } from "./passage";
+import type { CombatAdjustment } from "../combat";
+import { resolveTurn, startBattle } from "../combat";
+import {
+  passageIds,
+  passagePlan,
+  settlePassage,
+  type Passage,
+} from "./passage";
 import { medicineOpening, qiExpectedMove, qiTacticalCue } from "./tactics";
 import { runWorkshop, workshopQuote } from "../workshop/rules";
 import { isPersonAction, personError, settlePerson } from "./people";
@@ -13,7 +20,7 @@ import {
 } from "./preparation";
 import type { State } from "../world";
 import { hasFoundationRecipe } from "../foundation";
-import { readiness, tacticalExchange } from "../expedition/combat";
+import { readiness, tacticalPreview } from "../combat/game";
 import type { Move } from "../expedition/content";
 import { qiSites, commissions, type QiAction } from "./content";
 import type { QiRoute } from "./state";
@@ -63,8 +70,9 @@ export function qiError(s: State, a: QiAction): string {
   if (isPreparationAction(a)) return preparationError(s, a);
   if (a.startsWith("buy:")) {
     const product = a.slice(4);
-    if (product !== 'healing' && product !== 'sword' && product !== 'vial') return '未知货物';
-    return workshopQuote(s, { product, method: 'buy' }).error;
+    if (product !== "healing" && product !== "sword" && product !== "vial")
+      return "未知货物";
+    return workshopQuote(s, { product, method: "buy" }).error;
   }
   if (a.startsWith("commission:")) {
     const k = a.slice(11) as keyof typeof commissions;
@@ -87,10 +95,7 @@ export function qiError(s: State, a: QiAction): string {
       return "先择药谷、宗门或散修一路，备妥行装并亲自闯关";
     if (s.adventure.step !== "done") return "先救回药工，取得泉谷线索";
     if (s.qi < qiSites[q.gates]!.qi) return `需要修为 ${qiSites[q.gates]!.qi}`;
-    if (
-      q.gates === 1 &&
-      !hasFoundationRecipe(s)
-    )
+    if (q.gates === 1 && !hasFoundationRecipe(s))
       return "先赴青石遗府取得丹方与内府图";
     if (s.injury >= 3) return "先养伤至 2 以下";
     if (!s.journey.main) return "先装配一门主修功法";
@@ -139,18 +144,15 @@ export function qiPreview(s: State, move: Move) {
     e = qiEnemy(s);
   if (!q.duel || !e) return null;
   const expected = qiExpectedMove(s, e.identity, e.pattern);
-  const p = qiPower(s);
+  const adjustments: CombatAdjustment[] = [];
   // Against beasts, guarding is a real defensive choice even outside the ideal tell.
-  // Constructs already apply their own guard tradeoff in tacticalExchange.
-  if (e.kind === "妖兽" && move === "guard") { p.damage -= 3; p.armor += 4; }
-  if (q.route === "sword") p.armor -= 1;
-  if (
-    q.route === "array" &&
-    move === "discern" &&
-    expected === move
-  ) {
-    p.damage += 3;
-    p.armor += 2;
+  // Constructs already apply their own guard tradeoff in the combat engine.
+  if (e.kind === "妖兽" && move === "guard") {
+    adjustments.push({ phase: "power", damage: -3, armor: 4 });
+  }
+  if (q.route === "sword") adjustments.push({ phase: "power", armor: -1 });
+  if (q.route === "array" && move === "discern" && expected === move) {
+    adjustments.push({ phase: "power", damage: 3, armor: 2 });
   }
   const correct = expected === move;
   if (
@@ -158,39 +160,44 @@ export function qiPreview(s: State, move: Move) {
     move === "strike" &&
     expected !== "strike"
   )
-    p.damage -= 4;
+    adjustments.push({ phase: "power", damage: -4 });
   if (
     e.identity === "spring-python" &&
     expected === "discern" &&
     move !== "discern"
   )
-    p.armor -= 3;
+    adjustments.push({ phase: "power", armor: -3 });
   if (e.identity === "corridor-guardian" && move === "discern" && correct)
-    p.damage += 3;
+    adjustments.push({ phase: "power", damage: 3 });
   if (
     correct &&
     ((e.kind === "妖兽" && q.people.beastLesson && move === "guard") ||
       (e.kind === "傀儡" && q.people.constructLesson && move === "discern"))
   )
-    p.armor += 2;
-  if (medicineOpening(s, e.identity)) p.armor += 4;
-  const result = tacticalExchange(
-    s,
-    move,
-    { ...e, pattern: Array<Move>(e.pattern.length).fill(expected) },
-    q.duel,
-    q.duel.effect,
-    e.kind === "傀儡",
-    p,
-  );
-  if (result && medicineOpening(s, e.identity)) result.note += "药气诱开蛇首，本合承伤 −4。";
-  if (result && e.kind === "妖兽" && move === "guard") result.note += "收势护身：伤害 −3、承伤 −4。";
-  return result;
+    adjustments.push({ phase: "power", armor: 2 });
+  if (medicineOpening(s, e.identity))
+    adjustments.push({ phase: "power", armor: 4 });
+  if (medicineOpening(s, e.identity))
+    adjustments.push({ phase: "power", note: "药气诱开蛇首，本合承伤 −4。" });
+  if (e.kind === "妖兽" && move === "guard")
+    adjustments.push({ phase: "power", note: "收势护身：伤害 −3、承伤 −4。" });
+  return tacticalPreview(s, {
+    move: move,
+    encounter: { ...e, pattern: Array<Move>(e.pattern.length).fill(expected) },
+    battle: q.duel,
+    effect: q.duel.effect,
+    arrayCore: e.kind === "傀儡",
+    power: qiPower(s),
+    adjustments,
+  });
 }
 export function qiEnemyTell(s: State) {
-  const e = qiEnemy(s), d = s.qiJourney.duel;
+  const e = qiEnemy(s),
+    d = s.qiJourney.duel;
   if (!e || !d) return "";
-  return medicineOpening(s, e.identity) ? qiTacticalCue(s, e.identity) : e.tells[d.turn % e.pattern.length];
+  return medicineOpening(s, e.identity)
+    ? qiTacticalCue(s, e.identity)
+    : e.tells[d.turn % e.pattern.length];
 }
 export function runQiJourney(
   input: State,
@@ -199,7 +206,13 @@ export function runQiJourney(
   tick: (s: State) => State,
 ): State {
   if (qiError(input, a)) return input;
-  if (a === 'buy:healing' || a === 'buy:sword' || a === 'buy:vial') return runWorkshop(input, { product: a.slice(4) as 'healing' | 'sword' | 'vial', method: 'buy' }, id, tick);
+  if (a === "buy:healing" || a === "buy:sword" || a === "buy:vial")
+    return runWorkshop(
+      input,
+      { product: a.slice(4) as "healing" | "sword" | "vial", method: "buy" },
+      id,
+      tick,
+    );
   let s = structuredClone(input);
   // Outside combat every undertaking takes a month; existing appointments interrupt first.
   if (!s.qiJourney.node && a !== "withdraw") {
@@ -225,9 +238,7 @@ export function runQiJourney(
     settlePreparation(s, a);
     if (s.qiJourney.trial)
       s.qiJourney.duel = {
-        hp: qiPower(s).hp,
-        enemy: qiEnemy(s)!.hp,
-        turn: 0,
+        ...startBattle(qiPower(s).hp, qiEnemy(s)!.hp),
         effect: "none",
       };
   } else if (a.startsWith("commission:")) {
@@ -250,21 +261,19 @@ export function runQiJourney(
     if (q.route === "medicine") s.herbs -= 4;
     q.node = 1;
     q.duel = {
-      hp: qiPower(s).hp,
-      enemy: qiEnemy(s)!.hp,
-      turn: 0,
+      ...startBattle(qiPower(s).hp, qiEnemy(s)!.hp),
       effect: "none",
     };
     q.last = qiSites[q.gates]!.intro;
   } else if (q.duel) {
     const d = q.duel,
       p = qiPreview(s, a as Move)!;
-    const damage = Math.min(d.enemy, p.damage);
-    d.enemy -= damage;
-    d.turn++;
-    s.herbs -= p.herbs;
+    const turn = resolveTurn(d, p, { turnLimit: 16, resolution: "journey" });
+    const damage = turn.damage;
+    Object.assign(d, turn.battle);
+    s.herbs -= turn.herbs;
     q.last = `${qiEnemy(s)!.name}气势 −${damage}。`;
-    if (d.enemy === 0) {
+    if (turn.outcome === "win") {
       if (q.trial) {
         completePreparation(s);
       } else if (q.node === 1) {
@@ -285,10 +294,9 @@ export function runQiJourney(
         q.last += `取得${qiSites[q.gates]!.material}，并带回${q.gates ? "失灵阵枢，可交给裴铸" : "完整蟒蜕，可交给许照岚"}。可携材料回山炼化。`;
       }
     } else {
-      d.hp = Math.max(0, d.hp - p.incoming) + p.healing;
       d.effect = a;
       q.last += `自身气势 −${p.incoming}${p.healing ? `、回气 +${p.healing}` : ""}。${p.note}`;
-      if (d.hp <= 0 || d.turn >= 16) {
+      if (turn.outcome === "loss") {
         q.duel = null;
         q.node = 0;
         q.trial = null;
@@ -299,7 +307,7 @@ export function runQiJourney(
   } else if (q.node === 2) {
     const p = settlePassage(s, a as Passage, qiPower(s).hp);
     q.node = 3;
-    q.duel = { hp: p.vigor, enemy: qiEnemy(s)!.hp, turn: 0, effect: "none" };
+    q.duel = { ...startBattle(p.vigor, qiEnemy(s)!.hp), effect: "none" };
     q.last = `${p.label}：${p.cost}，以气势 ${p.vigor} 进入深处。`;
   } else {
     s.stones -= a === "refine" ? 24 : a === "mentor" ? 12 : 48;

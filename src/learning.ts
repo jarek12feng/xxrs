@@ -1,3 +1,6 @@
+import { claimResources } from "./economy";
+import { grantTechnique, applyTechnique } from "./techniques";
+import { applyEquipmentChange } from "./equipment";
 import type { State } from "./world";
 export type LearningChoice = "spring" | "blade" | "breath" | "vial" | "sword";
 export const freshLearning = () => ({ book: false, relic: false });
@@ -38,17 +41,17 @@ export function runLearning(
   if (book) {
     const t = choice as "spring" | "blade" | "breath";
     const owned = s.journey.known.includes(t);
-    if (owned) s.stones += 20;
-    else s.journey.known.push(t);
+    if (owned) claimResources(s, s.journey.learning.book, { stones: 20 });
+    else grantTechnique(s, t);
     s.journey.learning.book = true;
-    if (equip) s.journey.main = t;
+    if (equip) applyTechnique(s, { kind: "equip", id: t });
     s.adventure.result += owned
       ? "你已学过所选功法，药工将谢礼折为灵石 20。"
       : `你收下${{ spring: "长春诀", blade: "听松剑经", breath: "归元息" }[t]}，开始依诀修行；以后仍可学习其他功法。`;
   } else {
     const r = choice as "vial" | "sword";
-    if (s.journey.relics[r]) s.stones += 12;
-    else s.journey.relics[r] = 1;
+    if (s.journey.relics[r]) claimResources(s, s.journey.learning.relic, { stones: 12 });
+    else applyEquipmentChange(s, { kind: "acquire", id: r });
     s.journey.learning.relic = true;
     s.expedition.last = `你选了${r === "sword" ? "听松灵剑" : "归元灵瓶"}作为谢礼；已有同件法器时折为灵石 12。可在储物袋装配。`;
   }

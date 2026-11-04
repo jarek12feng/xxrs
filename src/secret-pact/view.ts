@@ -1,3 +1,4 @@
+import { hasEquippedRelic } from "../equipment";
 import type { State } from "../world";
 import { challenges } from "../foundation-journey/content";
 import { foundationPower } from "../foundation-journey/combat";
@@ -93,7 +94,7 @@ export function pactView(s: State) {
   const preparation = [
     s.injury ? `伤势 ${s.injury}：先静养，免得带伤争宝。` : "伤势已平。",
     mainTraining(s) < 2 ? "主修尚未通达，可到功法页研修。" : "主修已通达。",
-    s.journey.equipped === null || s.journey.relics[s.journey.equipped] < 2 ? "可到灵器页精炼法器，补足攻守。" : "已备二阶灵器。",
+    !hasEquippedRelic(s, 2) ? "可到灵器页精炼法器，补足攻守。" : "已备二阶灵器。",
     supportTraining(s) < 2 ? "辅修仍可研修，护身之力尚有余地。" : "辅修已通达。",
     "长春守势需留灵草；也可先炼化古道主材、提升修为，再来赴约。",
   ];

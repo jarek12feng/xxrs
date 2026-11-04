@@ -9,7 +9,7 @@ import {
 } from "../src/core";
 import { goldenExchange, goldenChance } from "../src/golden-core/rules";
 import { contestFoes } from "../src/sect-contest/content";
-import { readiness } from "../src/expedition/combat";
+import { readiness } from "../src/combat/game";
 const results = [];
 for (const main of ["spring", "blade", "breath"] as const)
   for (const route of ["share", "alone", "contest"] as const) {

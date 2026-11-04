@@ -1,9 +1,5 @@
-export const moves = {
-  guard: "守势化劲",
-  strike: "破绽反击",
-  discern: "凝神辨影",
-} as const;
-export type Move = keyof typeof moves;
+import type { Move } from "../combat";
+export { moves, type Move } from "../combat";
 export const encounters = [
   {
     realm: 0,

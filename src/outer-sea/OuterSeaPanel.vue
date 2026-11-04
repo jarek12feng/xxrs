@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { projectInteractions } from "../story-interactions";
 import GoldenWorld from "../golden-scene/GoldenWorld.vue";
 import CombatBar from "../scene2d/combat/CombatBar.vue";
 import { goldenCombat } from "../golden-scene/presentation";
@@ -40,7 +41,7 @@ const options = computed(() => {
       );
     }
     add("撤回古渡 · 不新增伤势", { kind: "withdraw" });
-    return a.map((x) => ({ ...x, quote: seaQuote(s, x.action) }));
+    return projectInteractions(s, a, seaQuote);
   }
   if (t.location === "home") add("循海路前往外海古渡", { kind: "sail" });
   if (t.location === "ferry") {
@@ -90,7 +91,7 @@ const options = computed(() => {
         });
     }
   }
-  return a.map((x) => ({ ...x, quote: seaQuote(s, x.action) }));
+  return projectInteractions(s, a, seaQuote);
 });
 const send = (action: SeaAction) => emit("act", { type: "outerSea", action });
 
@@ -169,7 +170,7 @@ const combatOptions = computed(() =>
       id: row.action.kind === "move" ? row.action.move : "",
       label: row.label.split(" · ")[0]!,
       detail: row.label.split(" · ").slice(1).join(" · "),
-      disabled: !!row.quote.error,
+      disabled: !row.available,
     })),
 );
 function move(id: string) {
@@ -293,9 +294,9 @@ watch(hotspots, (objects) => {
       <p>两种运功不叠加，旧功法与研修保留。</p>
     </div>
 
-    <div v-for="option in shown" :key="option.label" class="scene-choice">
+    <div v-for="option in shown" :key="option.id" class="scene-choice">
       <button
-        :disabled="busy || !!option.quote.error"
+        :disabled="busy || !option.available"
         @click="send(option.action)"
       >
         {{ option.label.split(" · ")[0] }}

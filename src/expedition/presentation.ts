@@ -1,6 +1,6 @@
 import type { State, Intent } from "../core";
 import { encounters } from "./content";
-import { readiness } from "./rules";
+import { readiness } from "../combat/game";
 export function preparationAdvice(
   s: State,
 ): { text: string; label: string; intent: Intent }[] {

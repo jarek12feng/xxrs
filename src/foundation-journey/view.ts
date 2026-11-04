@@ -1,6 +1,6 @@
 import { foundationCap, foundationBlock, resourceRoutes, hasSteady } from "./growth-state";
 import { routeInfo } from "./growth";
-import { maleMainline } from "./heroine";
+import { awaitingFerryConversation, maleMainline } from "./heroine";
 import { opponentRealmName } from "../realm-pressure";
 import type { State } from "../world";
 import type { JourneyAction, BattleId, Destination, Side } from "./state";
@@ -307,9 +307,14 @@ export function journeyPresentation(s: State, relationship = false) {
   if(!relationship && q.location === "home" && maleMainline(s) && !["away","missing","shelter"].includes(q.whereabouts)) {
     speaker=q.heroine.meeting === "none" ? "青嶂勘路人" : "苏婉宁";
     portrait=q.reunion ? "shentinglan-reunion" : "shentinglan-growth";
-    if(q.heroine.meeting === "none")body="你正要踏上青嶂石梁，崖下有人敲了两下尺杆：左边那块是空的。女修收紧绳索，请你稳住上面的石梁，她来测落脚处。";
+    if(q.heroine.meeting === "none" && !s.adventure.road.surveyed)body="一位女修正在校对青嶂路图。她指向山门：先到云栈旅亭踏勘归路吧，回来再商议石梁的勘测。";
+    else if(q.heroine.meeting === "none")body="你正要踏上青嶂石梁，崖下有人敲了两下尺杆：左边那块是空的。女修收紧绳索，请你稳住上面的石梁，她来测落脚处。";
     else if(q.growth.refined && q.heroine.map === "none")body="苏婉宁带回试印图，药舍住户却指着图上的井口与果树，问她能否不公开住处。她停下刻刀，和你重新商量：保留干道，由药工引路；或撤下刻样，另探一条替代路。";
     else if(q.reunion && !q.heroine.expedition)body="苏婉宁带回独立测完的图，修正了曾轻信的旧里程。闻岑小队邀她复核古道深处，临行前，她想与你再试一遍备用路标。";
+  }
+  if(!relationship && awaitingFerryConversation(s)) {
+    speaker="苏婉宁";portrait="shentinglan-growth";
+    body="苏婉宁将尺绳系在井口，俯身试了试水位。她看向你：“你想从这座沉井里找到什么？”等你说过来意，她便留在渡边核对水位、看守退路。";
   }
   if(!relationship && q.location === "estate" && q.growth.routes.estate.prepared) {
     speaker="岑霁";portrait="";body=routeInfo.estate.intro+"岑霁将药性逐条记在册上：“庄里的家事容后再谈。药心性烈，先辨清药性，莫伤了经脉。”";

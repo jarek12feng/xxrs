@@ -1,6 +1,6 @@
 import { breakthroughDetails, relics, techniques, type State } from "./world";
 import { cultivationMonth, cultivationMonthlyGain } from "./cultivation";
-import { readiness, combatStyle } from "./expedition/combat";
+import { readiness, combatStyle } from "./combat/game";
 import { foundationPower } from "./foundation-journey/combat";
 import { mistDetails } from "./mist";
 import { temperInfo } from "./workshop/state";

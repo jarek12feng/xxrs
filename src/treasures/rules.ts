@@ -1,3 +1,7 @@
+import { grantTechnique } from "../techniques";
+import { settleResources } from "../economy";
+import { advanceMonths } from "../timeline";
+import { equipmentChangeError, applyEquipmentChange } from "../equipment";
 import type { State, Technique } from "../world";
 import { workshopLock } from "../workshop/rules";
 import {
@@ -26,37 +30,22 @@ export function treasureQuote(s: State, a: TreasureAction) {
   if (a.kind === "commission" || a.kind === "refine" || a.kind === "equip") {
     if (!treasureIds.includes(a.item))
       return { error: "未知器物", stones, iron, months };
-    const def = treasures[a.item],
-      rank = s.treasures.owned[a.item];
-    error ||=
-      s.realm < def.realm
-        ? "需筑基方能驾驭此器"
-        : !s.realm && s.qi < 120
-          ? "炼气中期才能驾驭辅器"
-          : "";
+    const def = treasures[a.item];
+    error ||= equipmentChangeError(s, {
+      kind: a.kind === "commission" ? "acquire" : a.kind,
+      id: a.item,
+    });
     if (a.kind === "commission") {
       stones = def.price;
       months = 1;
-      error ||= rank ? "已拥有此器" : "";
     }
     if (a.kind === "refine") {
       stones = 18;
       iron = 1;
       months = 1;
-      error ||= !s.realm
-        ? "筑基后方可精炼"
-        : rank !== 1
-          ? "需拥有尚未精炼的器物"
-          : "";
     }
-    if (a.kind === "equip")
-      error ||= !rank
-        ? "尚未拥有此器"
-        : s.treasures.equipped === a.item
-          ? "已装配"
-          : "";
   } else if (a.kind === "unequip")
-    error ||= !s.treasures.equipped ? "未装配辅器" : "";
+    error ||= equipmentChangeError(s, { kind: "unequip", slot: "auxiliary" });
   else if (a.kind === "catalog") {
     error ||= !["market", "foundation"].includes(a.venue)
       ? "未知会场"
@@ -152,24 +141,26 @@ export function runTreasure(
   const quote = treasureQuote(input, a);
   if (quote.error) return input;
   let s = structuredClone(input);
-  for (let m = 0; m < quote.months; m++) {
-    s = tick(s);
-    if (s.status !== "alive" || s.pending || s.social.scene) {
+  const elapsed = advanceMonths(s, quote.months, { tick, interrupt: s => (s.status !== "alive" || s.pending || s.social.scene) ? "interrupted" : "" });
+  s = elapsed.state;
+  if (elapsed.stopped) {
       s.treasures.last = "行程中断，未扣灵石材料，也未领取拍品或器物。";
       return finish();
-    }
+
   }
   const t = s.treasures;
   if (a.kind === "commission" || a.kind === "refine") {
-    s.stones -= quote.stones;
-    s.workshop.iron -= quote.iron;
-    t.owned[a.item]++;
+    if (settleResources(s, { stones: quote.stones, iron: quote.iron }).error) return input;
+    applyEquipmentChange(s, {
+      kind: a.kind === "commission" ? "acquire" : "refine",
+      id: a.item,
+    });
     t.last = `${treasures[a.item].name}${a.kind === "refine" ? "精炼完成" : "已收入储物袋"}，花费灵石 ${quote.stones}。装配后才生效。`;
   } else if (a.kind === "equip") {
-    t.equipped = a.item;
+    applyEquipmentChange(s, { kind: "equip", id: a.item });
     t.last = `已装配${treasures[a.item].name}。${treasures[a.item].hint}`;
   } else if (a.kind === "unequip") {
-    t.equipped = null;
+    applyEquipmentChange(s, { kind: "unequip", slot: "auxiliary" });
     t.last = "已卸下辅器。";
   } else if (a.kind === "catalog") {
     const gear = treasureIds.filter(
@@ -224,11 +215,11 @@ export function runTreasure(
         l.price = offer;
         l.paid = offer;
         l.result = "won";
-        s.stones -= offer;
+        if (settleResources(s, { stones: offer }).error) return input;
         if (treasureIds.includes(l.item as Treasure))
-          t.owned[l.item as Treasure] = 1;
+          applyEquipmentChange(s, { kind: "acquire", id: l.item as Treasure });
         else if (bookIds.includes(l.item as Technique))
-          s.journey.known.push(l.item as Technique);
+          grantTechnique(s, l.item as Technique);
         else if (l.item === "ward") s.workshop.ward++;
         else s.growth.medicines[l.item as "healing" | "clarity"]++;
         t.last = `${lotInfo(l.item).name}以 ${offer} 灵石落槌，已交付。`;

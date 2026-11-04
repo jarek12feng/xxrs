@@ -1,3 +1,4 @@
+import { grantTechnique } from "../techniques";
 import { plans } from "./content";
 import type { State } from "../world";
 
@@ -114,7 +115,7 @@ export function runCompanionship(
             "你用四份灵草调出护脉药液，顶住回流稳住阵石；尹照川守着灯讯引空船入泊。灵草 −4。",
         };
     const learned = !s.journey.known.includes("guard");
-    if (learned) s.journey.known.push("guard");
+    if (learned) grantTechnique(s, "guard");
     else s.study = Math.min(4, s.study + 2);
     n.last =
       methods[action as Method] +
@@ -147,9 +148,7 @@ export function runCompanionship(
         "护身诀留在你的功法中，后续交锋与历练都能继续使用。";
     }
   } else {
-    const revisit =
-      plans[n.plan!].result +
-      "你路过时，新接手的人正照着路簿做事。他认出你，招呼你坐下喝碗茶。";
+    const revisit = companionRevisitText(s);
     if (n.last === revisit) return input;
     n.last = revisit;
   }
@@ -178,4 +177,9 @@ export function validCompanionship(s: State): boolean {
   return q.stage === "dispute"
     ? q.plan === null
     : q.plan !== null && availablePlans(s).includes(q.plan);
+}
+
+export function companionRevisitText(s: State) {
+  return s.companionship.plan ? plans[s.companionship.plan].result +
+    "你路过时，新接手的人正照着路簿做事。他认出你，招呼你坐下喝碗茶。" : '';
 }

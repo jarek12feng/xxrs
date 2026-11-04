@@ -1,3 +1,4 @@
+import { grantTechnique } from "../techniques";
 import type { State } from "../world";
 export type PersonAction =
   | "person:scout"
@@ -148,7 +149,7 @@ export function settlePerson(s: State, a: PersonAction) {
   if (a === "reward:core-training") {
     p.core = false;
     p.smithReward = "training";
-    if (!s.journey.known.includes("guard")) s.journey.known.push("guard");
+    if (!s.journey.known.includes("guard")) grantTechnique(s, "guard");
     s.growth.training.guard = 2;
     q.last =
       "裴铸与你拆解阵枢，将古傀卸力之法化入护身诀。护身诀已通达；装配为辅修后，可在接下来的交锋中减伤。";

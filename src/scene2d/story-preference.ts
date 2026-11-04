@@ -16,3 +16,11 @@ export function readStoryPreference(s: State, storage: StoragePort): string {
 export function writeStoryPreference(s: State, chapter: StoryChapter, storage: StoragePort) {
   try { storage.setItem(key, JSON.stringify({snapshot: snapshot(s), chapter})); } catch { /* Storage preferences must never block play. */ }
 }
+
+// Carry the view across a successfully saved command, including while scenes are unmounted.
+// Loading a different snapshot still requires an exact match.
+export function advanceStoryPreference(before: State, after: State, storage: StoragePort) {
+  const chapter = readStoryPreference(before, storage);
+  const available = storyChapters(after).find(c => c.id === chapter);
+  if (available) writeStoryPreference(after, available.id, storage);
+}

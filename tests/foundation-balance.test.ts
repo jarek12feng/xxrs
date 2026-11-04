@@ -127,6 +127,7 @@ it("blade bonuses require setup; old battle rules retain their original style an
     damage: 0,
     incoming: 0,
     note: "",
+    effects: [],
   });
   s.journey.main = "breath";
   expect(foundationExchange(s, "discern")!.note).toContain("伤害 +7");

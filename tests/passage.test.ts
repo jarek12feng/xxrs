@@ -94,9 +94,9 @@ it("validates route ownership, mutually exclusive travel and old v32 pending inl
   const { passage: _, ...wayfaring } = s.wayfaring;
   const old = { ...s, version: 32, wayfaring };
   const upgraded = migrateSave(old);
-  expect(upgraded.version).toBe(33);
+  expect(upgraded.version).toBe(34);
   expect(upgraded.wayfaring.passage).toBeNull();
   expect(upgraded.wayfaring.swordFlight).toBe(s.wayfaring.swordFlight);
   expect(old.version).toBe(32);
-  expect(() => migrateSave({ ...s, version: 34 })).toThrow();
+  expect(() => migrateSave({ ...s, version: 35 })).toThrow();
 });

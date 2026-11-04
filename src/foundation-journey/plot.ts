@@ -1,3 +1,4 @@
+import { grantTechnique } from "../techniques";
 import { maleMainline } from "./heroine";
 import type { State } from "../world";
 import { revisit, chapterEnding } from "./aftermath";
@@ -28,7 +29,7 @@ export function advancePlot(s: State, a: JourneyAction) {
     case "inherit":
       q.inheritance = a.technique;
       if (!s.journey.known.includes(a.technique))
-        s.journey.known.push(a.technique);
+        grantTechnique(s, a.technique);
       s.growth.training[a.technique] = 2;
       q.last = `${{ spring: "长春续脉", blade: "剑经分流", breath: "归元定枢" }[a.technique]}传承已领悟，对应主修研修至通达。装配它，在筑基挑战使用${{ spring: "守势", blade: "反击", breath: "辨影" }[a.technique]}时额外伤害 +4、承伤 −2。你循着古院铭记走完一遍行功路线，曾经淤在腕脉的灵息顺着指尖散开。门外却响起了催你登记名籍的铜铃。出口执卫是筑基中期，装配传承后可尝试越阶，也可先修到同阶再来。`;
       return;
@@ -97,7 +98,7 @@ export function advancePlot(s: State, a: JourneyAction) {
       }
       if (a.side === "snow") {
         if (!s.journey.known.includes("lantern"))
-          s.journey.known.push("lantern");
+          grantTechnique(s, "lantern");
         s.growth.training.lantern = Math.min(2, s.growth.training.lantern + 1);
         q.last +=
           "你把雪中辨认阵痕的心得记入照夜篇。照夜篇已习得，研修提升一阶（上限通达）。";

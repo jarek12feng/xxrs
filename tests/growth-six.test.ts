@@ -12,7 +12,7 @@ import {
   type Intent,
   type PassSolution,
 } from "../src/core";
-import { readiness } from "../src/expedition/combat";
+import { readiness } from "../src/combat/game";
 import { turnPreview } from "../src/social";
 import { actionReceipt } from "../src/action-feedback";
 import { automaticPause, preparationValues } from "../src/cultivation-feedback";

@@ -3,7 +3,7 @@ import { outerSeaCheckpoint, seaPlayer } from "../tools/outer-sea-checkpoint";
 import { dispatch, validState, migrateSave } from "../src/core";
 import { seaFoe, seaQuote } from "../src/outer-sea/rules";
 import {currentLandmark,routeNodes} from "../src/landmarks";
-import { readiness, tacticalExchange } from "../src/expedition/combat";
+import { readiness, tacticalPreview } from "../src/combat/game";
 import { cultivationProjection } from "../src/cultivation";
 const start = outerSeaCheckpoint();
 function trip(pact: "share" | "private", reward: "seal" | "manual") {
@@ -104,7 +104,12 @@ describe("外海开篇", () => {
     p.send({ type: "outerSea", action: { kind: "method", method: "clear" } });
     expect(readiness(p.state).damage).toBe(a.damage - 3);
     expect(readiness(p.state).armor).toBe(a.armor + 4);
-    expect(tacticalExchange(p.state,"guard",seaFoe(1),{hp:20,enemy:185,turn:1},"")!.healing).toBe(0);
+    expect(tacticalPreview(p.state, {
+move: "guard",
+encounter: seaFoe(1),
+battle: {hp:20,enemy:185,turn:1},
+effect: ""
+})!.healing).toBe(0);
     expect(p.state.journey.known).toEqual(known);
     expect(p.state.growth.training).toEqual(training);
   });

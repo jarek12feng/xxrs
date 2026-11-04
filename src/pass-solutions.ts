@@ -1,3 +1,4 @@
+import { hasEquippedRelic } from "./equipment";
 import type { State } from "./world";
 import type { PassSolution } from "./road";
 
@@ -83,7 +84,7 @@ export function passActionError(s: State, action: PassAction): string {
     if (s.herbs < 6) return "需要灵草 6 温养镇风草";
   }
   if (key === "sword") {
-    if (s.mastery < 4 && s.journey.equipped !== "sword")
+    if (s.mastery < 4 && !hasEquippedRelic(s, 1, "sword"))
       return "需要剑意 4，或炼制并装配听松灵剑";
     if (s.foundation < 12) return "需要根基 12 稳住断崖";
   }

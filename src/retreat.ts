@@ -1,3 +1,5 @@
+import { limitBySchedule } from "./timeline";
+import { seaSchedule } from "./outer-sea/calendar";
 import {
   cultivationProjection,
   cultivationStageIndex,
@@ -35,19 +37,13 @@ export function retreatPlan(
   target?: number,
 ) {
   const duration = retreatDurations(s).find((x) => x.pace === pace);
-  const untilMeeting = s.realm === 2 && s.month !== undefined &&
-    s.outerSea?.notice != null && !s.outerSea.reminded
-    ? s.outerSea.notice + 600 - s.month
-    : null;
-  const limit = untilMeeting !== null && untilMeeting > 0
-    ? Math.min(duration?.months ?? 0, untilMeeting)
-    : duration?.months ?? 0;
+  const schedule = limitBySchedule(s.month ?? 0, duration?.months ?? 0, s.realm === 2 && s.month !== undefined ? seaSchedule(s) : []);
+  const limit = schedule.months;
   const forecast = cultivationProjection(s, target, limit);
   return {
     ...forecast,
     duration: duration?.months ?? 0,
-    stopsForMeeting: untilMeeting !== null && untilMeeting > 0 &&
-      forecast.batchMonths === untilMeeting,
+    stopsForMeeting: !!schedule.event && forecast.batchMonths === schedule.months,
     exitAge: s.age + forecast.batchMonths,
     remainingAtExit: forecast.remainingMonths - forecast.batchMonths,
     reachesTarget:

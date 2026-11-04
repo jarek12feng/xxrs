@@ -1,7 +1,10 @@
-import { equipmentPower } from "./workshop/equipment";
-import { hasMainlineMeeting, mainlineRomanceReady } from "./foundation-journey/heroine";
-import { temperEffect } from "./workshop/combat";
-import { realmPressure } from "./realm-pressure";
+import { grantTechnique } from "./techniques";
+import { previewArenaAction, resolveArenaAction } from "./combat";
+import { arenaContext } from "./combat/game";
+import {
+  hasMainlineMeeting,
+  mainlineRomanceReady,
+} from "./foundation-journey/heroine";
 import { companionScene } from "./companion-scenes";
 import {
   availableOrigins,
@@ -10,7 +13,6 @@ import {
   companionBackground,
   type Origin,
 } from "./companion-origins";
-import { mainTraining, supportTraining } from "./growth";
 import type { State } from "./world";
 import type { EventView } from "./chapter";
 
@@ -159,7 +161,12 @@ export const companion = (s: State) =>
   s.social.gender ? companions[s.social.gender] : null;
 export function relationship(s: State) {
   const r = s.social;
-  if(hasMainlineMeeting(s) && !r.bonded) return s.foundationJourney.reunion ? "相知" : s.foundationJourney.heroine.route !== "none" ? "同道相契" : "相识";
+  if (hasMainlineMeeting(s) && !r.bonded)
+    return s.foundationJourney.reunion
+      ? "相知"
+      : s.foundationJourney.heroine.route !== "none"
+        ? "同道相契"
+        : "相识";
   return r.bonded
     ? "两心相许"
     : r.memories.length === 3 && r.affection >= 50
@@ -172,8 +179,12 @@ export function relationship(s: State) {
 }
 export function relationshipGoal(s: State) {
   if (!s.social.gender) return "请先在人物页选择角色性别，再去山门外相识。";
-  if (s.social.gender === "male" && !s.social.met) return "筑基后重返青嶂，与苏婉宁合力开路。";
-  if (hasMainlineMeeting(s)) return mainlineRomanceReady(s) ? "共同历险后已按约重逢；成年后可表达心意，也可继续同道。" : "与她同行历练，修订路图，再约重逢之期。";
+  if (s.social.gender === "male" && !s.social.met)
+    return "筑基后重返青嶂，与苏婉宁合力开路。";
+  if (hasMainlineMeeting(s))
+    return mainlineRomanceReady(s)
+      ? "共同历险后已按约重逢；成年后可表达心意，也可继续同道。"
+      : "与她同行历练，修订路图，再约重逢之期。";
   if (s.age < 216)
     return "成年并筑基后，可在山门外结识新的同行者。眼下先走好自己的修行路。";
   if (!s.social.met && s.realm < 1)
@@ -370,67 +381,8 @@ export function duelIntent(s: State): Stance | null {
 export function turnPreview(s: State, stance: Stance) {
   const d = s.social.arena.duel;
   if (!d) return null;
-  const correct = duelIntent(s) === stance;
-  const skill = s.journey.main,
-    support = s.journey.support;
-  let damage =
-    mainTraining(s) * 2 +
-    (stance === "endure" ? -2 : 0) +
-    (correct ? 8 : 3) +
-    Math.floor((s.root + s.sense + s.study + s.mastery) / 8) +
-    equipmentPower(s).damage +
-    (stance === "break" && skill === "blade" ? 4 : 0) +
-    (stance === "discern" && skill === "breath" ? 3 : 0) +
-    (stance === "discern" && support === "lantern" ? 3 : 0);
-  let incoming = Math.max(
-    1,
-    rivals[d.opponent].attack +
-      Math.floor(d.turn / 3) * 2 +
-      (stance === "break" && skill === "blade" ? 2 : 0) -
-      (stance === "discern" && skill === "breath" ? 2 : 0) -
-      supportTraining(s) -
-      (stance === "endure" ? 6 : 0) +
-      (correct ? 0 : 5) -
-      (support === "guard" ? 2 : 0) -
-      equipmentPower(s).armor,
-  );
-  const temper = temperEffect(
-    s,
-    stance === "break" ? "strike" : stance === "endure" ? "guard" : "discern",
-    correct,
-  );
-  damage += temper.damage;
-  incoming = Math.max(1, incoming + temper.incoming);
-  const pressure = realmPressure(s, rivals[d.opponent]);
-  damage = Math.max(1, Math.floor(damage * pressure.damageFactor));
-  incoming += pressure.incomingExtra;
-  const heal =
-    (stance === "endure" && skill === "spring" && s.herbs > 0 ? 6 : 0) +
-    (support === "herb" ? 1 : 0);
-  const firstStrike = stance === "break" && skill === "blade";
-  const incomingRange = [0, 1, 2].map((variation) =>
-    firstStrike && Math.max(1, damage) + variation >= d.enemyHp
-      ? 0
-      : incoming + 2 - variation,
-  );
-  return {
-    correct,
-    incomingMin: Math.min(...incomingRange),
-    incomingMax: Math.max(...incomingRange),
-    damage: Math.max(1, damage),
-    incoming,
-    heal,
-    herbs: stance === "endure" && skill === "spring" && s.herbs > 0 ? 1 : 0,
-    firstStrike,
-  };
-}
-function random(s: State) {
-  let x = s.seed;
-  x ^= x << 13;
-  x ^= x >>> 17;
-  x ^= x << 5;
-  s.seed = x >>> 0 || 1;
-  return s.seed / 4294967296;
+  const context = arenaContext(s, stance, rivals[d.opponent])!;
+  return previewArenaAction(context);
 }
 function finishDuel(s: State, win: boolean, withdrawal = false) {
   const a = s.social.arena,
@@ -438,7 +390,7 @@ function finishDuel(s: State, win: boolean, withdrawal = false) {
   if (win) {
     const reward = (["breath", "guard", "lantern"] as const)[d.opponent];
     const duplicate = s.journey.known.includes(reward);
-    if (!duplicate) s.journey.known.push(reward);
+    if (!duplicate) grantTechnique(s, reward);
     else s.stones += 12;
     s.stones += [8, 12, 20][d.opponent];
     a.wins++;
@@ -497,10 +449,6 @@ export function dispatchSocial(
   const travel = () => {
     s = elapse(s);
     if (s.status !== "alive") return false;
-    s.stones -= 4;
-    s.log = s.log.filter(
-      (l) => !(l.month === s.month && l.text === "山下劳作，额外灵石 +4。"),
-    );
     return !s.pending;
   };
   switch (c.type) {
@@ -519,13 +467,13 @@ export function dispatchSocial(
       open(s, "background");
       return accept();
     case "identity":
-      if(c.gender === "male" && s.foundationJourney.ferry > 0) return input;
+      if (c.gender === "male" && s.foundationJourney.ferry > 0) return input;
       if (s.social.gender !== null || !["male", "female"].includes(c.gender))
         return input;
       s.social.gender = c.gender;
       return accept();
     case "visit":
-      if(s.social.gender === "male") return input;
+      if (s.social.gender === "male") return input;
       if (!s.social.gender || s.social.met || s.age < 216 || s.realm < 1)
         return input;
       if (!travel()) return accept();
@@ -542,10 +490,11 @@ export function dispatchSocial(
       open(s, c.outing);
       return accept();
     case "confess":
-      if(s.social.gender === "male" && !mainlineRomanceReady(s)) return input;
+      if (s.social.gender === "male" && !mainlineRomanceReady(s)) return input;
       if (
         !s.social.met ||
-        (!mainlineRomanceReady(s) && (s.social.memories.length !== 3 || s.social.affection < 50)) ||
+        (!mainlineRomanceReady(s) &&
+          (s.social.memories.length !== 3 || s.social.affection < 50)) ||
         s.social.bonded ||
         s.age < 216
       )
@@ -626,26 +575,21 @@ export function dispatchSocial(
     case "arenaTurn": {
       const d = s.social.arena.duel;
       if (!d || !Object.hasOwn(stances, c.stance)) return input;
-      const p = turnPreview(s, c.stance)!;
-      const variation = Math.floor(random(s) * 3),
-        damage = p.damage + variation,
-        incoming =
-          p.firstStrike && damage >= d.enemyHp
-            ? 0
-            : p.incoming + (2 - variation);
-      d.enemyHp = Math.max(0, d.enemyHp - damage);
-      d.hp = Math.max(0, d.hp - incoming);
-      const healing = d.hp > 0 ? Math.min(d.maxHp - d.hp, p.heal) : 0;
-      if (healing > 0) {
-        d.hp += healing;
-        s.herbs -= p.herbs;
-      }
-      d.turn++;
+      const result = resolveArenaAction(
+        arenaContext(s, c.stance, rivals[d.opponent])!,
+        s.seed,
+      );
+      const { damage, incoming, healing } = result;
+      const p = result;
+      d.enemyHp = result.battle.enemy;
+      d.hp = result.battle.hp;
+      d.turn = result.battle.turn;
+      s.seed = result.seed;
+      s.herbs -= result.herbs;
       d.log.push(
         `第${d.turn}合${stances[c.stance]}${p.correct ? "应对得当" : "未破招"}${p.firstStrike && incoming === 0 ? "，剑经抢先收势，对手未及反击" : ""}：对手气势 −${damage}，自身气势 −${incoming}${healing ? `，调息 +${healing}${p.herbs ? "、灵草 −1" : ""}` : ""}。`,
       );
-      if (d.hp === 0 || d.enemyHp === 0 || d.turn === 6)
-        finishDuel(s, d.enemyHp === 0 && d.hp > 0);
+      if (result.outcome !== "ongoing") finishDuel(s, result.outcome === "win");
       return accept();
     }
     case "arenaWithdraw":
@@ -676,14 +620,23 @@ export function validSocial(s: State): boolean {
     return false;
   if (
     r.met
-      ? !r.gender || !int(r.metMonth, s.month) || (s.age < 216 && !hasMainlineMeeting(s)) || r.affection < 8
+      ? !r.gender ||
+        !int(r.metMonth, s.month) ||
+        (s.age < 216 && !hasMainlineMeeting(s)) ||
+        r.affection < 8
       : r.metMonth !== null ||
         r.affection !== 0 ||
         r.memories.length > 0 ||
         r.bonded
   )
     return false;
-  if (r.bonded && (s.age < 216 || (!mainlineRomanceReady(s) && (r.memories.length !== 3 || r.affection < 50)))) return false;
+  if (
+    r.bonded &&
+    (s.age < 216 ||
+      (!mainlineRomanceReady(s) &&
+        (r.memories.length !== 3 || r.affection < 50)))
+  )
+    return false;
   if (
     Number(s.version) >= 15 &&
     (!Array.isArray(r.origins) ||
@@ -780,7 +733,9 @@ export function validSocial(s: State): boolean {
       return false;
     if (
       r.scene.kind === "pledge" &&
-      ((!mainlineRomanceReady(s) && (r.memories.length !== 3 || r.affection < 50)) || r.bonded)
+      ((!mainlineRomanceReady(s) &&
+        (r.memories.length !== 3 || r.affection < 50)) ||
+        r.bonded)
     )
       return false;
   }

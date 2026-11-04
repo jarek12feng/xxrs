@@ -1,4 +1,8 @@
-import type { State, Intent } from "../world";
+import { additionalStoryRoute, additionalArrival } from "./additional-story";
+import { createTravelEngine } from './engine';
+import { travelProfile } from './profile';
+import { travelSpeeds } from './geography';
+import { explorationError, places, type State, type Intent } from "../world";
 import { adventureOptions } from "../adventure";
 import { mistError } from "../mist";
 import { qiError } from "../qi-journey/rules";
@@ -7,6 +11,11 @@ import { roadError } from "../road";
 import { goldenQuote } from "../golden-core/rules";
 import { seaQuote } from "../outer-sea/rules";
 import { conclaveQuote } from "../conclave/rules";
+import { pactQuote } from "../secret-pact/rules";
+import { contestError } from "../sect-contest/rules";
+import { expeditionError } from "../expedition/rules";
+import { encounters } from "../expedition/content";
+import { preparationRoutes, type PreparationRoute } from "../qi-journey/preparation";
 import { passageIntent } from "./passage";
 export interface MapSite {
   id: string;
@@ -41,7 +50,7 @@ const dew: MapSite[] = [
   { id: "path", name: "凝露药圃", x: 760, y: 190 },
 ];
 export interface StoryRoute {
-  domain: "opening" | "road" | "mist" | "qi" | "golden" | "sea" | "conclave";
+  domain: "opening" | "road" | "mist" | "qi" | "golden" | "sea" | "conclave" | "pact" | "contest" | "escort" | "valley" | "peak" | "oldSea" | "relic" | "social" | "companion" | "arena" | "service";
   intent: Intent;
   from: string;
   to: string;
@@ -58,6 +67,10 @@ export interface StoryRoute {
   mode: "walk" | "flight" | "sail";
 }
 export function storyLocation(s: State, domain: StoryRoute["domain"]) {
+  if (domain === "valley" || domain === "peak" || domain === "oldSea") return s.journey.maps[domain === "oldSea" ? "sea" : domain] ? "site" : "home";
+  if (domain === "pact") return ["inside", "betrayed"].includes(s.secretPact.stage) ? "inner" : "frontier";
+  if (domain === "contest") return ["entered", "finished"].includes(s.sectContest.stage) ? "court" : "home";
+  if (domain === "escort") return s.expedition.duel ? "site" : "camp";
   if (domain === "opening")
     return s.adventure.step === "home"
       ? "shrine"
@@ -80,7 +93,7 @@ export function storyLocation(s: State, domain: StoryRoute["domain"]) {
   return s.conclave.location === "away" ? "ferry" : s.conclave.location;
 }
 /** Read-only adapters reuse the same domain quotes as command settlement. No speculative dispatch/RNG. */
-export function storyRoute(s: State, intent: Intent): StoryRoute | null {
+function authoredStoryRoute(s: State, intent: Intent): StoryRoute | null {
   const base = {
     intent,
     startProgress: s.wayfaring.passage
@@ -93,6 +106,42 @@ export function storyRoute(s: State, intent: Intent): StoryRoute | null {
     mode: "walk" as const,
     note: "近郊短途，不另扣修行年月。",
   };
+  const pair = (domain: StoryRoute["domain"], title: string, from: string, to: string,
+    names: [string, string], distance: number, quote: {error:string;months?:number;stones?:number;herbs?:number}, mode: StoryRoute["mode"] = "walk"): StoryRoute => ({
+    ...base, ...quote, mode, domain, title, from, to, distance, path: [from,to],
+    sites: [{id:from,name:names[0],x:160,y:380},{id:to,name:names[1],x:780,y:190}],
+    note: "沿用本次剧情的整备与通行费用，不另加赶路月份；抵达后继续现场行动。",
+  });
+  if (intent.type==='explore' && s.journey.maps[intent.place]===0) {
+    return pair(intent.place==='sea'?'oldSea':intent.place,'旧事探访 · '+places[intent.place].name,'home','site',
+      [intent.place==='sea'?'雾岭旧渡':'听松山居',places[intent.place].name],intent.place==='valley'?120:intent.place==='peak'?600:900,
+      {error:explorationError(s,intent.place),months:1},intent.place==='sea'?'sail':'walk');
+  }
+  if (intent.type === "secretPact" && ["enterAnchor","enterLight","leave"].includes(intent.action)) {
+    const back=intent.action==='leave';
+    return pair('pact','云外古道 · 照玄赴约',back?'inner':'frontier',back?'frontier':'inner',
+      back?['照玄内府','古道外缘']:['古道外缘','照玄内府'],120,pactQuote(s,intent.action));
+  }
+  if (intent.type === 'sectContest' && (intent.action.kind==='enter' || (intent.action.kind==='leave' && s.sectContest.stage==='finished'))) {
+    const back=intent.action.kind==='leave';
+    return pair('contest','听松山门 · 宗门内比',back?'court':'home',back?'home':'court',
+      back?['松间石台','听松行前居']:['听松行前居','松间石台'],15,{error:contestError(s,intent.action)});
+  }
+  if (intent.type==='expedition' && ['enter','withdraw'].includes(intent.action)) {
+    const back=intent.action==='withdraw';
+    const encounter=encounters[s.expedition.cleared];
+    if(!encounter)return null;
+    return pair('escort','青嶂药路 · '+encounter.name,back?'site':'camp',back?'camp':'site',
+      back?[encounter.name,'山口行营']:['山口行营',encounter.name],s.expedition.cleared===2?60:30,
+      {error:expeditionError(s,intent.action),months:back?0:1,stones:back?0:encounter.cost});
+  }
+  if (intent.type==='qiJourney' && (/^prep:(medicine|sect|wander):trial$/.test(intent.action) || (intent.action==='withdraw' && s.qiJourney.trial))) {
+    const back=intent.action==='withdraw';
+    const route=(back?s.qiJourney.trial:intent.action.split(':')[1]) as PreparationRoute;
+    return pair('qi','听松历练 · '+preparationRoutes[route].name,back?'site':'home',back?'home':'site',
+      back?[preparationRoutes[route].name,'听松山居']:['听松山居',preparationRoutes[route].name],route==='wander'?300:120,
+      {error:qiError(s,intent.action),months:back?0:1});
+  }
   if (intent.type === "adventure") {
     const from = storyLocation(s, "opening"),
       a = intent.action;
@@ -183,8 +232,8 @@ export function storyRoute(s: State, intent: Intent): StoryRoute | null {
     const to =
       a === "accept" || a === "camp"
         ? "camp"
-        : ["garden", "station", "shrine", "home"].includes(a)
-          ? a
+        : ["garden", "station", "shrine", "home", "read"].includes(a)
+          ? a === "read" ? "home" : a
           : a === "gate"
             ? s.adventure.mist.passed
               ? "archive"
@@ -351,8 +400,29 @@ export function storyRoute(s: State, intent: Intent): StoryRoute | null {
   }
   return null;
 }
+/** Chapters supply authored endpoints, costs and eligibility; the engine owns the itinerary.
+ * Fixed chapter time already includes approach/preparation, so never add distance time twice. */
+export function storyRoute(s: State, intent: Intent): StoryRoute | null {
+  const route=additionalStoryRoute(s,intent) ?? authoredStoryRoute(s,intent);
+  if(!route)return null;
+  const traveler=travelProfile(s);
+  // Crossing the cloud wall is a golden-core capability, independent of inland sword lessons.
+  if(route.mode==='flight' && s.realm>=2)traveler.speeds.flight=travelSpeeds.goldenFlight;
+  const mode=route.mode==='walk'?'land':route.mode;
+  const engine=createTravelEngine(route.sites.map(site=>site.id),[{
+    from:route.from,to:route.to,via:route.path.slice(1,-1),mode,distance:route.distance,
+    minRealm:mode==='flight'?1:0,timing:{kind:'fixed',months:route.months},
+  }]);
+  const quote=engine.plan({from:route.from,to:route.to,mode,traveler});
+  if(!quote.ok)return {...route,error:route.error || quote.error};
+  return {...route,path:quote.plan.path,distance:quote.plan.distance,months:quote.plan.months};
+}
 export function resumedStoryRoute(s: State) {
   return s.wayfaring.passage
     ? storyRoute(s, passageIntent(s.wayfaring.passage.route))
     : null;
+}
+
+export function storyArrived(next:State,old:State,route:StoryRoute) {
+ return additionalArrival(next,old,route) ?? (storyLocation(next,route.domain)===route.to && storyLocation(old,route.domain)!==route.to);
 }

@@ -1,8 +1,10 @@
+import { grantTechnique } from "../techniques";
+import { resolveTurn, startBattle } from "../combat";
 import type { State } from "../world";
 import { expeditionIntermission } from "./progression";
 import { encounters, type Move } from "./content";
-import { readiness, exchangePreview } from "./combat";
-export { readiness } from "./combat";
+import { exchangePreview } from "./combat";
+import { readiness } from "../combat/game";
 export interface Expedition {
   accepted: boolean;
   cleared: number;
@@ -103,7 +105,7 @@ export function runExpedition(
         if (a === "healArray") s.herbs -= 4;
         complete(s);
       } else {
-        q.duel = { hp: readiness(s).hp, enemy: e.hp, turn: 0 };
+        q.duel = { ...startBattle(readiness(s).hp, e.hp) };
         q.last = e.story;
       }
     }
@@ -114,17 +116,20 @@ export function runExpedition(
       s,
       a as Move,
     )!;
-    d.enemy = Math.max(0, d.enemy - damage);
-    d.turn++;
-    s.herbs -= herbs;
+    const turn = resolveTurn(
+      d,
+      { damage, incoming, healing, herbs },
+      { turnLimit: 12, resolution: "journey" },
+    );
+    Object.assign(d, turn.battle);
+    s.herbs -= turn.herbs;
     q.effect = q.cleared === 2 || correct ? (a as Move) : "hurt";
     q.last = `第 ${d.turn} 合：${correct ? "看破招式" : q.cleared === 2 ? "变招应对" : "未能化解来招"}，敌方气势 −${damage}。${note}`;
-    if (d.enemy === 0) complete(s);
+    if (turn.outcome === "win") complete(s);
     else {
-      d.hp = Math.max(0, d.hp - incoming) + healing;
       q.last += `自身气势 −${incoming}。`;
       if (healing) q.last += `消耗灵草 ${herbs}，恢复气势 ${healing}。`;
-      if (!d.hp || d.turn >= 12) {
+      if (turn.outcome === "loss") {
         q.duel = null;
         q.effect = "loss";
         s.injury = Math.min(6, s.injury + 1);
@@ -154,7 +159,7 @@ function complete(s: State) {
   if (q.cleared === 2) q.last += e.story + expeditionIntermission(s);
   if (q.cleared === 3) {
     if (!s.journey.known.includes("guard")) {
-      s.journey.known.push("guard");
+      grantTechnique(s, "guard");
       q.last += "获得护身诀（可在功法面板装配）。";
     } else {
       s.stones += 12;

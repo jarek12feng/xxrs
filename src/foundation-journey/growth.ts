@@ -1,3 +1,4 @@
+import { hasEquippedRelic, inspectEquipment } from "../equipment";
 import type { State } from '../world';
 import type { JourneyAction, BattleId } from './state';
 import { resourceRoutes, type ResourceRoute, hasSteady } from './growth-state';
@@ -30,13 +31,13 @@ export function growthQuote(s: State, a: GrowthAction) {
     if(q.location!==r || q.ferry<4 || q.cultivation<200) error='完成离渡并修至筑基中期，到对应地点准备';
     if(a.kind==='routePrepare') {
       if(p.prepared || !['supplies','service','relic','training'].includes(a.method)) error='已完成准备，或准备方式无效';
-      if(r==='frontier' && Math.max(s.journey.relics.sword,s.journey.relics.vial)<2 && (!s.journey.main || s.growth.training[s.journey.main]<2)) error='古道需二阶灵器或通达主修，先到功法灵器准备';
+      if(r==='frontier' && Math.max(inspectEquipment(s, "sword").rank,inspectEquipment(s, "vial").rank)<2 && (!s.journey.main || s.growth.training[s.journey.main]<2)) error='古道需二阶灵器或通达主修，先到功法灵器准备';
       if(a.method==='supplies'){herbs=r==='estate'?3:2;ward=1;stones=2;}
       else if(a.method==='service') stones=r==='estate'?32:30;
       else if(a.method==='relic' || a.method==='training') {
         stones=2;
         if(r!=='snow') error='只有雪线可用灵器或通达功法替代护寒药';
-        else if(a.method==='relic' && (!s.journey.equipped || s.journey.relics[s.journey.equipped]<2)) error='先装配二阶灵器，以器光隔开寒流';
+        else if(a.method==='relic' && (!hasEquippedRelic(s, 2))) error='先装配二阶灵器，以器光隔开寒流';
         else if(a.method==='training' && (!s.journey.main || s.growth.training[s.journey.main]<2)) error='先装配通达主修，再调息适应寒流';
         if(a.method==='training')months=6;
       }

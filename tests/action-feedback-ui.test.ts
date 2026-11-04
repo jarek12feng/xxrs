@@ -255,6 +255,8 @@ it("NPC choices have a named response, affection and memory before returning to 
   await mount(mistCheckpoint());
   await click("人物关系");
   await click("赴约 · 一月");
+  await click("动身前往");
+  await click("进入目的地");
   await click("用研读所得标出安全通路");
   expect(document.querySelector(".action-feedback.playing")).toBeNull();
   const dialog = document.querySelector("[role=dialog]");
@@ -273,6 +275,8 @@ it("NPC response is not fabricated on save failure", async () => {
   await mount(mistCheckpoint());
   await click("人物关系");
   await click("赴约 · 一月");
+  await click("动身前往");
+  await click("进入目的地");
   vi.mocked(save).mockRejectedValueOnce(new Error("保存失败"));
   await click("用研读所得标出安全通路");
   expect(document.querySelector(".reply-person")).toBeNull();
@@ -289,6 +293,8 @@ it("combat shows damage at the controls, gates rapid follow-up and keeps the fin
   await click("听松擂台");
   await click("炼气组");
   await click("登台挑战");
+  await click("动身前往");
+  await click("进入目的地");
   await vi.advanceTimersByTimeAsync(650);
   await click("破势");
   expect(document.querySelector(".combat-receipt")?.textContent).toContain(
@@ -305,17 +311,21 @@ it("combat shows damage at the controls, gates rapid follow-up and keeps the fin
     await vi.advanceTimersByTimeAsync(650);
     await click(i === 0 ? "破势" : "守息");
   }
-  expect(document.querySelector("[role=dialog]")).not.toBeNull();
-  await click("跳过演出");
-  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
-    "初登试剑榜",
-  );
-  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
-    "归元息",
-  );
-  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
-    "赛后邀约",
-  );
+  // The saved victory receipt is above the presentation-only return map.
+  const resultDialog = document.querySelector<HTMLElement>(".feedback-layer [role=dialog]")!;
+  expect(resultDialog).not.toBeNull();
+  const skip = [...resultDialog.querySelectorAll("button")].find(b => b.textContent?.includes("跳过演出"))!;
+  skip.click();
+  await flush();
+  expect(resultDialog.textContent).toContain("初登试剑榜");
+  expect(resultDialog.textContent).toContain("归元息");
+  expect(resultDialog.textContent).toContain("赛后邀约");
+  const savesAfterBattle = vi.mocked(save).mock.calls.length;
+  await click("知晓结果");
+  expect(document.querySelector(".story-travel")).not.toBeNull();
+  await click("进入目的地");
+  expect(document.querySelector(".story-travel")).toBeNull();
+  expect(save).toHaveBeenCalledTimes(savesAfterBattle);
 });
 it("an expanded ordinary receipt stays readable beyond the toast timeout", async () => {
   await mount();

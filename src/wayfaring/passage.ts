@@ -1,3 +1,4 @@
+import { advanceJourney } from './engine';
 import type { State, Intent } from "../world";
 /** Long sea journeys retain their own command and remaining time across events/reloads.
  * No second position is stored: the chapter remains at its last safe origin. */
@@ -98,11 +99,13 @@ export function advancePassage(
     total: passageTotal(s, route),
     remaining: passageTotal(s, route),
   };
-  while (s.wayfaring.passage!.remaining > 0) {
-    s = tick(s);
-    s.wayfaring.passage!.remaining--;
-    if (interrupted(s)) return { state: s, stopped: true };
-  }
+  const result=advanceJourney(s,{
+    remaining:n=>n.wayfaring.passage!.remaining,
+    consume:n=>{n.wayfaring.passage!.remaining--;},tick,
+    interrupted:(_before,n)=>interrupted(n),
+  });
+  s=result.state;
+  if(result.stopped)return result;
   s.wayfaring.passage = null;
   return { state: s, stopped: false };
 }

@@ -3,7 +3,8 @@ import { computed, ref, watch } from "vue";
 import NarrativeStage from "./NarrativeStage.vue";
 import type { State } from "../core";
 import { techniques } from "../core";
-import { tacticalExchange, combatStyle } from "../expedition/combat";
+import { combatStyle } from "../combat/game";
+import { tacticalPreview } from "../combat/game";
 import { characterArt, heroArt } from "../presentation/art";
 import type { Move } from "../expedition/content";
 const props = withDefaults(
@@ -36,25 +37,26 @@ const moves = [
 // Read-only demonstration against a clearly labelled practice target. No command, cost or reward.
 const result = computed(() =>
   move.value
-    ? tacticalExchange(
-        props.game,
-        move.value,
-        { hp: 100, attack: 12, pattern: ["guard"] },
-        { hp: 16, enemy: 100, turn: 0 },
-        "",
-        false,
-      )
+    ? tacticalPreview(props.game, {
+        move: move.value,
+        encounter: { hp: 100, attack: 12, pattern: ["guard"] },
+        battle: { hp: 16, enemy: 100, turn: 0 },
+        effect: "",
+        arrayCore: false,
+      })
     : null,
 );
 const basic = computed(() =>
   move.value
-    ? tacticalExchange(
+    ? tacticalPreview(
         { ...props.game, journey: { ...props.game.journey, main: null } },
-        move.value,
-        { hp: 100, attack: 12, pattern: ["guard"] },
-        { hp: 16, enemy: 100, turn: 0 },
-        "",
-        false,
+        {
+          move: move.value,
+          encounter: { hp: 100, attack: 12, pattern: ["guard"] },
+          battle: { hp: 16, enemy: 100, turn: 0 },
+          effect: "",
+          arrayCore: false,
+        },
       )
     : null,
 );

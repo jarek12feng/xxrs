@@ -383,6 +383,8 @@ it("completes the companion field test through persisted UI commands and the act
   await flush();
   button("商量这次同行").click();
   await flush();
+  button("进入目的地").click();
+  await flush();
   document.querySelector<HTMLButtonElement>('.companionship-panel [data-hotspot="route"]')!.click();
   await flush();
   button("辨认回流阵眼").click();

@@ -1,6 +1,12 @@
+import { inspectInteraction } from "../story-interactions";
+import { settleResources } from "../economy";
+import { quoteMedicineUse } from "../medicines";
+import { advanceMonths } from "../timeline";
+import { goldenChance, goldenBreakthroughError, goldenSuccess } from "../progression";
+import { resolveTurn, startBattle } from "../combat";
 import type { State } from "../world";
 import type { Move } from "../expedition/content";
-import { tacticalExchange } from "../expedition/combat";
+import { tacticalPreview } from "../combat/game";
 import { foundationPower } from "../foundation-journey/combat";
 export type GoldenAction =
   | {
@@ -48,17 +54,7 @@ const occupied = (s: State) =>
   !!s.qiJourney.node ||
   !!s.sectContest.duel ||
   !!(s.treasures.auction?.entered && !s.treasures.auction.closed);
-export function goldenChance(s: State) {
-  return Math.min(
-    100,
-    55 +
-      Math.floor(s.foundation / 2) +
-      (s.journey.main ? s.growth.training[s.journey.main] * 4 : 0) +
-      (s.goldenCore.site === "none" ? 0 : s.goldenCore.site === "repaired" ? 8 : 12) +
-      (s.goldenCore.guard ? 15 : 0) +
-      Math.min(10, s.goldenCore.attempts * 5),
-  );
-}
+export { goldenChance } from "../progression";
 export function goldenFoe(s: State) {
   const shared = s.goldenCore.route === "share";
   return {
@@ -75,15 +71,14 @@ export const goldenTells = [
 ];
 export function goldenExchange(s: State, move: Move) {
   return s.goldenCore.duel
-    ? tacticalExchange(
-        s,
-        move,
-        goldenFoe(s),
-        s.goldenCore.duel,
-        s.goldenCore.duel.effect,
-        true,
-        foundationPower(s),
-      )
+    ? tacticalPreview(s, {
+        move: move,
+        encounter: goldenFoe(s),
+        battle: s.goldenCore.duel,
+        effect: s.goldenCore.duel.effect,
+        arrayCore: true,
+        power: foundationPower(s),
+      })
     : null;
 }
 export function goldenQuote(s: State, a: GoldenAction) {
@@ -181,18 +176,7 @@ export function goldenQuote(s: State, a: GoldenAction) {
     if (g.guard) error ||= "本次凝丹护持已备妥";
   } else if (a.kind === "break") {
     months = 6;
-    if (g.champion === "pending") error ||= "先选取已获得的魁首培养，再行凝丹";
-    if (
-      q.cultivation !== 600 ||
-      !q.epilogue ||
-      !q.condensation ||
-      !q.won.includes("culmination")
-    )
-      error ||= "先完成稳脉、贯流与长风归流，修至圆满并归山";
-    if (!g.pills)
-      error ||= "每次叩关需一枚凝丹丹药；可由大比或药圃取得主药后炼制";
-    if (g.site === "none") error ||= "先租用、修复或领取一处凝丹灵地";
-    if (s.injury) error ||= "先静养至伤势归零，再行凝丹";
+    error ||= goldenBreakthroughError(s);
   } else if (a.kind === "farShore") {
     months = 1;
     if (s.realm !== 2 || g.farShore) error ||= "金丹初成后可首次越过云壁";
@@ -249,19 +233,18 @@ export function runGolden(
   id: string,
   tick: (s: State) => State,
 ): State {
-  const cost = goldenQuote(input, a);
-  if (cost.error) return input;
+  const offer = inspectInteraction(input, a, goldenQuote);
+  if (!offer.available) return input;
+  const cost = offer.quote;
   let s = structuredClone(input);
-  for (let i = 0; i < cost.months; i++) {
-    s = tick(s);
-    if (occupied(s)) {
+  const elapsed = advanceMonths(s, cost.months, { tick, interrupt: s => (occupied(s)) ? "interrupted" : "" });
+  s = elapsed.state;
+  if (elapsed.stopped) {
       record("行程中断，尚未扣除物资；处理眼前事件后可继续筹备。");
       return finish();
-    }
+
   }
-  s.stones -= cost.stones;
-  s.herbs -= cost.herbs;
-  s.workshop.ward -= cost.ward;
+  if (settleResources(s, { stones: cost.stones, herbs: cost.herbs, ward: cost.ward }).error) return input;
   const g = s.goldenCore;
   if (a.kind === "champion") {
     g.champion = a.reward;
@@ -290,25 +273,27 @@ export function runGolden(
   }
   if (a.kind === "fight") {
     const f = goldenFoe(s);
-    g.duel = { hp: foundationPower(s).hp, enemy: f.hp, turn: 0, effect: "" };
+    g.duel = { ...startBattle(foundationPower(s).hp, f.hp), effect: "" };
     record("守药石偶抬起双臂。最多十六合；败退伤势 +1，主动撤回不加伤。");
   }
   if (a.kind === "move") {
     const p = goldenExchange(s, a.move)!,
       d = g.duel!;
-    s.herbs -= p.herbs;
-    d.enemy = Math.max(0, d.enemy - p.damage);
-    d.hp = Math.max(0, d.hp - p.incoming + p.healing);
-    d.turn++;
+    const turn = resolveTurn(d, p, {
+      turnLimit: 16,
+      resolution: "simultaneous",
+    });
+    Object.assign(d, turn.battle);
+    s.herbs -= turn.herbs;
     d.effect = a.move;
     record(
       `破阵 ${p.damage}、承伤 ${p.incoming}${p.healing ? `，耗草 ${p.herbs} 回气 ${p.healing}` : ""}。${p.note}`,
     );
-    if (!d.enemy) {
+    if (turn.outcome === "win") {
       g.duel = null;
       g.expedition = "won";
       record("石偶停止追击，药床显露。凝露芝心就在眼前，取药归山后可炼丹。");
-    } else if (!d.hp || d.turn >= 16) {
+    } else if (turn.outcome === "loss") {
       g.duel = null;
       g.expedition = "idle";
       g.route = "none";
@@ -367,7 +352,7 @@ export function runGolden(
   }
   if (a.kind === "break") {
     const chance = goldenChance(s);
-    g.pills--;
+    g.pills = quoteMedicineUse("goldenCore", { scene: "golden-breakthrough", count: g.pills, month: s.month }).remaining;
     g.guard = false;
     g.attempts++;
     g.lastChance = chance;
@@ -379,9 +364,7 @@ export function runGolden(
     g.lastRoll = Math.floor((s.seed / 4294967296) * 100) + 1;
     if (g.lastRoll <= chance) {
       g.formedAt = s.month;
-      s.realm = 2;
-      s.limit += 300 * 12;
-      s.cultivationRemainder = 0;
+      Object.assign(s, goldenSuccess(s));
       record(
         `丹元凝成，金丹前期。判定 ${g.lastRoll}/100，成功把握 ${chance}%。寿元总上限基准 500 年，既有减寿保留。你已能以丹元护体穿过云壁，独自走到云外石台。`,
       );

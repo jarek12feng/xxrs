@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { equipmentCategoryLabel } from "./equipment";
+import { medicineCategoryLabel } from "./medicines";
 import TreasurePanel from "./treasures/TreasurePanel.vue";
 import GrowthPreview from "./GrowthPreview.vue";
 import { workshopQuote } from "./workshop/rules";
@@ -33,6 +35,7 @@ const items = computed(() => [
     id: "herbs",
     name: "灵草",
     category: "材料",
+    purpose: "",
     count: props.game.herbs,
     description: "用于炼丹、炼器与救治。具体消耗在行动前显示。",
   },
@@ -40,6 +43,7 @@ const items = computed(() => [
     id: "pills",
     name: "筑基丹",
     category: "丹药",
+    purpose: medicineCategoryLabel("foundation"),
     count: props.game.pills,
     description: "筑基必需一枚，成功或失败都会消耗。遗府通关后可依丹方补炼。",
   },
@@ -47,6 +51,7 @@ const items = computed(() => [
     id,
     name: products[id].name,
     category: id === "ward" ? "丹药" : "材料",
+    purpose: id === "ward" ? medicineCategoryLabel(id) : "",
     count: props.game.workshop[id],
     description: products[id].hint,
   })),
@@ -54,6 +59,7 @@ const items = computed(() => [
     id,
     name: medicines[id].name,
     category: "丹药",
+    purpose: medicineCategoryLabel(id),
     count: props.game.growth.medicines[id],
     description: medicines[id].hint,
   })),
@@ -63,6 +69,7 @@ const items = computed(() => [
       id,
       name: relics[id].name,
       category: "装备",
+      purpose: equipmentCategoryLabel(id),
       count: 1,
       description: relics[id].hint,
     })),
@@ -140,7 +147,7 @@ const craft = computed(() =>
             : 0
         "
       />
-      <small>{{ item.category }}</small>
+      <small>{{ item.category }}<template v-if="item.purpose"> · {{ item.purpose }}</template></small>
       <h3>{{ item.name }}</h3>
       <p>{{ item.description }}</p>
       <template v-if="item.id === 'vial' || item.id === 'sword'">

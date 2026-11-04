@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { projectInteractions } from "../story-interactions";
 import { computed, ref, watch } from "vue";
 import { goldenObject } from "../scene2d/golden-objects";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
@@ -97,7 +98,7 @@ const options = computed(() => {
       );
     add(`服丹叩关 · 当前把握 ${goldenChance(s)}%`, { kind: "break" });
   }
-  return choices.map((c) => ({ ...c, quote: goldenQuote(s, c.action) }));
+  return projectInteractions(s, choices, goldenQuote);
 });
 const send = (action: GoldenAction) =>
   emit("act", { type: "goldenCore", action });
@@ -222,8 +223,8 @@ watch(hotspots, (objects) => {
     <p v-if="selected === 'path' && g.expedition !== 'idle' && !g.duel">
       取药必过守药石偶。探索途中可撤回；不能在阵中开炉、换装或接其他行程。
     </p>
-    <div v-for="o in shown" :key="o.label" class="scene-choice">
-      <button :disabled="busy || !!o.quote.error" @click="send(o.action)">
+    <div v-for="o in shown" :key="o.id" class="scene-choice">
+      <button :disabled="busy || !o.available" @click="send(o.action)">
         {{ o.label.split(" · ")[0] }}
       </button>
       <small v-if="o.label.includes(' · ')">{{

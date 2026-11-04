@@ -32,13 +32,8 @@ export const freshQiJourney = (): QiJourney => ({
   duel: null,
   last: "",
 });
-export function qiCap(s: { realm: number; qiJourney?: QiJourney }) {
-  return s.realm || !s.qiJourney || s.qiJourney.gates === 2
-    ? 360
-    : s.qiJourney.gates === 0
-      ? 239
-      : 359;
-}
+import { qiCap } from "../progression/caps";
+export { qiCap } from "../progression/caps";
 export function validQiJourney(
   s: {
     realm: number;

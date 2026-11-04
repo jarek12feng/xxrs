@@ -46,11 +46,11 @@ export function combatFeedback(
   const player =
     next?.hp ?? (won ? d.hp : Math.max(0, d.hp - incoming) + healing);
   const effects: string[] = [];
-  if (p.note.includes("剑经循隙")) effects.push("循隙反击");
-  if (p.note.includes("长春固护") && !won) effects.push("固护减伤");
-  if (p.note.includes("归元息照见阵核")) effects.push("辨影破核");
-  if (p.note.includes("周天贯流")) effects.push("周天贯流");
-  if (p.note.includes("沉井传承")) effects.push("沉井传承");
+  if (p.effects.includes("blade-counter")) effects.push("循隙反击");
+  if (p.effects.includes("spring-guard") && !won) effects.push("固护减伤");
+  if (p.effects.includes("array-discern")) effects.push("辨影破核");
+  if (p.effects.includes("circulation")) effects.push("周天贯流");
+  if (p.effects.includes("inheritance")) effects.push("沉井传承");
   if (healing) effects.push(`回春 +${healing}`);
   return {
     turn: d.turn + 1,

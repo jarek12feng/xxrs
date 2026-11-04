@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TravelMap from "../wayfaring/TravelMap.vue";
 import type { Destination } from "./state";
-import { travelQuote } from "../wayfaring/rules";
+import { preferredTravelMode, travelQuote } from "../wayfaring/rules";
 import { foundationApproachPoint } from "./scene-approach";
 import FoundationWorld from "./FoundationWorld.vue";
 import SecretPactPanel from "../secret-pact/SecretPactPanel.vue";
@@ -47,7 +47,7 @@ const props = withDefaults(
   }>(),
   { mode: "journey" },
 );
-const emit = defineEmits<{ act: [intent: Intent]; equipment: [] }>();
+const emit = defineEmits<{ act: [intent: Intent]; equipment: []; road: [] }>();
 const preparation = computed(() =>
   journeyPreparation(props.game, props.mode === "board"),
 );
@@ -233,6 +233,10 @@ function act(action: JourneyAction) {
           <button v-if="q.board.last" @click="active = 'encounter'">查看本场经过</button>
         </template>
       </template>
+      <aside v-if="mode === 'journey' && q.location === 'home' && !game.adventure.road.surveyed && (active === 'encounter' || active === 'road')" aria-label="青嶂归路指引">
+        <p>先沿青嶂旧路到云栈旅亭，记录归路；再回行前居商议同行。</p>
+        <button :disabled="busy" @click="emit('road')">前往青嶂旧路</button>
+      </aside>
       <CombatFeedbackView
         v-if="!q.duel && active === 'encounter' && mode !== 'relationship'"
         :game="game"
@@ -429,7 +433,7 @@ function act(action: JourneyAction) {
                 :aria-pressed="q.location === id"
                 @click="act({ kind: 'travel', destination: id })"
               >
-                {{ place.name }}{{ q.location === id ? " · 此处" : " · "+formatLifeMonths(travelQuote(game,id).remaining) }}
+                {{ place.name }}{{ q.location === id ? " · 此处" : " · "+formatLifeMonths(travelQuote(game,id,preferredTravelMode(game)).remaining) }}
               </button>
             </nav>
           </template>
@@ -458,9 +462,7 @@ function act(action: JourneyAction) {
                 2，筑基后可达二级。
               </p>
               <p>
-                灵器可在灵器页精炼至二阶：灵瓶每阶减伤 1，灵剑每阶伤害
-                +2；每次需心得 2、灵石 24、灵草
-                4。根基未满时可在洞府固本，提高气势与基础伤害。
+                灵器可在丹器页精炼，灵瓶增强护体，灵剑提高伤害。可炼阶数、所需材料与提升效果，以当前精炼报价为准。
               </p>
               <p v-if="game.journey.main === 'spring'">
                 长春守势需有灵草，且承伤后仍存活才会回气；储物袋有药也不能在交锋中起死回生。

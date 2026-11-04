@@ -1,8 +1,18 @@
-import { passageKey, passageError, passageMonths, advancePassage } from "../wayfaring/passage";
+import { methodQuote } from "../techniques";
+import { inspectInteraction } from "../story-interactions";
+import { settleResources } from "../economy";
+import { advanceMonths } from "../timeline";
+import { resolveTurn, startBattle } from "../combat";
+import {
+  passageKey,
+  passageError,
+  passageMonths,
+  advancePassage,
+} from "../wayfaring/passage";
 import type { State } from "../world";
 import type { Move } from "../expedition/content";
 import { foundationPower } from "../foundation-journey/combat";
-import { tacticalExchange } from "../expedition/combat";
+import { tacticalPreview } from "../combat/game";
 import { goldenCap, goldenBlock } from "./state";
 import { rivals, wardens } from "./content";
 export type ConclaveAction =
@@ -166,16 +176,11 @@ export function conclaveQuote(s: State, a: ConclaveAction) {
     if (c.location === "vault" || c.depth < 1 || c.attuned)
       error ||= "取得定神珠后，在安全处温养";
   } else if (a.kind === "method") {
-    months = c.method === "none" ? 24 : 6;
-    if (
-      c.location === "vault" ||
-      c.depth !== 2 ||
-      !["inherit", "still"].includes(a.method) ||
-      c.method === a.method
-    )
-      error ||= "取回抱元凝神录后，在安全处参悟或转修";
+    const method = methodQuote("conclave", c.method, a.method, c.depth === 2, c.location !== "vault");
+    months = method.months;
+    error ||= method.error;
   } else error ||= "未知诸宗会操作";
-  const passage = passageKey('conclave', a.kind);
+  const passage = passageKey("conclave", a.kind);
   error ||= passageError(s, passage);
   months = passageMonths(s, passage, months);
   if (!error && (s.stones < stones || s.herbs < herbs))
@@ -189,27 +194,29 @@ export function conclaveExchange(s: State, move: Move) {
   if (!d) return null;
   const power = foundationPower(s);
   // Preparation is a choice, never a stackable repeat reward.
-  const p = tacticalExchange(
-    s,
-    move,
-    conclaveFoe(s),
-    d,
-    d.effect,
-    d.kind === "vault",
-    {
-      ...power,
-      hp: power.hp + (d.kind === "vault" && c.route === "shelter" ? 16 : 0),
-      armor: power.armor + (c.preparation === "ward" ? 3 : 0),
-      damage:
-        power.damage +
-        (d.kind === "vault" && c.route === "current" && move === "strike"
-          ? 5
-          : 0) +
-        (c.preparation === "insight" && move === "discern" ? 6 : 0),
-    },
-  );
-  if (p && d.kind === "vault" && d.index === 1 && !c.attuned) p.incoming += 12;
-  return p;
+  return tacticalPreview(s, {
+    move: move,
+    encounter: conclaveFoe(s),
+    battle: d,
+    effect: d.effect,
+    arrayCore: d.kind === "vault",
+    power,
+    adjustments: [
+      {
+        phase: "power",
+        hp: d.kind === "vault" && c.route === "shelter" ? 16 : 0,
+        armor: c.preparation === "ward" ? 3 : 0,
+        damage:
+          (d.kind === "vault" && c.route === "current" && move === "strike"
+            ? 5
+            : 0) + (c.preparation === "insight" && move === "discern" ? 6 : 0),
+      },
+      {
+        phase: "afterHealing",
+        incoming: d.kind === "vault" && d.index === 1 && !c.attuned ? 12 : 0,
+      },
+    ],
+  });
 }
 export function conclaveGoal(s: State) {
   const c = s.conclave;
@@ -246,32 +253,39 @@ export function runConclave(
   id: string,
   tick: (s: State) => State,
 ) {
-  const q = conclaveQuote(input, a);
-  if (q.error) return input;
+  const offer = inspectInteraction(input, a, conclaveQuote);
+  if (!offer.available) return input;
+  const q = offer.quote;
   let s = structuredClone(input);
-  const passage = passageKey('conclave',a.kind);
-  if(passage) {
-    const result=advancePassage(input,passage,tick,n=>occupied(n) || (n.outerSea.reminded && !input.outerSea.reminded));
-    s=result.state;
-    if(result.stopped) {
-      record(`航程暂止，尚余 ${s.wayfaring.passage!.remaining} 月；处理眼前消息后继续，不重复扣除已耗年月。行装尚未扣除。`);
-      return finish();
-    }
-  } else {
-  for (let i = 0; i < q.months; i++) {
-    s = tick(s);
-    if (occupied(s) || (s.outerSea.reminded && !input.outerSea.reminded)) {
+  const passage = passageKey("conclave", a.kind);
+  if (passage) {
+    const result = advancePassage(
+      input,
+      passage,
+      tick,
+      (n) => occupied(n) || (n.outerSea.reminded && !input.outerSea.reminded),
+    );
+    s = result.state;
+    if (result.stopped) {
       record(
-        a.kind === "wait" && s.outerSea.reminded
-          ? "古渡传来会谷来信，五十年之约已至。你结束候约，可自行决定何时赴会。"
-          : "行程暂止，物资尚未扣除，成果尚未结算。",
+        `航程暂止，尚余 ${s.wayfaring.passage!.remaining} 月；处理眼前消息后继续，不重复扣除已耗年月。行装尚未扣除。`,
       );
       return finish();
     }
+  } else {
+    const elapsed = advanceMonths(s, q.months, { tick, interrupt: s => (occupied(s) || (s.outerSea.reminded && !input.outerSea.reminded)) ? "interrupted" : "" });
+    s = elapsed.state;
+    if (elapsed.stopped) {
+        record(
+          a.kind === "wait" && s.outerSea.reminded
+            ? "古渡传来会谷来信，五十年之约已至。你结束候约，可自行决定何时赴会。"
+            : "行程暂止，物资尚未扣除，成果尚未结算。",
+        );
+        return finish();
+
+    }
   }
-  }
-  s.stones -= q.stones;
-  s.herbs -= q.herbs;
+  if (settleResources(s, { stones: q.stones, herbs: q.herbs }).error) return input;
   const c = s.conclave;
   if (a.kind === "wait")
     record("你留居候约，修行年月与余寿照常流逝；未自动报名或参加斗法。");
@@ -339,11 +353,11 @@ export function runConclave(
     c.duel = {
       kind,
       index,
-      hp:
+      ...startBattle(
         foundationPower(s).hp +
-        (kind === "vault" && c.route === "shelter" ? 16 : 0),
-      enemy: (kind === "contest" ? rivals : wardens)[index]!.hp,
-      turn: 0,
+          (kind === "vault" && c.route === "shelter" ? 16 : 0),
+        (kind === "contest" ? rivals : wardens)[index]!.hp,
+      ),
       effect: "",
     };
     record(
@@ -353,15 +367,17 @@ export function runConclave(
   if (a.kind === "move") {
     const d = c.duel!,
       p = conclaveExchange(s, a.move)!;
-    s.herbs -= p.herbs;
-    d.hp = Math.max(0, d.hp - p.incoming + p.healing);
-    d.enemy = Math.max(0, d.enemy - p.damage);
-    d.turn++;
+    const turn = resolveTurn(d, p, {
+      turnLimit: 18,
+      resolution: "simultaneous",
+    });
+    Object.assign(d, turn.battle);
+    s.herbs -= turn.herbs;
     d.effect = a.move;
     record(
       `削去气势 ${p.damage}，承受 ${p.incoming}${p.healing ? `，耗灵草 ${p.herbs} 回气 ${p.healing}` : ""}。${p.note}`,
     );
-    if (!d.enemy) {
+    if (turn.outcome === "win") {
       c.duel = null;
       if (d.kind === "contest") {
         c.wins++;
@@ -390,7 +406,7 @@ export function runConclave(
                   : "衡璇院依你的实测水位修正潮阵，药船多了一段可行航道。"),
         );
       }
-    } else if (!d.hp || d.turn >= 18) {
+    } else if (turn.outcome === "loss") {
       c.duel = null;
       s.injury = Math.min(6, s.injury + 2);
       if (d.kind === "contest") c.retryAt = s.month + 6;

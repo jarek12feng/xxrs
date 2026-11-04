@@ -1,3 +1,4 @@
+import { validJourneyPlan, type JourneyPlan } from './engine';
 import { validPassage, type Passage } from "./passage";
 import type { Destination } from "../foundation-journey/state";
 import type { State } from "../world";
@@ -9,6 +10,7 @@ export interface Wayfaring {
     from: Destination;
     to: Destination;
     mode: TravelMode;
+    plan: JourneyPlan;
     total: number;
     remaining: number;
   };
@@ -43,7 +45,14 @@ export function validWayfaring(s: State) {
     s.foundationJourney.location === t.from &&
     (t.mode !== "flight" || w.swordFlight !== "none") &&
     Number.isInteger(t.total) &&
-    t.total === routeBetween(t.from, t.to, t.mode, s.realm).months &&
+    validJourneyPlan(t.plan) &&
+    t.plan.from === t.from && t.plan.to === t.to && t.plan.mode === t.mode &&
+    t.plan.path.every(id=>Object.hasOwn(sites,id)) &&
+    t.plan.fixedMonths === 0 && t.total > 0 &&
+    t.plan.distance === routeBetween(t.from,t.to,t.mode,s.realm).distance &&
+    t.plan.path.join(':') === routeBetween(t.from,t.to,t.mode,s.realm).path.join(':') &&
+    Math.abs(t.plan.movingMonths-t.plan.distance/t.plan.speed)<1e-9 &&
+    t.total === t.plan.months &&
     Number.isInteger(t.remaining) &&
     t.remaining >= 0 &&
     t.remaining <= t.total

@@ -1,7 +1,8 @@
+import { resolveTurn, startBattle } from "../combat";
 import { awardContestMilestones } from "../golden-core/rules";
 import type { State, Command } from "../world";
 import type { Move } from "../expedition/content";
-import { tacticalExchange } from "../expedition/combat";
+import { tacticalPreview } from "../combat/game";
 import { foundationPower } from "../foundation-journey/combat";
 import { contestFoes, contestRank, NOTICE_MONTHS } from "./content";
 export type ContestAction =
@@ -31,7 +32,7 @@ export const contestDate = (month: number) =>
   `修行 ${Math.floor(month / 12)} 年 ${month % 12} 月`;
 export function updateContestCalendar(s: State) {
   const t = s.sectContest;
-  if(s.realm === 2) return;
+  if (s.realm === 2) return;
   if (s.status !== "alive") {
     t.duel = null;
     return;
@@ -145,15 +146,14 @@ export function contestError(s: State, a: ContestAction): string {
 export function contestExchange(s: State, move: Move) {
   const t = s.sectContest;
   if (!t.duel) return null;
-  return tacticalExchange(
-    s,
-    move,
-    contestFoes[t.results.length]!,
-    t.duel,
-    t.duel.effect,
-    false,
-    foundationPower(s),
-  );
+  return tacticalPreview(s, {
+    move: move,
+    encounter: contestFoes[t.results.length]!,
+    battle: t.duel,
+    effect: t.duel.effect,
+    arrayCore: false,
+    power: foundationPower(s),
+  });
 }
 export function runContest(
   input: State,
@@ -195,9 +195,7 @@ export function runContest(
   if (a.kind === "fight") {
     s.stones -= 2;
     t.duel = {
-      hp: foundationPower(s).hp,
-      enemy: contestFoes[t.results.length]!.hp,
-      turn: 0,
+      ...startBattle(foundationPower(s).hp, contestFoes[t.results.length]!.hp),
       effect: "",
     };
     record(
@@ -208,17 +206,19 @@ export function runContest(
   if (a.kind === "move") {
     const p = contestExchange(s, a.move)!,
       d = t.duel!;
-    s.herbs -= p.herbs;
-    d.enemy = Math.max(0, d.enemy - p.damage);
-    d.hp = Math.max(0, d.hp - p.incoming + p.healing);
-    d.turn++;
+    const turn = resolveTurn(d, p, {
+      turnLimit: 12,
+      resolution: "simultaneous",
+    });
+    Object.assign(d, turn.battle);
+    s.herbs -= turn.herbs;
     d.effect = a.move;
     record(
       s,
       `你化去对方 ${p.damage} 气势，承受 ${p.incoming}${p.healing ? `，耗灵草 ${p.herbs} 回气 ${p.healing}` : ""}。${p.note}`,
     );
-    if (!d.enemy) end("win", false);
-    else if (!d.hp || d.turn >= 12) end("loss", true);
+    if (turn.outcome === "win") end("win", false);
+    else if (turn.outcome === "loss") end("loss", true);
   }
   if (a.kind === "withdraw") end("loss", false);
   if (a.kind === "leave") {
@@ -237,7 +237,7 @@ export function runContest(
     }
   }
   if (a.kind === "reward") {
-    const extra = awardContestMilestones(s,t.claimed);
+    const extra = awardContestMilestones(s, t.claimed);
     const count = t.best - t.claimed;
     t.claimed = t.best;
     if (a.reward === "herbs") s.herbs += count * 4;

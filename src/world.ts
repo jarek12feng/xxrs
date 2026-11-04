@@ -1,3 +1,8 @@
+import { previewEncounter, resolveEncounter } from "./combat";
+import { evaluateEquipment, applyEquipmentChange } from "./equipment";
+import { SAVE_VERSION } from './save-version';
+import { inlandTravel, routeBetween } from './wayfaring/routes';
+import { travelSpeeds } from './wayfaring/geography';
 import { isPassageContinuation } from "./wayfaring/passage";
 import { freshWayfaring, validWayfaring, type Wayfaring } from "./wayfaring/state";
 import { runWayfaring, type WayfaringAction } from "./wayfaring/rules";
@@ -102,49 +107,14 @@ import {
 export * from "./chapter";
 export * from "./social";
 
-export const techniques = {
-  spring: {
-    name: "长春诀",
-    slot: "main",
-    hint: "学会后可采药；炼气吐纳基础收益 +3（受寿元影响）；回合交锋守势可耗灵草恢复气势",
-  },
-  blade: {
-    name: "听松剑经",
-    slot: "main",
-    hint: "学会后可历练剑意；炼气历练每月额外 +4 修为；回合交锋反击伤害 +8、承伤 +2",
-  },
-  breath: {
-    name: "归元息",
-    slot: "main",
-    hint: "炼气劳作每月额外 +4 修为；回合交锋辨影减伤，擅破傀儡阵核",
-  },
-  herb: { name: "辨草录", slot: "support", hint: "学会后可采药；装配后采药每月额外 +1 灵草" },
-  guard: {
-    name: "护身诀",
-    slot: "support",
-    hint: "历练不新增伤势；回合交锋护体 +2，每阶研修再 +1",
-  },
-  lantern: {
-    name: "照夜篇",
-    slot: "support",
-    hint: "雾海识阵把握 +8，每阶研修再 +2；交锋辨影伤害 +3；凝神同时得心得 1（上限 4）",
-  },
-} as const;
-export type Technique = keyof typeof techniques;
+import { techniques, canGather, canTrain, applyTechnique, techniqueChangeError, techniqueActivityEffect, grantTechnique } from "./techniques";
+import type { Technique } from "./techniques";
+export { techniques, canGather, canTrain, type Technique } from "./techniques";
 export type Branch = "none" | "dan" | "jian";
 export type Place = "valley" | "peak" | "sea";
 export type TrialPlace = "peak" | "sea";
-export type Relic = "vial" | "sword";
-export const relics = {
-  vial: {
-    name: "归元灵瓶",
-    hint: "回合交锋一阶减伤 1、二阶减伤 3；二阶器物辅助筑基吐纳；雾海回声阵每阶 +6、风阵 +3 把握；道友寻亲应对妖修额外 +8%，失败少受 1 层伤势",
-  },
-  sword: {
-    name: "听松灵剑",
-    hint: "回合交锋一阶伤害 +2、二阶伤害 +5；二阶器物辅助筑基吐纳；雾海风阵每阶 +6、回声阵 +3 把握；道友寻亲应对邪修额外 +8%",
-  },
-};
+import { relics, type Relic } from "./equipment";
+export { relics, type Relic } from "./equipment";
 export const opponents = {
   guardian: {
     name: "石角 · 守境妖修",
@@ -226,7 +196,7 @@ import {
 } from "./adventure";
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
-  version: 33;
+  version: typeof SAVE_VERSION;
   wayfaring: Wayfaring;
   conclave: Conclave;
   outerSea: OuterSea;
@@ -341,7 +311,7 @@ function lift(
 ): State {
   return {
     ...s,
-    version: 33,
+    version: SAVE_VERSION,
     wayfaring: freshWayfaring(),
     conclave: freshConclave(),
     outerSea: freshOuterSea(),
@@ -390,8 +360,6 @@ export const eventView = (s: State) => {
 };
 export const activeEventId = (s: State) =>
   s.pending?.id ?? s.social.scene?.id ?? "";
-export const canGather = (s: State) => s.journey.known.some(t => t === "spring" || t === "herb");
-export const canTrain = (s: State) => s.journey.known.includes("blade");
 export const breakthroughDetails = (s: State, pill = false) =>
   chapter.breakthroughDetails(base(s), pill);
 export const refineCost = (s: State) => chapter.refineCost(base(s));
@@ -436,7 +404,7 @@ function log(s: State, text: string) {
 }
 function learn(s: State, t: Technique) {
   if (!s.journey.known.includes(t)) {
-    s.journey.known.push(t);
+    grantTechnique(s, t);
     log(s, `领悟「${techniques[t].name}」。可在功法栏装配。`);
   } else {
     s.stones += 12;
@@ -459,39 +427,15 @@ export function encounterDescription(s: State, kind: keyof typeof opponents) {
 export function challengeDetails(s: State, p: TrialPlace) {
   const e = s.journey.encounters[p];
   if (!e) return null;
-  const equipped = s.journey.equipped;
-  const gear = equipped
-    ? (s.journey.relics[equipped] === 2 ? 32 : 10) +
-      ((equipped === "vial" && e.kind === "guardian") ||
-      (equipped === "sword" && e.kind === "raider")
-        ? 8
-        : 0)
-    : 0;
-  const terms = [
-    { name: "应敌基础", value: opponents[e.kind].base },
-    { name: "根骨与神识", value: Math.floor(s.root / 2) + s.sense },
-    { name: "根基与剑意", value: Math.floor(s.foundation / 2) + s.mastery },
-    { name: "研读心得", value: s.study * 5 },
-    {
-      name: "装配功法",
-      value: (s.journey.main ? 4 : 0) + (s.journey.support ? 4 : 0),
-    },
-    { name: "灵器与针对性", value: gear },
-    { name: "同行援助", value: e.aid !== "none" ? 20 : 0 },
-    { name: "伤势", value: -s.injury * 5 },
-    { name: "雾海险境", value: p === "sea" ? -8 : 0 },
-  ];
-  return {
-    terms,
-    chance: Math.max(
-      5,
-      Math.min(
-        100,
-        terms.reduce((a, b) => a + b.value, 0),
-      ),
-    ),
-    damage: Math.max(0, (p === "sea" ? 2 : 1) - (equipped === "vial" ? 1 : 0)),
-  };
+  const gear = evaluateEquipment(s, { kind: "challenge", opponent: e.kind });
+  return previewEncounter({
+    base: opponents[e.kind].base,
+    root: s.root, sense: s.sense, foundation: s.foundation,
+    mastery: s.mastery, study: s.study,
+    mainEquipped: !!s.journey.main, supportEquipped: !!s.journey.support,
+    equipmentChance: gear.chance, injuryReduction: gear.injuryReduction,
+    aid: e.aid !== "none", injury: s.injury, sea: p === "sea",
+  });
 }
 export function forgeError(s: State, r: Relic) {
   if (!Object.hasOwn(relics, r)) return "未知灵器";
@@ -741,7 +685,7 @@ function dispatchCommand(input: State, c: Command): State {
     (c.type === "choose" && !input.pending && input.social.scene)
   ) {
     return dispatchSocial(input, c as SocialCommand, (s) =>
-      dispatch(s, { id: c.id, type: "advance", activity: "work", months: 1 }),
+      normalize(lift(chapter.travelMonth(base(s), "同行与赴台"), structuredClone(s.journey), structuredClone(s.social), structuredClone(s.adventure)), s),
     );
   }
   if (input.social.scene || input.social.arena.duel) return input;
@@ -797,12 +741,10 @@ function dispatchCommand(input: State, c: Command): State {
             n.qi = Math.min(qiCap(n), old.qi + cultivation.gain);
           if (n.realm === 0 && a !== "cultivate")
             n.qi = Math.min(qiCap(n), old.qi + incidentalQiGain(old, a));
-          if (a === "gather" && n.journey.support === "herb")
-            n.herbs += 1 + n.growth.training.herb;
-          if (a === "train" && n.journey.support === "guard")
-            n.injury = old.injury;
-          if (a === "meditate" && n.journey.support === "lantern")
-            n.study = Math.min(4, n.study + 1);
+          const techniqueEffect = techniqueActivityEffect(n, a);
+          n.herbs += techniqueEffect.herbs;
+          if (techniqueEffect.preventInjury) n.injury = old.injury;
+          n.study = Math.min(4, n.study + techniqueEffect.study);
           if (n.realm === 2) {
             n.qi=old.qi;
             n.outerSea.cultivation=Math.min(goldenCap(n),old.outerSea.cultivation+(cultivation?.gain??0));
@@ -932,11 +874,12 @@ function dispatchCommand(input: State, c: Command): State {
       s.herbs += 4;
       log(s, "坊市购得灵草四株，可用于灵器炼制、炼丹或与守境妖修交涉。");
       return accept();
-    case "equipRelic":
-      if (!Object.hasOwn(relics, c.relic) || !s.journey.relics[c.relic])
-        return input;
-      s.journey.equipped = c.relic;
+    case "equipRelic": {
+      const { error } = applyEquipmentChange(s, { kind: "equip", id: c.relic });
+      // Preserve the existing command receipt for re-equipping the same item.
+      if (error && error !== "已装配") return input;
       return accept();
+    }
     case "aid":
       if (
         !["peak", "sea"].includes(c.place) ||
@@ -985,18 +928,20 @@ function dispatchCommand(input: State, c: Command): State {
         );
       } else {
         s.stones -= 4;
-        const value = Math.floor(roll(s) * 100) + 1;
+        const result = resolveEncounter(details, s.seed);
+        const value = result.roll;
+        s.seed = result.seed;
         current.lastRoll = value;
-        current.lastChance = details.chance;
-        current.passed = value <= details.chance;
-        current.outcome = current.passed ? "win" : "loss";
+        current.lastChance = result.chance;
+        current.passed = result.outcome === "win";
+        current.outcome = result.outcome;
         if (current.passed)
           log(
             s,
             `你闯过${opponents[current.kind].name}的阻拦。判定 ${value}/100，把握 ${details.chance}%。原先的准备终于派上了用场。`,
           );
         else {
-          s.injury = Math.min(6, s.injury + details.damage);
+          s.injury = Math.min(6, s.injury + result.injury);
           log(
             s,
             `挑战未过：${opponents[current.kind].name}迫你退回。判定 ${value}/100，把握 ${details.chance}%，伤势 +${details.damage}。线索与灵器保留；先养伤、精炼灵器、凝神固本，或请道友护持后再来。`,
@@ -1161,21 +1106,14 @@ function dispatchCommand(input: State, c: Command): State {
       );
       return accept();
     case "learn":
-      if (
-        !Object.hasOwn(techniques, c.technique) ||
-        s.journey.known.includes(c.technique) ||
-        s.study < 2 ||
-        s.stones < 20
-      )
-        return input;
+      if (techniqueChangeError(s, { kind: "learn", id: c.technique })) return input;
       // The same techniques are accessible to independent cultivators.
       s.stones -= 20;
       learn(s, c.technique);
       log(s, "在坊市与散修交换心得，读懂一册功法。");
       return accept();
     case "equip":
-      if (!s.journey.known.includes(c.technique)) return input;
-      s.journey[techniques[c.technique].slot] = c.technique;
+      if (applyTechnique(s, { kind: "equip", id: c.technique }).error) return input;
       return accept();
     case "explore": {
       if (explorationError(s, c.place)) return input;
@@ -1286,11 +1224,11 @@ function dispatchCommand(input: State, c: Command): State {
   return input;
 }
 export function validState(x: unknown): x is State {
-  return validWorldState(x, 33);
+  return validWorldState(x, SAVE_VERSION);
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
@@ -1389,16 +1327,24 @@ function validWorldState(
 }
 export function migrateSave(x:unknown):State {
   if(validState(x)) return structuredClone(x);
-  if(x && typeof x==='object' && 'version' in x && x.version===32) {
-    const previous=x as State;
-    if(!previous.wayfaring || Object.hasOwn(previous.wayfaring,'passage')) throw new Error("旧旅行存档损坏，原档未修改。");
-    const next={...structuredClone(previous),version:33 as const,wayfaring:{...structuredClone(previous.wayfaring),passage:null}};
-    if(!validState(next)) throw new Error("旧旅行存档损坏，原档未修改。");
-    return next;
+  if(x && typeof x==='object' && 'version' in x && (x.version===32 || x.version===33)) {
+    const previous=structuredClone(x) as State;
+    if(!previous.wayfaring || (x.version===32 && Object.hasOwn(previous.wayfaring,'passage'))) throw new Error("旧旅行存档损坏，原档未修改。");
+    if(x.version===32)previous.wayfaring.passage=null;
+    const trip=previous.wayfaring.trip;
+    if(trip) {
+      if(Object.hasOwn(trip,'plan') || trip.total!==routeBetween(trip.from,trip.to,trip.mode,previous.realm).months)throw new Error("旧行程损坏，原档未修改。");
+      const quote=inlandTravel.plan({from:trip.from,to:trip.to,mode:trip.mode,traveler:{realm:previous.realm,speeds:{land:travelSpeeds.land,flight:previous.realm>=2?travelSpeeds.goldenFlight:travelSpeeds.foundationFlight},effects:[]}});
+      if(!quote.ok)throw new Error("旧行程损坏，原档未修改。");
+      trip.plan=quote.plan;
+    }
+    previous.version=SAVE_VERSION;
+    if(!validState(previous)) throw new Error("旧旅行存档损坏，原档未修改。");
+    return previous;
   }
   if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=32) throw new Error("未知或损坏的存档，原档未修改。");
   const old=migratePrevious(x);
-  const next={...old,version:33 as const,wayfaring:freshWayfaring()};
+  const next={...old,version:SAVE_VERSION,wayfaring:freshWayfaring()};
   if(!validState(next)) throw new Error("旧存档损坏，原档未修改。");
   return next;
 }
@@ -1407,19 +1353,19 @@ function migratePrevious(x: unknown): State {
   if(x && typeof x === "object" && "version" in x && x.version===30){
     const candidate={...structuredClone(x),conclave:freshConclave()} as State;
     if(!validWorldState(candidate,30)) throw new Error("旧存档损坏，原档未修改。");
-    return {...candidate,version:33};
+    return {...candidate,version:SAVE_VERSION};
   }
   if(x && typeof x === "object" && "version" in x && x.version===29){
     if(!validWorldState(x,29)) throw new Error("旧存档损坏，原档未修改。");
-    return {...structuredClone(x) as State,version:33,conclave:freshConclave(),outerSea:freshOuterSea()};
+    return {...structuredClone(x) as State,version:SAVE_VERSION,conclave:freshConclave(),outerSea:freshOuterSea()};
   }
   if (x && typeof x === "object" && "version" in x && x.version === 28) {
     if (!validWorldState(x,28)) throw new Error("旧存档损坏，原档未修改。");
-    return {...structuredClone(x) as State,version:33,conclave:freshConclave(),outerSea:freshOuterSea(),goldenCore:freshGoldenCore()};
+    return {...structuredClone(x) as State,version:SAVE_VERSION,conclave:freshConclave(),outerSea:freshOuterSea(),goldenCore:freshGoldenCore()};
   }
   if (x && typeof x === "object" && "version" in x && x.version === 27) {
     if (!validWorldState(x,27)) throw new Error("旧存档损坏，原档未修改。");
-    return {...structuredClone(x) as State,version:33,conclave:freshConclave(),outerSea:freshOuterSea(),goldenCore:freshGoldenCore(),sectContest:freshSectContest()};
+    return {...structuredClone(x) as State,version:SAVE_VERSION,conclave:freshConclave(),outerSea:freshOuterSea(),goldenCore:freshGoldenCore(),sectContest:freshSectContest()};
   }
   if (x && typeof x === "object" && "version" in x && x.version === 26) {
     if (!validWorldState(x,26)) throw new Error("旧存档损坏，原档未修改。");
@@ -1428,7 +1374,7 @@ function migratePrevious(x: unknown): State {
   if (x && typeof x === "object" && "version" in x && x.version === 25) {
     if (!validWorldState(x, 25)) throw new Error("旧存档损坏，原档未修改。");
     const n = structuredClone(x) as State;
-    n.version = 33;
+    n.version = SAVE_VERSION;
     n.conclave = freshConclave();
     n.outerSea = freshOuterSea();
     n.goldenCore = freshGoldenCore();
@@ -1454,7 +1400,7 @@ function migratePrevious(x: unknown): State {
     const n = structuredClone(x) as State;
     // No invented milestones: earlier foundation runs must start a new character.
     if (n.realm === 1) throw new Error("筑基成长规则已重构，请备份原档并新建角色；原档未修改。");
-    n.version = 33;
+    n.version = SAVE_VERSION;
     n.conclave = freshConclave();
     n.outerSea = freshOuterSea();
     n.goldenCore = freshGoldenCore();

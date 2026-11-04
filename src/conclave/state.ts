@@ -36,8 +36,8 @@ export const freshConclave = (): Conclave => ({
   duel: null,
   last: "",
 });
-export const goldenCap = (s: { conclave?: { stage: number } }) =>
-  [299, 599, 899][s.conclave?.stage ?? 0] ?? 299;
+import { goldenCap } from "../progression/caps";
+export { goldenCap } from "../progression/caps";
 export function goldenBlock(s: { conclave?: { stage: number } }) {
   return (s.conclave?.stage ?? 0) === 0
     ? "修满 299，走通退潮内府、温养镇潮印并参悟澄息篇，再凝炼丹元突破中期。"

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import StoryTravelMap from "./wayfaring/StoryTravelMap.vue";
+import { useStoryTravel } from "./wayfaring/useStoryTravel";
 import LearningChoices from "./LearningChoices.vue";
 import GrowthPreview from "./GrowthPreview.vue";
 import RecognitionPanel from "./recognition/RecognitionPanel.vue";
@@ -62,6 +64,8 @@ const emit = defineEmits<{
   resumeStory: [];
   equipment: [];
 }>();
+const storyTravel=useStoryTravel(()=>props.game,()=>props.busy || props.running,intent=>emit("act",intent));
+const {route:storyTravelRoute,arrived:storyTravelArrived}=storyTravel;
 const atlasMode = defineModel<"story" | "explore">("atlasMode", {
   default: "story",
 });
@@ -164,6 +168,8 @@ const mapImages = {
 
 <template>
   <section class="world-panel" :class="{ 'desktop-room': !!room }">
+    <StoryTravelMap v-if="storyTravelRoute" :game="game" :route="storyTravelRoute" :busy="busy || running" :arrived="storyTravelArrived" @depart="storyTravel.depart" @close="storyTravel.close" @cancel="storyTravel.cancel" />
+    <div v-show="!storyTravelRoute" :inert="!!storyTravelRoute" style="display: contents">
     <div v-if="!embedded" class="panel-heading">
       <h2>山外有天地</h2>
       <span class="muted">修行成长 · 山河与故人</span>
@@ -217,7 +223,7 @@ const mapImages = {
       @equipment="emit('equipment')"
       :busy="busy"
       :running="running"
-      @act="emit('act', $event)"
+      @act="storyTravel.act($event)"
     />
     <div v-else-if="tab === 'world'" class="world-content">
       <FoundationPanel
@@ -225,7 +231,7 @@ const mapImages = {
         v-if="game.realm === 1 && atlasMode !== 'story'"
         :game="game"
         :busy="busy || running"
-        @act="emit('act', $event)"
+        @act="storyTravel.act($event)"
         @equipment="emit('equipment')"
       />
       <nav aria-label="地图路线">
@@ -253,7 +259,7 @@ const mapImages = {
           }}</small></template
         >
       </p>
-      <TravelMap v-if="game.realm === 1 && atlasMode === 'story'" :game="game" :busy="locked" @act="emit('act',$event)" @close="emit('resumeStory')" />
+      <TravelMap v-if="game.realm === 1 && atlasMode === 'story'" :game="game" :busy="locked" @act="storyTravel.act($event)" @close="emit('resumeStory')" />
       <WorldAtlas
         v-else
         :game="game"
@@ -362,7 +368,7 @@ const mapImages = {
               :game="game"
               :place="id"
               :locked="locked"
-              @act="emit('act', $event)"
+              @act="storyTravel.act($event)"
             />
             <template
               v-else-if="id === 'valley' && game.journey.maps.valley === 1"
@@ -372,7 +378,7 @@ const mapImages = {
                   locked || !!explorationError(game, id) || game.herbs < 2
                 "
                 @click="
-                  emit('act', {
+                  storyTravel.act({
                     type: 'explore',
                     place: id,
                     approach: 'rescue',
@@ -384,7 +390,7 @@ const mapImages = {
               <button
                 :disabled="locked || !!explorationError(game, id)"
                 @click="
-                  emit('act', { type: 'explore', place: id, approach: 'trace' })
+                  storyTravel.act({ type: 'explore', place: id, approach: 'trace' })
                 "
               >
                 先追查笔记 · 灵石 +8 / 错过见闻
@@ -393,7 +399,7 @@ const mapImages = {
             <button
               v-else
               :disabled="locked || !!explorationError(game, id)"
-              @click="emit('act', { type: 'explore', place: id })"
+              @click="storyTravel.act({ type: 'explore', place: id })"
             >
               {{ game.journey.maps[id] === 0 ? "动身探访" : "继续追寻" }} · 一月
             </button>
@@ -403,7 +409,7 @@ const mapImages = {
       <details v-if="game.journey.settled" class="retirement">
         <summary>回顾本卷</summary>
         <p>查看这段行旅的成果与未竟之事，之后可以继续当前角色的修行。</p>
-        <button :disabled="locked" @click="emit('act', { type: 'retire' })">
+        <button :disabled="locked" @click="storyTravel.act({ type: 'retire' })">
           查看修行履历
         </button>
       </details>
@@ -413,11 +419,11 @@ const mapImages = {
       class="world-content scene-controls"
       aria-label="灵器操作区"
     >
-      <TreasurePanel :game="game" :busy="busy || running" @act="emit('act', $event)" />
-      <WorkshopPanel :game="game" :busy="busy || running" @act="emit('act', $event)" />
+      <TreasurePanel :game="game" :busy="busy || running" @act="storyTravel.act($event)" />
+      <WorkshopPanel :game="game" :busy="busy || running" @act="storyTravel.act($event)" />
     </div>
-    <div v-else-if="tab === 'sect'" class="world-content">
-      <RecognitionPanel :game="game" :busy="locked" @act="emit('act', $event)" />
+    <div v-else-if="tab === 'sect'" style="display: contents">
+      <RecognitionPanel :game="game" :busy="locked" @act="storyTravel.act($event)" />
       <p class="muted">
         宗门提供师承与通行资格，不是唯一道路。散修也可在坊市学同样的功法，以神识
         8、心得 2 识路入山。可选择一个堂口拜师。
@@ -450,7 +456,7 @@ const mapImages = {
           <button
             v-if="game.journey.branch === 'none'"
             :disabled="locked || game.story.stage === 'unmet'"
-            @click="emit('act', { type: 'join', branch })"
+            @click="storyTravel.act({ type: 'join', branch })"
           >
             拜入{{ mentor.hall }} · 渡口初逢后开放
           </button>
@@ -471,19 +477,19 @@ const mapImages = {
         <div class="world-actions">
           <button
             :disabled="locked || game.herbs < 2"
-            @click="emit('act', { type: 'duty', duty: 'herbs' })"
+            @click="storyTravel.act({ type: 'duty', duty: 'herbs' })"
           >
             送药济人<small>一月 / 灵草 −2 / 灵石 +10 / 根基 +1 / 贡献 +2</small>
           </button>
           <button
             :disabled="locked || game.injury >= 3"
-            @click="emit('act', { type: 'duty', duty: 'watch' })"
+            @click="storyTravel.act({ type: 'duty', duty: 'watch' })"
           >
             守护夜路<small>一月 / 灵石 +8 / 伤势 +1 / 炼气修为 +8 / 贡献 +2</small>
           </button>
           <button
             :disabled="locked || game.stones < 3"
-            @click="emit('act', { type: 'duty', duty: 'copy' })"
+            @click="storyTravel.act({ type: 'duty', duty: 'copy' })"
           >
             整理旧卷<small>一月 / 灵石先付 3、完工收 6 / 心得 +1 / 贡献 +2</small>
           </button>
@@ -497,12 +503,12 @@ const mapImages = {
           <p>几次事务之后，执事终于放下手中的卷宗，认真等你的答案。</p>
           <button
             :disabled="locked"
-            @click="emit('act', { type: 'mentor', answer: 'care' })"
+            @click="storyTravel.act({ type: 'mentor', answer: 'care' })"
           >
             为护住身边的人</button
           ><button
             :disabled="locked"
-            @click="emit('act', { type: 'mentor', answer: 'seek' })"
+            @click="storyTravel.act({ type: 'mentor', answer: 'seek' })"
           >
             为亲眼看看山外
           </button>
@@ -514,7 +520,7 @@ const mapImages = {
         </p>
         <button
           :disabled="locked || !!promotionError(game)"
-          @click="emit('act', { type: 'promote' })"
+          @click="storyTravel.act({ type: 'promote' })"
         >
           晋升外门 · 贡献 −6 / 主修功法 / 雾岭资格
         </button>
@@ -526,7 +532,7 @@ const mapImages = {
       aria-label="功法操作区"
     >
       <h3 class="controls-heading">功法研习与装配</h3>
-      <LearningChoices :game="game" :busy="busy" @act="emit('act', $event)" />
+      <LearningChoices :game="game" :busy="busy" @act="storyTravel.act($event)" />
       <p>
         主修：{{
           game.journey.main ? techniques[game.journey.main].name : "未装配"
@@ -566,7 +572,7 @@ const mapImages = {
           <button
             v-if="game.journey.known.includes(id)"
             :disabled="locked || !!trainingError(game, id)"
-            @click="emit('act', { type: 'trainTechnique', technique: id })"
+            @click="storyTravel.act({ type: 'trainTechnique', technique: id })"
           >
             研修{{ t.name }} · 灵石 12 / 灵草 2
           </button>
@@ -578,14 +584,14 @@ const mapImages = {
         <button
           v-if="game.journey.known.includes(id)"
           :disabled="locked || game.journey[t.slot] === id"
-          @click="emit('act', { type: 'equip', technique: id })"
+          @click="storyTravel.act({ type: 'equip', technique: id })"
         >
           {{ game.journey[t.slot] === id ? "已装配" : "装配" }}{{ t.name }}
         </button>
         <button
           v-else
           :disabled="locked || game.study < 2 || game.stones < 20"
-          @click="emit('act', { type: 'learn', technique: id })"
+          @click="storyTravel.act({ type: 'learn', technique: id })"
         >
           坊市求教 · 20 灵石
         </button>
@@ -625,7 +631,7 @@ const mapImages = {
             repeat < 1 ||
             repeat > 12
           "
-          @click="emit('act', { type: 'enqueue', action: job, repeat })"
+          @click="storyTravel.act({ type: 'enqueue', action: job, repeat })"
         >
           加入安排
         </button>
@@ -640,10 +646,11 @@ const mapImages = {
         执行安排</button
       ><button
         :disabled="busy || !game.journey.queue.length"
-        @click="emit('act', { type: 'clearQueue' })"
+        @click="storyTravel.act({ type: 'clearQueue' })"
       >
         清空安排
       </button>
+    </div>
     </div>
   </section>
 </template>

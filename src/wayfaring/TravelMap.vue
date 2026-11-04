@@ -8,7 +8,7 @@ import { useMapFocus } from "../presentation/movement/useMapFocus";
 import { travelWalkSheet } from "../presentation/movement/appearance";
 import PathTraveler from "../presentation/movement/PathTraveler.vue";
 import { sites, roads, type TravelMode } from "./routes";
-import { travelQuote, studyError } from "./rules";
+import { preferredTravelMode, travelQuote, studyError } from "./rules";
 import { formatLifeMonths } from "../cultivation";
 const props = defineProps<{
   game: State;
@@ -25,8 +25,7 @@ const selected = ref<Destination>(
   props.game.wayfaring.trip?.to ?? props.destination ?? "ferry",
 );
 const mode = ref<TravelMode>(
-  props.game.wayfaring.trip?.mode ??
-    (props.game.wayfaring.swordFlight === "none" ? "land" : "flight"),
+  preferredTravelMode(props.game),
 );
 const quote = computed(() =>
   travelQuote(props.game, selected.value, mode.value),

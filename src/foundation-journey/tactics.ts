@@ -1,3 +1,4 @@
+import type { CombatEffect } from "../combat";
 import type { State } from "../world";
 import type { Move } from "../expedition/content";
 import { challenges } from "./content";
@@ -65,7 +66,8 @@ export function tacticalAdjustment(s: State, move: Move) {
   let damage = 0,
     incoming = 0,
     note = "";
-  if (d.ruleset !== 2) return { damage, incoming, note };
+  const effects: CombatEffect[] = [];
+  if (d.ruleset !== 2) return { damage, incoming, note, effects };
   if (move === "guard") {
     damage -= 3;
     incoming -= 5;
@@ -78,10 +80,12 @@ export function tacticalAdjustment(s: State, move: Move) {
   ) {
     damage += 2;
     incoming -= 5;
+    effects.push("blade-counter");
     note += "剑经循隙：承接守势或辨影反击，伤害 +2、承伤 −5。";
   }
   if (s.journey.main === "spring" && move === "guard" && d.effect !== "guard") {
     incoming -= 4;
+    effects.push("spring-guard");
     note += "长春固护：转入守势承伤 −4；有草时仍可回春。";
   }
   const same = d.effect === move;
@@ -162,6 +166,7 @@ export function tacticalAdjustment(s: State, move: Move) {
   if (s.foundationJourney.condensation && d.effect !== "none" && !same) {
     damage += 5;
     incoming -= 2;
+    effects.push("circulation");
     note += "周天贯流：换招伤害 +5、承伤 −2。";
   }
   const growth=s.foundationJourney.growth;
@@ -211,5 +216,5 @@ export function tacticalAdjustment(s: State, move: Move) {
     if(s.secretPact.aggressor === "rival" && s.secretPact.preparation === "anchor") {incoming-=4;note+="叶照护住预留阵钉，首合承伤 −4。";}
     if(s.secretPact.preparation === "light") {incoming+=3;note+="退路阵钉未稳，首合承伤 +3。";}
   }
-  return { damage, incoming, note };
+  return { damage, incoming, note, effects };
 }

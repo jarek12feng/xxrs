@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { projectInteractions } from "../story-interactions";
 import GoldenWorld from "../golden-scene/GoldenWorld.vue";
 import CombatBar from "../scene2d/combat/CombatBar.vue";
 import { goldenCombat } from "../golden-scene/presentation";
@@ -113,7 +114,7 @@ const choices = computed(() => {
         });
     }
   }
-  return rows.map((r) => ({ ...r, quote: conclaveQuote(s, r.action) }));
+  return projectInteractions(s, rows, conclaveQuote);
 });
 const safe = computed(
   () =>
@@ -187,7 +188,7 @@ const combatOptions = computed(() =>
       id: row.action.kind === "move" ? row.action.move : "",
       label: row.label.split(" · ")[0]!,
       detail: row.label.split(" · ").slice(1).join(" · "),
-      disabled: !!row.quote.error,
+      disabled: !row.available,
     })),
 );
 function move(id: string) {
@@ -311,9 +312,9 @@ watch(stageKey, () => {
       }}。抱元守神法与旧法招式不叠加；旧功法与研修保留。
     </p>
 
-    <div v-for="row in shown" :key="row.label" class="scene-choice">
+    <div v-for="row in shown" :key="row.id" class="scene-choice">
       <button
-        :disabled="busy || !!row.quote.error"
+        :disabled="busy || !row.available"
         @click="emit('act', { type: 'conclave', action: row.action })"
       >
         {{ row.label.split(" · ")[0] }}

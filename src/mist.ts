@@ -1,3 +1,4 @@
+import { evaluateEquipment } from "./equipment";
 import { companionPresent } from "./foundation-journey/progression";
 import { expeditionMistEcho } from "./expedition/resolution";
 import type { State } from "./world";
@@ -283,12 +284,7 @@ export function mistDetails(s: State) {
     },
     {
       name: "装配灵器",
-      value: s.journey.equipped
-        ? s.journey.relics[s.journey.equipped] *
-          (s.journey.equipped === (m.hazard === "wind" ? "sword" : "vial")
-            ? 6
-            : 3)
-        : 0,
+      value: evaluateEquipment(s, { kind: "mist", hazard: m.hazard }).chance,
     },
     {
       name: "照夜辨阵",

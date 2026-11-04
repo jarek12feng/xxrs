@@ -7,7 +7,8 @@ import {
   type Path,
   type Aptitude,
 } from "../src/core";
-import { exchangePreview, readiness } from "../src/expedition/combat";
+import { exchangePreview } from "../src/expedition/combat";
+import { readiness } from "../src/combat/game";
 import {
   expeditionResolution,
   expeditionMistEcho,

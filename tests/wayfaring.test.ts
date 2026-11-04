@@ -7,7 +7,7 @@ import {
   type State,
 } from "../src/core";
 import { journeyCheckpoint } from "../tools/foundation-journey-checkpoint";
-import { routeBetween, sites } from "../src/wayfaring/routes";
+import { inlandTravel, routeBetween, sites } from "../src/wayfaring/routes";
 import { travelQuote } from "../src/wayfaring/rules";
 import { measurePath, pointAt } from "../src/presentation/movement/path";
 const initial = journeyCheckpoint("male", false, "wood", "spring");
@@ -132,7 +132,10 @@ it("death cannot arrive or complete flight; pending events block departure and s
 it("in-progress trip cannot change mode, and abandonment retains spent months", () => {
   const s = fresh();
   s.wayfaring.swordFlight = "learned";
+  const quote=inlandTravel.plan({from:'home',to:'ferry',mode:'land',traveler:{realm:1,speeds:{land:1200},effects:[]}});
+  if(!quote.ok)throw Error(quote.error);
   s.wayfaring.trip = {
+    plan:quote.plan,
     from: "home",
     to: "ferry",
     mode: "land",
@@ -153,7 +156,7 @@ it("version 31 migrates only empty travel facts; malformed current travel and fu
   const old = { ...fresh(), version: 31 };
   delete (old as Partial<State>).wayfaring;
   const n = migrateSave(old);
-  expect(n.version).toBe(33);
+  expect(n.version).toBe(34);
   expect(n.wayfaring).toEqual({ swordFlight: "none", trip: null, passage: null, last: "" });
   expect(n.seed).toBe(old.seed);
   expect(validState(n)).toBe(true);

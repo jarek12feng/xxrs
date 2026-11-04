@@ -12,7 +12,7 @@ import {
   conclaveSupplement,
 } from "../src/conclave/rules";
 import { freshConclave, goldenCap } from "../src/conclave/state";
-import { readiness, tacticalExchange } from "../src/expedition/combat";
+import { readiness, tacticalPreview } from "../src/combat/game";
 import {
   cultivationProjection,
   cultivationStageIndex,
@@ -126,13 +126,12 @@ describe("诸宗会与凝婴机缘", () => {
     p.act({ kind: "method", method: "still" });
     expect(readiness(p.state).damage).toBe(inherited.damage - 8);
     expect(readiness(p.state).armor).toBe(inherited.armor + 6);
-    const battle = tacticalExchange(
-      p.state,
-      "guard",
-      { hp: 300, attack: 50, pattern: ["guard"] },
-      { hp: 10, enemy: 300, turn: 0 },
-      "",
-    )!;
+    const battle = tacticalPreview(p.state, {
+move: "guard",
+encounter: { hp: 300, attack: 50, pattern: ["guard"] },
+battle: { hp: 10, enemy: 300, turn: 0 },
+effect: ""
+})!;
     expect(battle.healing).toBe(0);
     expect(p.state.journey.known).toEqual(known);
     expect(p.state.growth.training).toEqual(training);
@@ -242,7 +241,7 @@ describe("诸宗会与凝婴机缘", () => {
     const v30 = { ...old, version: 30, conclave: undefined };
     const migrated = migrateSave(v30);
     expect(migrated.conclave).toEqual(freshConclave());
-    expect(migrated.version).toBe(33);
+    expect(migrated.version).toBe(34);
     expect(validState(migrated)).toBe(true);
     expect(() => migrateSave({ ...start, version: 999 })).toThrow();
   });

@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import StoryTravelMap from "./wayfaring/StoryTravelMap.vue";
+import { useStoryTravel } from "./wayfaring/useStoryTravel";
+import { additionalStoryRoute } from "./wayfaring/additional-story";
 import StoryScenes from "./scene2d/StoryScenes.vue";
+import { advanceStoryPreference } from './scene2d/story-preference';
 import EventScene from "./scene2d/EventScene.vue";
 import {goldenCap} from "./conclave/state";
 import { goldenGoal } from "./golden-core/rules";
@@ -455,7 +459,10 @@ const desktopRuntime = window.location.protocol === "xxrs:";
 function quitGame() {
   if (!ui.busy && desktopRuntime) window.close();
 }
+const globalTravel = useStoryTravel(()=>game.value,()=>ui.busy, intent=>{void executeAct(intent);}, true);
+const {route:globalTravelRoute, arrived:globalTravelArrived}=globalTravel;
 const modal = computed(() =>
+  globalTravelRoute.value ? "travel" :
   titleScreen.value || systemOverlay.value
     ? dialog.value
     : receiptExpanded.value
@@ -506,6 +513,15 @@ async function persist(s: State) {
 }
 async function act(intent: Intent) {
   if (!game.value || ui.busy || receiptExpanded.value) return false;
+  if (game.value && additionalStoryRoute(game.value,intent)) {
+    ui.running=false;
+    globalTravel.act(intent);
+    return false;
+  }
+  return executeAct(intent);
+}
+async function executeAct(intent: Intent) {
+  if (!game.value || ui.busy || receiptExpanded.value) return false;
   const automatic = ui.running;
   actionOrigin = document.activeElement as HTMLElement | null;
   const old = game.value,
@@ -529,6 +545,7 @@ async function act(intent: Intent) {
   }
   const ok = await persist(n);
   if (ok) {
+    advanceStoryPreference(old, n, localStorage);
     combatFeedback.value = projectCombatFeedback(old, n, intent);
     if (!automatic) pauseReason.value = null;
     const changedScene =
@@ -898,6 +915,9 @@ onUnmounted(() => {
 });
 </script>
 <template>
+  <div v-if="globalTravelRoute && game" class="overlay" role="dialog" aria-modal="true" aria-label="剧情旅行">
+    <StoryTravelMap style="width:min(1440px,96vw);max-height:94vh;overflow:auto" :game="game" :route="globalTravelRoute" :busy="ui.busy" :arrived="globalTravelArrived" @depart="globalTravel.depart" @close="globalTravel.close" @cancel="globalTravel.cancel" />
+  </div>
   <PlaytestRecorder v-if="playtestEnabled" :game="game" />
   <div v-if="ui.busy" class="saving-pulse" role="status">正在保存……</div>
   <div v-if="notice" class="notice" role="alert">{{ notice }}</div>
@@ -1433,7 +1453,7 @@ onUnmounted(() => {
     />
   </div>
   <div
-    v-if="modal && !receiptExpanded"
+    v-if="modal && !receiptExpanded && !globalTravelRoute"
     class="overlay"
     :data-mood="heart ? eventMood : 'day'"
   >

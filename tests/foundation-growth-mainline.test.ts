@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { dispatch, validState, migrateSave, createGame } from '../src/core';
 import { freshSocial } from '../src/social';
-import { freshHeroine } from '../src/foundation-journey/heroine';
+import { applyHeroine, freshHeroine } from '../src/foundation-journey/heroine';
 import { foundationCap } from '../src/foundation-journey/growth-state';
 import { journeyCheckpoint, journeyPlayer } from '../tools/foundation-journey-checkpoint';
 import { growthQuote, routeInfo } from '../src/foundation-journey/growth';
@@ -9,6 +9,14 @@ import { journeyActionError } from '../src/foundation-journey/progression';
 import { foundationGoal } from '../src/foundation-journey/progression';
 import { journeyOptions } from '../src/foundation-journey/view';
 import type { ResourceRoute } from '../src/foundation-journey/growth-state';
+it.each([true,false])('meeting text respects whether guard was already learned: %s',known=>{
+ const s=createGame('行旅','wood',42);s.herbs=5;
+ s.journey.known=known?['guard']:[];
+ applyHeroine(s,{kind:'meetHeroine',method:'supplies'});
+ expect(s.journey.known.filter(x=>x==='guard')).toHaveLength(1);
+ expect(s.foundationJourney.last.includes('习得护身诀')).toBe(!known);
+ expect(s.herbs).toBe(1);
+});
 it('updates the reunion goal when the agreed three months have elapsed', () => {
  const s=journeyCheckpoint('male',false);
  const q=s.foundationJourney;
@@ -92,5 +100,5 @@ it('rejects corrupt earned milestones and does not silently import old foundatio
  for(const update of [(n:typeof s)=>n.foundationJourney.growth.refined=true,(n:typeof s)=>n.foundationJourney.heroine.supplied=true,(n:typeof s)=>n.foundationJourney.cultivation=200]){
   const n=structuredClone(s);update(n);expect(validState(n)).toBe(false);
  }
- const qi=createGame('存档','wood');const legacy={...qi,version:21};expect(migrateSave(legacy).version).toBe(33);
+ const qi=createGame('存档','wood');const legacy={...qi,version:21};expect(migrateSave(legacy).version).toBe(34);
 });

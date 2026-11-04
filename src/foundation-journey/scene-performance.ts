@@ -1,5 +1,6 @@
 import type { State } from '../world';
 import type { Pose } from '../presentation/art';
+import { awaitingFerryConversation } from './heroine';
 export type FoundationPerformance = 'meeting' | 'map' | 'inherit' | 'refine' | 'supply' | 'rescue' | 'estateFlow' | 'snowLine' | 'wellOpen' | 'circulation';
 export function foundationSceneSnapshot(s: State) {
   const q = s.foundationJourney;
@@ -39,7 +40,7 @@ export function foundationCompanionPresent(s: State, mode: string) {
   if (mode==='board' || q.duel || s.social.gender!=='male') return false;
   if (mode==='relationship') return ['home','returned','rescued'].includes(q.whereabouts);
   return (q.location==='home' && !['away','missing','shelter'].includes(q.whereabouts)) ||
-    (q.location==='ferry' && q.ferry===0 && q.heroine.meeting!=='none') ||
+    (q.location==='ferry' && q.ferry===0 && q.heroine.meeting!=='none') || awaitingFerryConversation(s) ||
     (q.location==='frontier' && q.rescue===4 && q.whereabouts==='rescued');
 }
 

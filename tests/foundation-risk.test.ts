@@ -12,7 +12,8 @@ import { foundationPassages } from "../src/foundation";
 import { foundationPreparation } from "../src/foundation-preparation";
 import { actionReceipt } from "../src/action-feedback";
 import { luchiView } from "../src/characters";
-import { exchangePreview, moveHint, readiness } from "../src/expedition/combat";
+import { exchangePreview, moveHint } from "../src/expedition/combat";
+import { readiness } from "../src/combat/game";
 import { foundationReunion } from "../src/foundation-scenes";
 const send = (s: State, intent: Intent) =>
   dispatch(s, { ...intent, id: `risk-${s.seen.length}` });

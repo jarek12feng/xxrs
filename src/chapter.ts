@@ -1,3 +1,6 @@
+import { quoteMedicineUse } from "./medicines";
+import { breakthroughDetails, breakthroughSuccess, foundationFailure } from "./progression";
+export { breakthroughDetails, breakthroughSuccess } from "./progression";
 import { foundationCost } from "./workshop/catalog";
 import { cultivationGainAtAge, cultivationMonthlyGain } from "./cultivation";
 import {
@@ -250,33 +253,6 @@ export function canGather(s: State) {
 }
 export function canTrain(s: State) {
   return s.path === "sword" || s.inherited === "sword";
-}
-export function breakthroughSuccess(s: Pick<State, "limit">) {
-  return { realm: 1 as const, qi: 0, limit: s.limit + 100 * 12 };
-}
-export function breakthroughDetails(s: State, pill = false) {
-  const parts = [
-    { label: "炼气基础", value: 45 },
-    { label: "根基", value: s.foundation },
-    { label: "剑意", value: Math.floor(s.mastery / 2) },
-    {
-      label: "陆迟护法",
-      value:
-        s.story.luchi === "foundation" ? (s.story.trust >= 4 ? 15 : 10) : 0,
-    },
-    { label: "伤势", value: -s.injury * 5 },
-    { label: "筑基丹", value: pill ? 20 : 0 },
-  ];
-  return {
-    parts,
-    chance: Math.max(
-      10,
-      Math.min(
-        95,
-        parts.reduce((n, p) => n + p.value, 0),
-      ),
-    ),
-  };
 }
 export function cultivationGain(s: State) {
   return cultivationMonthlyGain(s);
@@ -825,7 +801,7 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
     if (s.pending) return accept();
     const chance = breakthroughDetails(s, c.pill).chance,
       roll = Math.floor(rng(s) * 100) + 1;
-    if (c.pill) s.pills--;
+    if (c.pill) s.pills = quoteMedicineUse("foundation", { scene: "foundation-breakthrough", count: s.pills, month: s.month }).remaining;
     if (roll <= chance) {
       Object.assign(s, breakthroughSuccess(s));
       s.result = `筑基成功：判定 ${roll}/100，成功率 ${chance}%。寿元 +100 年。`;
@@ -833,10 +809,7 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
       maybeFinish(s);
     } else {
       const protectedFailure = s.ward;
-      s.qi = Math.floor((s.qi * (protectedFailure ? 9 : 7)) / 10);
-      s.ward = false;
-      s.injury = Math.min(6, s.injury + 2);
-      if (!protectedFailure) s.limit -= 12;
+      Object.assign(s, foundationFailure(s));
       s.result = `突破未成：判定 ${roll}/100，成功率 ${chance}%。${protectedFailure ? "护脉丹纹消耗：保留九成修为、不减寿" : "修为保留七成、寿元上限 −1 年"}，伤势 +2；可养伤、炼丹或再打磨根基。`;
       record(s, s.result, "warning");
       if (s.age >= s.limit) finish(s, true);

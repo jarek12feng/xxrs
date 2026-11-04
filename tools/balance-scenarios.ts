@@ -9,7 +9,7 @@ import {
   type Aptitude,
 } from "../src/core";
 import { foundationStep } from "./foundation-playthrough";
-import { readiness } from "../src/expedition/combat";
+import { readiness } from "../src/combat/game";
 export const dispersedSeeds = Array.from(
   { length: 128 },
   (_, i) => Math.imul(i + 1, 0x9e3779b1) >>> 0,

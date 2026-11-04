@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { equipmentCategoryLabel } from "../equipment";
+import { medicineCategoryLabel } from "../medicines";
 import GrowthPreview from "../GrowthPreview.vue";
 import { computed, ref } from "vue";
 import type { State, Intent } from "../core";
@@ -26,6 +28,7 @@ const cards = computed(() => {
   return ids.map((product) => ({
     product,
     ...products[product],
+    purpose: product === "sword" || product === "vial" ? equipmentCategoryLabel(product) : product === "iron" ? "材料" : medicineCategoryLabel(product),
     choices: (product === "iron"
       ? (["buy"] as const)
       : product === "foundation"
@@ -93,6 +96,7 @@ function order(o: WorkshopOrder) {
           :id="card.product === 'foundation' ? 'pills' : card.product"
         />{{ card.name }}
       </h4>
+      <p class="muted">{{ card.purpose }}</p>
       <p>{{ card.hint }}</p>
       <p v-if="card.product === 'sword' || card.product === 'vial'">
         现有 {{ game.journey.relics[card.product] }} 阶 ·

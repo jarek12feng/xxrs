@@ -1,3 +1,4 @@
+import { hasEquippedRelic } from "./equipment";
 import type { State } from "./world";
 import { cultivationStageIndex } from "./cultivation";
 import { mainTraining } from "./growth";
@@ -31,7 +32,7 @@ export function realmPressure(
     mainTraining(s) === 2
   )
     methods.push("沉井传承与主修相合");
-  if (s.journey.equipped !== null && s.journey.relics[s.journey.equipped] >= 2)
+  if (hasEquippedRelic(s, 2))
     methods.push("二阶灵器");
   if (cooperation) methods.push("道侣合力");
   const uncovered =

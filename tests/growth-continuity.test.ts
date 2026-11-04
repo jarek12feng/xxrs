@@ -34,7 +34,8 @@ import {
   cultivationGain,
   type State,
 } from "../src/core";
-import { readiness, exchangePreview } from "../src/expedition/combat";
+import { exchangePreview } from "../src/expedition/combat";
+import { readiness } from "../src/combat/game";
 import { expeditionSession } from "../tools/expedition-simulation";
 function learner() {
   const s = createGame("试炼", "sword", 91);
@@ -129,7 +130,7 @@ it("migrates v12 conservatively, rejects corrupt growth, and retains it across m
   const old = { ...rest, version: 12 };
   const copy = structuredClone(old);
   const n = migrateSave(old);
-  expect(n.version).toBe(33);
+  expect(n.version).toBe(34);
   expect(old).toEqual(copy);
   expect(n.seed).toBe(old.seed);
   expect(
