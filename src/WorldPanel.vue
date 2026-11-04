@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { PreparationSelection } from "./workshop/preparation";
+const preparationSelection = defineModel<PreparationSelection | null>("preparationSelection", {default: null});
 import StoryTravelMap from "./wayfaring/StoryTravelMap.vue";
 import { useStoryTravel } from "./wayfaring/useStoryTravel";
 import LearningChoices from "./LearningChoices.vue";
@@ -419,7 +421,7 @@ const mapImages = {
       aria-label="灵器操作区"
     >
       <TreasurePanel :game="game" :busy="busy || running" @act="storyTravel.act($event)" />
-      <WorkshopPanel :game="game" :busy="busy || running" @act="storyTravel.act($event)" />
+      <WorkshopPanel v-model:selection="preparationSelection" :game="game" :busy="busy || running" @act="storyTravel.act($event)" />
     </div>
     <div v-else-if="tab === 'sect'" style="display: contents">
       <RecognitionPanel :game="game" :busy="locked" @act="storyTravel.act($event)" />

@@ -91,3 +91,18 @@ it('persists a live auction and preserves its next bid and opponent budget', asy
   expect(dispatch(restored,{id:'bid',type:'treasure',action:{kind:'bid'}})).toBe(restored);
   expect(dispatch(restored,{id:'next-bid',type:'treasure',action:{kind:'bid'}})).toEqual(dispatch(state,{id:'next-bid',type:'treasure',action:{kind:'bid'}}));
 });
+it('loaded current snapshots are isolated from the database and future versions stay protected', async()=>{
+  const a=createGame('隔离','wood',42);await save(a);
+  const first=(await load()).state!;first.stones=999;
+  expect((await load()).state).toEqual(a);
+  await new Promise<void>((resolve,reject)=>{
+    const r=indexedDB.open('cultivation-life',1);
+    r.onsuccess=()=>{const db=r.result,tx=db.transaction('saves','readwrite');
+      tx.objectStore('saves').put({...a,version:a.version+1},'current');
+      tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>{db.close();reject(tx.error);};
+    };
+  });
+  await expect(load()).rejects.toThrow('较新版本');
+  await expect(save(a)).rejects.toThrow();
+  await expect(load()).rejects.toThrow('较新版本');
+});

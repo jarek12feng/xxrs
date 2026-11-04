@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { activityInterruption } from "./scene-activity";
+import { formatLifeMonths } from "./progression";
 import { computed } from "vue";
 import { actionError, medicineError, type State, type Intent } from "./core";
 import { growthComparison } from "./growth-feedback";
 import GrowthPreview from "./GrowthPreview.vue";
 const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent] }>();
+const restError = computed(() => activityInterruption(props.game) || actionError(props.game, 'rest'));
+const restMonths = computed(() => Math.min(12, props.game.injury));
 const impact = computed(() =>
   growthComparison({ ...props.game, injury: 0 }, props.game),
 );
@@ -15,12 +19,16 @@ const impact = computed(() =>
     <p v-for="line in impact" :key="line">{{ line }}</p>
     <GrowthPreview :game="game" :request="{ kind: 'rest' }" compact />
     <button
-      :disabled="busy || !!actionError(game, 'rest')"
+      :disabled="busy || !!restError"
       @click="emit('act', { type: 'advance', activity: 'rest', months: 1 })"
     >
       静养一月 · 免费
     </button>
-    <small>{{ actionError(game, "rest") }}</small>
+    <button v-if="game.injury > 1" :disabled="busy || !!restError" @click="emit('act', { type: 'advance', activity: 'rest', months: restMonths })">
+      静养至痊愈 · 最多{{ formatLifeMonths(restMonths) }} · 免费
+    </button>
+    <small>遇事件或寿尽提前停止；痊愈后不再消耗月份。</small>
+    <small>{{ restError }}</small>
     <GrowthPreview :game="game" :request="{ kind: 'healing' }" compact />
     <button
       :disabled="busy || !!medicineError(game, 'healing', true)"

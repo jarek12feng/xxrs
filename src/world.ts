@@ -1,3 +1,4 @@
+import { settleResources } from "./economy";
 import { previewEncounter, resolveEncounter } from "./combat";
 import { evaluateEquipment, applyEquipmentChange } from "./equipment";
 import { SAVE_VERSION } from './save-version';
@@ -867,9 +868,7 @@ function dispatchCommand(input: State, c: Command): State {
   };
   switch (c.type) {
     case "supplies":
-      if (s.stones < 8) return input;
-      s.stones -= 8;
-      s.herbs += 4;
+      if (settleResources(s, {stones: 8}, {herbs: 4}).error) return input;
       log(s, "坊市购得灵草四株，可用于灵器炼制、炼丹或与守境妖修交涉。");
       return accept();
     case "equipRelic": {

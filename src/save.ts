@@ -19,7 +19,9 @@ function newer(value: unknown) {
 }
 function read(value: unknown) {
   try {
-    return migrateSave(value);
+    // IndexedDB already returned an isolated structured clone. Current saves need
+    // validation, not a second migration clone. Older versions still migrate.
+    return validState(value) ? value : migrateSave(value);
   } catch {
     return null;
   }
@@ -40,8 +42,8 @@ export async function load(): Promise<{
         reject(new Error("这是较新版本的存档，请更新游戏后读取。原档未修改。"));
         return;
       }
-      const current = read(a.result),
-        previous = read(b.result);
+      const current = read(a.result);
+      const previous = current ? null : read(b.result);
       if (current) resolve({ state: current, recovered: false });
       else if (previous) resolve({ state: previous, recovered: true });
       else if (a.result || b.result)
@@ -66,10 +68,11 @@ export async function save(state: State) {
         tx.abort();
         return;
       }
-      if (read(old.result)) store.put(old.result, "previous");
+      const recognized = read(old.result);
+      if (recognized) store.put(old.result, "previous");
       if (
         Number.isInteger(old.result?.version) && old.result.version >= 1 && old.result.version < SAVE_VERSION &&
-        read(old.result)
+        recognized
       ) {
         const key = `original-v${old.result.version}`;
         const backup = store.get(key);

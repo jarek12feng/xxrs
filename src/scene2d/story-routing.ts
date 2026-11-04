@@ -1,3 +1,4 @@
+import { sceneOwner } from "../scene-activity";
 import type { State } from "../core";
 export type StoryChapter =
   | "opening"
@@ -71,16 +72,8 @@ export function storyChapter(
   preferred: string,
   showRoad = false,
 ): StoryChapter {
-  if(s.wayfaring.trip) return "foundation";
-  if(s.wayfaring.passage) return s.wayfaring.passage.route.startsWith("sea:") ? "sea" : "conclave";
-  // An ongoing encounter always owns the scene. UI navigation never advances a journey.
-  if (s.realm === 2 && s.conclave.location !== "away") return "conclave";
-  if (s.realm === 2 && s.outerSea.location === "ruins") return "sea";
-  if (s.realm === 1 && s.sectContest.stage === "entered") return "contest";
-  if (s.realm === 1 && s.goldenCore.expedition !== "idle") return "golden";
-  if (s.realm === 1 && s.foundationJourney.duel) return "foundation";
-  if (s.realm === 0 && s.qiJourney.duel) return "qi";
-  if (s.realm < 2 && s.expedition.duel) return "road";
+  const owner = sceneOwner(s);
+  if (owner) return owner;
   const available = storyChapters(s, showRoad);
   return available.find((x) => x.id === preferred)?.id ?? available[0].id;
 }

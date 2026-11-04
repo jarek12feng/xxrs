@@ -1,3 +1,4 @@
+import { preparationRates, monthlyStudy } from "./preparation-rates";
 import { quoteMedicineUse } from "./medicines";
 import { breakthroughDetails, breakthroughSuccess, foundationFailure } from "./progression";
 export { breakthroughDetails, breakthroughSuccess } from "./progression";
@@ -730,7 +731,7 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
       if (c.activity === "cultivate")
         s.qi = Math.min(MAX_QI, s.qi + cultivationGainAtAge(s));
       if (c.activity === "gather") {
-        s.herbs += 2;
+        s.herbs += preparationRates.herbs;
         s.qi = Math.min(MAX_QI, s.qi + 3);
       }
       if (c.activity === "train") {
@@ -743,9 +744,9 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
         s.qi = Math.min(MAX_QI, s.qi + 2);
       }
       if (c.activity === "study")
-        s.study = Math.min(4, s.study + (s.wisdom >= 8 ? 2 : 1));
-      if (c.activity === "work") s.stones += 5;
-      if (c.activity === "rest") s.injury = Math.max(0, s.injury - 1);
+        s.study = Math.min(4, s.study + monthlyStudy(s.wisdom));
+      if (c.activity === "work") s.stones += preparationRates.stones;
+      if (c.activity === "rest") s.injury = Math.max(0, s.injury - preparationRates.healing);
       if (c.activity !== "cultivate")
         record(
           s,

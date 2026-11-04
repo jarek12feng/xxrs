@@ -77,7 +77,39 @@ it("pending story disables every mutating workshop action while leaving category
   await flush();
   expect(
     [...document.querySelectorAll("button")]
-      .filter((b) => !b.disabled)
+      .filter((b) => !b.disabled && b.textContent?.trim() !== "查看筹备缺口")
       .map((b) => b.textContent?.trim()),
   ).toEqual(["丹药", "法器与刻纹"]);
+});
+it("preparation is read-only until confirmed and refreshes the chosen budget after work", async () => {
+  const initial=createGame('按需筹备','wood',42);initial.stones=2;
+  const state=shallowRef(initial),intents:Intent[]=[];
+  app=createApp({render:()=>h(WorkshopPanel,{game:state.value,busy:false,onAct:(c:Intent)=>{
+    intents.push(c);state.value=dispatch(state.value,{...c,id:`plan-${intents.length}`});
+  }})});
+  app.mount(document.body.appendChild(document.createElement('div')));await flush();
+  const card=[...document.querySelectorAll('article.workshop-card')].find(x=>x.querySelector('h4')?.textContent?.includes('回春散'))!;
+  const buy=[...card.querySelectorAll('.workshop-options > div')].find(x=>x.textContent?.includes('购买成品'))!;
+  [...buy.querySelectorAll('button')].find(b=>b.textContent?.includes('查看筹备'))!.click();await flush();
+  expect(intents).toHaveLength(0);
+  const plan=()=>document.querySelector('[aria-label="当前筹备方案"]')!;
+  expect(plan().textContent).toContain('灵石 10');
+  [...plan().querySelectorAll('button')].find(b=>b.textContent?.includes('劳作筹灵石'))!.click();await flush();
+  expect(intents).toEqual([{type:'advance',activity:'work',months:2}]);
+  expect(state.value.growth.medicines.healing).toBe(0);
+  expect(plan().textContent).toContain('灵石 0');
+  [...plan().querySelectorAll('button')].find(b=>b.textContent?.includes('按所选方案'))!.click();await flush();
+  expect(state.value.growth.medicines.healing).toBe(1);
+  expect(plan().textContent).toContain('本次筹备已完成');
+  expect(plan().textContent).not.toContain('劳作筹灵石');
+});
+it('retains a selected preparation across an event overlay unmount',async()=>{
+  const state=createGame('中断筹备','wood',42),shown=shallowRef(true);
+  const selection=shallowRef<import('../src/workshop/preparation').PreparationSelection|null>(null);
+  app=createApp({render:()=>shown.value?h(WorkshopPanel,{game:state,busy:false,selection:selection.value,'onUpdate:selection':value=>{selection.value=value;}}):h('div','待决事件')});
+  app.mount(document.body.appendChild(document.createElement('div')));await flush();
+  [...document.querySelectorAll('button')].find(b=>b.textContent?.includes('查看筹备缺口'))!.click();await flush();
+  expect(selection.value?.order).toEqual({product:'healing',method:'craft'});
+  shown.value=false;await flush();shown.value=true;await flush();
+  expect(document.querySelector('[aria-label="当前筹备方案"]')?.textContent).toContain('自行炼制 · 回春散');
 });

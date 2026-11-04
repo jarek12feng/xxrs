@@ -1,0 +1,50 @@
+{
+  "environment": "Node + fake-indexeddb; controlled command fixtures, not browser or Windows measurements",
+  "node": "v24.7.0",
+  "rows": [
+    {
+      "realm": 0,
+      "month": 0,
+      "bytes": 5063,
+      "metrics": {
+        "command": {
+          "samples": 35,
+          "p50Ms": 0.0487910000000511,
+          "p95Ms": 0.06941600000004655
+        },
+        "save": {
+          "samples": 35,
+          "p50Ms": 0.23445800000001782,
+          "p95Ms": 0.32262500000001637
+        },
+        "load": {
+          "samples": 35,
+          "p50Ms": 0.14783399999998892,
+          "p95Ms": 0.21570900000006077
+        }
+      }
+    },
+    {
+      "realm": 2,
+      "month": 2473,
+      "bytes": 30868,
+      "metrics": {
+        "command": {
+          "samples": 35,
+          "p50Ms": 0.13870799999995143,
+          "p95Ms": 0.15991699999995035
+        },
+        "save": {
+          "samples": 35,
+          "p50Ms": 0.6080829999999651,
+          "p95Ms": 1.8930420000000368
+        },
+        "load": {
+          "samples": 35,
+          "p50Ms": 0.3341250000000855,
+          "p95Ms": 0.41295800000000327
+        }
+      }
+    }
+  ]
+}

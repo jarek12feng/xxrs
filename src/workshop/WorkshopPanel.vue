@@ -1,8 +1,15 @@
 <script setup lang="ts">
+import {
+  preparationPlan,
+  preparationOutcome,
+  preparationCompleted,
+  type PreparationSelection,
+} from "./preparation";
+import { formatLifeMonths } from "../progression";
 import { equipmentCategoryLabel } from "../equipment";
 import { medicineCategoryLabel } from "../medicines";
 import GrowthPreview from "../GrowthPreview.vue";
-import { computed, ref } from "vue";
+import { computed, ref, nextTick } from "vue";
 import type { State, Intent } from "../core";
 import ItemArt from "../presentation/ItemArt.vue";
 import { products, type Product, type Method } from "./catalog";
@@ -10,6 +17,23 @@ import { tempers, temperInfo, type Temper } from "./state";
 import { workshopQuote, workshopLock, type WorkshopOrder } from "./rules";
 const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent] }>();
+const selection = defineModel<PreparationSelection | null>("selection", {
+  default: null,
+});
+const selectedOrder = computed(() => selection.value?.order ?? null);
+const preparationPanel = ref<HTMLElement | null>(null);
+const planComplete = computed(
+  () => !!selection.value && preparationCompleted(props.game, selection.value),
+);
+async function selectPlan(order: WorkshopOrder) {
+  selection.value = { order, outcome: preparationOutcome(props.game, order) };
+  await nextTick();
+  preparationPanel.value?.focus({ preventScroll: true });
+  preparationPanel.value?.scrollIntoView({ block: "nearest" });
+}
+const preparation = computed(() =>
+  selectedOrder.value ? preparationPlan(props.game, selectedOrder.value) : null,
+);
 const category = ref<"medicine" | "relic">(
   props.game.journey.relics.sword || props.game.journey.relics.vial
     ? "relic"
@@ -28,7 +52,12 @@ const cards = computed(() => {
   return ids.map((product) => ({
     product,
     ...products[product],
-    purpose: product === "sword" || product === "vial" ? equipmentCategoryLabel(product) : product === "iron" ? "材料" : medicineCategoryLabel(product),
+    purpose:
+      product === "sword" || product === "vial"
+        ? equipmentCategoryLabel(product)
+        : product === "iron"
+          ? "材料"
+          : medicineCategoryLabel(product),
     choices: (product === "iron"
       ? (["buy"] as const)
       : product === "foundation"
@@ -79,6 +108,72 @@ function order(o: WorkshopOrder) {
     <p class="muted">
       开炉期间若遇来信、约定或寿尽，将中断筹备，不扣材料、不发成品；处理后可重新安排。不会自动替你选择。
     </p>
+    <section
+      v-if="preparation"
+      ref="preparationPanel"
+      tabindex="-1"
+      class="workshop-card"
+      aria-label="当前筹备方案"
+    >
+      <h4>
+        {{ methods[selectedOrder!.method] }} · {{ preparation.quote.name }}
+      </h4>
+      <template v-if="planComplete">
+        <p>本次筹备已完成，可在下方查看物品与装配选项。</p>
+        <button :disabled="busy" @click="selectPlan(selectedOrder!)">
+          再筹备一份
+        </button>
+      </template>
+      <template v-else>
+        <p>
+          {{ preparation.quote.cost }} ·
+          {{
+            preparation.quote.months
+              ? formatLifeMonths(preparation.quote.months)
+              : "不耗月份"
+          }}
+        </p>
+        <p>{{ preparation.quote.effect }}</p>
+        <p>
+          尚缺：灵石 {{ preparation.deficits.stones }} · 灵草
+          {{ preparation.deficits.herbs }} · 玄铁料
+          {{ preparation.deficits.iron }} · 心得
+          {{ preparation.deficits.study }}
+        </p>
+        <div v-for="purchase in preparation.purchases" :key="purchase.label">
+          <button
+            :disabled="busy || !!purchase.error"
+            @click="emit('act', purchase.intent)"
+          >
+            {{ purchase.label }}
+          </button>
+          <small v-if="purchase.error">{{ purchase.error }}</small>
+        </div>
+        <div v-for="step in preparation.steps" :key="step.label">
+          <button
+            :disabled="busy || !!step.error"
+            @click="emit('act', step.intent)"
+          >
+            {{ step.label }} · 最多{{ formatLifeMonths(step.months) }} · 预计
+            +{{ step.gain }}
+          </button>
+          <small v-if="step.error">{{ step.error }}</small>
+        </div>
+        <p class="muted">
+          按现有收益估算，每次最多十二月；事件、约期、寿尽或修行上限可能提前停止。每项由你分别决定，不自动开炉或购买。
+        </p>
+        <button
+          :disabled="busy || !!preparation.quote.error"
+          @click="order(selectedOrder!)"
+        >
+          按所选方案制作或购买
+        </button>
+        <small v-if="preparation.quote.error">{{
+          preparation.quote.error
+        }}</small>
+      </template>
+      <button @click="selection = null">收起筹备</button>
+    </section>
     <nav class="panel-tabs" aria-label="制作分类">
       <button
         :aria-pressed="category === 'medicine'"
@@ -104,7 +199,12 @@ function order(o: WorkshopOrder) {
           game.journey.equipped === card.product ? "已装配" : "未装配"
         }}。基础炼制费用包含普通器胚与炉火，灵草用于温养灵路。
       </p>
-      <GrowthPreview v-if="card.product === 'sword' || card.product === 'vial'" :game="game" :request="{ kind: 'refine', id: card.product }" compact />
+      <GrowthPreview
+        v-if="card.product === 'sword' || card.product === 'vial'"
+        :game="game"
+        :request="{ kind: 'refine', id: card.product }"
+        compact
+      />
       <div class="workshop-options">
         <div v-for="choice in card.choices" :key="choice.method">
           <button
@@ -127,9 +227,21 @@ function order(o: WorkshopOrder) {
             }}<span v-if="choice.study"> · 心得 {{ choice.study }}</span>
           </p>
           <small v-if="choice.error">{{ choice.error }}</small>
+          <button :disabled="busy" @click="selectPlan(choice.order)">
+            查看筹备缺口
+          </button>
         </div>
       </div>
-      <GrowthPreview v-if="(card.product === 'sword' || card.product === 'vial') && game.journey.relics[card.product] && game.journey.equipped !== card.product" :game="game" :request="{ kind: 'relic', id: card.product }" compact />
+      <GrowthPreview
+        v-if="
+          (card.product === 'sword' || card.product === 'vial') &&
+          game.journey.relics[card.product] &&
+          game.journey.equipped !== card.product
+        "
+        :game="game"
+        :request="{ kind: 'relic', id: card.product }"
+        compact
+      />
       <button
         v-if="card.product === 'sword' || card.product === 'vial'"
         :disabled="
@@ -157,7 +269,11 @@ function order(o: WorkshopOrder) {
         <article v-for="option in item.options" :key="option.name">
           <h4>{{ option.name }}</h4>
           <p>{{ option.hint }}</p>
-          <GrowthPreview :game="game" :request="{ kind: 'temper', id: item.relic, temper: option.temper }" compact />
+          <GrowthPreview
+            :game="game"
+            :request="{ kind: 'temper', id: item.relic, temper: option.temper }"
+            compact
+          />
           <div class="workshop-options">
             <div v-for="choice in option.choices" :key="choice.method">
               <button
@@ -175,6 +291,9 @@ function order(o: WorkshopOrder) {
                 >
               </p>
               <small v-if="choice.error">{{ choice.error }}</small>
+              <button :disabled="busy" @click="selectPlan(choice.order)">
+                查看筹备缺口
+              </button>
             </div>
           </div>
         </article>

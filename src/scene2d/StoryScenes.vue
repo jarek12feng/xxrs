@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { sceneOwner } from "../scene-activity";
 import { readStoryPreference, writeStoryPreference } from './story-preference';
 import { qiGoal } from '../qi-journey/rules';
 import StoryTravelMap from "../wayfaring/StoryTravelMap.vue";
@@ -30,7 +31,7 @@ watch(() => props.game.adventure.step, (step,old) => { if(step==='done' && old!=
 watch(() => props.game.journey.learning.book, (book,old) => { if(book&&!old) preferred.value='practice'; });
 const chapters=computed(()=>storyChapters(props.game,props.showRoad).filter(item=>item.id!=='conclave'));
 const chapter=computed(()=>storyChapter(props.game,preferred.value,props.showRoad));
-const encounter=computed(()=>!!(props.game.qiJourney.duel||props.game.expedition.duel||props.game.foundationJourney.duel||props.game.sectContest.duel||props.game.goldenCore.duel||props.game.outerSea.duel||props.game.conclave.duel)||props.game.conclave.location!=='away'||props.game.outerSea.location==='ruins'||props.game.sectContest.stage==='entered'||props.game.goldenCore.expedition!=='idle');
+const encounter=computed(()=>!!sceneOwner(props.game));
 // Loading or mounting mid-encounter must also retain that journey after its final turn.
 // Otherwise the temporary forced chapter would fall back to the old road preference.
 watch(() => encounter.value ? chapter.value : null, (owner) => {

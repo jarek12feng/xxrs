@@ -1,3 +1,4 @@
+import { quoteSettlement, settleResources } from "./economy";
 import { grantTechnique } from "./techniques";
 import { previewArenaAction, resolveArenaAction } from "./combat";
 import { arenaContext } from "./combat/game";
@@ -362,6 +363,10 @@ export function outingError(s: State, outing: Memory) {
     return "先取得一场胜利，或两次落败后再来复盘";
   return "";
 }
+export function arenaPrize(s: State, opponent = s.social.arena.wins) {
+  const technique = (["breath", "guard", "lantern"] as const)[opponent];
+  return {stones: ([8, 12, 20][opponent] ?? 0) + (technique && s.journey.known.includes(technique) ? 12 : 0)};
+}
 export function arenaError(s: State) {
   if (s.age < 216) return "年满十八岁后可参加";
   if (s.social.arena.wins >= 3) return "本届三位对手皆已胜过，奖赏已领";
@@ -370,7 +375,7 @@ export function arenaError(s: State) {
   if (s.stones < 4) return "需要灵石 4 作为擂台修缮费";
   if (!s.social.arena.scouted.includes(s.social.arena.wins))
     return "先观摩对手，了解招式";
-  return "";
+  return quoteSettlement(s, {stones:4}, arenaPrize(s)).error;
 }
 export function duelIntent(s: State): Stance | null {
   const d = s.social.arena.duel;
@@ -389,9 +394,8 @@ function finishDuel(s: State, win: boolean, withdrawal = false) {
     d = a.duel!;
   if (win) {
     const reward = (["breath", "guard", "lantern"] as const)[d.opponent];
+    if (settleResources(s, {}, arenaPrize(s, d.opponent)).error) return false;
     const duplicate = !grantTechnique(s, reward);
-    if (duplicate) s.stones += 12;
-    s.stones += [8, 12, 20][d.opponent];
     a.wins++;
     a.last = `击败${rivals[d.opponent].name}：${duplicate ? `功法已掌握，折为灵石 12；另得胜场灵石 ${[8, 12, 20][d.opponent]}${d.opponent === 2 ? "、听松试剑魁首" : ""}` : rivals[d.opponent].prize}。`;
     if (s.social.met && !a.invited) {
@@ -427,6 +431,7 @@ function finishDuel(s: State, win: boolean, withdrawal = false) {
   a.last += `本场交锋：${d.log.join(" ")}`;
   note(s, a.last);
   a.duel = null;
+  return true;
 }
 export function dispatchSocial(
   input: State,
@@ -558,7 +563,7 @@ export function dispatchSocial(
     case "arenaStart": {
       if (arenaError(s)) return input;
       if (!travel()) return accept();
-      s.stones -= 4;
+      if (settleResources(s, {stones:4}).error) return input;
       const hp = 24 + s.root + Math.floor(s.foundation / 2),
         opponent = s.social.arena.wins;
       s.social.arena.duel = {
@@ -584,11 +589,11 @@ export function dispatchSocial(
       d.hp = result.battle.hp;
       d.turn = result.battle.turn;
       s.seed = result.seed;
-      s.herbs -= result.herbs;
+      if (settleResources(s, {herbs:result.herbs}).error) return input;
       d.log.push(
         `第${d.turn}合${stances[c.stance]}${p.correct ? "应对得当" : "未破招"}${p.firstStrike && incoming === 0 ? "，剑经抢先收势，对手未及反击" : ""}：对手气势 −${damage}，自身气势 −${incoming}${healing ? `，调息 +${healing}${p.herbs ? "、灵草 −1" : ""}` : ""}。`,
       );
-      if (result.outcome !== "ongoing") finishDuel(s, result.outcome === "win");
+      if (result.outcome !== "ongoing" && !finishDuel(s, result.outcome === "win")) return input;
       return accept();
     }
     case "arenaWithdraw":

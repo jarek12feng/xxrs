@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { combatOwner } from "./scene-activity";
+import type { PreparationSelection } from "./workshop/preparation";
+import { rejectedActionReason } from "./action-diagnostics";
 import StoryTravelMap from "./wayfaring/StoryTravelMap.vue";
 import { useStoryTravel } from "./wayfaring/useStoryTravel";
 import { additionalStoryRoute } from "./wayfaring/additional-story";
@@ -16,6 +19,7 @@ import InjuryImpact from "./InjuryImpact.vue";
 import { incidentalQiGain } from "./progression";
 import {
   ref,
+  toRef,
   defineAsyncComponent,
   shallowRef,
   computed,
@@ -24,6 +28,7 @@ import {
   watch,
   nextTick,
 } from "vue";
+const preparationSelection = ref<PreparationSelection | null>(null);
 const playtestEnabled = ref(
   new URLSearchParams(window.location.search).get("playtest") === "1",
 );
@@ -317,7 +322,7 @@ async function followOpening() {
 function openPanel(id: string) {
   if (ui.busy || receiptExpanded.value) return;
   if (
-    game.value?.expedition.duel &&
+    game.value && combatOwner(game.value) &&
     !["system", "saves", "settings", "backup", "feedback", "help"].includes(id)
   )
     return;
@@ -325,6 +330,7 @@ function openPanel(id: string) {
   dialog.value = id;
 }
 function resetJourneyView() {
+  preparationSelection.value = null;
   clearTimeout(receiptTimer);
   clearTimeout(practiceTimer);
   titleScreen.value = false;
@@ -372,24 +378,19 @@ function resumeGame() {
   creating.value = false;
 }
 
-import { load, save } from "./save";
+import { useGameSession } from "./session/use-game-session";
+import { startAutomaticClock } from "./session/automatic-clock";
 const useSession = defineStore("session", {
   state: () => ({ running: false, busy: false, history: false }),
 });
-const ui = useSession(),
-  game = shallowRef<State | null>(null);
-const sceneCombat = computed(() => !!game.value && !titleScreen.value && !ui.history && view.value === "story" && !!(
-  game.value.qiJourney.duel || game.value.foundationJourney.duel || game.value.expedition.duel ||
-  game.value.sectContest.duel || game.value.goldenCore.duel || game.value.outerSea.duel || game.value.conclave.duel
-));
-const ready = ref(false),
-  loadError = ref(false),
-  name = ref("沈青禾"),
+const ui = useSession();
+const session = useGameSession(toRef(ui, 'busy'), () => {ui.running=false;}, () => {combatFeedback.value=null;});
+const {game, ready, loadError, notice, saved, persist} = session;
+const sceneCombat = computed(() => !!game.value && !titleScreen.value && !ui.history && view.value === "story" && !!combatOwner(game.value) && combatOwner(game.value) !== 'arena');
+const name = ref("沈青禾"),
   aptitude = ref<Aptitude>("insightful"),
   gender = ref<Gender>("male"),
   activity = ref<Activity>("cultivate"),
-  notice = ref(""),
-  saved = ref(""),
   dialog = ref("");
 watch(
   () => !!game.value?.social.arena.duel,
@@ -493,23 +494,6 @@ const activities: { id: Activity; name: string; hint: string }[] = [
   { id: "rest", name: "养伤", hint: "每月伤势 −1" },
 ];
 const regularRetreat = computed(() => game.value ? retreatPlan(game.value) : null);
-async function persist(s: State) {
-  ui.busy = true;
-  try {
-    await save(s);
-    game.value = s;
-    combatFeedback.value = null;
-    saved.value = "已自动保存";
-    notice.value = "";
-    return true;
-  } catch (e) {
-    notice.value = String(e);
-    ui.running = false;
-    return false;
-  } finally {
-    ui.busy = false;
-  }
-}
 async function act(intent: Intent) {
   if (!game.value || ui.busy || receiptExpanded.value) return false;
   if (game.value && additionalStoryRoute(game.value,intent)) {
@@ -539,7 +523,7 @@ async function executeAct(intent: Intent) {
         : "本次行动未执行，自动修行已暂停，没有新增消耗。";
     } else
       notice.value =
-        "本次行动未执行：请检查材料、修为或当前待处理剧情。没有新增消耗。";
+        `本次行动未执行：${rejectedActionReason(old, intent)}。没有新增消耗。`;
     return false;
   }
   const ok = await persist(n);
@@ -804,7 +788,7 @@ function hidden() {
     };
   }
 }
-let timer: ReturnType<typeof setInterval>;
+let stopAutomaticClock: (() => void) | undefined;
 let unmounted = false;
 const stopAudioWatches: (() => void)[] = [];
 onMounted(async () => {
@@ -882,19 +866,12 @@ onMounted(async () => {
   document.addEventListener("keydown", unlockSound);
   document.addEventListener("visibilitychange", hidden);
   document.addEventListener("keydown", keyboard);
-  try {
-    const result = await load();
-    game.value = result.state;
-    saved.value = result.recovered ? "已恢复上一份备份" : "存档已读取";
-  } catch (e) {
-    loadError.value = true;
-    notice.value = String(e);
-  }
-  ready.value = true;
-  timer = setInterval(() => {
-    if (ui.running && !ui.busy && !modal.value && !document.hidden)
-      void (queueMode.value ? act({ type: "queueTick" }) : advance(1));
-  }, 800);
+  await session.restore();
+  if (!unmounted) stopAutomaticClock = startAutomaticClock(
+    () => ui.running && !ui.busy && !modal.value && !document.hidden,
+    () => queueMode.value ? act({ type: "queueTick" }) : advance(1),
+    error => {ui.running=false;notice.value=`自动行动已停止：${String(error)}`;},
+  );
 });
 onUnmounted(() => {
   unmounted = true;
@@ -908,7 +885,7 @@ onUnmounted(() => {
   document.removeEventListener("pointerdown", unlockSound);
   document.removeEventListener("keydown", unlockSound);
   clearTimeout(receiptTimer);
-  clearInterval(timer);
+  stopAutomaticClock?.();
   document.removeEventListener("visibilitychange", hidden);
   document.removeEventListener("keydown", keyboard);
 });
@@ -1578,6 +1555,7 @@ onUnmounted(() => {
           @breakthrough="dialog = 'break'"
         />
         <WorldPanel
+          v-model:preparation-selection="preparationSelection"
           :combat-feedback="combatFeedback"
           @equipment="openPanel('skills')"
           v-else-if="worldTab && game"

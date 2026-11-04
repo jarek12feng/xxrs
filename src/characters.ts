@@ -14,7 +14,7 @@ export function luchiView(
   const m = s.adventure?.mist;
   const together =
     m?.partner === "luchi" && !["dormant", "letter"].includes(m.stage);
-  const metOnRoad = s.adventure && s.adventure.step !== "ferry";
+  const metOnRoad = s.adventure?.step === "done";
   const portrait =
     s.story.luchi === "foundation"
       ? "foundation"

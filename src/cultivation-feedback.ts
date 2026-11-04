@@ -1,3 +1,4 @@
+import { activityInterruption } from "./scene-activity";
 import {
   actionError,
   preparationError,
@@ -24,17 +25,12 @@ export function automaticPause(
       target: "story",
       label: "回看履历",
     };
-  if (
-    s.pending ||
-    s.social.scene ||
-    s.social.arena.duel ||
-    s.expedition.duel ||
-    s.foundationJourney.duel
-  )
+  const interrupted = activityInterruption(s);
+  if (interrupted)
     return {
-      text: "眼前有待处理的事件，自动修行已暂停；完成回应后可自行继续。",
-      target: "story",
-      label: "处理眼前事件",
+      text: `自动修行已暂停：${interrupted}。`,
+      target: s.social.arena.duel ? "cultivate" : "story",
+      label: s.social.arena.duel ? "返回修行现场" : "返回当前现场",
     };
   if (!s.realm && s.qi >= 360 && (!previous || previous.qi < 360))
     return {
