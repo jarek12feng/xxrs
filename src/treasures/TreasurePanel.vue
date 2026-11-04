@@ -1,5 +1,15 @@
 <script setup lang="ts">
-import { equipmentCategoryLabel } from "../equipment";
+import {
+  equipmentCategoryLabel,
+  equipmentControl,
+  controlCosts,
+  controlDescription,
+  getEquipment,
+  inspectEquipment,
+  previewEquipment,
+  evaluateEquipment,
+  type EquipmentId,
+} from "../equipment";
 import { computed, ref } from "vue";
 import { techniques, type State, type Intent, type Technique } from "../world";
 import ItemArt from "../presentation/ItemArt.vue";
@@ -16,6 +26,22 @@ const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent] }>();
 const budget = ref(0);
 const sceneFailed = ref(false);
+const control = computed(() => equipmentControl(props.game));
+const loadoutPreviews = computed(() => Object.fromEntries(
+  [...treasureIds, "tideSeal", "spiritPearl"].map((item) => {
+    const preview = previewEquipment(props.game, [{ kind: "deploy", id: item as EquipmentId }]);
+    if (preview.error) return [item, ""];
+    const delta = (n: number) => `${n >= 0 ? "+" : ""}${n}`;
+    const turns = (["strike", "guard", "discern"] as const).map((move, i) => {
+      const context = { kind: "turn" as const, move, correct: true };
+      const before = evaluateEquipment(props.game, context);
+      const after = evaluateEquipment(preview.next, context);
+      return `${["反击", "守势", "识破"][i]}伤害 ${delta(preview.after.damage - preview.before.damage + after.damage - before.damage)}、承伤 ${delta(before.armor - after.armor + after.incoming - before.incoming + preview.before.armor - preview.after.armor)}`;
+    });
+    return [item, `装配后器物基础修正差值（正确应对；实际结算还受境界压制、承伤下限及击倒免反击影响）：${turns.join("；")}。`];
+  }),
+));
+const artifacts = ["tideSeal", "spiritPearl"] as const;
 const auction = computed(() => props.game.treasures.auction);
 const lot = computed(() =>
   auction.value && !auction.value.closed
@@ -34,8 +60,26 @@ const venueIds: Venue[] = ["market", "foundation"];
     <h3>宝物与拍卖会</h3>
     <p>
       灵石 {{ game.stones }} ·
-      主灵器之外可装配一件辅器；入袋后需自行装配，交锋中不能更换。
+      {{ controlDescription(game) }}。容量随神识提升，每 3 点增加
+      1；器物入袋后需自行出战，交锋与途中不能更换。
     </p>
+    <p>
+      神识达到 18 后，仅驾驭一件器物可专御：伤害 +2、护体
+      +1。多器共享一回合行动，按各器特性配合。
+    </p>
+    <p v-if="control.remaining < 4">
+      余量
+      {{ control.remaining }}；可先收回不需要的器物，或回洞府凝神、服养神药。
+    </p>
+    <button
+      v-if="game.journey.equipped"
+      :disabled="
+        busy || !!reason({ kind: 'withdraw', item: game.journey.equipped })
+      "
+      @click="act({ kind: 'withdraw', item: game.journey.equipped })"
+    >
+      收回主器 · {{ getEquipment(game.journey.equipped).name }}
+    </button>
     <p role="status">{{ game.treasures.last }}</p>
     <div class="treasure-grid">
       <article v-for="id in treasureIds" :key="id">
@@ -51,7 +95,8 @@ const venueIds: Venue[] = ["market", "foundation"];
                 : "未持有"
           }}
         </p>
-        <p>{{ treasures[id].hint }}</p>
+        <p>{{ treasures[id].hint }} 占用容量 {{ controlCosts[id] }}。</p>
+        <p v-if="loadoutPreviews[id]">{{ loadoutPreviews[id] }}</p>
         <template v-if="!game.treasures.owned[id]">
           <button
             :disabled="busy || !!reason({ kind: 'commission', item: id })"
@@ -66,7 +111,15 @@ const venueIds: Venue[] = ["market", "foundation"];
             :disabled="busy || !!reason({ kind: 'equip', item: id })"
             @click="act({ kind: 'equip', item: id })"
           >
-            {{ game.treasures.equipped === id ? "已装配" : "装配辅器" }}
+            {{ game.treasures.equipped.includes(id) ? "已装配" : "装配辅器" }}
+          </button>
+          <small>{{ reason({ kind: "equip", item: id }) }}</small>
+          <button
+            v-if="game.treasures.equipped.includes(id)"
+            :disabled="busy || !!reason({ kind: 'withdraw', item: id })"
+            @click="act({ kind: 'withdraw', item: id })"
+          >
+            收回此器
           </button>
           <button
             v-if="game.treasures.owned[id] < 2"
@@ -82,12 +135,45 @@ const venueIds: Venue[] = ["market", "foundation"];
       </article>
     </div>
     <button
-      v-if="game.treasures.equipped"
+      v-if="game.treasures.equipped.length"
       :disabled="busy || !!reason({ kind: 'unequip' })"
       @click="act({ kind: 'unequip' })"
     >
       卸下辅器
     </button>
+    <div v-if="game.realm >= 2" class="treasure-grid">
+      <article v-for="id in artifacts" :key="id">
+        <ItemArt :id="id" :size="72" />
+        <h4>{{ getEquipment(id).name }}</h4>
+        <p>
+          法宝 · 占用容量 {{ controlCosts[id] }} · 伤害 +{{
+            getEquipment(id).damage
+          }}、护体 +{{ getEquipment(id).armor }}
+        </p>
+        <p>
+          {{
+            inspectEquipment(game, id).rank
+              ? "已取得；温养完成后可选择出战"
+              : "需从秘境争取，此处不出售"
+          }}
+        </p>
+        <button
+          :disabled="busy || !!reason({ kind: 'deploy', item: id })"
+          @click="act({ kind: 'deploy', item: id })"
+        >
+          出战法宝
+        </button>
+        <p v-if="loadoutPreviews[id]">{{ loadoutPreviews[id] }}</p>
+        <small>{{ reason({ kind: "deploy", item: id }) }}</small>
+        <button
+          v-if="game.treasures.artifacts.includes(id)"
+          :disabled="busy || !!reason({ kind: 'withdraw', item: id })"
+          @click="act({ kind: 'withdraw', item: id })"
+        >
+          收回此宝
+        </button>
+      </article>
+    </div>
     <h4>赴会争宝</h4>
     <p>
       免费查看目录，先筹资再赴会。逐口竞价，成交才扣款；可以随时放弃。本场结束后至少十二个月才有下场目录。

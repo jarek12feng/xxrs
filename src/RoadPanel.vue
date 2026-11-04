@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { treasureQuote } from "./treasures/rules";
+import { senseLimit } from "./spirit";
 import RoadWorld from "./scene2d/RoadWorld.vue";
 import OriginNotes from "./OriginNotes.vue";
 import { expeditionIntermission } from "./expedition/progression";
@@ -221,10 +223,10 @@ const choices = computed<{ action: RoadAction; label: string }[]>(
 const growth = computed(() => [
   {
     label: "凝神辨雾 · 最多三月",
-    hint: `神识 ${props.game.sense}/12；迷雾中达到 8 更有利`,
+    hint: `神识 ${props.game.sense}/${senseLimit(props.game.realm)}；迷雾中达到 8 更有利`,
     intent: { type: "advance", activity: "meditate", months: 3 } as Intent,
     error:
-      props.game.sense >= 12 ? "神识已满" : actionError(props.game, "meditate"),
+      props.game.sense >= senseLimit(props.game.realm) ? "神识已满" : actionError(props.game, "meditate"),
   },
   {
     label: "研读航图 · 最多两月",
@@ -647,12 +649,11 @@ const person = computed(() =>
               ><button
                 :disabled="
                   locked ||
-                  !game.journey.relics.vial ||
-                  game.journey.equipped === 'vial'
+                  !!treasureQuote(game, {kind: 'deploy', item: 'vial'}).error
                 "
                 @click="emit('act', { type: 'equipRelic', relic: 'vial' })"
               >
-                装配归元灵瓶
+                装配归元灵瓶<small>{{ treasureQuote(game, {kind: 'deploy', item: 'vial'}).error }}</small>
               </button></template
             >
             <button

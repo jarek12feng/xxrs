@@ -2,6 +2,7 @@ import type { Relic, Treasure } from "./catalog";
 /** Structural view over the existing save. No dependency on the world or chapter modules. */
 export interface EquipmentContext {
   realm: number;
+  sense: number;
   qi: number;
   journey: { equipped: Relic | null; relics: Record<Relic, number> };
   workshop: {
@@ -10,7 +11,11 @@ export interface EquipmentContext {
       vial: "plain" | "shell" | "flow";
     };
   };
-  treasures: { equipped: Treasure | null; owned: Record<Treasure, number> };
+  treasures: {
+    equipped: Treasure[];
+    artifacts: ("tideSeal" | "spiritPearl")[];
+    owned: Record<Treasure, number>;
+  };
   outerSea?: { attuned: boolean; seal: boolean };
   conclave?: { attuned: boolean; depth: number };
 }

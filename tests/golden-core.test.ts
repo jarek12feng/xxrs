@@ -1,3 +1,4 @@
+import { legacyEquipment } from "./legacy-equipment";
 import { describe, it, expect } from "vitest";
 import {
   dispatch,
@@ -213,10 +214,10 @@ describe("凝丹双路与突破", () => {
   });
   it("v28 不补发过去大比奖励，不覆盖原档", () => {
     const s = createGame("迁移", "wood");
-    const old = { ...s, version: 28 } as Record<string, unknown>;
+    const old = { ...s, treasures: legacyEquipment(s), version: 28 } as Record<string, unknown>;
     delete old.goldenCore;
     const n = migrateSave(old);
-    expect(n.version).toBe(34);
+    expect(n.version).toBe(35);
     expect(n.goldenCore.medicine).toBe(0);
     expect(validState(n)).toBe(true);
     expect(old.goldenCore).toBeUndefined();

@@ -127,7 +127,7 @@ it("migrates real v14 without invented memories, retaining existing relationship
     copy = structuredClone(old);
   expect(() => migrateSave(old)).toThrow();
   const n = s;
-  expect(n.version).toBe(34);
+  expect(n.version).toBe(35);
   expect(n.social.origins).toEqual([]);
   expect(n.social.scene).toEqual(old.social.scene);
   expect(n.social.answers).toEqual(old.social.answers);

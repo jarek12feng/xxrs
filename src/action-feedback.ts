@@ -137,6 +137,7 @@ export function actionReceipt(
     before.growth.medicines.clarity,
     after.growth.medicines.clarity,
   );
+  add("养神丹", before.growth.medicines.spirit, after.growth.medicines.spirit);
   add("护脉丹", before.workshop.ward, after.workshop.ward);
   add("玄铁料", before.workshop.iron, after.workshop.iron);
   for (const id of treasureIds) add(treasures[id].name, before.treasures.owned[id], after.treasures.owned[id]);

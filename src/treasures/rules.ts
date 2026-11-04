@@ -1,9 +1,11 @@
+import { senseLimit } from "../spirit";
+import { getEquipment, type EquipmentId } from "../equipment";
 import { grantTechnique } from "../techniques";
 import { quoteSettlement, settleResources, type ResourceAmounts } from "../economy";
 import { advanceMonths } from "../timeline";
 import { equipmentChangeError, applyEquipmentChange } from "../equipment";
 import type { State, Technique } from "../world";
-import { workshopLock } from "../workshop/rules";
+import { workshopLock, workshopLocationError } from "../workshop/rules";
 import {
   treasures,
   treasureIds,
@@ -16,11 +18,15 @@ import {
 } from "./catalog";
 import type { Lot } from "./state";
 export type TreasureAction =
+  | { kind: "deploy" | "withdraw"; item: EquipmentId }
   | { kind: "commission" | "refine" | "equip"; item: Treasure }
   | { kind: "unequip" }
   | { kind: "catalog"; venue: Venue }
   | { kind: "enter" | "bid" | "pass" | "leave" }
   | { kind: "budget"; value: number };
+export function isEquipmentAction(a: TreasureAction) {
+  return ["equip", "unequip", "deploy", "withdraw"].includes(a.kind);
+}
 function lotReward(item: LotItem): ResourceAmounts {
   return item === "ward" || item === "healing" || item === "clarity" ? { [item]: 1 } : {};
 }
@@ -29,8 +35,11 @@ export function treasureQuote(s: State, a: TreasureAction) {
     stones = 0,
     iron = 0,
     months = 0;
+  if (!isEquipmentAction(a)) error ||= workshopLocationError(s);
   const active = s.treasures.auction;
-  if (a.kind === "commission" || a.kind === "refine" || a.kind === "equip") {
+  if (a.kind === "deploy" || a.kind === "withdraw") {
+    error ||= equipmentChangeError(s, { kind: a.kind, id: a.item });
+  } else if (a.kind === "commission" || a.kind === "refine" || a.kind === "equip") {
     if (!treasureIds.includes(a.item))
       return { error: "未知器物", stones, iron, months };
     const def = treasures[a.item];
@@ -100,7 +109,7 @@ export function treasureQuote(s: State, a: TreasureAction) {
   if (
     active?.entered &&
     !active.closed &&
-    ["commission", "refine", "equip", "unequip"].includes(a.kind)
+    ["commission", "refine", "equip", "unequip", "deploy", "withdraw"].includes(a.kind)
   )
     error ||= "先结束本场拍卖";
   error ||=
@@ -153,7 +162,10 @@ export function runTreasure(
 
   }
   const t = s.treasures;
-  if (a.kind === "commission" || a.kind === "refine") {
+  if (a.kind === "deploy" || a.kind === "withdraw") {
+    if (applyEquipmentChange(s, { kind: a.kind, id: a.item }).error) return input;
+    t.last = `${getEquipment(a.item).name}已${a.kind === "deploy" ? "出战" : "收回"}。`;
+  } else if (a.kind === "commission" || a.kind === "refine") {
     if (settleResources(s, { stones: quote.stones, iron: quote.iron }).error) return input;
     if (applyEquipmentChange(s, {
       kind: a.kind === "commission" ? "acquire" : "refine",
@@ -174,7 +186,7 @@ export function runTreasure(
     );
     const manuals = bookIds.filter((k) => !s.journey.known.includes(k));
     const drugs: LotItem[] = s.realm ? ["healing"] : ["healing", "ward"];
-    if (s.sense < 12) drugs.push("clarity");
+    if (s.sense < Math.min(24, senseLimit(s.realm))) drugs.push("clarity");
     t.auction = {
       venue: a.venue,
       lots: [

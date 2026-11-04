@@ -100,7 +100,7 @@ const choices = computed(() => {
       add("离会回古渡 · 胜绩保留", { kind: "leave" });
     }
     if (t.depth && !t.attuned)
-      add("温养定神珠 · 护体 +5，抵御识海阵压", { kind: "attune" });
+      add("温养定神珠 · 可出战护体 +5，温养抵御阵压", { kind: "attune" });
     if (t.depth === 2) {
       if (t.method !== "inherit")
         add("参悟抱元录，承接旧法 · 伤害 +5", {
@@ -308,7 +308,7 @@ watch(stageKey, () => {
     </p>
     <p v-if="selected === 'treasure'">
       定神珠{{
-        c.attuned ? "已温养，护体 +5" : "温养后抵御深处识海阵压"
+        c.attuned ? "已温养；出战后护体 +5" : "温养后抵御深处识海阵压"
       }}。抱元守神法与旧法招式不叠加；旧功法与研修保留。
     </p>
 
@@ -402,7 +402,7 @@ watch(stageKey, () => {
         <summary>凝婴所需与所得用途</summary>
         <p>
           定神珠：{{ c.depth ? "已取得" : "须在归潮外殿争取" }}；{{
-            c.attuned ? "已温养，护体 +5" : "温养后才能抵御深处阵压"
+            c.attuned ? "已温养；出战后护体 +5" : "温养后才能抵御深处阵压"
           }}。
         </p>
         <p>

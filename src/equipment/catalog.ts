@@ -121,7 +121,7 @@ export const equipmentCatalog = {
 } as const;
 export type EquipmentId = keyof typeof equipmentCatalog;
 export type EquipableId = Relic | Treasure;
-export const getEquipment = (id: EquipmentId) => equipmentCatalog[id];
+export const getEquipment = <T extends EquipmentId>(id: T) => equipmentCatalog[id];
 
 export interface TurnRule {
   move: "strike" | "guard" | "discern";

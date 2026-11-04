@@ -1,0 +1,206 @@
+[
+  {
+    "main": "spring",
+    "pact": "share",
+    "reward": "seal",
+    "start": {
+      "month": 1432,
+      "stones": 26,
+      "herbs": 3
+    },
+    "end": {
+      "month": 1564,
+      "stones": 30,
+      "herbs": 8,
+      "cultivation": 108
+    },
+    "months": 132
+  },
+  {
+    "main": "spring",
+    "pact": "share",
+    "reward": "manual",
+    "start": {
+      "month": 1432,
+      "stones": 26,
+      "herbs": 3
+    },
+    "end": {
+      "month": 1534,
+      "stones": 8,
+      "herbs": 8,
+      "cultivation": 107
+    },
+    "months": 102
+  },
+  {
+    "main": "spring",
+    "pact": "private",
+    "reward": "seal",
+    "start": {
+      "month": 1432,
+      "stones": 26,
+      "herbs": 3
+    },
+    "end": {
+      "month": 1558,
+      "stones": 16,
+      "herbs": 8,
+      "cultivation": 108
+    },
+    "months": 126
+  },
+  {
+    "main": "spring",
+    "pact": "private",
+    "reward": "manual",
+    "start": {
+      "month": 1432,
+      "stones": 26,
+      "herbs": 3
+    },
+    "end": {
+      "month": 1534,
+      "stones": 24,
+      "herbs": 8,
+      "cultivation": 107
+    },
+    "months": 102
+  },
+  {
+    "main": "blade",
+    "pact": "share",
+    "reward": "seal",
+    "start": {
+      "month": 1438,
+      "stones": 52,
+      "herbs": 0
+    },
+    "end": {
+      "month": 1564,
+      "stones": 26,
+      "herbs": 8,
+      "cultivation": 108
+    },
+    "months": 126
+  },
+  {
+    "main": "blade",
+    "pact": "share",
+    "reward": "manual",
+    "start": {
+      "month": 1438,
+      "stones": 52,
+      "herbs": 0
+    },
+    "end": {
+      "month": 1540,
+      "stones": 34,
+      "herbs": 8,
+      "cultivation": 107
+    },
+    "months": 102
+  },
+  {
+    "main": "blade",
+    "pact": "private",
+    "reward": "seal",
+    "start": {
+      "month": 1438,
+      "stones": 52,
+      "herbs": 0
+    },
+    "end": {
+      "month": 1558,
+      "stones": 12,
+      "herbs": 8,
+      "cultivation": 108
+    },
+    "months": 120
+  },
+  {
+    "main": "blade",
+    "pact": "private",
+    "reward": "manual",
+    "start": {
+      "month": 1438,
+      "stones": 52,
+      "herbs": 0
+    },
+    "end": {
+      "month": 1534,
+      "stones": 20,
+      "herbs": 8,
+      "cultivation": 107
+    },
+    "months": 96
+  },
+  {
+    "main": "breath",
+    "pact": "share",
+    "reward": "seal",
+    "start": {
+      "month": 1438,
+      "stones": 52,
+      "herbs": 3
+    },
+    "end": {
+      "month": 1564,
+      "stones": 26,
+      "herbs": 11,
+      "cultivation": 108
+    },
+    "months": 126
+  },
+  {
+    "main": "breath",
+    "pact": "share",
+    "reward": "manual",
+    "start": {
+      "month": 1438,
+      "stones": 52,
+      "herbs": 3
+    },
+    "end": {
+      "month": 1540,
+      "stones": 34,
+      "herbs": 11,
+      "cultivation": 107
+    },
+    "months": 102
+  },
+  {
+    "main": "breath",
+    "pact": "private",
+    "reward": "seal",
+    "start": {
+      "month": 1438,
+      "stones": 52,
+      "herbs": 3
+    },
+    "end": {
+      "month": 1558,
+      "stones": 12,
+      "herbs": 11,
+      "cultivation": 108
+    },
+    "months": 120
+  },
+  {
+    "main": "breath",
+    "pact": "private",
+    "reward": "manual",
+    "start": {
+      "month": 1438,
+      "stones": 52,
+      "herbs": 3
+    },
+    "end": {
+      "month": 1534,
+      "stones": 20,
+      "herbs": 11,
+      "cultivation": 107
+    },
+    "months": 96
+  }
+]

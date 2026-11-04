@@ -80,7 +80,7 @@ export function preparationOutcome(
     case "iron":
       return s.workshop[order.product];
     case "healing":
-    case "clarity":
+    case "clarity": case "spirit":
       return s.growth.medicines[order.product];
   }
 }

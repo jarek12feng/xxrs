@@ -62,6 +62,7 @@ const items: Readonly<Record<string, string>> = {
   pills: "foundation-pill",
   healing: "healing-powder",
   clarity: "clarity-pill",
+  spirit: "clarity-pill",
   sword: "sword",
   vial: "vial",
   spring: "manual-spring",
@@ -90,4 +91,5 @@ export const rewardArt: Readonly<Record<string, string>> = {
   筑基丹: "pills",
   回春散: "healing",
   清心丹: "clarity",
+  养神丹: "spirit",
 };

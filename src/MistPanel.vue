@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { senseLimit } from "./spirit";
 import MistWorld from "./scene2d/MistWorld.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
@@ -292,7 +293,7 @@ const paths = computed<Choice[]>(() => [
 const growth = computed(() => [
   {
     label: "凝神辨回声 · 最多三月",
-    hint: `神识 ${props.game.sense}/12；到 8 可应对回声阵`,
+    hint: `神识 ${props.game.sense}/${senseLimit(props.game.realm)}；到 8 可应对回声阵`,
     activity: "meditate" as const,
     months: 3,
   },

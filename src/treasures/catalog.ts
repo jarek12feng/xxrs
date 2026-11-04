@@ -44,7 +44,7 @@ export function lotInfo(item: LotItem) {
     : item === "clarity"
       ? {
           name: "清心丹",
-          hint: "服用神识 +2，上限 12；服药间隔三月。",
+          hint: "神识不足 12 时 +2，之后 +1；药力上限 24，不超本境上限；服药间隔三月。",
           price: 12,
           category: "丹药",
           source: "炉房购药",

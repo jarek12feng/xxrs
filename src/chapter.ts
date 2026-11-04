@@ -1,3 +1,4 @@
+import { senseLimit } from "./spirit";
 import { preparationRates, monthlyStudy } from "./preparation-rates";
 import { quoteMedicineUse } from "./medicines";
 import { breakthroughDetails, breakthroughSuccess, foundationFailure } from "./progression";
@@ -506,7 +507,7 @@ export function travelMonth(input: State, activity = "行路准备"): State {
   return s;
 }
 export function actionError(s: State, activity: Activity, learnedAccess = false) {
-  if (activity === "meditate" && s.sense >= 12) return "神识已达本篇上限";
+  if (activity === "meditate" && s.sense >= senseLimit(s.realm)) return "神识已达当前境界上限";
   if (activity === "study" && s.study >= 4) return "研读心得已满";
   if (activity === "train" && s.mastery >= 12) return "剑意已满";
   if (!learnedAccess && activity === "gather" && !canGather(s)) return "需选择长春医道";
@@ -622,7 +623,7 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
         s.foundation = Math.min(24, s.foundation + 2);
       }
       if (c.option === "lesson") {
-        s.sense = Math.min(12, s.sense + 1);
+        s.sense = Math.min(senseLimit(s.realm), s.sense + 1);
         s.study = Math.min(4, s.study + 1);
       }
       record(
@@ -740,7 +741,7 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
         if (s.mastery % 4 === 0) s.injury = Math.min(6, s.injury + 1);
       }
       if (c.activity === "meditate") {
-        s.sense = Math.min(12, s.sense + 1);
+        s.sense = Math.min(senseLimit(s.realm), s.sense + 1);
         s.qi = Math.min(MAX_QI, s.qi + 2);
       }
       if (c.activity === "study")
@@ -750,7 +751,7 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
       if (c.activity !== "cultivate")
         record(
           s,
-          `${{ meditate: "凝神内观，神识 +1（上限 12）、修为 +2", study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: "山下劳作，灵石 +5", rest: "静养经脉，伤势 −1" }[c.activity]}。`,
+          `${{ meditate: `凝神内观，神识 +1（本境上限 ${senseLimit(s.realm)}）、修为 +2`, study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: "山下劳作，灵石 +5", rest: "静养经脉，伤势 −1" }[c.activity]}。`,
         );
       hooks(s);
       if (
@@ -838,7 +839,7 @@ export function validState(x: unknown): x is State {
     !Object.hasOwn(aptitudes, s.aptitude) ||
     s.root !== aptitudes[s.aptitude].root ||
     s.wisdom !== aptitudes[s.aptitude].wisdom ||
-    !int(s.sense, aptitudes[s.aptitude].sense, 12) ||
+    !int(s.sense, aptitudes[s.aptitude].sense, senseLimit(s.realm)) ||
     !int(s.study, 0, 4) ||
     typeof s.ward !== "boolean"
   )

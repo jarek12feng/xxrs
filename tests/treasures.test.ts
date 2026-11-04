@@ -84,7 +84,7 @@ describe("宝物与有境界限制的拍卖", () => {
       start - s.treasures.auction!.lots.reduce((a, l) => a + l.paid, 0),
     );
     expect(s.treasures.owned[first]).toBe(1);
-    expect(s.treasures.equipped).toBeNull();
+    expect(s.treasures.equipped).toEqual([]);
     expect(s.journey.known).toContain(original.treasures.auction!.lots[2].item);
     const drug = original.treasures.auction!.lots[1].item;
     expect(
@@ -178,7 +178,7 @@ describe("宝物与有境界限制的拍卖", () => {
     expect(act(n, { kind: "refine", item: "bell" })).toBe(n);
     for (const item of treasureIds) {
       n.treasures.owned[item] = 2;
-      n.treasures.equipped = item;
+      n.treasures.equipped = [item];
       const effect = equipmentTurnEffect(
         n,
         item === "bell" ? "guard" : item === "cord" ? "strike" : "discern",
@@ -211,13 +211,13 @@ describe("宝物与有境界限制的拍卖", () => {
     broken.treasures.auction!.lots[0].paid = 99;
     expect(validState(broken)).toBe(false);
     const missing = structuredClone(s);
-    missing.treasures.equipped = "bell";
+    missing.treasures.equipped = ["bell"];
     expect(validState(missing)).toBe(false);
     expect(() => migrateSave({ ...s, version: 999 })).toThrow();
     const old = { ...ready(), version: 26 };
     delete (old as Partial<State>).treasures;
     const migrated = migrateSave(old);
-    expect(migrated.version).toBe(34);
+    expect(migrated.version).toBe(35);
     expect(migrated.treasures.auction).toBeNull();
     expect(validState(migrated)).toBe(true);
   });
@@ -239,7 +239,7 @@ it('三辅器进入共用交锋结算，未装配不生效，正确辨影才加�
   const s=ready();s.realm=1;
   const enemy={...qiSites[0].enemies[0],hp:1000,attack:50};
   for(const [item,move,turn,damage,incoming] of [['bell','guard',0,0,-2],['cord','strike',1,-1,-2],['mirror','discern',2,2,0]] as const){
-    const n=structuredClone(s);n.treasures.owned[item]=1;n.treasures.equipped=item;
+    const n=structuredClone(s);n.treasures.owned[item]=1;n.treasures.equipped = [item];
     const duel={hp:100,enemy:1000,turn};const a=tacticalPreview(s, {
 move: move,
 encounter: enemy,
@@ -252,7 +252,7 @@ battle: duel,
 effect: 'none'
 })!;
     expect(b.damage-a.damage).toBe(damage);expect(b.incoming-a.incoming).toBe(incoming);
-    n.treasures.equipped=null;expect(tacticalPreview(n, {
+    n.treasures.equipped=[];expect(tacticalPreview(n, {
 move: move,
 encounter: enemy,
 battle: duel,

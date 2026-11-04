@@ -1,6 +1,9 @@
-import { writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { writeFileSync, mkdirSync } from "node:fs";
 import { outerSeaCheckpoint, seaPlayer } from "./outer-sea-checkpoint";
 import { seaFoe } from "../src/outer-sea/rules";
+const output = process.argv[2] ?? "docs/outer-sea-review";
+mkdirSync(output, { recursive: true });
 const results = [];
 for (const main of ["spring", "blade", "breath"] as const)
   for (const pact of ["share", "private"] as const)
@@ -13,7 +16,7 @@ for (const main of ["spring", "blade", "breath"] as const)
       };
       if (main === "spring" && pact === "share" && reward === "seal")
         writeFileSync(
-          "docs/outer-sea-review/start.json",
+          join(output, "start.json"),
           JSON.stringify(p.state, null, 2),
         );
       const sea = (
@@ -47,6 +50,14 @@ for (const main of ["spring", "blade", "breath"] as const)
           ? { kind: "attune" }
           : { kind: "method", method: "continue" },
       );
+      if (reward === "seal") {
+        while (p.state.sense < 18)
+          p.send({ type: "advance", activity: "meditate", months: 1 });
+        p.send({
+          type: "treasure",
+          action: { kind: "deploy", item: "tideSeal" },
+        });
+      }
       while (p.state.outerSea.cultivation < 60)
         p.send({ type: "advance", activity: "cultivate", months: 12 });
       p.work(12);
@@ -71,12 +82,9 @@ for (const main of ["spring", "blade", "breath"] as const)
       });
       if (main === "spring" && pact === "share" && reward === "seal")
         writeFileSync(
-          "docs/outer-sea-review/completed.json",
+          join(output, "completed.json"),
           JSON.stringify(p.state, null, 2),
         );
     }
-writeFileSync(
-  "docs/outer-sea-review/routes.json",
-  JSON.stringify(results, null, 2),
-);
+writeFileSync(join(output, "routes.json"), JSON.stringify(results, null, 2));
 console.log(`Passed ${results.length} deterministic public-command routes`);

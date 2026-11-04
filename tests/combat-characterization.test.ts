@@ -34,7 +34,7 @@ function fixture(main: Technique, realm: 0 | 1 | 2) {
   s.journey.equipped = main === "blade" ? "sword" : "vial";
   s.journey.relics = { sword: 2, vial: 2 };
   s.workshop.temper = { sword: "array", vial: "flow" };
-  s.treasures.equipped = "mirror";
+  s.treasures.equipped = ["mirror"];
   s.treasures.owned.mirror = 2;
   return s;
 }
@@ -55,7 +55,12 @@ it("preserves the pre-extraction tactical, foundation and arena calculations", (
               for (const enemy of [1, 40, 120])
                 for (const move of ["guard", "strike", "discern"] as const)
                   for (const effect of ["none", "guard", "discern"]) {
+                    const power = readiness(s);
+                    if (attuned) { power.damage += 4; power.armor += 8; }
+                    // Legacy attunement used to supply these bonuses automatically, even below gold.
+                    // Supply that historical input explicitly; v35 deployment is tested separately.
                     const p = tacticalPreview(s, {
+                      power,
                       move,
                       encounter: {
                         realm: 1,
@@ -68,7 +73,7 @@ it("preserves the pre-extraction tactical, foundation and arena calculations", (
                       effect,
                       arrayCore: true,
                     });
-                    values.push([readiness(s), p]);
+                    values.push([power, p]);
                   }
           }
         }

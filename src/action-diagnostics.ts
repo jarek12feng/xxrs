@@ -67,6 +67,9 @@ export function rejectedActionReason(s: State, intent: Intent): string {
     case "sectContest":
       error = contestError(s, intent.action);
       break;
+    case "equipRelic":
+      error = treasureQuote(s, {kind: "deploy", item: intent.relic}).error;
+      break;
     case "treasure":
       error = treasureQuote(s, intent.action).error;
       break;

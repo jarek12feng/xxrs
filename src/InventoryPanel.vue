@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { equipmentCategoryLabel } from "./equipment";
-import { medicineCategoryLabel } from "./medicines";
+import { treasureQuote } from "./treasures/rules";
+import { controlCapacity, senseLimit } from "./spirit";
+import { medicineCategoryLabel, dailyMedicineQuote } from "./medicines";
 import TreasurePanel from "./treasures/TreasurePanel.vue";
 import GrowthPreview from "./GrowthPreview.vue";
 import { workshopQuote } from "./workshop/rules";
@@ -55,14 +57,21 @@ const items = computed(() => [
     count: props.game.workshop[id],
     description: products[id].hint,
   })),
-  ...(["healing", "clarity"] as const).map((id) => ({
-    id,
-    name: medicines[id].name,
-    category: "丹药",
-    purpose: medicineCategoryLabel(id),
-    count: props.game.growth.medicines[id],
-    description: medicines[id].hint,
-  })),
+  ...(["healing", "clarity", "spirit"] as const)
+    .filter(
+      (id) =>
+        id !== "spirit" ||
+        props.game.realm >= 2 ||
+        props.game.growth.medicines.spirit > 0,
+    )
+    .map((id) => ({
+      id,
+      name: medicines[id].name,
+      category: "丹药",
+      purpose: medicineCategoryLabel(id),
+      count: props.game.growth.medicines[id],
+      description: medicines[id].hint,
+    })),
   ...(["vial", "sword"] as const)
     .filter((id) => props.game.journey.relics[id] > 0)
     .map((id) => ({
@@ -82,8 +91,15 @@ const visible = computed(() =>
 const item = computed(
   () => visible.value.find((i) => i.id === selected.value) || visible.value[0],
 );
+const dosage = computed(() =>
+  item.value?.id === "clarity" || item.value?.id === "spirit"
+    ? dailyMedicineQuote(props.game, item.value.id)
+    : null,
+);
 const craft = computed(() =>
-  item.value?.id === "healing" || item.value?.id === "clarity"
+  item.value?.id === "healing" ||
+  item.value?.id === "clarity" ||
+  item.value?.id === "spirit"
     ? workshopQuote(props.game, { product: item.value.id, method: "craft" })
     : null,
 );
@@ -101,7 +117,7 @@ const craft = computed(() =>
     "
   >
     药性未散：第
-    {{ game.growth.lastMedicineMonth + 3 }} 月可再次服清心丹；回春散不受影响。
+    {{ game.growth.lastMedicineMonth + 3 }} 月可再次服养神药；回春散不受影响。
   </p>
   <p>
     <ItemArt id="stones" :size="32" /> 灵石 {{ game.stones }} · 当前灵器：{{
@@ -147,7 +163,10 @@ const craft = computed(() =>
             : 0
         "
       />
-      <small>{{ item.category }}<template v-if="item.purpose"> · {{ item.purpose }}</template></small>
+      <small
+        >{{ item.category
+        }}<template v-if="item.purpose"> · {{ item.purpose }}</template></small
+      >
       <h3>{{ item.name }}</h3>
       <p>{{ item.description }}</p>
       <template v-if="item.id === 'vial' || item.id === 'sword'">
@@ -155,30 +174,39 @@ const craft = computed(() =>
           器纹：{{ temperInfo(game.workshop, item.id).name }} ·
           {{ temperInfo(game.workshop, item.id).hint }}
         </p>
-        <p>{{ game.journey.relics[item.id] === 2 ? "二阶精炼灵器" : "一阶普通灵器" }}</p>
+        <p>
+          {{
+            game.journey.relics[item.id] === 2 ? "二阶精炼灵器" : "一阶普通灵器"
+          }}
+        </p>
         <GrowthPreview :game="game" :request="{ kind: 'relic', id: item.id }" />
         <button
           :disabled="
             busy ||
-            game.journey.equipped === item.id ||
-            !!game.pending ||
-            !!game.social.scene ||
-            !!game.social.arena.duel ||
-            game.status !== 'alive'
+            !!treasureQuote(game, { kind: 'deploy', item: item.id }).error
           "
           @click="emit('act', { type: 'equipRelic', relic: item.id })"
         >
           {{ game.journey.equipped === item.id ? "已装备" : "装备" }}
         </button>
+        <small>{{
+          treasureQuote(game, { kind: "deploy", item: item.id }).error
+        }}</small>
       </template>
-      <template v-if="item.id === 'healing' || item.id === 'clarity'">
-        <GrowthPreview v-if="item.id === 'healing'" :game="game" :request="{ kind: 'healing' }" />
+      <template
+        v-if="
+          item.id === 'healing' || item.id === 'clarity' || item.id === 'spirit'
+        "
+      >
+        <GrowthPreview
+          v-if="item.id === 'healing'"
+          :game="game"
+          :request="{ kind: 'healing' }"
+        />
         <p>
           丹方：{{ craft?.cost }}，需心得 {{ craft?.study }}，炼制耗时
-          {{
-            craft?.months
-          }}
-          月。清心丹间隔三个月；回春散即时疗伤，筑基丹用于突破。
+          {{ craft?.months }}
+          月。养神药共用三月药性间隔；回春散可即时疗伤。
         </p>
         <button
           :disabled="busy || !!craft?.error"
@@ -187,6 +215,22 @@ const craft = computed(() =>
           炼制{{ item.name }}
         </button>
         <small>{{ craft?.error }}</small>
+        <p v-if="dosage && !dosage.error">
+          本次神识 {{ game.sense }} → {{ game.sense + dosage.sense }}；御器容量
+          {{ controlCapacity(game.sense) }} →
+          {{ controlCapacity(game.sense + dosage.sense) }}。
+          <template
+            v-if="
+              (Math.floor((game.sense + dosage.sense) / 3) + 1) * 3 <=
+              senseLimit(game.realm)
+            "
+            >下次容量提升需神识
+            {{
+              (Math.floor((game.sense + dosage.sense) / 3) + 1) * 3
+            }}。</template
+          >
+          <template v-else>已达本境容量上限。</template>
+        </p>
         <button
           :disabled="busy || !!medicineError(game, item.id, true)"
           @click="emit('act', { type: 'consume', medicine: item.id })"

@@ -56,6 +56,11 @@ describe("外海开篇", () => {
             ? { kind: "attune" }
             : { kind: "method", method: "continue" },
       });
+      if (reward === "seal") {
+        expect(readiness(p.state)).toEqual(before);
+        while (p.state.sense < 18) p.send({ type: "advance", activity: "meditate", months: 1 });
+        p.send({ type: "treasure", action: { kind: "deploy", item: "tideSeal" } });
+      }
       expect(readiness(p.state).damage).toBeGreaterThan(before.damage);
       expect(seaQuote(p.state, { kind: "enter" }).error).not.toBe("");
       const projection = cultivationProjection(p.state, 60, 120);

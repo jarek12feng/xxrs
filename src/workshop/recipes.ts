@@ -88,7 +88,7 @@ export function planOrder(s: State, o: WorkshopOrder) {
         method === "buy"
           ? p === "ward"
             ? 20
-            : 12
+            : p === "spirit" ? 48 : 12
           : cost.stones +
             (method === "commission"
               ? p === "foundation"
@@ -106,7 +106,8 @@ export function planOrder(s: State, o: WorkshopOrder) {
               ? 0
               : 1
           : 0;
-      if (p === "foundation" && method === "buy")
+      if (p === "spirit" && s.realm < 2) reason = "金丹后方可筹备养神丹";
+      else if (p === "foundation" && method === "buy")
         reason = "坊市不出售筑基丹；取得遗府丹方后可自炼或委托";
       else if (p === "foundation" && !hasFoundationRecipe(s))
         reason = "先闯过青石遗府，取得筑基丹方";

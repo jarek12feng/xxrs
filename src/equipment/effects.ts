@@ -1,3 +1,4 @@
+import { equipmentControl, artifactReady } from "./control";
 import {
   equipmentCatalog,
   temperRules,
@@ -19,7 +20,7 @@ export type EquipmentSituation =
   | { kind: "mist"; hazard: string };
 export interface EquipmentContribution {
   source: EquipmentId;
-  effect: "base" | "temper" | "auxiliary" | "attuned" | "exploration";
+  effect: "base" | "temper" | "auxiliary" | "attuned" | "exploration" | "focus";
   damage: number;
   armor: number;
   incoming: number;
@@ -47,6 +48,7 @@ export function evaluateEquipment(
       ...values,
     });
   };
+  const control = equipmentControl(s);
   const relic = s.journey.equipped;
   const rank = equippedRelicRank(s);
   if (situation.kind === "base") {
@@ -58,12 +60,18 @@ export function evaluateEquipment(
       });
     }
     if (situation.includeAttuned) {
-      if (s.outerSea?.attuned)
+      if (
+        s.treasures.artifacts.includes("tideSeal") &&
+        artifactReady(s, "tideSeal")
+      )
         add("tideSeal", "attuned", {
           damage: equipmentCatalog.tideSeal.damage,
           armor: equipmentCatalog.tideSeal.armor,
         });
-      if (s.conclave?.attuned)
+      if (
+        s.treasures.artifacts.includes("spiritPearl") &&
+        artifactReady(s, "spiritPearl")
+      )
         add("spiritPearl", "attuned", {
           damage: equipmentCatalog.spiritPearl.damage,
           armor: equipmentCatalog.spiritPearl.armor,
@@ -86,9 +94,10 @@ export function evaluateEquipment(
       return { damage, incoming };
     };
     if (relic && rank) add(relic, "temper", resolve(temperRules[temper], rank));
-    const id = s.treasures.equipped;
-    const level = id ? s.treasures.owned[id] : 0;
-    if (id && level) add(id, "auxiliary", resolve(auxiliaryRules[id], level));
+    for (const id of s.treasures.equipped) {
+      const level = s.treasures.owned[id];
+      if (level) add(id, "auxiliary", resolve(auxiliaryRules[id], level));
+    }
   } else if (relic && rank) {
     if (situation.kind === "challenge")
       add(relic, "exploration", {
@@ -111,6 +120,8 @@ export function evaluateEquipment(
           (relic === (situation.hazard === "wind" ? "sword" : "vial") ? 6 : 3),
       });
   }
+  if (situation.kind === "base" && control.focused && control.ids[0])
+    add(control.ids[0], "focus", { damage: 2, armor: 1 });
   const total = {
     damage: 0,
     armor: 0,
@@ -124,7 +135,10 @@ export function evaluateEquipment(
   return { ...total, sources };
 }
 export function equipmentPower(s: EquipmentContext) {
-  const { damage, armor } = evaluateEquipment(s, { kind: "base" });
+  const { damage, armor } = evaluateEquipment(s, {
+    kind: "base",
+    includeAttuned: true,
+  });
   return { damage, armor };
 }
 export function equipmentTurnEffect(

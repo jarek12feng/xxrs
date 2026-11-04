@@ -1,3 +1,4 @@
+import { legacyEquipment } from "./legacy-equipment";
 import {expect,it} from 'vitest';
 import {createTravelEngine,effectiveSpeed,validJourneyPlan,type TravelerProfile} from '../src/wayfaring/engine';
 import {inlandTravel} from '../src/wayfaring/routes';
@@ -54,10 +55,10 @@ it('saved departure survives profile changes and reload, consuming only the rema
 });
 it('migrates version 33 in-progress trips conservatively and rejects forged totals or future saves',()=>{
  const s=journeyCheckpoint('male',false);
- const old={...s,version:33,wayfaring:{...s.wayfaring,trip:{from:'home',to:'ferry',mode:'land',total:3,remaining:2}}};
+ const old={...s,treasures:legacyEquipment(s),version:33,wayfaring:{...s.wayfaring,trip:{from:'home',to:'ferry',mode:'land',total:3,remaining:2}}};
  const before=structuredClone(old), migrated=migrateSave(old);
- expect(migrated.version).toBe(34);expect(migrated.wayfaring.trip?.plan.speed).toBe(1200);
+ expect(migrated.version).toBe(35);expect(migrated.wayfaring.trip?.plan.speed).toBe(1200);
  expect(old).toEqual(before);
  expect(()=>migrateSave({...old,wayfaring:{...old.wayfaring,trip:{...old.wayfaring.trip,total:1}}})).toThrow();
- expect(()=>migrateSave({...createGame('未来','wood'),version:35})).toThrow();
+ expect(()=>migrateSave({...createGame('未来','wood'),version:999})).toThrow();
 });

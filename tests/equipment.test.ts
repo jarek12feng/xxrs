@@ -14,10 +14,11 @@ import {
 function ready(): EquipmentContext {
   return {
     realm: 1,
+    sense: 12,
     qi: 0,
     journey: { equipped: null, relics: { sword: 1, vial: 1 } },
     workshop: { temper: { sword: "plain", vial: "plain" } },
-    treasures: { equipped: null, owned: { bell: 1, cord: 1, mirror: 1 } },
+    treasures: { equipped: [], artifacts: [], owned: { bell: 1, cord: 1, mirror: 1 } },
     outerSea: { seal: true, attuned: false },
     conclave: { depth: 1, attuned: false },
   };
@@ -76,7 +77,7 @@ describe("equipment public interface", () => {
     const s = ready();
     s.journey.equipped = "sword";
     s.workshop.temper.sword = "keen";
-    s.treasures.equipped = "cord";
+    s.treasures.equipped = ["cord"];
     const result = evaluateEquipment(s, {
       kind: "turn",
       move: "strike",
@@ -105,7 +106,7 @@ describe("equipment public interface", () => {
     const s = ready();
     s.journey.equipped = "sword";
     s.workshop.temper.sword = "array";
-    s.treasures.equipped = "mirror";
+    s.treasures.equipped = ["mirror"];
     s.treasures.owned.mirror = 2;
     expect(
       evaluateEquipment(s, { kind: "turn", move: "discern", correct: true })
@@ -143,6 +144,9 @@ describe("equipment public interface", () => {
     expect(
       evaluateEquipment(s, { kind: "base", includeAttuned: true }),
     ).toMatchObject({ damage: 0, armor: 0 });
+    s.realm = 2;
+    s.sense = 30;
+    s.treasures.artifacts = ["tideSeal", "spiritPearl"];
     s.outerSea!.attuned = true;
     s.conclave!.attuned = true;
     expect(
@@ -153,7 +157,7 @@ describe("equipment public interface", () => {
       armor: 0,
     });
     expect(s.journey.equipped).toBeNull();
-    expect(s.treasures.equipped).toBeNull();
+    expect(s.treasures.equipped).toEqual([]);
   });
   it("rejects realm, ownership, rank and incompatible inscription changes without mutation", () => {
     const s = ready();

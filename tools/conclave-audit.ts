@@ -1,5 +1,8 @@
-import { writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { writeFileSync, mkdirSync } from "node:fs";
 import { conclavePlayer } from "./conclave-checkpoint";
+const output = process.argv[2] ?? "docs/conclave-review";
+mkdirSync(output, { recursive: true });
 const samples = [];
 for (const main of ["spring", "blade", "breath"] as const)
   for (const route of ["shelter", "current"] as const)
@@ -15,7 +18,7 @@ for (const main of ["spring", "blade", "breath"] as const)
           method === "inherit"
         )
           writeFileSync(
-            "docs/conclave-review/start.json",
+            join(output, "start.json"),
             JSON.stringify(p.state, null, 2),
           );
         p.arrive();
@@ -34,6 +37,12 @@ for (const main of ["spring", "blade", "breath"] as const)
           if (!i) {
             p.work(18);
             p.act({ kind: "attune" });
+            while (p.state.sense < 36)
+              p.send({ type: "advance", activity: "meditate", months: 1 });
+            p.send({
+              type: "treasure",
+              action: { kind: "deploy", item: "spiritPearl" },
+            });
           }
         }
         p.act({ kind: "method", method });
@@ -65,14 +74,11 @@ for (const main of ["spring", "blade", "breath"] as const)
           method === "inherit"
         )
           writeFileSync(
-            "docs/conclave-review/completed.json",
+            join(output, "completed.json"),
             JSON.stringify(p.state, null, 2),
           );
       }
-writeFileSync(
-  "docs/conclave-review/routes.json",
-  JSON.stringify(samples, null, 2),
-);
+writeFileSync(join(output, "routes.json"), JSON.stringify(samples, null, 2));
 console.log("Passed", samples.length, "public-command routes");
 console.log(
   "Midpoint months since notice",

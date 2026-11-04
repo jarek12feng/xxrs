@@ -35,6 +35,8 @@ export function conclaveCheckpoint(
       sea({ kind: "report" });
       p.work(8);
       sea({ kind: "attune" });
+      while (p.state.sense < 18) p.send({ type: "advance", activity: "meditate", months: 1 });
+      p.send({ type: "treasure", action: { kind: "deploy", item: "tideSeal" } });
     }
   }
   sea({ kind: "method", method: "continue" });

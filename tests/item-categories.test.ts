@@ -47,7 +47,7 @@ it("supports multiple medicine purposes without advertising nonexistent medicine
   expect(listMedicines("energy")).toContain("ward");
   expect(listMedicines("meridian")).toContain("ward");
   expect(listMedicines("healing")).toEqual(["healing"]);
-  expect(listMedicines("spirit")).toEqual(["clarity"]);
+  expect(listMedicines("spirit")).toEqual(["clarity", "spirit"]);
   expect(listMedicines("breakthrough")).toEqual(["foundation", "goldenCore"]);
   expect(listMedicines("detox")).toEqual([]);
   expect(listMedicines("cultivation")).toEqual([]);

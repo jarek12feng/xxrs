@@ -1,3 +1,4 @@
+import { combatSense } from "./spirit";
 import { evaluateEquipment, hasEquippedRelic } from "./equipment";
 import { expeditionGoal } from "./expedition/progression";
 import { expeditionBlocksPass } from "./expedition/rules";
@@ -194,7 +195,7 @@ export function roadDetails(
           : 0;
   const terms = [
     { name: "稳住气息", value: 14 + Math.floor(s.root / 2) },
-    { name: "神识", value: s.sense * 2 },
+    { name: "神识", value: combatSense(s.sense) * 2 },
     { name: "根基", value: s.foundation },
     { name: "识路心得", value: s.study * 4 },
     { name: "所选准备", value: routeBonus },

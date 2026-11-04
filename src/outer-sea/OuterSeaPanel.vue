@@ -57,7 +57,7 @@ const options = computed(() => {
         });
     }
     if (t.cleared && t.reward === "none") {
-      add("先取镇潮印 · 温养后伤害 +4、护体 +3", {
+      add("先取镇潮印 · 温养后可出战：伤害 +4、护体 +3", {
         kind: "reward",
         reward: "seal",
       });
@@ -274,7 +274,7 @@ watch(hotspots, (objects) => {
       <figure v-if="o.seal">
         <img src="/art/outer-sea/seal.webp" alt="镇潮印" />
         <figcaption>
-          镇潮印 · {{ o.attuned ? "已温养，伤害 +4 / 护体 +3" : "待温养" }}
+          镇潮印 · {{ o.attuned ? "已温养；出战后伤害 +4 / 护体 +3" : "待温养" }}
         </figcaption>
       </figure>
       <figure v-if="o.manual">
@@ -361,7 +361,7 @@ watch(hotspots, (objects) => {
       <p v-if="o.seal || o.manual">
         镇潮印：{{
           o.attuned
-            ? "已温养，伤害 +4 / 护体 +3"
+            ? "已温养；出战后伤害 +4 / 护体 +3"
             : o.seal
               ? "已取得，待温养"
               : "尚未取得"

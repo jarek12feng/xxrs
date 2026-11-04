@@ -1,4 +1,5 @@
-/** Public equipment interface. Pure TypeScript; save layout remains unchanged. */
+/** Public equipment interface. Pure TypeScript. */
+export { equipmentControl, controlCosts, artifactReady, controlDescription } from "./control";
 export {
   relics,
   treasures,

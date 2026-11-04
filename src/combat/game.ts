@@ -1,3 +1,4 @@
+import { combatSense } from "../spirit";
 import { techniqueCombatProfile, techniquePower } from "../techniques";
 /** Game-state adapter. The combat engine itself never imports world or story modules. */
 import {
@@ -25,7 +26,7 @@ export function readiness(s: State) {
       5 +
       (s.realm === 2 ? 12 : s.realm === 1 ? 2 : 0) +
       technique.damage +
-      Math.floor((s.sense + s.study * 2 + s.mastery + s.foundation) / 4) +
+      Math.floor((combatSense(s.sense) + s.study * 2 + s.mastery + s.foundation) / 4) +
       equipment.damage +
       (s.conclave?.stage ?? 0) * 5,
     armor:
@@ -81,7 +82,7 @@ export function arenaContext(
       herbs: s.herbs,
       attackBase:
         mainTraining(s) * 2 +
-        Math.floor((s.root + s.sense + s.study + s.mastery) / 8) +
+        Math.floor((s.root + combatSense(s.sense) + s.study + s.mastery) / 8) +
         equipment.damage,
       armorBase: supportTraining(s) + equipment.armor,
       equipment: equipmentTurnEffect(

@@ -54,12 +54,12 @@ it("clarity saves months, respects cap and cooldown; healing remains available i
   let s = prepared();
   s.sense = 11;
   s.injury = 2;
-  s.growth.medicines = { clarity: 2, healing: 1 };
+  s.growth.medicines = { spirit: 0, clarity: 2, healing: 1 };
   let n = dispatch(s, { id: "clarity", type: "consume", medicine: "clarity" });
-  expect(n.sense).toBe(12);
+  expect(n.sense).toBe(13);
   expect(n.month).toBe(s.month);
   expect(n.seed).toBe(s.seed);
-  expect(n.log[0].text).toContain("神识 +1");
+  expect(n.log[0].text).toContain("神识 +2");
   expect(
     dispatch(n, { id: "again", type: "consume", medicine: "clarity" }),
   ).toBe(n);

@@ -1,3 +1,4 @@
+import { senseLimit } from "./spirit";
 import { validAdventureV10 } from "./legacy-adventure-v10";
 import type { State } from "./world";
 import { freshRoad, type Road } from "./road";
@@ -299,7 +300,7 @@ export function runAdventure(
       a.step = "done";
       s.stones += 12;
       if (a.method === "medicine") s.study = Math.min(4, s.study + 1);
-      if (a.method === "guide") s.sense = Math.min(12, s.sense + 1);
+      if (a.method === "guide") s.sense = Math.min(senseLimit(s.realm), s.sense + 1);
       if (a.method === "ward") s.foundation = Math.min(24, s.foundation + 2);
       a.result =
         rescueEcho(a) +

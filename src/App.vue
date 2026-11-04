@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { senseLimit, controlCapacity } from "./spirit";
 import { combatOwner } from "./scene-activity";
 import type { PreparationSelection } from "./workshop/preparation";
 import { rejectedActionReason } from "./action-diagnostics";
@@ -1523,7 +1524,7 @@ onUnmounted(() => {
               </div>
               <div>
                 <strong>{{ game.sense }}</strong
-                ><span>神识</span><small>可修炼至 12</small>
+                ><span>神识</span><small>本境上限 {{ senseLimit(game.realm) }} · 御器容量 {{ controlCapacity(game.sense) }}</small>
               </div>
             </div>
             <p class="fineprint">

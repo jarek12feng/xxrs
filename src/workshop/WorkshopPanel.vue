@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { treasureQuote } from "../treasures/rules";
 import {
   preparationPlan,
   preparationOutcome,
@@ -47,7 +48,7 @@ const methods: Record<Method, string> = {
 const cards = computed(() => {
   const ids: Product[] =
     category.value === "medicine"
-      ? ["healing", "clarity", "ward", "foundation"]
+      ? ["healing", "clarity", ...(props.game.realm >= 2 ? ["spirit" as const] : []), "ward", "foundation"]
       : ["sword", "vial", "iron"];
   return ids.map((product) => ({
     product,
@@ -247,14 +248,14 @@ function order(o: WorkshopOrder) {
         :disabled="
           busy ||
           !!lock ||
-          !game.journey.relics[card.product] ||
-          game.journey.equipped === card.product
+          !!treasureQuote(game, {kind: 'deploy', item: card.product}).error
         "
         @click="emit('act', { type: 'equipRelic', relic: card.product })"
       >
         {{ game.journey.equipped === card.product ? "已装配" : "装配灵器 · "
         }}{{ card.name }}
       </button>
+      <small v-if="card.product === 'sword' || card.product === 'vial'">{{ treasureQuote(game, {kind: 'deploy', item: card.product}).error }}</small>
     </article>
     <template v-if="category === 'relic'">
       <p>

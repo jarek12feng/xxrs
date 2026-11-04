@@ -21,6 +21,12 @@ for (let i = 0; i < 2; i++) {
   if (!i) {
     p.work(18);
     p.act({ kind: "attune" });
+    while (p.state.sense < 36)
+      p.send({ type: "advance", activity: "meditate", months: 1 });
+    p.send({
+      type: "treasure",
+      action: { kind: "deploy", item: "spiritPearl" },
+    });
   }
 }
 p.act({ kind: "method", method: "inherit" });

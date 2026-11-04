@@ -5,11 +5,17 @@ export const medicines = {
     stones: 4,
     hint: "伤势降低 2；服用不耗月份。不能恢复交锋气势。",
   },
+  spirit: {
+    name: "养神丹",
+    herbs: 6,
+    stones: 18,
+    hint: "金丹后可用：神识未满 36 时 +4，之后 +2，本境上限 48；两类养神药共用三月药性间隔。",
+  },
   clarity: {
     name: "清心丹",
     herbs: 2,
     stones: 4,
-    hint: "神识 +2（上限 12）；服用不耗月份，三个月内不能再服。",
+    hint: "神识不足 12 时 +2，之后 +1；药力上限 24，且不超本境上限。服用不耗月份，两类养神药共用三月间隔。",
   },
 } as const;
 
@@ -27,6 +33,7 @@ export type MedicineCategory = keyof typeof medicineCategories;
 export const medicineCatalog = {
   healing: { ...medicines.healing, categories: ["healing"] },
   clarity: { ...medicines.clarity, categories: ["spirit"] },
+  spirit: { ...medicines.spirit, categories: ["spirit"] },
   ward: {
     name: "护脉丹",
     hint: "在淬脉泉或凝元内府两战之间服用：回气 26，不增伤势。每次消耗一枚，不能在交锋中服用。",

@@ -1,6 +1,8 @@
 import { settleResources } from "./economy";
 import { previewEncounter, resolveEncounter } from "./combat";
 import { evaluateEquipment, applyEquipmentChange } from "./equipment";
+import { combatSense } from "./spirit";
+import { equipmentControl, artifactReady } from "./equipment";
 import { SAVE_VERSION } from './save-version';
 import { inlandTravel, routeBetween } from './wayfaring/routes';
 import { travelSpeeds } from './wayfaring/geography';
@@ -16,7 +18,7 @@ import { runGolden, goldenGoal, type GoldenAction } from "./golden-core/rules";
 import { freshSectContest, validSectContest, type SectContest } from "./sect-contest/state";
 import { runContest, discoverContest, updateContestCalendar, type ContestAction } from "./sect-contest/rules";
 import { freshTreasures, validTreasures, type Treasures } from "./treasures/state";
-import { runTreasure, type TreasureAction } from "./treasures/rules";
+import { runTreasure, isEquipmentAction, type TreasureAction } from "./treasures/rules";
 import { freshLearning, validLearning, runLearning, type LearningChoice } from "./learning";
 import { freshSecretPact, validSecretPact, type SecretPact } from "./secret-pact/state";
 import { runPact, type PactAction } from "./secret-pact/rules";
@@ -429,7 +431,7 @@ export function challengeDetails(s: State, p: TrialPlace) {
   const gear = evaluateEquipment(s, { kind: "challenge", opponent: e.kind });
   return previewEncounter({
     base: opponents[e.kind].base,
-    root: s.root, sense: s.sense, foundation: s.foundation,
+    root: s.root, sense: combatSense(s.sense), foundation: s.foundation,
     mastery: s.mastery, study: s.study,
     mainEquipped: !!s.journey.main, supportEquipped: !!s.journey.support,
     equipmentChance: gear.chance, injuryReduction: gear.injuryReduction,
@@ -591,10 +593,11 @@ function dispatchCommand(input: State, c: Command): State {
   if (c.type === "wayfaring") return runWayfaring(input,c.action,c.id,wayfaringMonth);
   if(c.type === "conclave") return runConclave(input,c.action,c.id,workshopMonth);
   if(input.conclave.duel || input.conclave.location === "vault") return input;
-  if(conclaveActive(input) && ["outerSea","goldenCore","foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest","beginChapter","next"].includes(c.type)) return input;
+  const localEquipment = c.type === "treasure" && isEquipmentAction(c.action);
+  if(!localEquipment && conclaveActive(input) && ["outerSea","goldenCore","foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest","beginChapter","next"].includes(c.type)) return input;
   if(c.type === "outerSea") return runSea(input,c.action,c.id,workshopMonth);
   if(input.outerSea.location === "ruins") return input;
-  if(input.outerSea.location !== "home" && ["foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest"].includes(c.type)) return input;
+  if(!localEquipment && input.outerSea.location !== "home" && ["foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest"].includes(c.type)) return input;
   if (c.type === "goldenCore") return runGolden(input,c.action,c.id,workshopMonth);
   if (input.goldenCore.expedition !== "idle") return input;
   if (c.type === "sectContest") return runContest(input,c.action,c.id,workshopMonth);
@@ -1225,7 +1228,7 @@ export function validState(x: unknown): x is State {
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
@@ -1233,12 +1236,13 @@ function validWorldState(
   if (
     (x as { version: unknown }).version !== version ||
     (version >= 32 && !validWayfaring(s)) ||
+    (version < 35 && s.sense > 12) ||
     (version >= 31 && !validConclave(s)) ||
     (version >= 30 && !validOuterSea(s)) ||
     (version >= 29 && !validGoldenCore(s)) ||
     (version < 29 && s.realm > 1) ||
     (version >= 28 && !validSectContest(s)) ||
-    (version >= 27 && !validTreasures(s.treasures,s.realm)) ||
+    (version >= 27 && !validTreasures(s.treasures,s.realm,version < 35)) ||
     (version >= 23 && (!Number.isInteger(s.cultivationRemainder) || s.cultivationRemainder < 0 || s.cultivationRemainder >= 240)) ||
     (version >= 25 && !validSecretPact(s.secretPact,s.month,s.realm,s.foundationJourney?.won ?? [],s.foundationJourney?.duel?.id)) ||
     (version >= 24 && !validRecognition(s.recognition, s.month, s.realm, s.journey?.branch)) ||
@@ -1256,9 +1260,10 @@ function validWorldState(
     !validRoad(s.adventure.road, s) ||
     !validMist(s) ||
     (version >= 12 && !validExpedition(s)) ||
-    (version >= 13 && !validGrowth(s))
+    (version >= 13 && !validGrowth(s,version < 35))
   )
     return false;
+  if (version >= 35 && (equipmentControl(s).error || s.treasures.artifacts.some(id => !artifactReady(s, id)))) return false;
   const integer = (v: unknown, max = 1e9) =>
     Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= max;
   return (
@@ -1324,6 +1329,10 @@ function validWorldState(
 }
 export function migrateSave(x:unknown):State {
   if(validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 34) {
+    if (!validWorldState(x, 34)) throw new Error("旧存档损坏，原档未修改。");
+    return upgradeSpirit(structuredClone(x) as State);
+  }
   if(x && typeof x==='object' && 'version' in x && (x.version===32 || x.version===33)) {
     const previous=structuredClone(x) as State;
     if(!previous.wayfaring || (x.version===32 && Object.hasOwn(previous.wayfaring,'passage'))) throw new Error("旧旅行存档损坏，原档未修改。");
@@ -1335,15 +1344,14 @@ export function migrateSave(x:unknown):State {
       if(!quote.ok)throw new Error("旧行程损坏，原档未修改。");
       trip.plan=quote.plan;
     }
-    previous.version=SAVE_VERSION;
-    if(!validState(previous)) throw new Error("旧旅行存档损坏，原档未修改。");
-    return previous;
+    previous.version=34 as State["version"];
+    if(!validWorldState(previous,34)) throw new Error("旧旅行存档损坏，原档未修改。");
+    return upgradeSpirit(previous);
   }
   if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=32) throw new Error("未知或损坏的存档，原档未修改。");
   const old=migratePrevious(x);
   const next={...old,version:SAVE_VERSION,wayfaring:freshWayfaring()};
-  if(!validState(next)) throw new Error("旧存档损坏，原档未修改。");
-  return next;
+  return upgradeSpirit(next);
 }
 function migratePrevious(x: unknown): State {
   if (validWorldState(x,31)) return structuredClone(x) as State;
@@ -1366,7 +1374,7 @@ function migratePrevious(x: unknown): State {
   }
   if (x && typeof x === "object" && "version" in x && x.version === 26) {
     if (!validWorldState(x,26)) throw new Error("旧存档损坏，原档未修改。");
-    return migratePrevious({...structuredClone(x) as State,version:27,treasures:freshTreasures()});
+    return migratePrevious({...structuredClone(x) as State,version:27,treasures:{...freshTreasures(),equipped:null}});
   }
   if (x && typeof x === "object" && "version" in x && x.version === 25) {
     if (!validWorldState(x, 25)) throw new Error("旧存档损坏，原档未修改。");
@@ -1634,5 +1642,27 @@ function migratePrevious(x: unknown): State {
     s = lift(old);
   s.journey.learning = { book: s.adventure.step === "done", relic: false };
   s.journey.settled = old.status === "complete";
+  return s;
+}
+
+function upgradeSpirit(s: State): State {
+  const old = s.treasures.equipped as unknown as import("./equipment").Treasure | null;
+  s.treasures.equipped = Array.isArray(old) ? old : old ? [old] : [];
+  s.treasures.artifacts = [];
+  s.growth.medicines.spirit = 0;
+  // Preserve ownership and attunement. Old automatic artifact bonuses become explicit deployment.
+  // Never invent cultivation; an over-budget old auxiliary is retained in inventory.
+  if (equipmentControl(s).error) {
+    s.treasures.equipped = [];
+    s.treasures.last = "御器规则已更新：原辅器暂收回储物袋，神识容量足够后可重新出战。";
+  }
+  if (s.outerSea.attuned || s.conclave.attuned) {
+    const notice = "御器规则已更新：已温养法宝保留，但需在安全处按神识容量重新选择出战；原自动战力加成已停止。战中不能换装，可先撤退重整。";
+    s.treasures.last = [s.treasures.last, notice].filter(Boolean).join(" ");
+    s.log.unshift({ month: s.month, kind: "warning", text: notice });
+    s.log = s.log.slice(0, 180);
+  }
+  s.version = SAVE_VERSION;
+  if (!validState(s)) throw new Error("旧存档损坏，原档未修改。");
   return s;
 }

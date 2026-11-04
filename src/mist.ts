@@ -1,3 +1,4 @@
+import { combatSense } from "./spirit";
 import { evaluateEquipment } from "./equipment";
 import { companionPresent } from "./foundation-journey/progression";
 import { expeditionMistEcho } from "./expedition/resolution";
@@ -262,7 +263,7 @@ export function mistDetails(s: State) {
   const m = s.adventure.mist;
   const terms = [
     { name: "筑基护体", value: 20 },
-    { name: "神识", value: s.sense * 2 },
+    { name: "神识", value: combatSense(s.sense) * 2 },
     { name: "心得", value: s.study * 4 },
     { name: "根基", value: Math.floor(s.foundation / 2) },
     { name: "药圃引灯草", value: m.garden ? 8 : 0 },

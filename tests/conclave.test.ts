@@ -1,3 +1,4 @@
+import { legacyEquipment } from "./legacy-equipment";
 import { describe, it, expect } from "vitest";
 import { dispatch, validState, migrateSave, type State } from "../src/core";
 import {
@@ -65,6 +66,7 @@ describe("诸宗会与凝婴机缘", () => {
       expect(send(bad, { kind: "mid" })).toBe(bad);
     }
     const old = structuredClone(start);
+    old.sense = Math.min(12, old.sense); // v30 predates realm-scaled spirit growth
     old.conclave = freshConclave();
     old.outerSea.cultivation = 299;
     old.outerSea.method = "none";
@@ -112,8 +114,11 @@ describe("诸宗会与凝婴机缘", () => {
     p.work(18);
     p.act({ kind: "prepare" });
     expect(conclaveQuote(p.state, { kind: "enter" }).error).toContain("定神珠");
+    while (p.state.sense < 36) p.send({ type: "advance", activity: "meditate", months: 1 });
     const before = readiness(p.state);
     p.act({ kind: "attune" });
+    expect(readiness(p.state)).toEqual(before);
+    p.send({ type: "treasure", action: { kind: "deploy", item: "spiritPearl" } });
     expect(readiness(p.state).armor - before.armor).toBe(5);
     p.act({ kind: "enter" });
     p.battle("fight");
@@ -236,12 +241,13 @@ effect: ""
       expect(() => migrateSave(bad)).toThrow();
     }
     const old = structuredClone(start);
+    old.sense = Math.min(12, old.sense); // v30 predates realm-scaled spirit growth
     old.conclave = freshConclave();
     old.outerSea.cultivation = 299;
-    const v30 = { ...old, version: 30, conclave: undefined };
+    const v30 = { ...old, treasures: legacyEquipment(old), version: 30, conclave: undefined };
     const migrated = migrateSave(v30);
     expect(migrated.conclave).toEqual(freshConclave());
-    expect(migrated.version).toBe(34);
+    expect(migrated.version).toBe(35);
     expect(validState(migrated)).toBe(true);
     expect(() => migrateSave({ ...start, version: 999 })).toThrow();
   });

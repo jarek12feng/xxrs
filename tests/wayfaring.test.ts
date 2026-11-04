@@ -1,3 +1,4 @@
+import { legacyEquipment } from "./legacy-equipment";
 import { expect, it } from "vitest";
 import {
   createGame,
@@ -153,10 +154,10 @@ it("in-progress trip cannot change mode, and abandonment retains spent months", 
   expect(n.foundationJourney.location).toBe("home");
 });
 it("version 31 migrates only empty travel facts; malformed current travel and future saves are rejected", () => {
-  const old = { ...fresh(), version: 31 };
-  delete (old as Partial<State>).wayfaring;
+  const old = { ...fresh(), treasures: legacyEquipment(fresh()), version: 31 };
+  delete (old as unknown as Partial<State>).wayfaring;
   const n = migrateSave(old);
-  expect(n.version).toBe(34);
+  expect(n.version).toBe(35);
   expect(n.wayfaring).toEqual({ swordFlight: "none", trip: null, passage: null, last: "" });
   expect(n.seed).toBe(old.seed);
   expect(validState(n)).toBe(true);

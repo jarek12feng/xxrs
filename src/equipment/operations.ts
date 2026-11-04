@@ -1,3 +1,4 @@
+import { equipmentControl, artifactReady } from "./control";
 import {
   equipmentCatalog,
   tempers,
@@ -12,6 +13,8 @@ import { evaluateEquipment, type EquipmentSituation } from "./effects";
 export type EquipmentChange =
   | { kind: "equip" | "acquire" | "refine"; id: EquipableId }
   | { kind: "temper"; id: Relic; temper: Temper }
+  | { kind: "deploy"; id: EquipmentId }
+  | { kind: "withdraw"; id: EquipmentId }
   | { kind: "unequip"; slot: "primary" | "auxiliary" };
 export function inspectEquipment(s: EquipmentContext, id: EquipmentId) {
   const definition = equipmentCatalog[id];
@@ -23,8 +26,8 @@ export function inspectEquipment(s: EquipmentContext, id: EquipmentId) {
       )
         ? 1
         : 0,
-      active: !!(id === "tideSeal" ? s.outerSea?.attuned : s.conclave?.attuned),
-      error: "此宝由剧情取得与温养，不占主器或辅器位",
+      active: s.treasures.artifacts.includes(id),
+      error: artifactReady(s, id) ? "" : "需金丹境界，取得此宝并完成温养",
     };
   const main = id === "sword" || id === "vial";
   const rank = main ? s.journey.relics[id] : s.treasures.owned[id];
@@ -38,7 +41,9 @@ export function inspectEquipment(s: EquipmentContext, id: EquipmentId) {
   return {
     definition,
     rank,
-    active: main ? s.journey.equipped === id : s.treasures.equipped === id,
+    active: main
+      ? s.journey.equipped === id
+      : s.treasures.equipped.includes(id),
     error,
   };
 }
@@ -47,10 +52,25 @@ export function equipmentChangeError(
   s: EquipmentContext,
   change: EquipmentChange,
 ): string {
+  if (change.kind === "deploy" || change.kind === "withdraw") {
+    if (!Object.hasOwn(equipmentCatalog, change.id)) return "未知器物";
+    const item = inspectEquipment(s, change.id);
+    if (change.kind === "withdraw") return item.active ? "" : "此器未出战";
+    if (item.error) return item.error;
+    if (!item.rank) return "尚未拥有此器";
+    if (item.active) return "已装配";
+    const next = equipmentDraft(s);
+    changeLoadout(next, change.id, true);
+    return equipmentControl(next).error;
+  }
   if (change.kind === "unequip")
     return !["primary", "auxiliary"].includes(change.slot)
       ? "未知装备位"
-      : (change.slot === "primary" ? s.journey.equipped : s.treasures.equipped)
+      : (
+            change.slot === "primary"
+              ? s.journey.equipped
+              : s.treasures.equipped.length
+          )
         ? ""
         : change.slot === "primary"
           ? "未装配主器"
@@ -79,7 +99,7 @@ export function equipmentChangeError(
   }
   if (item.error) return item.error;
   if (change.kind === "equip")
-    return !item.rank ? "尚未拥有此器" : item.active ? "已装配" : "";
+    return equipmentChangeError(s, { kind: "deploy", id: change.id });
   if (change.kind === "acquire") return item.rank ? "已拥有此器" : "";
   const primary = equipmentCatalog[change.id].slot === "primary";
   if (primary && !item.rank) return "尚未拥有此器";
@@ -102,7 +122,9 @@ export function applyEquipmentChange(
   if (error) return { error };
   if (change.kind === "unequip") {
     if (change.slot === "primary") s.journey.equipped = null;
-    else s.treasures.equipped = null;
+    else s.treasures.equipped = [];
+  } else if (change.kind === "deploy" || change.kind === "withdraw") {
+    changeLoadout(s, change.id, change.kind === "deploy");
   } else if (change.kind === "temper") {
     if (change.id === "sword")
       s.workshop.temper.sword =
@@ -114,7 +136,8 @@ export function applyEquipmentChange(
     if (change.kind === "equip") s.journey.equipped = change.id;
     else s.journey.relics[change.id]++;
   } else {
-    if (change.kind === "equip") s.treasures.equipped = change.id as Treasure;
+    if (change.kind === "equip")
+      s.treasures.equipped.push(change.id as Treasure);
     else s.treasures.owned[change.id]++;
   }
   return { error: "" };
@@ -125,12 +148,7 @@ export function previewEquipment<T extends EquipmentContext>(
   changes: readonly EquipmentChange[],
   situation: EquipmentSituation = { kind: "base", includeAttuned: true },
 ) {
-  const next = {
-    ...s,
-    journey: { ...s.journey, relics: { ...s.journey.relics } },
-    workshop: { ...s.workshop, temper: { ...s.workshop.temper } },
-    treasures: { ...s.treasures, owned: { ...s.treasures.owned } },
-  } as T;
+  const next = equipmentDraft(s);
   for (const change of changes) {
     const { error } = applyEquipmentChange(next, change);
     if (error)
@@ -147,4 +165,29 @@ export function previewEquipment<T extends EquipmentContext>(
     before: evaluateEquipment(s, situation),
     after: evaluateEquipment(next, situation),
   };
+}
+
+function equipmentDraft<T extends EquipmentContext>(s: T): T {
+  return {
+    ...s,
+    journey: { ...s.journey, relics: { ...s.journey.relics } },
+    workshop: { ...s.workshop, temper: { ...s.workshop.temper } },
+    treasures: {
+      ...s.treasures,
+      owned: { ...s.treasures.owned },
+      equipped: [...s.treasures.equipped],
+      artifacts: [...s.treasures.artifacts],
+    },
+  };
+}
+function changeLoadout(s: EquipmentContext, id: EquipmentId, equip: boolean) {
+  if (id === "sword" || id === "vial") s.journey.equipped = equip ? id : null;
+  else if (id === "tideSeal" || id === "spiritPearl")
+    s.treasures.artifacts = equip
+      ? [...s.treasures.artifacts, id]
+      : s.treasures.artifacts.filter((x) => x !== id);
+  else
+    s.treasures.equipped = equip
+      ? [...s.treasures.equipped, id]
+      : s.treasures.equipped.filter((x) => x !== id);
 }

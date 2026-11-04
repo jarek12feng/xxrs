@@ -5,12 +5,12 @@ import { techniqueIds, techniqueChangeError, applyTechnique } from "./techniques
 export { techniqueIds, mainTraining, supportTraining } from "./techniques";
 export interface Growth {
   training: Record<Technique, number>;
-  medicines: { healing: number; clarity: number };
+  medicines: { healing: number; clarity: number; spirit: number };
   lastMedicineMonth: number | null;
 }
 export const freshGrowth = (): Growth => ({
   training: { spring: 0, blade: 0, breath: 0, herb: 0, guard: 0, lantern: 0 },
-  medicines: { healing: 0, clarity: 0 },
+  medicines: { healing: 0, clarity: 0, spirit: 0 },
   lastMedicineMonth: null,
 });
 import { medicines } from "./workshop/catalog";
@@ -50,7 +50,7 @@ export function runGrowth(
     const used = applyDailyMedicine(s, c.medicine);
     text = c.medicine === "healing"
       ? `服用回春散：伤势 −${used.healed}，不推进月份；单场气势不受影响。`
-      : `服用清心丹：神识 +${used.sense}（上限 12），不推进月份。下次可服清心丹：第 ${used.nextUseMonth} 月。`;
+      : `服用${medicines[c.medicine].name}：神识 +${used.sense}，不推进月份。下次可服养神药：第 ${used.nextUseMonth} 月。`;
 
   }
   s.log.unshift({ month: s.month, kind: "story", text });
@@ -58,7 +58,7 @@ export function runGrowth(
   s.seen = [...s.seen, c.id].slice(-512);
   return s;
 }
-export function validGrowth(s: State) {
+export function validGrowth(s: State, legacy = false) {
   const g = s.growth;
   const int = (v: unknown, max = 1e9) =>
     Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= max;
@@ -72,7 +72,7 @@ export function validGrowth(s: State) {
         (g.training[t] === 0 || s.journey.known.includes(t)),
     ) &&
     !!g.medicines &&
-    ["healing", "clarity"].every((k) => int(g.medicines[k as Medicine])) &&
+    (legacy ? ["healing", "clarity"] : ["healing", "clarity", "spirit"]).every((k) => int(g.medicines[k as Medicine])) &&
     (g.lastMedicineMonth === null || int(g.lastMedicineMonth, s.month))
   );
 }

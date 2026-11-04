@@ -1,5 +1,5 @@
 export type Resource =
-  "stones" | "herbs" | "iron" | "ward" | "pills" | "healing" | "clarity" | "contribution";
+  "stones" | "herbs" | "iron" | "ward" | "pills" | "healing" | "clarity" | "spirit" | "contribution";
 export type ResourceAmounts = Partial<Record<Resource, number>>;
 export interface ResourceSettlement {
   cost: ResourceAmounts;
@@ -14,6 +14,7 @@ export const resourceNames: Record<Resource, string> = {
   pills: "筑基丹",
   healing: "回春散",
   clarity: "清心丹",
+  spirit: "养神丹",
 };
 export interface ResourceContext {
   journey?: { contribution: number };
@@ -21,7 +22,7 @@ export interface ResourceContext {
   herbs: number;
   pills?: number;
   workshop?: { iron?: number; ward?: number };
-  growth?: { medicines?: { healing: number; clarity: number } };
+  growth?: { medicines?: { healing: number; clarity: number; spirit?: number } };
 }
 function balance(s: ResourceContext, key: Resource): number | undefined {
   if (key === "contribution") return s.journey?.contribution;

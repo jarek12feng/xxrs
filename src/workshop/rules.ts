@@ -10,10 +10,11 @@ export type WorkshopCommand = {
   order: WorkshopOrder;
 };
 export function workshopLock(s: State): string {
-  return s.conclave?.duel ||
+  return s.wayfaring.trip || s.wayfaring.passage || s.conclave?.duel ||
     s.conclave?.location === "vault" ||
     s.outerSea?.location === "ruins" ||
     s.goldenCore?.duel ||
+    s.goldenCore.expedition !== "idle" ||
     s.sectContest.duel ||
     s.status !== "alive" ||
     s.pending ||
@@ -25,11 +26,16 @@ export function workshopLock(s: State): string {
     ? "先处理眼前事件或结束历练，再回炉房准备"
     : "";
 }
+export function workshopLocationError(s: State): string {
+  return s.conclave.location !== "away" || s.outerSea.location !== "home"
+    ? "此处可调整出战器物；炼器、精炼、刻纹、委托与拍卖需回坊市"
+    : "";
+}
 function workshopReward(order: WorkshopOrder): ResourceAmounts {
   if ("relic" in order) return {};
   switch (order.product) {
     case "foundation": return { pills: 1 };
-    case "healing": case "clarity": case "ward": case "iron":
+    case "healing": case "clarity": case "spirit": case "ward": case "iron":
       return { [order.product]: 1 };
     default: return {};
   }
@@ -46,6 +52,8 @@ export function workshopQuote(s: State, o: WorkshopOrder) {
     .join("、");
   const error =
     workshopLock(s) ||
+    (("relic" in o || o.product === "sword" || o.product === "vial")
+      ? workshopLocationError(s) : "") ||
     reason ||
     (s.study < study
       ? `需要心得 ${study}；可在洞府研读，或选择委托加工`
@@ -54,7 +62,10 @@ export function workshopQuote(s: State, o: WorkshopOrder) {
       ? `需要${cost}；灵草和玄铁料可在坊市购入`
       : "") ||
     quoteSettlement(s, { stones, herbs, iron }, workshopReward(o)).error;
-  return { name, effect, stones, herbs, iron, months, study, cost, error };
+  const hint = "product" in o && o.product === "clarity" && s.sense >= 12 && s.sense < 24
+    ? "神识达到 12 后每颗仅增 1；若只是当下提升，凝神一月同增 1 且不耗材料。现成丹药适合节省服用当月时间。"
+    : "";
+  return { name, effect: [effect, hint].filter(Boolean).join(" "), stones, herbs, iron, months, study, cost, error };
 }
 export function runWorkshop(
   input: State,
