@@ -37,3 +37,5 @@ export {
   equipmentCategoryLabel,
 } from "./catalog";
 export type { EquipmentCategory } from "./catalog";
+
+export { loadoutPreview } from "./loadout-preview";

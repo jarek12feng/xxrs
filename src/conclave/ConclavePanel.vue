@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { projectInteractions } from "../story-interactions";
+import FieldLoadout from "../equipment/FieldLoadout.vue";
 import GoldenWorld from "../golden-scene/GoldenWorld.vue";
 import CombatBar from "../scene2d/combat/CombatBar.vue";
 import { goldenCombat } from "../golden-scene/presentation";
@@ -18,7 +19,9 @@ import {
   type ConclaveAction,
 } from "./rules";
 import { goldenCap } from "./state";
-import { rivals, tell } from "./content";
+import { conclaveLessons, victoryMemory } from "./victories";
+import { battleSignal } from "./battle-feedback";
+import { rivals } from "./content";
 import CultivationOutlook from "../CultivationOutlook.vue";
 const props = defineProps<{
   game: State;
@@ -26,6 +29,10 @@ const props = defineProps<{
   entryObject?: string;
 }>();
 const emit = defineEmits<{ act: [intent: Intent]; shore: []; meeting: [] }>();
+const signal = computed(() => battleSignal(props.game));
+const defeat = computed(() => !props.game.conclave.duel && props.game.conclave.last.includes("本场复盘："));
+const useHerbs = ref(true);
+const lessons = computed(() => conclaveLessons(props.game));
 const c = computed(() => props.game.conclave);
 const active = computed(() => c.value.location !== "away");
 const due = computed(
@@ -45,10 +52,10 @@ const choices = computed(() => {
       ["strike", "反击"],
       ["discern", "辨影"],
     ] as const) {
-      const p = conclaveExchange(s, move)!;
+      const p = conclaveExchange(s, move, useHerbs.value)!;
       add(
         `${label} · 伤害 ${p.damage} / 承伤 ${p.incoming}${p.healing ? ` / 耗草 ${p.herbs} 回气 ${p.healing}` : ""}`,
-        { kind: "move", move },
+        { kind: "move", move, useHerbs: useHerbs.value },
       );
     }
     add("收势撤回 · 保留此前进度", { kind: "withdraw" });
@@ -65,13 +72,14 @@ const choices = computed(() => {
     if (t.location === "court") {
       if (!t.introduced) add("与各宗来客相识，听清入境之约", { kind: "meet" });
       else {
+        if(t.preparation !== "none") add("按自身功法备战 · 不耗年月与物资，撤去演练加成",{kind:"training",style:"none"});
         if (t.preparation !== "ward")
-          add("随顾沧遥演练守势 · 本程护体 +3", {
+          add("随顾沧遥演练守势 · 本程护体 +3，辨后守势承伤再 −5", {
             kind: "training",
             style: "ward",
           });
         if (t.preparation !== "insight")
-          add("与叶问苓推演潮阵 · 本程辨影伤害 +6", {
+          add("与叶问苓推演潮阵 · 本程辨影伤害 +6，辨后反击再 +8", {
             kind: "training",
             style: "insight",
           });
@@ -82,11 +90,11 @@ const choices = computed(() => {
           );
         if (t.wins >= 2) {
           if (t.route === "none") {
-            add("背潮石道 · 六月入境，气势 +16", {
+            add(`背潮石道 · 六月入境，气势 +${16+lessons.value.shelterHp}`, {
               kind: "route",
               route: "shelter",
             });
-            add("循主流抢渡 · 两月入境，反击伤害 +5", {
+            add(`循主流抢渡 · 两月入境，反击伤害 +${5+lessons.value.currentDamage}`, {
               kind: "route",
               route: "current",
             });
@@ -137,20 +145,25 @@ const selected = ref(props.entryObject ?? "");
 const stageKey = computed(
   () => `conclave-${c.value.location}-${c.value.depth}`,
 );
+const actionObject = (action: ConclaveAction) => action.kind === "training"
+  ? (action.style === "none" ? "friends" : action.style === "ward" ? "gu" : "ye") : conclaveObject(action.kind);
 const hotspots = computed(() => {
   if (c.value.duel) return [];
   const ids = new Set<string>(
-    choices.value.map((row) => conclaveObject(row.action.kind)),
+    choices.value.map((row) => actionObject(row.action)),
   );
   if (safe.value) ids.add("chamber");
+  if (c.value.location === "court") { ids.add("friends"); ids.add("gu"); ids.add("ye"); }
   if (c.value.location === "away") ids.add("shore");
   return [
+    { id: "gu", label: "顾沧遥", x: 44, y: 77 },
+    { id: "ye", label: "叶问苓", x: 56, y: 77 },
     { id: "shore", label: "古渡石道", x: 78, y: 77 },
     {
       id: "friends",
-      label: c.value.introduced ? "顾沧遥与叶问苓" : "顾沧遥 · 会谷来客",
-      x: 43,
-      y: 63,
+      label: c.value.introduced ? "商议入境路线" : "与会谷来客相识",
+      x: c.value.location === "court" ? 50 : 43,
+      y: c.value.location === "court" ? 88 : 63,
     },
     {
       id: "arena",
@@ -160,8 +173,8 @@ const hotspots = computed(() => {
           : c.value.wins < 3
             ? rivals[c.value.wins]!.name + " · 斗法台"
             : "斗法台",
-      x: 70,
-      y: 64,
+      x: 71,
+      y: c.value.location === "court" ? 77 : 64,
     },
     { id: "path", label: "归潮秘境入口", x: 63, y: 65 },
     { id: "treasure", label: "定神珠与抱元录", x: 45, y: 78 },
@@ -169,7 +182,7 @@ const hotspots = computed(() => {
       id: "chamber",
       label: active.value ? "会谷歇脚处" : "临海静修处",
       x: 20,
-      y: 45,
+      y: 57,
     },
     { id: "letter", label: "道友来信", x: 40, y: 57 },
     {
@@ -202,11 +215,12 @@ const shown = computed(() =>
   c.value.duel
     ? []
     : choices.value.filter(
-        (row) => conclaveObject(row.action.kind) === selected.value,
+        (row) => actionObject(row.action) === selected.value,
       ),
 );
+watch(() => c.value.last, () => { if (defeat.value) selected.value = "chamber"; }, {immediate:true, flush:"post"});
 watch(stageKey, () => {
-  selected.value = "";
+  selected.value = defeat.value ? "chamber" : "";
 });
 </script>
 <template>
@@ -249,8 +263,12 @@ watch(stageKey, () => {
         :game="game"
         domain="conclave"
         :focus="selected"
-        @performed="selected = ''"
+        @performed="selected = defeat ? 'chamber' : ''"
+        @select="$event === 'shore' ? emit('shore') : (selected = $event)"
       />
+      <div v-if="signal" class="battle-signal" role="status" aria-label="敌方来势">
+        <strong>{{ signal.title }}</strong><span>{{ signal.next }}</span>
+      </div>
       <CombatBar
         v-if="combat && c.duel"
         :turn="combat.turn"
@@ -259,7 +277,7 @@ watch(stageKey, () => {
         :enemy="combat.enemy"
         :enemy-max="combat.enemyMax"
         :enemy-name="combat.enemyName"
-        :tell="tell[conclaveFoe(game).pattern[c.duel.turn % 3]!]"
+        :tell="signal?.cue ?? ''"
         :options="combatOptions"
         :busy="busy"
         retreat-label="收势撤回 · 保留此前进度"
@@ -267,7 +285,7 @@ watch(stageKey, () => {
         @retreat="
           emit('act', { type: 'conclave', action: { kind: 'withdraw' } })
         "
-      />
+      ><template #preparation><label class="battle-medicine"><input v-model="useHerbs" type="checkbox" :disabled="busy" />允许守势用药 · 关闭可保留灵草，预览随选择更新</label></template></CombatBar>
     </template>
     <template #status
       ><span
@@ -276,6 +294,17 @@ watch(stageKey, () => {
       ></template
     >
 
+    <template v-if="selected === 'gu' || selected === 'ye'">
+      <p>{{ selected === 'gu' ? '顾沧遥邀你演练守势，稳住阵前护体。' : '叶问苓与你推演潮阵，辨认阵中虚实。' }}</p>
+      <p v-if="c.preparation === (selected === 'gu' ? 'ward' : 'insight')">本程已采用此项准备。</p>
+      <button @click="selected = 'friends'">{{ c.introduced ? '一同商议入境路线' : '与两位道友相识' }}</button>
+    </template>
+    <div v-if="selected === 'friends' || selected === 'gu' || selected === 'ye'" class="preparation-tradeoffs">
+      <p>演练择一，不叠加，也不要求购买；切换不会返还此前耗费。</p>
+      <p>自行备战：零费用，依靠已有功法与器物。守势演练：半年、灵石 12，护体与辨后守势减伤。潮阵推演：半年、灵石 6，辨影与辨后抢攻增伤。</p>
+      <p>长春守势可耗草回气，也可在战中关闭用药保留灵草；剑经偏向抢攻，归元息偏向辨阵，均沿用已学功法。</p>
+      <p v-if="lessons.gu">{{ lessons.gu }}</p><p v-if="lessons.ye">{{ lessons.ye }}</p>
+    </div>
     <p v-if="selected === 'friends'">
       {{
         c.introduced
@@ -294,6 +323,13 @@ watch(stageKey, () => {
         +2，半年后可再试；主动撤回不加伤。
       </p>
     </template>
+    <div v-if="defeat && selected === 'chamber'" class="defeat-review">
+      <h3>调息与再战</h3><p>{{ c.last }}</p>
+      <p>可在此换装、购草和静养，再按当前报价登台；此前胜绩与秘境进度保留。</p>
+      <button @click="selected = game.month < c.retryAt || c.wins < 2 ? 'arena' : 'path'">查看再战条件</button>
+      <button @click="selected = 'gu'">查看守势演练</button>
+      <button @click="selected = 'ye'">查看潮阵推演</button>
+    </div>
     <p v-if="selected === 'chamber'">
       灵石 {{ game.stones }} · 灵草 {{ game.herbs }} · 伤势 {{ game.injury }}
     </p>
@@ -336,6 +372,8 @@ watch(stageKey, () => {
         ></small
       >
     </div>
+    <FieldLoadout v-if="safe && (selected === 'chamber' || selected === 'treasure')"
+      :game="game" :busy="busy" @act="emit('act', $event)" />
     <template v-if="safe && selected === 'chamber'">
       <details class="retreat-plan">
         <summary>安排闭关</summary>
@@ -389,6 +427,7 @@ watch(stageKey, () => {
       <p role="status">{{ c.last }}</p>
     </details>
     <template #notes>
+      <details v-if="c.victories.length"><summary>道友记下的交锋</summary><p v-for="v in c.victories" :key="v.kind+v.index">{{ victoryMemory(v) }}</p></details>
       <p v-if="game.outerSea.notice !== null && !due">
         距约定会期还有
         {{ Math.floor((game.outerSea.notice + 600 - game.month) / 12) }} 年
@@ -472,3 +511,9 @@ button:focus-visible {
   outline: 2px solid #f9d480;
 }
 </style>
+
+<style scoped>
+.battle-signal{position:absolute;z-index:5;right:9%;top:20%;max-width:260px;display:grid;gap:6px;padding:12px 16px;border:1px solid #d8b875;background:#142b2bee;color:#fff1d3;pointer-events:none;box-shadow:0 4px 20px #0006}.battle-signal strong{font-size:18px;color:#f2d18e}.battle-signal span{font-size:13px;line-height:1.5}.defeat-review{border-left:3px solid #d8b875;padding-left:12px}.defeat-review button{margin:4px}@media(max-width:760px){.battle-signal{top:16%;right:3%;max-width:180px;padding:8px}.battle-signal strong{font-size:15px}.battle-signal span{font-size:12px}}
+</style>
+
+<style scoped>.battle-medicine{display:flex;align-items:center;gap:8px;color:#efe2bd;font-size:13px;margin:4px 0}.preparation-tradeoffs{border-left:2px solid #bba36b;padding-left:10px}</style>

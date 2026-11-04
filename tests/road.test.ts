@@ -350,7 +350,7 @@ it("migrates v6 without changing resources, scene, old story or RNG; rejects cor
   expect(upgraded).toEqual({
     ...s,
     journey: { ...s.journey, learning: { book: true, relic: false } },
-    version: 35,
+    version: 37,
     adventure: { ...adventure, rescueChoice: "legacy", road: freshRoad() },
   });
   expect(() =>

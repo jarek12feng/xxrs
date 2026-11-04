@@ -6,8 +6,7 @@ import {
   controlDescription,
   getEquipment,
   inspectEquipment,
-  previewEquipment,
-  evaluateEquipment,
+  loadoutPreview,
   type EquipmentId,
 } from "../equipment";
 import { computed, ref } from "vue";
@@ -29,16 +28,7 @@ const sceneFailed = ref(false);
 const control = computed(() => equipmentControl(props.game));
 const loadoutPreviews = computed(() => Object.fromEntries(
   [...treasureIds, "tideSeal", "spiritPearl"].map((item) => {
-    const preview = previewEquipment(props.game, [{ kind: "deploy", id: item as EquipmentId }]);
-    if (preview.error) return [item, ""];
-    const delta = (n: number) => `${n >= 0 ? "+" : ""}${n}`;
-    const turns = (["strike", "guard", "discern"] as const).map((move, i) => {
-      const context = { kind: "turn" as const, move, correct: true };
-      const before = evaluateEquipment(props.game, context);
-      const after = evaluateEquipment(preview.next, context);
-      return `${["反击", "守势", "识破"][i]}伤害 ${delta(preview.after.damage - preview.before.damage + after.damage - before.damage)}、承伤 ${delta(before.armor - after.armor + after.incoming - before.incoming + preview.before.armor - preview.after.armor)}`;
-    });
-    return [item, `装配后器物基础修正差值（正确应对；实际结算还受境界压制、承伤下限及击倒免反击影响）：${turns.join("；")}。`];
+    return [item, loadoutPreview(props.game, { kind: "deploy", id: item as EquipmentId })];
   }),
 ));
 const artifacts = ["tideSeal", "spiritPearl"] as const;

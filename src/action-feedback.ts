@@ -12,6 +12,7 @@ import {
   type State,
 } from "./core";
 import { expeditionGoal } from "./expedition/progression";
+import { foundationPower } from "./foundation-journey/combat";
 import { readiness } from "./combat/game";
 import { routePayoff } from "./route-payoff";
 import { growthComparison } from "./growth-feedback";
@@ -55,6 +56,23 @@ export function actionReceipt(
   after: State,
   intent: Intent,
 ): ActionReceipt | null {
+  if (intent.type === "ascension") {
+    if (intent.action !== "commit") return null;
+    const result = actionReceipt(before, after, before.realm === 0 ? {type:"break",pill:true} : {type:"goldenCore",action:{kind:"break"}});
+    if (result && before.ascension) {
+      result.notes = [...before.ascension.history, ...result.notes];
+      if (before.realm === 1) {
+        result.title = after.realm === 2 ? "金丹已成 · 云壁之外" : after.pending ? "行功暂歇 · 先回应来信" : "凝丹未成 · 收势再备";
+        result.spotlight = true;
+        result.next = after.realm === 2 ? "以丹元护体独自越过云壁，踏上外海道途。" : "已保留灵地与历练成果，可养伤补药后再行功。";
+      }
+      if (after.realm > before.realm) {
+        const a = before.realm ? foundationPower(before) : readiness(before), b = after.realm ? foundationPower(after) : readiness(after);
+        result.payoff = [...(result.payoff ?? []), `同一套功法器物：基础伤害 ${a.damage} → ${b.damage}，护体 ${a.armor} → ${b.armor}。下一程仍按实际敌人与招式结算。`];
+      }
+    }
+    return result;
+  }
   if (
     intent.type === "expedition" ||
     before === after ||

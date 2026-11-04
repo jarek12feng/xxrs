@@ -118,16 +118,18 @@ it.each([1, 123456])(
     s.qi = 360;
     s.qiJourney.gates = 2;
     s.pills = 1;
-    const expected = dispatch(s, { type: "break", pill: true, id: "expected" });
+    s.herbs = Math.max(s.herbs,6);
     await mount(s);
     await click("叩问天关");
-    await click("凝神，突破");
+    await click("凝神，开始三段行功");
+    for(let n=0;n<3;n++) await click("以灵草药气调和");
+    await click("服丹，完成突破");
     expect(text()).toContain("气聚丹田");
     await click("跳过演出");
     const result = document.querySelector('[role="dialog"]')?.textContent;
-    expect(result).toContain(expected.realm ? "筑基已成" : "突破未成");
+    expect(result).toContain("筑基已成");
     expect(result).toContain("1 → 0");
-    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledTimes(5);
   },
 );
 it("shows interrupted alchemy before the pending letter and never advances that story automatically", async () => {

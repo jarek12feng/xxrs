@@ -95,7 +95,7 @@ it("validates route ownership, mutually exclusive travel and old v32 pending inl
   const { passage: _, ...wayfaring } = s.wayfaring;
   const old = { ...s, sense: Math.min(12, s.sense), treasures: legacyEquipment(s), version: 32, wayfaring };
   const upgraded = migrateSave(old);
-  expect(upgraded.version).toBe(35);
+  expect(upgraded.version).toBe(37);
   expect(upgraded.wayfaring.passage).toBeNull();
   expect(upgraded.wayfaring.swordFlight).toBe(s.wayfaring.swordFlight);
   expect(old.version).toBe(32);

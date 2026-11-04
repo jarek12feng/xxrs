@@ -217,7 +217,7 @@ describe("凝丹双路与突破", () => {
     const old = { ...s, treasures: legacyEquipment(s), version: 28 } as Record<string, unknown>;
     delete old.goldenCore;
     const n = migrateSave(old);
-    expect(n.version).toBe(35);
+    expect(n.version).toBe(37);
     expect(n.goldenCore.medicine).toBe(0);
     expect(validState(n)).toBe(true);
     expect(old.goldenCore).toBeUndefined();

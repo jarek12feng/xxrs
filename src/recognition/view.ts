@@ -87,7 +87,9 @@ export function advancementChanges(before: State, after: State) {
     return [];
   return [
     `${realmStageLabel(before)} → ${realmStageLabel(after)}`,
-    after.realm === 1 && before.realm === 0
+    after.realm === 2
+      ? (before.realm < 2 ? "金丹已成，可以丹元护体越过云壁，独自前往外海。" : (after.conclave.stage === 1 ? "丹元凝炼已成，可赴诸宗会争取归潮入境资格。" : "护神宝物与凝婴法门已融入修行，继续金丹后期道途。"))
+      : after.realm === 1 && before.realm === 0
       ? "从前须避开的旧阵，如今可亲自重返。完成青嶂归路后，师门可受录内门，散修可主持药运。"
       : !after.realm && cultivationStageIndex(after) === 1
         ? "已能独自持续护住灵息。三路历练已可前往；亲历之后，可在师门与委托中受托领队。"

@@ -1,3 +1,4 @@
+import { correctResponse } from "./types";
 import { battle, finiteTree, number, pattern } from "./validation";
 import type {
   CombatEffect,
@@ -35,6 +36,7 @@ export function previewAction({
 }: ActionContext) {
   battle(d);
   pattern(e.pattern, ["guard", "strike", "discern"]);
+  if(e.responses) pattern(e.responses,["guard", "strike", "discern"]);
   finiteTree({ profile, encounter: e, adjustments, arrayDiscernBonus });
   for (const key of ["hp", "damage", "armor"] as const)
     number(profile.power[key], key);
@@ -61,7 +63,7 @@ export function previewAction({
   }
   const effects: CombatEffect[] = [];
   if (!["guard", "strike", "discern"].includes(move)) return null;
-  const correct = move === e.pattern[d.turn % e.pattern.length];
+  const correct = correctResponse(e,d.turn,move);
   let damage =
       power.damage +
       (correct ? 6 : 0) +

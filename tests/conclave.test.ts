@@ -247,7 +247,7 @@ effect: ""
     const v30 = { ...old, treasures: legacyEquipment(old), version: 30, conclave: undefined };
     const migrated = migrateSave(v30);
     expect(migrated.conclave).toEqual(freshConclave());
-    expect(migrated.version).toBe(35);
+    expect(migrated.version).toBe(37);
     expect(validState(migrated)).toBe(true);
     expect(() => migrateSave({ ...start, version: 999 })).toThrow();
   });

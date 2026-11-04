@@ -145,3 +145,20 @@ it("bounds rapid switches to two live tracks and releases zero-volume audio", as
   ).toBe(true);
   player.dispose();
 });
+
+it('突破短乐不循环，重复场景更新不重播，结束后恢复常规配乐',async()=>{
+ const {player,audios}=setup();
+ player.settings(true,.3);player.unlock();await Promise.resolve();
+ player.scene('golden-rise');await Promise.resolve();
+ const score=audios.at(-1)!;
+ expect(score.src).toContain('breakthrough-v1/golden-rise.wav');
+ expect(score.loop).toBe(false);
+ const count=audios.length;
+ player.scene('golden-rise');
+ expect(audios.length).toBe(count);
+ player.scene('foundation');await Promise.resolve();
+ await vi.advanceTimersByTimeAsync(6000);
+ expect(score.pause).toHaveBeenCalled();
+ expect(audios.at(-1)!.loop).toBe(true);
+ player.dispose();
+});

@@ -1,3 +1,4 @@
+import { validEffort, type BattleEffort, type Victory } from "./victories";
 import type { State } from "../world";
 export interface Conclave {
   stage: 0 | 1 | 2;
@@ -11,6 +12,7 @@ export interface Conclave {
   depth: number;
   attuned: boolean;
   method: "none" | "inherit" | "still";
+  victories: Victory[];
   duel: {
     kind: "contest" | "vault";
     index: number;
@@ -18,6 +20,7 @@ export interface Conclave {
     enemy: number;
     turn: number;
     effect: string;
+    effort: BattleEffort | null;
   } | null;
   last: string;
 }
@@ -34,6 +37,7 @@ export const freshConclave = (): Conclave => ({
   attuned: false,
   method: "none",
   duel: null,
+  victories: [],
   last: "",
 });
 import { goldenCap } from "../progression/caps";
@@ -45,7 +49,7 @@ export function goldenBlock(s: { conclave?: { stage: number } }) {
       ? "修满 599，温养定神珠、走通归潮秘境并参悟凝婴法门，再融汇丹元突破后期。"
       : "已至金丹后期瓶颈；圆满试炼与化婴丹筹备仍待后续道途。";
 }
-export function validConclave(s: State) {
+export function validConclave(s: State, legacy = false) {
   const c = s.conclave;
   const int = (v: unknown, max = 1e9) =>
     Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= max;
@@ -67,8 +71,12 @@ export function validConclave(s: State) {
     c.last.length > 2000
   )
     return false;
-  if (s.realm !== 2)
-    return JSON.stringify(c) === JSON.stringify(freshConclave());
+  if (!legacy && (!Array.isArray(c.victories) || c.victories.length>5 || new Set(c.victories.map(v=>`${v?.kind}/${v?.index}`)).size!==c.victories.length || c.victories.some(v=>!v || !int(v.turns,18) || v.turns<1 || !validEffort(v,v.turns) || !int(v.index,2) || (v.kind==='contest' ? v.index>=c.wins : v.kind!=='vault' || v.index>=c.depth)))) return false;
+  if (s.realm !== 2) {
+    const {victories: _records,...rest}=c;
+    const {victories: _fresh,...fresh}=freshConclave();
+    return JSON.stringify(rest)===JSON.stringify(fresh) && (legacy || c.victories.length===0);
+  }
   if (
     c.stage > 0 &&
     (s.outerSea.cleared !== 2 ||
@@ -124,6 +132,7 @@ export function validConclave(s: State) {
     int(d.enemy, 600) &&
     d.enemy > 0 &&
     int(d.turn, 17) &&
+    (legacy || d.effort === null || validEffort(d.effort,d.turn)) &&
     ["", "strike", "guard", "discern"].includes(d.effect) &&
     (d.kind === "contest"
       ? c.location === "court" && d.index === c.wins && c.wins < 3

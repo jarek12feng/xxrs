@@ -54,7 +54,7 @@ export function completeChallenge(s: State) {
   if (d.id === "well") {
     q.ferry = 2;
     q.last +=
-      "石偶垂下手臂，身后的传承室亮了起来。你跨过曾被它封住的石阶，壁上运功痕迹触手可及。";
+      "筑基灵元托住了井底寒压，你第一次独力稳住整段阵路。石偶垂下手臂，身后的传承室亮了起来。你跨过曾被它封住的石阶，壁上运功痕迹触手可及。";
   }
   if (d.id === "exit") {
     q.ferry = 3;

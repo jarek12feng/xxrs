@@ -23,8 +23,9 @@ export function advancePlot(s: State, a: JourneyAction) {
       return;
     case "travel":
       q.location = a.destination;
-      if (a.destination === "ferry" && !q.ferry) q.ferry = 1;
-      q.last = `你来到${destinations[a.destination].name}。`;
+      const firstFerry = a.destination === "ferry" && !q.ferry;
+      if (firstFerry) q.ferry = 1;
+      q.last = `你来到${destinations[a.destination].name}。` + (firstFerry ? "井口寒气扑面，你运转筑基灵元便将它压回石沿。守渡修士收起原本要递来的护符，将通往井底的石阶让给你。进入沉井后，前两合灵元初运伤害 +6、承伤 −6；无需再领一次奖励。" : "");
       return;
     case "inherit":
       q.inheritance = a.technique;

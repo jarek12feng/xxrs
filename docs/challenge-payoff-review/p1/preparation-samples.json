@@ -1,0 +1,490 @@
+[
+  {
+    "main": "spring",
+    "prep": "none",
+    "goal": "speed",
+    "stones": 0,
+    "months": 0,
+    "win": true,
+    "turns": 5,
+    "herbs": 1,
+    "remaining": 58,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "spring",
+    "prep": "none",
+    "goal": "safe",
+    "stones": 0,
+    "months": 0,
+    "win": true,
+    "turns": 6,
+    "herbs": 5,
+    "remaining": 86,
+    "path": [
+      "guard",
+      "guard",
+      "guard",
+      "guard",
+      "guard",
+      "guard"
+    ]
+  },
+  {
+    "main": "spring",
+    "prep": "none",
+    "goal": "frugal",
+    "stones": 0,
+    "months": 0,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 51,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "spring",
+    "prep": "ward",
+    "goal": "speed",
+    "stones": 12,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 1,
+    "remaining": 70,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "spring",
+    "prep": "ward",
+    "goal": "safe",
+    "stones": 12,
+    "months": 6,
+    "win": true,
+    "turns": 6,
+    "herbs": 4,
+    "remaining": 96,
+    "path": [
+      "discern",
+      "guard",
+      "guard",
+      "guard",
+      "guard",
+      "guard"
+    ]
+  },
+  {
+    "main": "spring",
+    "prep": "ward",
+    "goal": "frugal",
+    "stones": 12,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 63,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "spring",
+    "prep": "insight",
+    "goal": "speed",
+    "stones": 6,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 1,
+    "remaining": 58,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "spring",
+    "prep": "insight",
+    "goal": "safe",
+    "stones": 6,
+    "months": 6,
+    "win": true,
+    "turns": 6,
+    "herbs": 5,
+    "remaining": 86,
+    "path": [
+      "guard",
+      "guard",
+      "guard",
+      "guard",
+      "guard",
+      "guard"
+    ]
+  },
+  {
+    "main": "spring",
+    "prep": "insight",
+    "goal": "frugal",
+    "stones": 6,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 51,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "blade",
+    "prep": "none",
+    "goal": "speed",
+    "stones": 0,
+    "months": 0,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 43,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "blade",
+    "prep": "none",
+    "goal": "safe",
+    "stones": 0,
+    "months": 0,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 53,
+    "path": [
+      "guard",
+      "guard",
+      "guard",
+      "guard",
+      "strike"
+    ]
+  },
+  {
+    "main": "blade",
+    "prep": "none",
+    "goal": "frugal",
+    "stones": 0,
+    "months": 0,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 43,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "blade",
+    "prep": "ward",
+    "goal": "speed",
+    "stones": 12,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 55,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "blade",
+    "prep": "ward",
+    "goal": "safe",
+    "stones": 12,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 67,
+    "path": [
+      "discern",
+      "guard",
+      "discern",
+      "guard",
+      "strike"
+    ]
+  },
+  {
+    "main": "blade",
+    "prep": "ward",
+    "goal": "frugal",
+    "stones": 12,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 55,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "blade",
+    "prep": "insight",
+    "goal": "speed",
+    "stones": 6,
+    "months": 6,
+    "win": true,
+    "turns": 4,
+    "herbs": 0,
+    "remaining": 46,
+    "path": [
+      "discern",
+      "strike",
+      "strike",
+      "strike"
+    ]
+  },
+  {
+    "main": "blade",
+    "prep": "insight",
+    "goal": "safe",
+    "stones": 6,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 54,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "guard",
+      "guard"
+    ]
+  },
+  {
+    "main": "blade",
+    "prep": "insight",
+    "goal": "frugal",
+    "stones": 6,
+    "months": 6,
+    "win": true,
+    "turns": 4,
+    "herbs": 0,
+    "remaining": 46,
+    "path": [
+      "discern",
+      "strike",
+      "strike",
+      "strike"
+    ]
+  },
+  {
+    "main": "breath",
+    "prep": "none",
+    "goal": "speed",
+    "stones": 0,
+    "months": 0,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 53,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "breath",
+    "prep": "none",
+    "goal": "safe",
+    "stones": 0,
+    "months": 0,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 57,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "guard",
+      "strike"
+    ]
+  },
+  {
+    "main": "breath",
+    "prep": "none",
+    "goal": "frugal",
+    "stones": 0,
+    "months": 0,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 53,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "breath",
+    "prep": "ward",
+    "goal": "speed",
+    "stones": 12,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 65,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "breath",
+    "prep": "ward",
+    "goal": "safe",
+    "stones": 12,
+    "months": 6,
+    "win": true,
+    "turns": 6,
+    "herbs": 0,
+    "remaining": 71,
+    "path": [
+      "discern",
+      "guard",
+      "discern",
+      "guard",
+      "guard",
+      "guard"
+    ]
+  },
+  {
+    "main": "breath",
+    "prep": "ward",
+    "goal": "frugal",
+    "stones": 12,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 65,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "breath",
+    "prep": "insight",
+    "goal": "speed",
+    "stones": 6,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 53,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  },
+  {
+    "main": "breath",
+    "prep": "insight",
+    "goal": "safe",
+    "stones": 6,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 57,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "guard",
+      "guard"
+    ]
+  },
+  {
+    "main": "breath",
+    "prep": "insight",
+    "goal": "frugal",
+    "stones": 6,
+    "months": 6,
+    "win": true,
+    "turns": 5,
+    "herbs": 0,
+    "remaining": 53,
+    "path": [
+      "discern",
+      "strike",
+      "guard",
+      "strike",
+      "guard"
+    ]
+  }
+]

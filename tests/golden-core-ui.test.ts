@@ -5,6 +5,7 @@ import { it, expect } from "vitest";
 import { dispatch, migrateSave, validState, type Intent } from "../src/core";
 import { condensationCheckpoint } from "../tools/golden-core-checkpoint";
 import Status from "../src/CultivationStatus.vue";
+import Ascension from "../src/ascension/AscensionPanel.vue";
 import Panel from "../src/golden-core/GoldenCorePanel.vue";
 it("实际按钮走通分药、炼丹、灵地、护持、凝丹和初行，重载保留成果", async () => {
   const state = shallowRef(condensationCheckpoint());
@@ -14,19 +15,16 @@ it("实际按钮走通分药、炼丹、灵地、护持、凝丹和初行，重�
   state.value.workshop.ward++;
   const host = document.createElement("div");
   let serial = 0;
-  const app = createApp({
-    render: () =>
-      h(Panel, {
-        game: state.value,
-        busy: false,
-        onAct: (i: Intent) => {
-          const before = state.value;
-          state.value = dispatch(before, { ...i, id: `ui-golden-${++serial}` });
-          expect(state.value).not.toBe(before);
-          expect(validState(state.value)).toBe(true);
-        },
-      }),
-  });
+  const onAct = (i: Intent) => {
+    const before = state.value;
+    state.value = dispatch(before, { ...i, id: `ui-golden-${++serial}` });
+    expect(state.value).not.toBe(before);
+    expect(validState(state.value)).toBe(true);
+  };
+  const app = createApp({render:()=>h('div',[
+    h(Panel,{game:state.value,busy:false,onAct}),
+    h(Ascension,{game:state.value,busy:false,onAct})
+  ])});
   app.mount(host);
 
   const click = (text: string) => clickSceneAction(host, text);
@@ -50,8 +48,15 @@ it("实际按钮走通分药、炼丹、灵地、护持、凝丹和初行，重�
     await nextTick();
     expect(host.textContent).toContain("预计出关年龄");
     expect(host.textContent).toContain("届时余寿");
-    expect(host.textContent).toContain("当前把握 100%");
-    await click("服丹叩关");
+    expect(host.textContent).toContain("直接叩关把握 100%");
+    await click("凝丹行功");
+    for(let n=0;n<3;n++) {
+      const b=[...host.querySelectorAll<HTMLButtonElement>('.ascension-overlay button')].find(x=>x.textContent?.includes('以灵草药气调和'))!;
+      b.click(); await nextTick();
+      state.value=migrateSave(JSON.parse(JSON.stringify(state.value))); await nextTick();
+    }
+    const finish=[...host.querySelectorAll<HTMLButtonElement>('.ascension-overlay button')].find(x=>x.textContent?.includes('服丹，完成突破'))!;
+    finish.click(); await nextTick();
     state.value = migrateSave(JSON.parse(JSON.stringify(state.value)));
     await nextTick();
     expect(host.textContent).toContain("金丹初成");

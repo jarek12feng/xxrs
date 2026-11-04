@@ -1,5 +1,7 @@
 # 战斗模块与调用约定
 
+2026-11-04：`CombatEncounter.responses` 可由章节提供当前可见阶段的多个有效应对；`correctResponse` 统一基础与装备计算，未提供时保留 pattern。会谷／归潮首次采用；`tacticalPreview` 支持 `useHerbs:false`，仅关闭本次治疗用药。详见 [P1 实施](challenge-payoff-review/p1/README.md)。
+
 2026-11-04。范围：现有逐回合交锋、一次性概率遭遇和章节效果接口，不调整数值、章节奖励、时间或持久化格式。
 
 ## 对外接口

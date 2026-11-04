@@ -1,6 +1,8 @@
 import { foundationMusic, audioUrl } from "./foundation-audio";
 // Original file score, loaded after app mount; mute/gesture/visibility gates apply.
 export type MusicCue =
+  | "foundation-rise"
+  | "golden-rise"
   | "home"
   | "trial"
   | "journey"
@@ -9,6 +11,8 @@ export type MusicCue =
   | keyof typeof foundationMusic;
 export const musicNames: Record<MusicCue, string> = {
   ...foundationMusic,
+  "foundation-rise": "道基初成 · 出关",
+  "golden-rise": "丹成云开 · 出关",
   home: "听松入定 · 洞府与归家",
   trial: "护路破阵 · 交锋",
   journey: "青山同行 · 山外行路",
@@ -44,6 +48,7 @@ export function createLoopPlayer<Cue extends string>(
   factory: (url: string) => HTMLAudioElement = (url) => new Audio(url),
   report: (message: string) => void = () => {},
   playback: (cue: Cue | null) => void = () => {},
+  loopFor: (cue: Cue) => boolean = () => true,
 ) {
   type Voice = {
     audio: HTMLAudioElement;
@@ -82,7 +87,7 @@ export function createLoopPlayer<Cue extends string>(
       return;
     }
     const voice: Voice = { audio, cue: selected, gain: 0, pending: true };
-    audio.loop = true;
+    audio.loop = loopFor(selected);
     audio.preload = "auto";
     audio.volume = 0;
     voices.add(voice);
@@ -201,5 +206,6 @@ export function createMusicPlayer(
     factory,
     report,
     playback,
+    cue => cue !== "foundation-rise" && cue !== "golden-rise",
   );
 }

@@ -7,6 +7,7 @@ import {
   type State,
 } from "../src/core";
 import {
+  loadoutPreview,
   equipmentControl,
   applyEquipmentChange,
   previewEquipment,
@@ -289,7 +290,7 @@ describe("神识成长与御器", () => {
     const before = structuredClone(old);
     const n = migrateSave(old);
     expect(old).toEqual(before);
-    expect(n.version).toBe(35);
+    expect(n.version).toBe(37);
     expect(n.sense).toBe(s.sense);
     expect(n.treasures.equipped).toEqual(["bell"]);
     expect(n.treasures.artifacts).toEqual([]);
@@ -335,8 +336,10 @@ describe("养神药报价", () => {
   it.each([
     [0, 11, 1],
     [1, 11, 2],
-    [1, 12, 1],
+    [1, 12, 2],
+    [1, 22, 2],
     [1, 23, 1],
+    [1, 24, 0],
   ] as const)("境界 %i 神识 %i 服清心丹增 %i", (realm, sense, gain) => {
     expect(
       quoteMedicineUse("clarity", {
@@ -447,7 +450,7 @@ it("清心丹后段报价说明完整制作成本与免费凝神替代", () => {
   const s = outerSeaCheckpoint(); s.sense = 12;
   const q = workshopQuote(s, { product: "clarity", method: "craft" });
   expect(q).toMatchObject({ months: 1, stones: 4, herbs: 2 });
-  expect(q.effect).toContain("凝神一月同增 1");
+  expect(q.effect).toContain("凝神每月增加 1");
 });
 it("低血量旧战档提示法宝变化，仍可撤退重整并重新出战", () => {
   const p = seaPlayer(outerSeaCheckpoint());
@@ -474,4 +477,27 @@ it("低血量旧战档提示法宝变化，仍可撤退重整并重新出战", (
   n.send({type:"treasure",action:{kind:"deploy",item:"tideSeal"}});
   expect(n.state.treasures.artifacts).toEqual(["tideSeal"]);
   expect(validState(n.state)).toBe(true);
+});
+
+it("整套预览包含专御得失且不改动原状态", () => {
+  const s = ready(); s.sense = 18;
+  s.journey.equipped = "sword"; s.journey.relics.sword = 1;
+  s.treasures.equipped = []; s.treasures.owned.bell = 1;
+  const original = JSON.stringify(s);
+  const text = loadoutPreview(s, { kind: "deploy", id: "bell" });
+  expect(text).toContain("反击伤害 -3、承伤 +1");
+  expect(JSON.stringify(s)).toBe(original);
+  const next = previewEquipment(s, [{kind:"deploy",id:"bell"}]).next;
+  expect(loadoutPreview(next, {kind:"withdraw",id:"bell"})).toContain("反击伤害 +3、承伤 -1");
+});
+it("清心丹在中段以材料换时间，临界截断且共用药性间隔", () => {
+  const s = outerSeaCheckpoint(); s.sense = 12; s.growth.medicines.clarity = 3;
+  s.growth.lastMedicineMonth = null;
+  const month = s.month;
+  const first = dispatch(s, {id:"clarity-new",type:"consume",medicine:"clarity"});
+  expect(first.sense).toBe(14); expect(first.month).toBe(month);
+  expect(first.growth.medicines.clarity).toBe(2);
+  expect(dispatch(first,{id:"clarity-cooldown",type:"consume",medicine:"clarity"})).toBe(first);
+  expect(quoteMedicineUse("spirit",{scene:"daily",count:1,realm:2,sense:14,month:month+2,lastMedicineMonth:month}).error).toContain("药性未散");
+  expect(quoteMedicineUse("clarity",{scene:"daily",count:1,realm:1,sense:24,month:month+3}).consumed).toBe(0);
 });

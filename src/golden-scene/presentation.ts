@@ -1,3 +1,4 @@
+import { conclaveLessons } from "../conclave/victories";
 import type { State } from "../core";
 import { foundationPower } from "../foundation-journey/combat";
 import { conclaveFoe } from "../conclave/rules";
@@ -39,7 +40,7 @@ export function goldenCombat(s: State, domain: GoldenDomain) {
           ? 12
           : 0
         : s.conclave.duel!.kind === "vault" && s.conclave.route === "shelter"
-          ? 16
+          ? 16 + conclaveLessons(s).shelterHp
           : 0),
     array,
   };

@@ -21,7 +21,7 @@ function navigate(event: KeyboardEvent, id: string) {
   event.preventDefault();
   const index = props.hotspots.findIndex(point => point.id === id);
   const next = props.hotspots[(index + direction + props.hotspots.length) % props.hotspots.length];
-  root.value?.querySelector<HTMLButtonElement>(`[data-hotspot="${next.id}"]`)?.focus();
+  root.value?.querySelector<HTMLButtonElement>(`[data-hotspot="${next.id}"]`)?.focus({ preventScroll: true });
 }
 const backdrop = computed(() => props.image === '/scenes/apothecary.jpg' ? '/art/scene2d/apothecary-floor-v1.png' : props.image);
 const target = computed(() => props.hotspots.find(x => x.id === props.active));
@@ -31,7 +31,7 @@ function choose(id: string) { notes.value = false; emit('select', id); }
 function close() {
   const id = props.active;
   notes.value = false; emit('close');
-  root.value?.querySelector<HTMLButtonElement>(`[data-hotspot="${id}"]`)?.focus();
+  root.value?.querySelector<HTMLButtonElement>(`[data-hotspot="${id}"]`)?.focus({ preventScroll: true });
 }
 function keyboard(event: KeyboardEvent) {
   if (event.key !== 'Escape' || props.battle || (!props.active && !notes.value)) return;
@@ -65,10 +65,12 @@ onBeforeUnmount(() => {
         <span aria-hidden="true">◇</span><strong>{{point.label}}</strong>
       </button>
     </div>
+    <div class="narrative-overview">
     <header class="narrative-heading"><small>青玄界 · 此间行旅</small><h2>{{title}}</h2>
       <button :disabled="battle" :aria-expanded="notes" @click="notes = !notes">此地见闻</button>
     </header>
     <aside class="narrative-goal" v-if="goal"><span>眼前之事</span><p>{{goal}}</p><slot name="status" /></aside>
+    </div>
     <section v-if="notes" class="narrative-inspector narrative-notes" aria-label="此地见闻">
       <div class="narrative-inspector-heading"><h3>此地见闻</h3><button @click="close" aria-label="收起此地见闻">×</button></div>
       <p v-if="body">{{body}}</p><slot name="notes" />
@@ -81,7 +83,7 @@ onBeforeUnmount(() => {
   </section>
 </template>
 <style scoped>
-.narrative-stage { position:relative; isolation:isolate; width:100%; height:calc(100dvh - 160px); min-height:560px; overflow:hidden; color:#f2ead7; background:#081b1c; border:1px solid #bca26b44; }
+.narrative-stage { position:relative; isolation:isolate; width:100%; height:calc(100dvh - 160px); min-height:560px; overflow:clip; color:#f2ead7; background:#081b1c; border:1px solid #bca26b44; }
 .narrative-world { position:absolute; inset:0; transform-origin:center; transition:transform 420ms cubic-bezier(.2,.65,.3,1); }
 .scene-landscape { position:absolute; inset:0; background-position:center; background-size:cover; }
 .place-enter-active,.place-leave-active { transition:opacity 350ms ease; }
@@ -125,4 +127,11 @@ onBeforeUnmount(() => {
 .narrative-hint { position:absolute; left:0; right:0; bottom:16px; text-align:center; font-size:12px; color:#e5d9bf; text-shadow:0 2px 6px #000; }
 @media(min-width:1000px) { .narrative-world { width:100%; height:100%; } }
 @media(max-width:900px) { .narrative-stage { min-height:640px; } .narrative-goal { width:180px; right:12px; } .narrative-heading { left:16px; } .narrative-inspector,.battle-inspector { top:auto; bottom:12px; left:12px; right:12px; width:auto; max-height:44%; padding:14px; } .narrative-hotspot strong { font-size:12px; } }
+.narrative-overview { display:contents; }
+@media(max-width:600px) {
+  .narrative-overview { display:grid; position:absolute; top:12px; left:12px; right:12px; gap:8px; max-height:36%; overflow:auto; }
+  .narrative-overview .narrative-heading, .narrative-overview .narrative-goal { position:static; max-width:none; width:auto; margin:0; }
+  .narrative-overview .narrative-heading h2 { font-size:20px; margin:4px 0; }
+  .narrative-overview .narrative-goal { background:#10251ee6; padding:8px 12px; }
+}
 </style>

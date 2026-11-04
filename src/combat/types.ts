@@ -21,6 +21,8 @@ export interface CombatEncounter {
   attack: number;
   pattern: readonly Move[];
   coreOpen?: boolean;
+  /** Visible encounter state may offer several valid responses instead of a fixed rotation. */
+  responses?: readonly Move[];
 }
 export interface CombatProfile {
   power: CombatPower;
@@ -69,3 +71,7 @@ export type CombatAdjustment =
       whenCorrect?: boolean;
     }
   | { phase: "afterHealing"; incoming: number; note?: string };
+
+export function correctResponse(e: CombatEncounter, turn: number, move: Move) {
+  return e.responses ? e.responses.includes(move) : move === e.pattern[turn % e.pattern.length];
+}

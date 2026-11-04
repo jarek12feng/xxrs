@@ -9,9 +9,16 @@ export function actionSound(
   // Terminal outcomes take priority over the action that happened to cause them.
   if (after.life > before.life) return "rebirth";
   if (after.status === "dead" && before.status !== "dead") return "death";
-  if (after.realm > before.realm) return "breakthrough";
+  if (after.realm > before.realm) return after.realm >= 2 ? "golden-breakthrough" : "breakthrough";
   if (after.status === "complete" && before.status !== "complete")
     return "closure";
+  if (intent.type === "ascension") {
+    if (intent.action === "commit" && (after.pills < before.pills || after.goldenCore.pills < before.goldenCore.pills)) return "failure";
+    if (intent.action === "withdraw") return "rest";
+    if (intent.action === "medicine") return "medicine";
+    if (intent.action === "press") return "guard";
+    return "cultivate";
+  }
   if (intent.type === "break" && after.qi < before.qi) return "failure";
   if (after.adventure.mist.attempts > before.adventure.mist.attempts)
     return after.adventure.mist.passed ? "discovery" : "failure";
@@ -226,4 +233,10 @@ export function actionSound(
   return intent.type === "adventure" && intent.action === "inspect"
     ? "discovery"
     : "step";
+}
+
+// Only a settled advancement triggers a short score. Restoration is not an action.
+export function breakthroughMusic(before:State, after:State): "foundation-rise" | "golden-rise" | null {
+  return after.status === 'alive' && after.realm > before.realm
+    ? after.realm >= 2 ? 'golden-rise' : 'foundation-rise' : null;
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CloudCrossing from "./CloudCrossing.vue";
 import { projectInteractions } from "../story-interactions";
 import { computed, ref, watch } from "vue";
 import { goldenObject } from "../scene2d/golden-objects";
@@ -96,12 +97,12 @@ const options = computed(() => {
           : "备护脉阵请人守关 · 把握 +15",
         { kind: "guard" },
       );
-    add(`服丹叩关 · 当前把握 ${goldenChance(s)}%`, { kind: "break" });
+    add(`凝丹行功 · 直接叩关把握 ${goldenChance(s)}%，稳住三段可至100%`, { kind: "break" });
   }
   return projectInteractions(s, choices, goldenQuote);
 });
 const send = (action: GoldenAction) =>
-  emit("act", { type: "goldenCore", action });
+  emit("act", action.kind === "break" ? {type:"ascension",action:"start"} : { type: "goldenCore", action });
 
 // The selected object is presentation state; opening it never dispatches a command.
 const selected = ref("");
@@ -187,6 +188,7 @@ watch(hotspots, (objects) => {
     @select="selected = $event"
     @close="selected = ''"
   >
+    <template #world><CloudCrossing v-if="game.realm === 2" :game="game" /></template>
     <template #status
       ><span v-if="game.realm === 1"
         >主药 {{ g.medicine }} · 丹药 {{ g.pills }} · 灵地{{

@@ -124,7 +124,7 @@ it("交锋隐藏探索热点，只有一份可操作招式；未收到成功状�
     b.click();
     await nextTick();
     expect(commands).toEqual([
-      { type: "conclave", action: { kind: "move", move: "guard" } },
+      { type: "conclave", action: { kind: "move", move: "guard", useHerbs: true } },
     ]);
     expect(
       host.querySelector(".combat-field")?.getAttribute("data-phase"),
@@ -206,7 +206,7 @@ it("会谷走近可略过，忙碌时停止，局部移动不改规则状态", a
     ).toBe("false");
     expect(
       (host.querySelector(".walking-actor") as HTMLElement).style.left,
-    ).toBe("58%");
+    ).toBe("60%");
     focus.value = "friends";
     await nextTick();
     busy.value = true;

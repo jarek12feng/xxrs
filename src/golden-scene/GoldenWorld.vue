@@ -19,7 +19,7 @@ const props = defineProps<{
   focus?: string;
   busy?: boolean;
 }>();
-const emit = defineEmits<{ performed: [] }>();
+const emit = defineEmits<{ performed: []; select: [id: string] }>();
 const hero = computed(() =>
   props.game.social.gender === "female" ? "hero-female" : "hero-male",
 );
@@ -56,7 +56,8 @@ const walk = useSceneApproach({
     walkReady.value &&
     !props.busy &&
     !combat.value,
-  initial: { x: 24, y: 87 },
+  initial: props.domain === "conclave" && props.game.conclave.location === "court"
+    ? { x: 28, y: 82 } : { x: 24, y: 87 },
 });
 watch(
   () => [props.busy, !!combat.value, !!props.game.pending, props.game.status],
@@ -75,7 +76,7 @@ watch(
     props.domain === "sea"
       ? props.game.outerSea.location
       : props.game.conclave.location,
-  () => walk.reset({ x: 24, y: 87 }),
+  () => walk.reset(court.value ? { x: 28, y: 82 } : { x: 24, y: 87 }),
 );
 const friends = computed(() => !combat.value && (shore.value || court.value));
 const performance = ref<ReturnType<typeof goldenPerformance>>(null);
@@ -186,15 +187,15 @@ watch(
         const positions: Record<string, number> = inRuins.value
           ? { path: 52, arena: 52, exit: 18 }
           : {
-              friends: 29,
-              arena: 58,
-              chamber: 24,
+              friends: 34, gu: 33, ye: 62,
+              arena: 60,
+              chamber: 25,
               path: 67,
               treasure: 32,
               exit: 15,
             };
         if (positions[value] !== undefined)
-          walk.walkTo({ x: positions[value]!, y: 87 });
+          walk.walkTo({ x: positions[value]!, y: court.value ? 82 : 87 });
       }
     }
   },
@@ -223,7 +224,7 @@ onBeforeUnmount(() => {
     :data-cue="cue"
     :data-phase="phase"
     :data-performance="performance?.kind"
-    :class="{ 'reduced-motion': reducedMotion }"
+    :class="{ 'reduced-motion': reducedMotion, 'court-world': court, 'shore-world': shore }"
   >
     <WalkingActor
       v-if="!combat"
@@ -253,27 +254,30 @@ onBeforeUnmount(() => {
     <div v-if="walk.moving.value && !cue" class="golden-caption">
       <span>沿石台走近</span><button @click.stop="walk.skip">略过走近</button>
     </div>
-    <div v-if="friends" class="shore-people">
-      <img
-        src="/art/conclave/gu-cangyao-v1.webp"
-        :alt="game.outerSea.met ? '顾沧遥在现场' : '修堤者'"
-      /><img
-        src="/art/conclave/ye-wenling-v1.webp"
-        :alt="game.outerSea.met ? '叶问苓在现场' : '观潮阵修'"
-      />
+    <div v-if="friends && court" class="court-people">
+      <button v-for="person in [{ id: 'gu-cangyao', key: 'gu', name: '顾沧遥' }, { id: 'ye-wenling', key: 'ye', name: '叶问苓' }]"
+        :key="person.id" class="court-person" :class="person.id"
+        :aria-label="'与' + person.name + '交谈'" :aria-pressed="focus === person.key"
+        :disabled="busy" @click.stop="emit('select', person.key)">
+        <img :src="'/art/conclave/' + person.id + '-v1.webp'" :alt="person.name + '在现场'" />
+      </button>
     </div>
-    <img
-      v-if="
-        court &&
-        !combat &&
-        game.conclave.introduced &&
-        game.conclave.wins > 0 &&
-        game.conclave.wins < 3
-      "
-      class="waiting-rival"
-      :src="rivalImages[game.conclave.wins]"
-      :alt="game.conclave.wins === 1 ? '纪闻霜候场' : '程砚舟候场'"
-    />
+    <div v-else-if="friends" class="shore-people">
+      <button v-for="person in [{ id: 'gu-cangyao', name: game.outerSea.met ? '顾沧遥' : '修堤者' }, { id: 'ye-wenling', name: game.outerSea.met ? '叶问苓' : '观潮阵修' }]"
+        :key="person.id" class="court-person" :class="person.id"
+        :aria-label="'与' + person.name + '交谈'" :disabled="busy"
+        @click.stop="emit('select', domain === 'sea' ? 'friends' : 'shore')">
+        <img :src="'/art/conclave/' + person.id + '-v1.webp'" :alt="person.name + '在现场'" />
+      </button>
+    </div>
+    <button
+      v-if="court && !combat && game.conclave.introduced && game.conclave.wins > 0 && game.conclave.wins < 3"
+      class="court-person waiting-rival" :disabled="busy"
+      :aria-label="game.conclave.wins === 1 ? '与纪闻霜交谈' : '与程砚舟交谈'"
+      :aria-pressed="focus === 'arena'" @click.stop="emit('select', 'arena')">
+      <img :src="rivalImages[game.conclave.wins]"
+        :alt="game.conclave.wins === 1 ? '纪闻霜候场' : '程砚舟候场'" />
+    </button>
     <div
       v-if="
         !combat &&
@@ -360,28 +364,32 @@ onBeforeUnmount(() => {
   object-fit: contain;
   object-position: center bottom;
 }
-.shore-people {
-  position: absolute;
-  left: 34%;
-  bottom: 24%;
-  height: 34%;
-  display: flex;
-  filter: drop-shadow(0 9px 8px #0008);
+.shore-world :deep(.walking-actor), .shore-world .meditating-actor { width:19%; height:33%; }
+.shore-world .court-person { top:80%; }
+.shore-world .gu-cangyao { left:43%; }
+.shore-world .ye-wenling { left:54%; }
+/* Court figures share the stone terrace's ground plane. Foreground hero is slightly larger. */
+.court-world :deep(.walking-actor), .court-world .meditating-actor {
+  width: 19%; height: 33%; z-index: 2;
 }
-.shore-people img {
-  height: 100%;
-  width: 12vw;
-  object-fit: contain;
-  object-position: bottom;
+.court-person {
+  position: absolute; top: 74%; width: 14%; height: 29%;
+  transform: translate(-50%, -100%); pointer-events: auto;
+  border: 0; padding: 0; margin: 0; background: transparent; cursor: pointer;
+  filter: drop-shadow(0 6px 5px #10231d66);
 }
-.waiting-rival {
-  position: absolute;
-  right: 22%;
-  bottom: 24%;
-  height: 42%;
-  width: 17%;
-  object-fit: contain;
+.court-person::before {
+  content: ""; position: absolute; bottom: 0; left: 23%; width: 54%; height: 5%;
+  border-radius: 50%; background: #13241f55; filter: blur(4px); z-index: -1;
 }
+.court-person img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+.court-person:is(:hover, :focus-visible), .court-person[aria-pressed="true"] {
+  filter: drop-shadow(0 0 6px #ebd69999);
+}
+.court-person:focus-visible { outline: 2px solid #e9d39b; outline-offset: 3px; border-radius: 35%; }
+.gu-cangyao { left: 45%; }
+.ye-wenling { left: 55%; }
+.waiting-rival { left: 71%; }
 .golden-caption {
   position: absolute;
   bottom: 8%;

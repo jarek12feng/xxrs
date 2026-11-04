@@ -139,8 +139,8 @@ it("explains the mandatory relic pill and blocks breakthrough without it", async
   const panel = document.querySelector('[aria-label="突破操作区"]')!;
   expect(panel.textContent).toContain("筑基必需一枚筑基丹");
   expect(panel.querySelector('input[type="checkbox"]')).toBeNull();
-  expect(button("凝神，突破").disabled).toBe(true);
-  button("凝神，突破").click();
+  expect(button("凝神，开始三段行功").disabled).toBe(true);
+  button("凝神，开始三段行功").click();
   await flush();
   expect(save).not.toHaveBeenCalled();
 });

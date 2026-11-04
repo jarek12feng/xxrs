@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { clickSceneAction, openSceneNotes } from "./golden-scene-navigation";
-import { createApp, h, shallowRef } from "vue";
+import { createApp, h, nextTick, shallowRef } from "vue";
 import { it, expect } from "vitest";
 import { dispatch, validState, type Intent } from "../src/core";
 import { outerSeaCheckpoint } from "../tools/outer-sea-checkpoint";
@@ -29,6 +29,10 @@ it("外海按钮从相识到探险、法宝与闭关均发送命令，显示五�
   const click = (text: string) => clickSceneAction(host, text);
   try {
     await click("循海路");
+    const before = JSON.stringify(s.value);
+    host.querySelector<HTMLButtonElement>('[aria-label="与修堤者交谈"]')!.click(); await nextTick();
+    expect(host.querySelector('.narrative-inspector')?.textContent).toContain('与修堤者');
+    expect(JSON.stringify(s.value)).toBe(before);
     await click("与修堤者");
     await click("共享潮图");
     expect(host.querySelector('[aria-label="现场操作"]')).toBeNull();

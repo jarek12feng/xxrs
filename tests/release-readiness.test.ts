@@ -107,7 +107,7 @@ it("system help and feedback remain available during a pending story without cha
   await click("版本与反馈");
   expect(
     document.querySelector<HTMLTextAreaElement>("#feedback-summary")?.value,
-  ).toContain("存档格式：35");
+  ).toContain("存档格式：37");
   await click("打开本机记录工具");
   await flush();
   // Lazy observer must be opt-in; opening it must never persist game changes.

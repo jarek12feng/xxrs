@@ -1,3 +1,4 @@
+import { ascensionError, ascensionOptions } from "./ascension/rules";
 import { quoteSettlement } from "./economy";
 import { arenaError, arenaPrize } from "./social";
 import { actionError, preparationError, type State, type Intent } from "./core";
@@ -18,6 +19,8 @@ import { trainingError, medicineError } from "./growth";
 import { studyError } from "./wayfaring/rules";
 /** Explain a rejected command using existing domain quotes. Never execute or consume RNG. */
 export function rejectedActionReason(s: State, intent: Intent): string {
+  if (s.ascension && intent.type !== "ascension" && !s.pending) return "先完成当前行功或收势调息";
+  if (intent.type === "ascension") return intent.action === "start" ? ascensionError(s) : s.pending ? "先处理眼前事件，再接续行功" : ascensionOptions(s).find(x=>x.id===intent.action)?.error || "当前行功阶段不能执行此动作";
   let error = "";
   switch (intent.type) {
     case "supplies":

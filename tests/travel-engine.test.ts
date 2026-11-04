@@ -57,7 +57,7 @@ it('migrates version 33 in-progress trips conservatively and rejects forged tota
  const s=journeyCheckpoint('male',false);
  const old={...s,treasures:legacyEquipment(s),version:33,wayfaring:{...s.wayfaring,trip:{from:'home',to:'ferry',mode:'land',total:3,remaining:2}}};
  const before=structuredClone(old), migrated=migrateSave(old);
- expect(migrated.version).toBe(35);expect(migrated.wayfaring.trip?.plan.speed).toBe(1200);
+ expect(migrated.version).toBe(37);expect(migrated.wayfaring.trip?.plan.speed).toBe(1200);
  expect(old).toEqual(before);
  expect(()=>migrateSave({...old,wayfaring:{...old.wayfaring,trip:{...old.wayfaring.trip,total:1}}})).toThrow();
  expect(()=>migrateSave({...createGame('未来','wood'),version:999})).toThrow();

@@ -1,3 +1,4 @@
+import { correctResponse } from "./types";
 import { combatSense } from "../spirit";
 import { techniqueCombatProfile, techniquePower } from "../techniques";
 /** Game-state adapter. The combat engine itself never imports world or story modules. */
@@ -39,17 +40,18 @@ export function readiness(s: State) {
 
 export type TacticalContext = Omit<ActionContext, "profile"> & {
   power?: CombatPower;
+  useHerbs?: boolean;
   pressure?: ActionContext["profile"]["pressure"];
 };
 export function tacticalPreview(s: State, context: TacticalContext) {
   const { encounter: e, battle: d, move } = context;
-  const correct = move === e.pattern[d.turn % e.pattern.length];
+  const correct = correctResponse(e,d.turn,move);
   return previewAction({
     ...context,
     profile: {
       power: context.power ?? readiness(s),
       ...techniqueCombatProfile(s),
-      herbs: s.herbs,
+      herbs: context.useHerbs === false ? 0 : s.herbs,
       equipment: equipmentTurnEffect(s, move, correct),
       pressure:
         context.pressure ??

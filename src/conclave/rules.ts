@@ -1,3 +1,7 @@
+import { conclavePhase } from "./phases";
+import { freshEffort, victoryMemory, conclaveLessons } from "./victories";
+import { defeatReview } from "./battle-feedback";
+import { conclaveTactics } from "./tactics";
 import { methodQuote } from "../techniques";
 import { inspectInteraction } from "../story-interactions";
 import { settleResources } from "../economy";
@@ -31,10 +35,10 @@ export type ConclaveAction =
         | "withdraw"
         | "attune";
     }
-  | { kind: "training"; style: "ward" | "insight" }
+  | { kind: "training"; style: "none" | "ward" | "insight" }
   | { kind: "route"; route: "shelter" | "current" }
   | { kind: "method"; method: "inherit" | "still" }
-  | { kind: "move"; move: Move };
+  | { kind: "move"; move: Move; useHerbs?: boolean };
 export const conclaveActive = (s: State) => s.conclave.location !== "away";
 export const conclaveFoe = (s: State) =>
   s.conclave.duel?.kind === "contest"
@@ -72,7 +76,7 @@ export function conclaveQuote(s: State, a: ConclaveAction) {
       error:
         error ||
         (a.kind === "withdraw" ||
-        (a.kind === "move" && ["guard", "strike", "discern"].includes(a.move))
+        (a.kind === "move" && ["guard", "strike", "discern"].includes(a.move) && (a.useHerbs === undefined || typeof a.useHerbs === "boolean"))
           ? ""
           : "先结束交锋或撤回"),
     };
@@ -123,12 +127,12 @@ export function conclaveQuote(s: State, a: ConclaveAction) {
     months = 2;
     if (c.location !== "court") error ||= "先撤出秘境，再回古渡";
   } else if (a.kind === "training") {
-    months = 6;
-    stones = a.style === "ward" ? 12 : 6;
+    months = a.style === "none" ? 0 : 6;
+    stones = a.style === "none" ? 0 : a.style === "ward" ? 12 : 6;
     if (
       c.location !== "court" ||
       !c.introduced ||
-      !["ward", "insight"].includes(a.style) ||
+      !["none", "ward", "insight"].includes(a.style) ||
       c.preparation === a.style
     )
       error ||= "先与各宗道友相识，选择尚未使用的备战方法";
@@ -150,7 +154,7 @@ export function conclaveQuote(s: State, a: ConclaveAction) {
   } else if (a.kind === "prepare") {
     months = 2;
     stones = c.route === "shelter" ? 10 : 6;
-    herbs = c.route === "shelter" ? 2 : 4;
+    herbs = (c.route === "shelter" ? 2 : 4) - conclaveLessons(s).herbsSaved;
     if (
       c.location !== "court" ||
       c.route === "none" ||
@@ -188,7 +192,7 @@ export function conclaveQuote(s: State, a: ConclaveAction) {
   if (!error && s.limit - s.age <= months) error = "余寿不足以完成此行";
   return { error, months, stones, herbs };
 }
-export function conclaveExchange(s: State, move: Move) {
+export function conclaveExchange(s: State, move: Move, useHerbs = true) {
   const c = s.conclave,
     d = c.duel;
   if (!d) return null;
@@ -196,19 +200,21 @@ export function conclaveExchange(s: State, move: Move) {
   // Preparation is a choice, never a stackable repeat reward.
   return tacticalPreview(s, {
     move: move,
-    encounter: conclaveFoe(s),
+    encounter: {...conclaveFoe(s), responses:conclavePhase(s)!.responses, coreOpen:conclavePhase(s)!.mode === "surge"},
+    useHerbs,
     battle: d,
     effect: d.effect,
     arrayCore: d.kind === "vault",
     power,
     adjustments: [
+      ...conclaveTactics(s, move).adjustments,
       {
         phase: "power",
-        hp: d.kind === "vault" && c.route === "shelter" ? 16 : 0,
+        hp: d.kind === "vault" && c.route === "shelter" ? 16 + conclaveLessons(s).shelterHp : 0,
         armor: c.preparation === "ward" ? 3 : 0,
         damage:
           (d.kind === "vault" && c.route === "current" && move === "strike"
-            ? 5
+            ? 5 + conclaveLessons(s).currentDamage
             : 0) + (c.preparation === "insight" && move === "discern" ? 6 : 0),
       },
       {
@@ -320,23 +326,24 @@ export function runConclave(
   if (a.kind === "training") {
     c.preparation = a.style;
     record(
-      a.style === "ward"
-        ? "顾沧遥陪你练成稳守潮势，诸宗会与归潮秘境交锋护体 +3；原辨阵准备不再启用。"
-        : "叶问苓与你推演潮阵，诸宗会与归潮秘境辨影伤害 +6；原守势准备不再启用。",
+      a.style === "none" ? "你按自己的功法与器物备战，不再采用会谷演练加成；此前演练耗费不返还。" : a.style === "ward"
+        ? "顾沧遥陪你练成稳守潮势，诸宗会与归潮秘境交锋护体 +3，辨影后接守势额外承伤 −5；原辨阵准备不再启用。"
+        : "叶问苓与你推演潮阵，诸宗会与归潮秘境辨影伤害 +6，辨影后接反击额外伤害 +8；原守势准备不再启用。",
     );
   }
   if (a.kind === "route") {
     c.route = a.route;
     record(
       a.route === "shelter"
-        ? "你与叶问苓约定绕行背潮石道：入境六个月，行装灵石 10、灵草 2，秘境初始气势 +16。图中险流会公开标注，后来药船也能避开。"
-        : "你选择循主流抢渡：入境两个月，行装灵石 6、灵草 4，秘境反击伤害 +5。答应带回实测水位，供衡璇院修正潮阵。",
+        ? `你与叶问苓约定绕行背潮石道：入境六个月，行装灵石 10、灵草 ${2-conclaveLessons(s).herbsSaved}，秘境初始气势 +${16+conclaveLessons(s).shelterHp}。图中险流会公开标注，后来药船也能避开。`
+        : `你选择循主流抢渡：入境两个月，行装灵石 6、灵草 ${4-conclaveLessons(s).herbsSaved}，秘境反击伤害 +${5+conclaveLessons(s).currentDamage}。答应带回实测水位，供衡璇院修正潮阵。`,
     );
   }
+  if(a.kind === "route"){const lessons=conclaveLessons(s);record(c.last + " " + [lessons.gu,lessons.ye].filter(Boolean).join(" "));}
   if (a.kind === "prepare") {
     c.supplies = true;
     record(
-      "行装已备。撤退或败退不丢失行装，每通一层才用尽；已探明的路不会要求重打。",
+      "行装已备。撤退或败退不丢失行装，每通一层才用尽；已探明的路不会要求重打。" + (conclaveLessons(s).herbsSaved ? "叶问苓按你辨影拆招的记录修订潮图，本次少耗灵草 1。" : ""),
     );
   }
   if (a.kind === "enter") {
@@ -355,10 +362,11 @@ export function runConclave(
       index,
       ...startBattle(
         foundationPower(s).hp +
-          (kind === "vault" && c.route === "shelter" ? 16 : 0),
+          (kind === "vault" && c.route === "shelter" ? 16 + conclaveLessons(s).shelterHp : 0),
         (kind === "contest" ? rivals : wardens)[index]!.hp,
       ),
       effect: "",
+      effort: freshEffort(),
     };
     record(
       `${conclaveFoe(s).name}与你交锋。最多十八合；败退伤势 +2，已获胜绩与秘境进度保留。`,
@@ -366,18 +374,21 @@ export function runConclave(
   }
   if (a.kind === "move") {
     const d = c.duel!,
-      p = conclaveExchange(s, a.move)!;
+      p = conclaveExchange(s, a.move, a.useHerbs)!;
     const turn = resolveTurn(d, p, {
       turnLimit: 18,
       resolution: "simultaneous",
     });
+    const review = turn.outcome === "loss" ? defeatReview(s, a.move, p.damage, p.incoming, p.note, turn.battle.turn >= 18 && turn.battle.hp > 0) : "";
     Object.assign(d, turn.battle);
     s.herbs -= turn.herbs;
+    if(d.effort){d.effort.moves[a.move]++;d.effort.herbs+=turn.herbs;}
     d.effect = a.move;
     record(
       `削去气势 ${p.damage}，承受 ${p.incoming}${p.healing ? `，耗灵草 ${p.herbs} 回气 ${p.healing}` : ""}。${p.note}`,
     );
     if (turn.outcome === "win") {
+      if(d.effort)c.victories.push({...structuredClone(d.effort),kind:d.kind,index:d.index,turns:d.turn});
       c.duel = null;
       if (d.kind === "contest") {
         c.wins++;
@@ -406,13 +417,15 @@ export function runConclave(
                   : "衡璇院依你的实测水位修正潮阵，药船多了一段可行航道。"),
         );
       }
+      const won=c.victories.find(v=>v.kind===d.kind && v.index===d.index);
+      if(won)record(c.last + " " + victoryMemory(won));
     } else if (turn.outcome === "loss") {
       c.duel = null;
       s.injury = Math.min(6, s.injury + 2);
       if (d.kind === "contest") c.retryAt = s.month + 6;
       else c.location = "court";
       record(
-        "你主动收势退下，伤势 +2。此前胜绩、秘境进度与未用尽的行装保留；斗法失利须调息半年再试，秘境可养伤后重返。",
+        "你败退离场，伤势 +2。此前胜绩、秘境进度与未用尽的行装保留；斗法失利须调息半年再试，秘境可养伤后重返。" + review,
       );
     }
   }

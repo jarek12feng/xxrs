@@ -43,6 +43,7 @@ function keyboard(event: KeyboardEvent) {
       ><span>{{ enemyName }} {{ enemy }} / {{ enemyMax }}</span>
     </div>
     <p class="combat-tell">来势 · {{ tell }}</p>
+    <slot name="preparation" />
     <div class="combat-commands">
       <button
         v-for="option in options"

@@ -1,7 +1,6 @@
 import { outerSeaCheckpoint, seaPlayer } from "./outer-sea-checkpoint";
 import { seaFoe, type SeaAction } from "../src/outer-sea/rules";
 import {
-  conclaveFoe,
   conclaveExchange,
   type ConclaveAction,
 } from "../src/conclave/rules";
@@ -55,9 +54,7 @@ export function conclavePlayer(main: "spring" | "blade" | "breath" = "spring") {
     let turns = 0;
     while (p.state.conclave.duel) {
       if (++turns > 18) throw Error("battle stuck");
-      const move = conclaveFoe(p.state).pattern[
-        p.state.conclave.duel.turn % 3
-      ]!;
+      const move = chooseConclaveMove(p.state);
       if (!conclaveExchange(p.state, move)) throw Error("preview missing");
       act({ kind: "move", move });
     }
@@ -81,4 +78,11 @@ export function conclavePlayer(main: "spring" | "blade" | "breath" = "spring") {
     battle,
     arrive,
   };
+}
+
+// Test journey policy follows current quotes, not the old three-turn pattern.
+export function chooseConclaveMove(s:import('../src/core').State) {
+ const d=s.conclave.duel!;
+ const ranked=(['guard','strike','discern'] as const).map(move=>{const q=conclaveExchange(s,move)!;return {move,score:q.damage>=d.enemy?10000:q.incoming>=d.hp?-10000:q.damage+q.healing-q.incoming*1.8};});
+ return ranked.sort((a,b)=>b.score-a.score)[0]!.move;
 }

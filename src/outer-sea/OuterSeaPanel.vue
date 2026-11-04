@@ -111,6 +111,7 @@ const hotspots = computed(() => {
   const ids = new Set<string>(
     options.value.map((row) => seaObject(row.action.kind)),
   );
+  if (o.value.location === "ferry") ids.add("friends");
   if (o.value.met && o.value.location !== "ruins") ids.add("chamber");
   if (
     o.value.location === "ferry" &&
@@ -127,8 +128,8 @@ const hotspots = computed(() => {
     {
       id: "friends",
       label: o.value.met ? "顾沧遥与叶问苓" : "堤边修士",
-      x: 38,
-      y: 63,
+      x: 49,
+      y: 83,
     },
     {
       id: "path",
@@ -189,6 +190,7 @@ const shown = computed(() =>
 watch(stageKey, () => {
   selected.value = "";
 });
+watch(() => o.value.pact, () => { selected.value = ""; });
 watch(hotspots, (objects) => {
   if (selected.value && !objects.some((o) => o.id === selected.value))
     selected.value = "";
@@ -236,6 +238,7 @@ watch(hotspots, (objects) => {
         domain="sea"
         :focus="selected"
         @performed="selected = ''"
+        @select="selected = $event"
       />
       <CombatBar
         v-if="combat && o.duel"

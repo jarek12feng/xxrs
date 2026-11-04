@@ -812,7 +812,7 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
     } else {
       const protectedFailure = s.ward;
       Object.assign(s, foundationFailure(s));
-      s.result = `突破未成：判定 ${roll}/100，成功率 ${chance}%。${protectedFailure ? "护脉丹纹消耗：保留九成修为、不减寿" : "修为保留七成、寿元上限 −1 年"}，伤势 +2；可养伤、炼丹或再打磨根基。`;
+      s.result = `突破未成：判定 ${roll}/100，成功率 ${chance}%。${protectedFailure ? "护脉丹纹消耗：保留九成修为、不减寿" : "修为保留七成、寿元上限 −1 年"}，伤势 +2；可养伤、补炼丹药，再以神识引流、护持稳脉或灵草调和消除强推紊乱。`;
       record(s, s.result, "warning");
       if (s.age >= s.limit) finish(s, true);
     }

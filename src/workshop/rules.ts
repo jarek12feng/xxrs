@@ -63,7 +63,7 @@ export function workshopQuote(s: State, o: WorkshopOrder) {
       : "") ||
     quoteSettlement(s, { stones, herbs, iron }, workshopReward(o)).error;
   const hint = "product" in o && o.product === "clarity" && s.sense >= 12 && s.sense < 24
-    ? "神识达到 12 后每颗仅增 1；若只是当下提升，凝神一月同增 1 且不耗材料。现成丹药适合节省服用当月时间。"
+    ? "每颗最多增加神识 2；凝神每月增加 1 且不耗材料。接近本境或药力上限时，实际药效会减少。"
     : "";
   return { name, effect: [effect, hint].filter(Boolean).join(" "), stones, herbs, iron, months, study, cost, error };
 }

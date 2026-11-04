@@ -58,6 +58,7 @@ export function foundationExchange(s: State, move: Move) {
       { spring: "guard", blade: "strike", breath: "discern" }[q.inheritance];
   const preparation = foundationBattleReadiness(s, d.id);
   const adjustments: CombatAdjustment[] = [];
+  if (d.id === "well" && d.turn < 2) adjustments.push({phase:"exchange",damage:6,incoming:-6,note:"筑基灵元初运：前两合伤害 +6、承伤 −6。炼气时难以承受的井底寒压已能自行化开。"});
   if (trained)
     adjustments.push({
       phase: "exchange",

@@ -3,6 +3,7 @@ import { createFileEffects } from "../src/file-effects";
 import { actionSound } from "../src/action-sound";
 import { createGame } from "../src/core";
 import { readFileSync, existsSync } from "node:fs";
+import { audioUrl } from "../src/foundation-audio";
 import { soundCues } from "../src/sound-cues";
 function setup(deferred = false) {
   const audios: any[] = [],
@@ -113,8 +114,10 @@ it("every cue ships as a finite stereo PCM file with headroom", () => {
     "journey",
     "vista",
     "mystery",
+    "foundation-rise",
+    "golden-rise",
   ]) {
-    const path = `public/audio/original-v1/${name}.wav`;
+    const path = `public/${audioUrl(name).replace(/^\//, "")}`;
     expect(existsSync(path)).toBe(true);
     const data = readFileSync(path);
     expect(data.toString("ascii", 0, 4)).toBe("RIFF");

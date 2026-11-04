@@ -66,9 +66,7 @@ export function quoteMedicineUse(id: MedicineId, context: MedicineUseContext) {
   );
   const gain =
     id === "clarity"
-      ? (context.sense ?? 0) < 12
-        ? 2
-        : 1
+      ? 2
       : id === "spirit"
         ? (context.sense ?? 0) < 36
           ? 4

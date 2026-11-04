@@ -101,3 +101,21 @@ it("terminal closure and learning have feedback without changing the seed", () =
   );
   expect(b.seed).toBe(a.seed);
 });
+
+it('筑基凝丹有不同短乐，失败、原档重读与未突破不触发庆祝', async()=>{
+ const {breakthroughMusic}=await import('../src/action-sound');
+ const [a,b]=pair();
+ b.realm=1;
+ expect(breakthroughMusic(a,b)).toBe('foundation-rise');
+ expect(actionSound(a,b,{type:'ascension',action:'commit'})).toBe('breakthrough');
+ const c=structuredClone(b); c.realm=2;
+ expect(breakthroughMusic(b,c)).toBe('golden-rise');
+ expect(actionSound(b,c,{type:'ascension',action:'commit'})).toBe('golden-breakthrough');
+ expect(breakthroughMusic(c,structuredClone(c))).toBeNull();
+ const failed=structuredClone(b); b.goldenCore.pills=1;
+ expect(actionSound(b,failed,{type:'ascension',action:'commit'})).toBe('failure');
+ expect(breakthroughMusic(b,failed)).toBeNull();
+ c.status='dead';
+ expect(breakthroughMusic(b,c)).toBeNull();
+ expect(actionSound(b,c,{type:'ascension',action:'commit'})).toBe('death');
+});

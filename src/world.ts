@@ -1,3 +1,5 @@
+import { runAscension, type AscensionAction } from "./ascension/rules";
+import { validAscension, type Ascension } from "./ascension/state";
 import { settleResources } from "./economy";
 import { previewEncounter, resolveEncounter } from "./combat";
 import { evaluateEquipment, applyEquipmentChange } from "./equipment";
@@ -199,6 +201,7 @@ import {
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
   version: typeof SAVE_VERSION;
+  ascension: Ascension | null;
   wayfaring: Wayfaring;
   conclave: Conclave;
   outerSea: OuterSea;
@@ -219,6 +222,7 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | { id:string; type:"ascension"; action:AscensionAction }
   | {id:string;type:"wayfaring";action:WayfaringAction}
   | {id:string;type:"conclave";action:ConclaveAction}
   | {id:string;type:"outerSea";action:SeaAction}
@@ -314,6 +318,7 @@ function lift(
   return {
     ...s,
     version: SAVE_VERSION,
+    ascension: null,
     wayfaring: freshWayfaring(),
     conclave: freshConclave(),
     outerSea: freshOuterSea(),
@@ -507,6 +512,7 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.ascension = n.life === old.life && n.realm === old.realm && n.status === "alive" ? structuredClone(old.ascension) : null;
   n.wayfaring = n.life === old.life ? structuredClone(old.wayfaring) : freshWayfaring();
   n.conclave = n.life === old.life ? structuredClone(old.conclave) : freshConclave();
   if(n.status!=="alive") n.conclave.duel=null;
@@ -572,12 +578,13 @@ function normalize(n: State, old: State) {
 function wayfaringMonth(s: State): State {
   return normalize(lift(chapter.travelMonth(base(s), "御剑研习"),structuredClone(s.journey),structuredClone(s.social),structuredClone(s.adventure)),s);
 }
-function workshopMonth(s: State): State {
-  return normalize(lift(chapter.travelMonth(base(s), "开炉筹备"), structuredClone(s.journey), structuredClone(s.social), structuredClone(s.adventure)), s);
+function workshopMonth(s: State, label = "开炉筹备"): State {
+  return normalize(lift(chapter.travelMonth(base(s), label), structuredClone(s.journey), structuredClone(s.social), structuredClone(s.adventure)), s);
 }
 export function dispatch(input: State, c: Command): State {
   const next = dispatchCommand(input, c);
   if (next !== input) {
+    if (next.realm !== input.realm || next.status !== "alive" || next.pills < input.pills || next.goldenCore.pills < input.goldenCore.pills) next.ascension = null;
     updateSeaCalendar(next);
     updateContestCalendar(next);
     discoverContest(next,c);
@@ -588,6 +595,8 @@ export function dispatch(input: State, c: Command): State {
 }
 function dispatchCommand(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (c.type === "ascension") return runAscension(input,c.action,c.id,dispatchCommand,s=>workshopMonth(s,"收势调息"));
+  if (input.ascension && !input.pending && !(input.ascension.step === 3 && (input.ascension.realm === 0 ? c.type === "break" : c.type === "goldenCore" && c.action.kind === "break"))) return input;
   if (input.wayfaring.passage && !(c.type === "choose" || (c.type === "wayfaring" && c.action.kind === "cancel") || isPassageContinuation(input,c))) return input;
   if (input.wayfaring.trip && !(c.type === "choose" || c.type === "wayfaring" || (c.type === "foundationJourney" && c.action.kind === "travel"))) return input;
   if (c.type === "wayfaring") return runWayfaring(input,c.action,c.id,wayfaringMonth);
@@ -598,7 +607,7 @@ function dispatchCommand(input: State, c: Command): State {
   if(c.type === "outerSea") return runSea(input,c.action,c.id,workshopMonth);
   if(input.outerSea.location === "ruins") return input;
   if(!localEquipment && input.outerSea.location !== "home" && ["foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest"].includes(c.type)) return input;
-  if (c.type === "goldenCore") return runGolden(input,c.action,c.id,workshopMonth);
+  if (c.type === "goldenCore") return runGolden(input,c.action,c.id,s=>workshopMonth(s,c.action.kind === "break" ? "闭关行功" : "凝丹筹备"));
   if (input.goldenCore.expedition !== "idle") return input;
   if (c.type === "sectContest") return runContest(input,c.action,c.id,workshopMonth);
   if (input.sectContest.duel) return input;
@@ -1228,16 +1237,17 @@ export function validState(x: unknown): x is State {
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
     (x as { version: unknown }).version !== version ||
+    (version >= 36 && (!validAscension(s.ascension,s.realm) || (s.ascension && (s.status !== "alive" || s.qiJourney?.node || s.foundationJourney?.duel || s.goldenCore?.expedition !== "idle" || s.social?.scene || s.social?.arena?.duel || s.expedition?.duel || s.sectContest?.duel || s.wayfaring?.trip || s.wayfaring?.passage || s.outerSea?.location !== "home" || s.conclave?.location !== "away" || (s.treasures?.auction?.entered && !s.treasures.auction.closed))))) ||
     (version >= 32 && !validWayfaring(s)) ||
     (version < 35 && s.sense > 12) ||
-    (version >= 31 && !validConclave(s)) ||
+    (version >= 31 && !validConclave(s,version<37)) ||
     (version >= 30 && !validOuterSea(s)) ||
     (version >= 29 && !validGoldenCore(s)) ||
     (version < 29 && s.realm > 1) ||
@@ -1329,6 +1339,14 @@ function validWorldState(
 }
 export function migrateSave(x:unknown):State {
   if(validState(x)) return structuredClone(x);
+  if (x && typeof x === "object" && "version" in x && x.version === 36) {
+    if (!validWorldState(x,36)) throw new Error("旧存档损坏，原档未修改。");
+    return upgradeConclave(structuredClone(x) as State);
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 35) {
+    if (!validWorldState(x,35)) throw new Error("旧存档损坏，原档未修改。");
+    return upgradeConclave({...structuredClone(x) as State,version:SAVE_VERSION,ascension:null});
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 34) {
     if (!validWorldState(x, 34)) throw new Error("旧存档损坏，原档未修改。");
     return upgradeSpirit(structuredClone(x) as State);
@@ -1663,6 +1681,14 @@ function upgradeSpirit(s: State): State {
     s.log = s.log.slice(0, 180);
   }
   s.version = SAVE_VERSION;
-  if (!validState(s)) throw new Error("旧存档损坏，原档未修改。");
+  s.ascension = null;
+  return upgradeConclave(s);
+}
+
+function upgradeConclave(s:State):State {
+  s.version=SAVE_VERSION;
+  s.conclave.victories=[];
+  if(s.conclave.duel) s.conclave.duel.effort=null;
+  if(!validState(s))throw new Error("旧存档损坏，原档未修改。");
   return s;
 }

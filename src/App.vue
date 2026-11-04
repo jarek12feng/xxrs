@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AscensionPanel from "./ascension/AscensionPanel.vue";
 import { senseLimit, controlCapacity } from "./spirit";
 import { combatOwner } from "./scene-activity";
 import type { PreparationSelection } from "./workshop/preparation";
@@ -41,7 +42,7 @@ const PlaytestRecorder = defineAsyncComponent(
 );
 import { defineStore } from "pinia";
 import { presences } from "./landmarks";
-import { actionSound } from "./action-sound";
+import { actionSound, breakthroughMusic } from "./action-sound";
 import { gameAudioScene } from "./audio-scene";
 import { createMusicPlayer, musicNames } from "./local-music";
 import FoundationJourney from "./FoundationJourney.vue";
@@ -62,26 +63,36 @@ const musicVolume = ref(0.45);
 const musicNotice = ref("");
 const musicTitle = ref("");
 const musicPlaying = ref("");
+const breakthroughScore = ref<"foundation-rise" | "golden-rise" | null>(null);
+let breakthroughTimer: ReturnType<typeof setTimeout> | undefined;
+function stopBreakthroughScore() {
+  clearTimeout(breakthroughTimer);
+  breakthroughScore.value = null;
+}
 import { createFileEffects } from "./file-effects";
 const sound = createSoundscape(undefined, createFileEffects());
 const soundPrefs = ref(soundSettings(null));
 const soundNotice = ref("");
 function blurSound() {
+  stopBreakthroughScore();
   sound.hidden(true);
   music?.hidden(true);
 }
 function syncSoundPreference(event: StorageEvent) {
   if (event.key !== "xxrs-sound-v1") return;
   soundPrefs.value = soundSettings(event.newValue);
+  if (!soundPrefs.value.enabled) stopBreakthroughScore();
   sound.settings(soundPrefs.value);
   music?.settings(soundPrefs.value.enabled, musicVolume.value);
 }
 if (import.meta.hot)
   import.meta.hot.dispose(() => {
+    stopBreakthroughScore();
     music?.dispose();
     sound.dispose();
   });
 function storeSound() {
+  if (!soundPrefs.value.enabled) stopBreakthroughScore();
   sound.settings(soundPrefs.value);
   music?.settings(soundPrefs.value.enabled, musicVolume.value);
   try {
@@ -331,6 +342,7 @@ function openPanel(id: string) {
   dialog.value = id;
 }
 function resetJourneyView() {
+  stopBreakthroughScore();
   preparationSelection.value = null;
   clearTimeout(receiptTimer);
   clearTimeout(practiceTimer);
@@ -362,6 +374,7 @@ async function beginNew() {
   try {
     if (game.value)
       await writeSlot("archive-" + crypto.randomUUID(), game.value);
+    stopBreakthroughScore();
     creating.value = true;
     titleScreen.value = true;
     dialog.value = "";
@@ -462,7 +475,9 @@ function quitGame() {
 }
 const globalTravel = useStoryTravel(()=>game.value,()=>ui.busy, intent=>{void executeAct(intent);}, true);
 const {route:globalTravelRoute, arrived:globalTravelArrived}=globalTravel;
+const activeAscension = computed(() => !titleScreen.value && !!game.value?.ascension && !game.value?.pending);
 const modal = computed(() =>
+  activeAscension.value ? "ascension" :
   globalTravelRoute.value ? "travel" :
   titleScreen.value || systemOverlay.value
     ? dialog.value
@@ -570,6 +585,9 @@ async function executeAct(intent: Intent) {
       (old.status !== n.status && ["dead", "complete"].includes(n.status))
     )
       sound.cue(actionSound(old, n, intent));
+    stopBreakthroughScore();
+    breakthroughScore.value = soundPrefs.value.enabled && musicVolume.value > 0 ? breakthroughMusic(old, n) : null;
+    if (breakthroughScore.value) breakthroughTimer = setTimeout(stopBreakthroughScore, 11000);
     clearTimeout(receiptTimer);
     receipt.value = actionReceipt(old, n, intent);
     arrivalFinished.value = false;
@@ -661,7 +679,7 @@ function foundationCommand(intent: Intent) {
   return intent.type === "prepare" ? prepare(intent.kind) : act(intent);
 }
 async function commitBreak() {
-  if (await act({ type: "break", pill: true })) dialog.value = "";
+  if (await act({ type: "ascension", action: "start" })) dialog.value = "";
 }
 
 function download(value: unknown, suffix = "") {
@@ -700,6 +718,7 @@ async function importSave(e: Event) {
   }
 }
 function keyboard(e: KeyboardEvent) {
+  if (activeAscension.value) return;
   const target = e.target as HTMLElement | null;
   if (
     e.key === "Escape" &&
@@ -778,6 +797,7 @@ watch(modal, async (value) => {
   }
 });
 function hidden() {
+  if (document.hidden) stopBreakthroughScore();
   sound.hidden(document.hidden);
   music?.hidden(document.hidden);
   if (document.hidden && ui.running) {
@@ -807,6 +827,7 @@ onMounted(async () => {
     stopAudioWatches.push(
       watch(
         () => ({
+          score: !titleScreen.value && game.value?.status === "alive" ? breakthroughScore.value : null,
           scene: currentScene.value,
           audio: gameAudioScene(
             titleScreen.value ? null : game.value,
@@ -814,8 +835,8 @@ onMounted(async () => {
             currentScene.value.name,
           ),
         }),
-        ({ scene, audio }) => {
-          const cue = audio.music;
+        ({ scene, audio, score }) => {
+          const cue = score ?? audio.music;
           const mood =
             presences[scene.name]?.weather ??
             ("mood" in scene ? scene.mood : "moon");
@@ -876,6 +897,7 @@ onMounted(async () => {
 });
 onUnmounted(() => {
   unmounted = true;
+  stopBreakthroughScore();
   stopAudioWatches.forEach((stop) => stop());
   sound.dispose();
   music?.dispose();
@@ -892,6 +914,7 @@ onUnmounted(() => {
 });
 </script>
 <template>
+  <AscensionPanel v-if="game && activeAscension" :game="game" :busy="ui.busy" :notice="notice" @act="act" />
   <div v-if="globalTravelRoute && game" class="overlay" role="dialog" aria-modal="true" aria-label="剧情旅行">
     <StoryTravelMap style="width:min(1440px,96vw);max-height:94vh;overflow:auto" :game="game" :route="globalTravelRoute" :busy="ui.busy" :arrived="globalTravelArrived" @depart="globalTravel.depart" @close="globalTravel.close" @cancel="globalTravel.cancel" />
   </div>
@@ -1430,7 +1453,7 @@ onUnmounted(() => {
     />
   </div>
   <div
-    v-if="modal && !receiptExpanded && !globalTravelRoute"
+    v-if="modal && !activeAscension && !receiptExpanded && !globalTravelRoute"
     class="overlay"
     :data-mood="heart ? eventMood : 'day'"
   >
@@ -1849,8 +1872,7 @@ onUnmounted(() => {
           </p>
           <div class="probability">{{ details?.chance }}<small>%</small></div>
           <p class="muted">
-            {{ game.pills ? "本次成功率" : "备齐丹药后的预计把握" }} · 下限
-            10%，上限 95%
+            直接叩关的基础把握；进入三段行功后，以实际紊乱结算，稳住三段可达 100%
           </p>
           <div class="break-details">
             <span v-for="p in details?.parts" :key="p.label"
@@ -1886,7 +1908,7 @@ onUnmounted(() => {
             :disabled="ui.busy || !!breakthroughError(game)"
             @click="commitBreak"
           >
-            凝神，突破</button
+            凝神，开始三段行功</button
           ><button class="quiet full" :disabled="ui.busy" @click="dialog = ''">
             尚需准备
           </button>

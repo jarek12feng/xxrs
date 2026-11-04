@@ -1,0 +1,730 @@
+[
+  {
+    "main": "spring",
+    "encounter": "gu",
+    "strategy": "strike",
+    "win": false,
+    "turns": 5,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "gu",
+    "strategy": "guard",
+    "win": true,
+    "turns": 6,
+    "remaining": 96,
+    "herbs": 5
+  },
+  {
+    "main": "spring",
+    "encounter": "gu",
+    "strategy": "discern",
+    "win": true,
+    "turns": 6,
+    "remaining": 13,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "gu",
+    "strategy": "pattern",
+    "win": true,
+    "turns": 6,
+    "remaining": 59,
+    "herbs": 2
+  },
+  {
+    "main": "spring",
+    "encounter": "gu",
+    "strategy": "observed",
+    "win": true,
+    "turns": 6,
+    "remaining": 34,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "ji",
+    "strategy": "strike",
+    "win": true,
+    "turns": 6,
+    "remaining": 20,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "ji",
+    "strategy": "guard",
+    "win": true,
+    "turns": 7,
+    "remaining": 43,
+    "herbs": 6
+  },
+  {
+    "main": "spring",
+    "encounter": "ji",
+    "strategy": "discern",
+    "win": true,
+    "turns": 7,
+    "remaining": 26,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "ji",
+    "strategy": "pattern",
+    "win": true,
+    "turns": 7,
+    "remaining": 26,
+    "herbs": 2
+  },
+  {
+    "main": "spring",
+    "encounter": "ji",
+    "strategy": "observed",
+    "win": true,
+    "turns": 6,
+    "remaining": 41,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "cheng",
+    "strategy": "strike",
+    "win": false,
+    "turns": 4,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "cheng",
+    "strategy": "guard",
+    "win": false,
+    "turns": 5,
+    "remaining": 0,
+    "herbs": 4
+  },
+  {
+    "main": "spring",
+    "encounter": "cheng",
+    "strategy": "discern",
+    "win": false,
+    "turns": 4,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "cheng",
+    "strategy": "pattern",
+    "win": false,
+    "turns": 7,
+    "remaining": 0,
+    "herbs": 2
+  },
+  {
+    "main": "spring",
+    "encounter": "cheng",
+    "strategy": "observed",
+    "win": false,
+    "turns": 7,
+    "remaining": 0,
+    "herbs": 3
+  },
+  {
+    "main": "spring",
+    "encounter": "outer",
+    "strategy": "strike",
+    "win": false,
+    "turns": 6,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "outer",
+    "strategy": "guard",
+    "win": true,
+    "turns": 8,
+    "remaining": 45,
+    "herbs": 7
+  },
+  {
+    "main": "spring",
+    "encounter": "outer",
+    "strategy": "discern",
+    "win": true,
+    "turns": 7,
+    "remaining": 10,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "outer",
+    "strategy": "pattern",
+    "win": true,
+    "turns": 7,
+    "remaining": 12,
+    "herbs": 2
+  },
+  {
+    "main": "spring",
+    "encounter": "outer",
+    "strategy": "observed",
+    "win": true,
+    "turns": 7,
+    "remaining": 63,
+    "herbs": 2
+  },
+  {
+    "main": "spring",
+    "encounter": "core",
+    "strategy": "search",
+    "win": true,
+    "turns": 7,
+    "remaining": 64,
+    "herbs": 2,
+    "path": [
+      "discern",
+      "discern",
+      "guard",
+      "strike",
+      "discern",
+      "guard",
+      "strike"
+    ]
+  },
+  {
+    "main": "spring",
+    "encounter": "core",
+    "strategy": "strike",
+    "win": false,
+    "turns": 5,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "core",
+    "strategy": "guard",
+    "win": true,
+    "turns": 9,
+    "remaining": 38,
+    "herbs": 8
+  },
+  {
+    "main": "spring",
+    "encounter": "core",
+    "strategy": "discern",
+    "win": true,
+    "turns": 8,
+    "remaining": 1,
+    "herbs": 0
+  },
+  {
+    "main": "spring",
+    "encounter": "core",
+    "strategy": "pattern",
+    "win": false,
+    "turns": 7,
+    "remaining": 0,
+    "herbs": 2
+  },
+  {
+    "main": "spring",
+    "encounter": "core",
+    "strategy": "observed",
+    "win": true,
+    "turns": 7,
+    "remaining": 64,
+    "herbs": 2
+  },
+  {
+    "main": "blade",
+    "encounter": "gu",
+    "strategy": "strike",
+    "win": false,
+    "turns": 4,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "gu",
+    "strategy": "guard",
+    "win": true,
+    "turns": 6,
+    "remaining": 61,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "gu",
+    "strategy": "discern",
+    "win": true,
+    "turns": 6,
+    "remaining": 8,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "gu",
+    "strategy": "pattern",
+    "win": true,
+    "turns": 5,
+    "remaining": 49,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "gu",
+    "strategy": "observed",
+    "win": true,
+    "turns": 5,
+    "remaining": 43,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "ji",
+    "strategy": "strike",
+    "win": true,
+    "turns": 5,
+    "remaining": 19,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "ji",
+    "strategy": "guard",
+    "win": false,
+    "turns": 6,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "ji",
+    "strategy": "discern",
+    "win": true,
+    "turns": 6,
+    "remaining": 29,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "ji",
+    "strategy": "pattern",
+    "win": true,
+    "turns": 6,
+    "remaining": 26,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "ji",
+    "strategy": "observed",
+    "win": true,
+    "turns": 6,
+    "remaining": 32,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "cheng",
+    "strategy": "strike",
+    "win": false,
+    "turns": 4,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "cheng",
+    "strategy": "guard",
+    "win": false,
+    "turns": 4,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "cheng",
+    "strategy": "discern",
+    "win": false,
+    "turns": 4,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "cheng",
+    "strategy": "pattern",
+    "win": true,
+    "turns": 7,
+    "remaining": 4,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "cheng",
+    "strategy": "observed",
+    "win": false,
+    "turns": 5,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "outer",
+    "strategy": "strike",
+    "win": false,
+    "turns": 5,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "outer",
+    "strategy": "guard",
+    "win": false,
+    "turns": 7,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "outer",
+    "strategy": "discern",
+    "win": true,
+    "turns": 7,
+    "remaining": 4,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "outer",
+    "strategy": "pattern",
+    "win": true,
+    "turns": 6,
+    "remaining": 19,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "outer",
+    "strategy": "observed",
+    "win": true,
+    "turns": 6,
+    "remaining": 45,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "core",
+    "strategy": "search",
+    "win": true,
+    "turns": 6,
+    "remaining": 12,
+    "herbs": 0,
+    "path": [
+      "guard",
+      "strike",
+      "guard",
+      "strike",
+      "strike",
+      "strike"
+    ]
+  },
+  {
+    "main": "blade",
+    "encounter": "core",
+    "strategy": "strike",
+    "win": false,
+    "turns": 4,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "core",
+    "strategy": "guard",
+    "win": false,
+    "turns": 7,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "core",
+    "strategy": "discern",
+    "win": true,
+    "turns": 7,
+    "remaining": 10,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "core",
+    "strategy": "pattern",
+    "win": false,
+    "turns": 6,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "blade",
+    "encounter": "core",
+    "strategy": "observed",
+    "win": true,
+    "turns": 7,
+    "remaining": 44,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "gu",
+    "strategy": "strike",
+    "win": false,
+    "turns": 5,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "gu",
+    "strategy": "guard",
+    "win": true,
+    "turns": 6,
+    "remaining": 66,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "gu",
+    "strategy": "discern",
+    "win": true,
+    "turns": 6,
+    "remaining": 23,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "gu",
+    "strategy": "pattern",
+    "win": true,
+    "turns": 6,
+    "remaining": 49,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "gu",
+    "strategy": "observed",
+    "win": true,
+    "turns": 5,
+    "remaining": 55,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "ji",
+    "strategy": "strike",
+    "win": true,
+    "turns": 6,
+    "remaining": 20,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "ji",
+    "strategy": "guard",
+    "win": true,
+    "turns": 7,
+    "remaining": 1,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "ji",
+    "strategy": "discern",
+    "win": true,
+    "turns": 7,
+    "remaining": 38,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "ji",
+    "strategy": "pattern",
+    "win": true,
+    "turns": 7,
+    "remaining": 10,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "ji",
+    "strategy": "observed",
+    "win": true,
+    "turns": 6,
+    "remaining": 47,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "cheng",
+    "strategy": "strike",
+    "win": false,
+    "turns": 4,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "cheng",
+    "strategy": "guard",
+    "win": false,
+    "turns": 4,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "cheng",
+    "strategy": "discern",
+    "win": false,
+    "turns": 4,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "cheng",
+    "strategy": "pattern",
+    "win": false,
+    "turns": 7,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "cheng",
+    "strategy": "observed",
+    "win": false,
+    "turns": 6,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "outer",
+    "strategy": "strike",
+    "win": false,
+    "turns": 6,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "outer",
+    "strategy": "guard",
+    "win": false,
+    "turns": 7,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "outer",
+    "strategy": "discern",
+    "win": true,
+    "turns": 6,
+    "remaining": 30,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "outer",
+    "strategy": "pattern",
+    "win": false,
+    "turns": 6,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "outer",
+    "strategy": "observed",
+    "win": true,
+    "turns": 6,
+    "remaining": 39,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "core",
+    "strategy": "search",
+    "win": true,
+    "turns": 7,
+    "remaining": 60,
+    "herbs": 0,
+    "path": [
+      "discern",
+      "discern",
+      "guard",
+      "discern",
+      "discern",
+      "guard",
+      "guard"
+    ]
+  },
+  {
+    "main": "breath",
+    "encounter": "core",
+    "strategy": "strike",
+    "win": false,
+    "turns": 5,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "core",
+    "strategy": "guard",
+    "win": false,
+    "turns": 7,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "core",
+    "strategy": "discern",
+    "win": true,
+    "turns": 7,
+    "remaining": 24,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "core",
+    "strategy": "pattern",
+    "win": false,
+    "turns": 6,
+    "remaining": 0,
+    "herbs": 0
+  },
+  {
+    "main": "breath",
+    "encounter": "core",
+    "strategy": "observed",
+    "win": true,
+    "turns": 7,
+    "remaining": 52,
+    "herbs": 0
+  }
+]

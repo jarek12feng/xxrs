@@ -1,4 +1,6 @@
+import { ascensionChance, type Ascension } from "../ascension/state";
 export interface FoundationBreakthroughContext {
+  ascension?: Ascension | null;
   foundation: number;
   mastery: number;
   injury: number;
@@ -25,7 +27,7 @@ export function breakthroughDetails(
   ];
   return {
     parts,
-    chance: Math.max(
+    chance: ascensionChance(s.ascension) ?? Math.max(
       10,
       Math.min(
         95,
@@ -56,6 +58,7 @@ export function goldenSuccess(s: { limit: number }) {
   };
 }
 export interface GoldenBreakthroughContext {
+  ascension?: Ascension | null;
   injury: number;
   foundation: number;
   journey: { main: string | null };
@@ -93,7 +96,7 @@ export function goldenBreakthroughError(s: GoldenBreakthroughContext) {
             : "";
 }
 export function goldenChance(s: GoldenBreakthroughContext) {
-  return Math.min(
+  return ascensionChance(s.ascension) ?? Math.min(
     100,
     55 +
       Math.floor(s.foundation / 2) +

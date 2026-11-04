@@ -157,7 +157,7 @@ it("version 31 migrates only empty travel facts; malformed current travel and fu
   const old = { ...fresh(), treasures: legacyEquipment(fresh()), version: 31 };
   delete (old as unknown as Partial<State>).wayfaring;
   const n = migrateSave(old);
-  expect(n.version).toBe(35);
+  expect(n.version).toBe(37);
   expect(n.wayfaring).toEqual({ swordFlight: "none", trip: null, passage: null, last: "" });
   expect(n.seed).toBe(old.seed);
   expect(validState(n)).toBe(true);

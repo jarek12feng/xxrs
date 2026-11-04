@@ -43,6 +43,7 @@ export const soundCues = {
     duration: 0.8,
     spacing: 0.14,
   },
+  "golden-breakthrough": { notes: [196, 293.66, 392, 587.33, 784], wave: "sine", duration: 2, spacing: 0.24 },
   breakthrough: {
     notes: [146.83, 220, 293.66, 440, 587.33],
     wave: "sine",
