@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import LizhaoPanel from "../lizhao/LizhaoPanel.vue";
+import NascentPanel from "../nascent-soul/NascentPanel.vue";
 import { sceneOwner } from "../scene-activity";
 import { readStoryPreference, writeStoryPreference } from './story-preference';
 import { qiGoal } from '../qi-journey/rules';
@@ -38,7 +40,7 @@ watch(() => encounter.value ? chapter.value : null, (owner) => {
  if (owner) preferred.value=owner;
 }, { immediate: true });
 watch([chapter, () => props.game], () => writeStoryPreference(props.game, chapter.value, localStorage), { immediate: true });
-function followGrowth(){ if(props.game.realm) { preferred.value=props.game.realm === 1 ? 'foundation' : 'sea'; return; } if(props.game.qi < 120 || props.game.qiJourney.gates === 2) emit('cultivate'); else preferred.value='qi'; }
+function followGrowth(){ if(props.game.realm) { preferred.value=props.game.realm === 1 ? 'foundation' : props.game.realm === 3 ? 'nascent' : props.game.conclave.stage >= 2 ? 'nascent' : 'sea'; return; } if(props.game.qi < 120 || props.game.qiJourney.gates === 2) emit('cultivate'); else preferred.value='qi'; }
 function choose(id:string){if(!encounter.value&&!props.busy)preferred.value=id;}
 defineExpose({ choose });
 </script>
@@ -58,6 +60,8 @@ defineExpose({ choose });
   <QiJourneyPanel v-else-if="chapter==='qi'" :game="game" :busy="busy" @act="travel.act($event)" @facilities="emit('cultivate')" @board="emit('board')" @gear="emit('equipment')" @sect="emit('sect')" @inventory="emit('inventory')" />
   <FoundationPanel @road="preferred='road'" v-else-if="chapter==='foundation'" :game="game" :busy="busy" :combat-feedback="combatFeedback" @act="travel.act($event)" @equipment="emit('equipment')" />
   <SectContestScene v-else-if="chapter==='contest'" :game="game" :busy="busy" @act="travel.act($event)" />
+  <LizhaoPanel v-else-if="chapter==='lizhao'" :game="game" :busy="busy" @act="travel.act($event)" />
+  <NascentPanel v-else-if="chapter==='nascent'" :game="game" :busy="busy" @act="travel.act($event)" />
   <GoldenCorePanel v-else-if="chapter==='golden'" :game="game" :busy="busy" @act="travel.act($event)" />
   <OuterSeaPanel @meeting="preferred='conclave'" v-else-if="chapter==='sea'" :game="game" :busy="busy" @act="travel.act($event)" />
   <ConclavePanel :entry-object="game.conclave.location==='away' ? game.outerSea.reminded ? 'letter' : 'chamber' : undefined" @shore="preferred='sea'" v-else-if="chapter==='conclave'" :game="game" :busy="busy" @act="travel.act($event)" />

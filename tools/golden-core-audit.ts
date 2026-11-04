@@ -118,6 +118,7 @@ for (const main of ["spring", "blade", "breath"] as const)
     send({ type: "goldenCore", action: { kind: "break" } });
     if (s.realm !== 2) throw new Error("Expected prepared success");
     const power = readiness(s);
+    send({ type: "goldenStory", action: { kind: "direction", choice: "independent" } });
     send({ type: "goldenCore", action: { kind: "farShore" } });
     if (main === "spring" && route === "share")
       writeFileSync(

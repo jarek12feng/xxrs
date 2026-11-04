@@ -1,4 +1,4 @@
-import { senseLimit } from "../spirit";
+import { senseLimit, restoreSpirit, type SpiritState } from "../spirit";
 import type { MedicineId } from "./catalog";
 export type MedicineScene =
   | "daily"
@@ -7,6 +7,8 @@ export type MedicineScene =
   | "golden-breakthrough";
 export interface MedicineUseContext {
   scene: MedicineScene;
+  purpose?: "grow" | "restore";
+  spirit?: SpiritState;
   count: number;
   month: number;
   injury?: number;
@@ -42,6 +44,7 @@ const rules = {
 } as const;
 /** Local use conditions and effects. Story/combat locks and breakthrough eligibility stay with command owners. */
 export function quoteMedicineUse(id: MedicineId, context: MedicineUseContext) {
+  const restoring = context.purpose === "restore";
   const rule = Object.hasOwn(rules, id) ? rules[id] : null;
   let error = !rule
     ? "未知丹方"
@@ -52,7 +55,7 @@ export function quoteMedicineUse(id: MedicineId, context: MedicineUseContext) {
         : "";
   if (
     !error &&
-    rule?.cooldown &&
+    !restoring && rule?.cooldown &&
     context.lastMedicineMonth != null &&
     context.month - context.lastMedicineMonth < rule.cooldown
   )
@@ -61,7 +64,7 @@ export function quoteMedicineUse(id: MedicineId, context: MedicineUseContext) {
     error = "没有伤势，无需服药";
   const spiritual = id === "clarity" || id === "spirit";
   const limit = Math.min(
-    senseLimit(context.realm ?? 0),
+    senseLimit(context.realm ?? 0, context.spirit),
     id === "clarity" ? 24 : 48,
   );
   const gain =
@@ -74,27 +77,31 @@ export function quoteMedicineUse(id: MedicineId, context: MedicineUseContext) {
         : 0;
   if (!error && id === "spirit" && (context.realm ?? 0) < 2)
     error = "金丹后方可炼化养神丹";
-  if (!error && spiritual && (context.sense ?? 0) >= limit)
+  if (!error && !restoring && spiritual && (context.sense ?? 0) >= limit)
     error = "神识已达本境或此药药力上限";
+  if (!error && restoring && (!spiritual || !context.spirit?.trauma)) error = "此药不能疗复，或识海没有创伤";
+  if (!error && context.purpose !== undefined && !["grow", "restore"].includes(context.purpose)) error = "未知服药用途";
   return {
+    restored: !error && restoring ? Math.min(context.spirit?.trauma ?? 0, id === "spirit" ? 2 : 1) : 0,
     error,
     consumed: error ? 0 : 1,
     remaining: context.count - (error ? 0 : 1),
     healed: error
       ? 0
       : Math.max(0, Math.min(context.injury ?? 0, rule?.injury ?? 0)),
-    sense: error
+    sense: error || restoring
       ? 0
       : Math.max(0, Math.min(limit - (context.sense ?? 0), gain)),
     recovery: error ? 0 : (rule?.recovery ?? 0),
     nextUseMonth:
-      !error && rule?.cooldown ? context.month + rule.cooldown : null,
+      !error && !restoring && rule?.cooldown ? context.month + rule.cooldown : null,
   };
 }
 export interface DailyMedicineState {
   month: number;
   injury: number;
   sense: number;
+  spirit?: SpiritState;
   realm?: number;
   growth: {
     medicines: { healing: number; clarity: number; spirit?: number };
@@ -104,9 +111,11 @@ export interface DailyMedicineState {
 export function dailyMedicineQuote(
   s: DailyMedicineState,
   id: "healing" | "clarity" | "spirit",
+  purpose: "grow" | "restore" = "grow",
 ) {
   return quoteMedicineUse(id, {
     scene: "daily",
+    purpose, spirit: s.spirit,
     count: s.growth.medicines[id] ?? 0,
     realm: s.realm,
     month: s.month,
@@ -118,12 +127,14 @@ export function dailyMedicineQuote(
 export function applyDailyMedicine(
   s: DailyMedicineState,
   id: "healing" | "clarity" | "spirit",
+  purpose: "grow" | "restore" = "grow",
 ) {
-  const quote = dailyMedicineQuote(s, id);
+  const quote = dailyMedicineQuote(s, id, purpose);
   if (!quote.error) {
     s.growth.medicines[id] = quote.remaining;
     s.injury -= quote.healed;
     s.sense += quote.sense;
+    restoreSpirit(s, quote.restored);
     if (quote.nextUseMonth !== null) s.growth.lastMedicineMonth = s.month;
   }
   return quote;

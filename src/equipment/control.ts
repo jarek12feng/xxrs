@@ -1,4 +1,4 @@
-import { controlCapacity } from "../spirit";
+import { controlCapacity, spiritReadiness } from "../spirit";
 import { equipmentCatalog, type EquipmentId } from "./catalog";
 import type { EquipmentContext } from "./context";
 export const controlCosts: Record<EquipmentId, number> = {
@@ -23,7 +23,7 @@ export function equipmentControl(s: EquipmentContext) {
     capacity,
     used,
     remaining: capacity - used,
-    focused: ids.length === 1 && s.sense >= 18,
+    focused: ids.length === 1 && spiritReadiness(s).effectiveSense >= 18,
     error:
       used > capacity
         ? `御器需神识容量 ${used}，当前 ${capacity}；先卸下其他器物或修炼神识`

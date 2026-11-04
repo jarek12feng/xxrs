@@ -35,6 +35,8 @@ export function recognitionView(s: State) {
         : "筑基中期亲自取材炼元后，可受托主持远路。";
   if (currentOffice(s) === 2)
     next = "可主持远路、循熟路办差，也可交还行牌，专心闭关。";
+  if (s.realm >= 3)
+    next = "元婴初成，可决定出关礼数与今后的职责；旧日任职仍按原约处理。";
   const quote =
     s.journey.branch === "dan"
       ? r.innerMonth !== null
@@ -57,12 +59,13 @@ export function recognitionView(s: State) {
     title,
     next,
     quote,
-    invitation: !r.deferred && eligibleOffice(s) > currentOffice(s),
+    invitation: s.realm < 3 && !r.deferred && eligibleOffice(s) > currentOffice(s),
     realm: realmStageLabel(s),
   };
 }
 export function advancementPromise(s: State) {
-  if(s.realm === 2) return s.conclave.stage===0?"金丹中期：凝炼丹元后可与诸宗修士斗法，争取凝婴秘境资格。":s.conclave.stage===1?"金丹后期：以护神宝物与新法融汇丹元，继续筹备凝婴。":"护神宝物与新法已兑现；圆满试炼与化婴丹仍待后续道途。";
+  if (s.realm >= 3) return "元婴初成：安顿出关、与故人相见，再以新成的神通亲自探路。";
+  if(s.realm === 2) return s.conclave.stage===0?"金丹中期：凝炼丹元后可与诸宗修士斗法，争取凝婴秘境资格。":s.conclave.stage===1?"金丹后期：以护神宝物与新法融汇丹元，继续筹备凝婴。":s.conclave.stage === 2 ? "金丹圆满：亲历离照洞天，完成圆满试炼，明辨自身承诺。" : "凝婴：备齐化婴丹、灵地与护法安排，再行三段叩关。";
   if (!s.realm)
     return cultivationStageIndex(s) === 0
       ? "下一境 · 炼气中期：可走药谷、宗门或散修历练；亲自闯关后，受邀领队，赚取护送报酬。"
@@ -87,8 +90,10 @@ export function advancementChanges(before: State, after: State) {
     return [];
   return [
     `${realmStageLabel(before)} → ${realmStageLabel(after)}`,
-    after.realm === 2
-      ? (before.realm < 2 ? "金丹已成，可以丹元护体越过云壁，独自前往外海。" : (after.conclave.stage === 1 ? "丹元凝炼已成，可赴诸宗会争取归潮入境资格。" : "护神宝物与凝婴法门已融入修行，继续金丹后期道途。"))
+    after.realm >= 3
+      ? "元婴已成，旧日道途与约定仍在；出关安顿后，可亲自试用新成的神通。"
+      : after.realm === 2
+      ? (before.realm < 2 ? "金丹已成，可以丹元护体越过云壁，独自前往外海。" : (after.conclave.stage === 1 ? "丹元凝炼已成，可赴诸宗会争取归潮入境资格。" : after.conclave.stage === 3 ? "圆满试炼已过，接下来备丹、择地，并安顿未尽的承诺。" : "护神宝物与凝婴法门已融入修行，继续金丹后期道途。"))
       : after.realm === 1 && before.realm === 0
       ? "从前须避开的旧阵，如今可亲自重返。完成青嶂归路后，师门可受录内门，散修可主持药运。"
       : !after.realm && cultivationStageIndex(after) === 1

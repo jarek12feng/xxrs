@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { legacyEquipment } from "./legacy-equipment";
 import { expect, it } from "vitest";
 import { dispatch, validState, migrateSave } from "../src/core";
@@ -95,7 +96,7 @@ it("validates route ownership, mutually exclusive travel and old v32 pending inl
   const { passage: _, ...wayfaring } = s.wayfaring;
   const old = { ...s, sense: Math.min(12, s.sense), treasures: legacyEquipment(s), version: 32, wayfaring };
   const upgraded = migrateSave(old);
-  expect(upgraded.version).toBe(37);
+  expect(upgraded.version).toBe(SAVE_VERSION);
   expect(upgraded.wayfaring.passage).toBeNull();
   expect(upgraded.wayfaring.swordFlight).toBe(s.wayfaring.swordFlight);
   expect(old.version).toBe(32);

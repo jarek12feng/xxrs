@@ -164,7 +164,7 @@ it("reduced motion arrives without scheduling an animation", async () => {
 });
 it("keyboard destination selection only previews; Escape closes without reaching global shortcuts", async () => {
   frames();
-  const game = journeyCheckpoint("male", false, "wood", "spring");
+  const game = dispatch(journeyCheckpoint("male", false, "wood", "spring"), {id:"learn-inland",type:"foundationJourney",action:{kind:"travel",destination:"ferry"}});
   const act = vi.fn(),
     close = vi.fn(),
     globalKey = vi.fn();

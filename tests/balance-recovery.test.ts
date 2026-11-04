@@ -45,12 +45,17 @@ it("dispersed public-command journeys cover first and consecutive failures, shor
 }, 15000);
 it("gift failures recover with earned recipe and no ward on both paths", () => {
   for (const path of ["wood", "sword"] as const) {
-    const row = dispersedSeeds
-      .map((seed) => recoveryRun(seed, path, true))
-      .find((r) => r.attempts.length > 1)!;
+    // This case needs one witnessed gift-route recovery per path. The preceding
+    // test already exhausts the full seed matrix; do not replay 256 full lives
+    // before find() can inspect the first matching example.
+    let row: ReturnType<typeof recoveryRun> | undefined;
+    for (const seed of dispersedSeeds) {
+      const candidate = recoveryRun(seed, path, true);
+      if (candidate.attempts.length > 1) { row = candidate; break; }
+    }
     expect(row).toBeDefined();
-    expect(row.attempts[0]!.before.ward).toBe(false);
-    expect(row.attempts.at(-1)!.success).toBe(true);
+    expect(row!.attempts[0]!.before.ward).toBe(false);
+    expect(row!.attempts.at(-1)!.success).toBe(true);
   }
 });
 it("equal-deadline builds pay real costs without changing starting inventory or deadline", () => {

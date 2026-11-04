@@ -30,10 +30,42 @@ it("外海按钮从相识到探险、法宝与闭关均发送命令，显示五�
   try {
     await click("循海路");
     const before = JSON.stringify(s.value);
-    host.querySelector<HTMLButtonElement>('[aria-label="与修堤者交谈"]')!.click(); await nextTick();
-    expect(host.querySelector('.narrative-inspector')?.textContent).toContain('与修堤者');
+    host
+      .querySelector<HTMLButtonElement>('[aria-label="与修堤者交谈"]')!
+      .click();
+    await nextTick();
+    expect(host.querySelector(".narrative-inspector")?.textContent).toContain(
+      "与修堤者",
+    );
     expect(JSON.stringify(s.value)).toBe(before);
     await click("与修堤者");
+    const hotspot = async (id: string) => {
+      const point = host.querySelector<HTMLButtonElement>(
+        `[data-hotspot="${id}"]`,
+      );
+      expect(point, `scene hotspot: ${id}`).toBeTruthy();
+      point!.click();
+      await nextTick();
+    };
+    await hotspot("golden-story");
+    expect(host.querySelectorAll(".narrative-stage")).toHaveLength(1);
+    await hotspot("gauge");
+    await click("刻下今日满潮线");
+    await hotspot("flow");
+    await click("测读堤后回流");
+    await hotspot("duty");
+    await click("我来护堤");
+    const measuredAt = s.value.month;
+    const herbsBefore = s.value.herbs;
+    await click("按分工复测一个潮期");
+    expect(s.value.goldenStory.tideComplete).toBe(true);
+    expect(s.value.goldenStory.observations).toEqual(["gauge", "flow"]);
+    expect(s.value.month).toBe(measuredAt + 1);
+    expect(s.value.herbs).toBe(herbsBefore - 2);
+    expect(s.value.outerSea.pact).toBe("none");
+    await hotspot("exit");
+    expect(host.querySelectorAll(".narrative-stage")).toHaveLength(1);
+    expect(host.querySelector(".outer-sea")).toBeTruthy();
     await click("共享潮图");
     expect(host.querySelector('[aria-label="现场操作"]')).toBeNull();
     await click("筹备避潮");

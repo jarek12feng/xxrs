@@ -1,8 +1,10 @@
+import type { SpiritState } from "../spirit";
 import type { Relic, Treasure } from "./catalog";
 /** Structural view over the existing save. No dependency on the world or chapter modules. */
 export interface EquipmentContext {
   realm: number;
   sense: number;
+  spirit?: SpiritState;
   qi: number;
   journey: { equipped: Relic | null; relics: Record<Relic, number> };
   workshop: {

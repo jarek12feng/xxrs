@@ -57,10 +57,10 @@ defineExpose({skip,approachObject,cancelMovement});
 </script>
 <template>
   <div ref="root" class="foundation-world" :data-performance="sequence" :data-phase="index">
-    <div v-if="site.estate" class="estate-channel site-result" role="img" aria-label="老根下已露出的育苗细渠与木签"><i></i><i></i><i></i><b></b><b></b></div>
-    <div v-if="site.snow" class="snow-guide site-result" role="img" aria-label="已经试通的西门绳槽留引"><i></i><i></i><i></i><span></span></div>
-    <div v-if="site.well" class="well-opening site-result" role="img" aria-label="石偶身后亮起的传承室入口"><span></span></div>
-    <div v-if="site.circulation" class="settled-circulation site-result" role="img" aria-label="归于平稳的古道周天灵流"><i></i><i></i><i></i></div>
+    <div v-if="game.secretPact.site === 'away' && site.estate" class="estate-channel site-result" role="img" aria-label="老根下已露出的育苗细渠与木签"><i></i><i></i><i></i><b></b><b></b></div>
+    <div v-if="game.secretPact.site === 'away' && site.snow" class="snow-guide site-result" role="img" aria-label="已经试通的西门绳槽留引"><i></i><i></i><i></i><span></span></div>
+    <div v-if="game.secretPact.site === 'away' && site.well" class="well-opening site-result" role="img" aria-label="石偶身后亮起的传承室入口"><span></span></div>
+    <div v-if="game.secretPact.site === 'away' && site.circulation" class="settled-circulation site-result" role="img" aria-label="归于平稳的古道周天灵流"><i></i><i></i><i></i></div>
     <div v-if="arrayBattle" class="battle-array" role="img" :aria-label="arrayBattle+'的阵纹'"><i></i><i></i><i></i><span></span></div>
     <template v-if="!game.foundationJourney.duel">
     <WalkingActor class="foundation-player" :character="heroArt(game.social.gender,game.realm)" :pose="frame?.pose || 'idle'" :label="game.name" :position="position" :moving="moving" :frame="walkFrame" :facing="facing" sheet="/art/scene2d/foundation-walk/hero-male-v1.png" @ready="walkReady=$event" />

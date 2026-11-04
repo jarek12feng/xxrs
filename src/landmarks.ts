@@ -1,3 +1,8 @@
+import { knowsLandmark } from './wayfaring/discovery';
+import { nascentGoal } from "./nascent-soul/rules";
+import { lizhaoGoal, lizhaoQuote } from "./lizhao/rules";
+import { narrativeMapNodes, showingMistRoute } from "./wayfaring/narrative-map";
+import { qiNarrativeActive } from "./qi-journey/narrative";
 import {conclaveGoal} from "./conclave/rules";
 import {seaGoal} from "./outer-sea/rules";
 // Read-only scene presentation. Travel still goes through existing core commands.
@@ -135,8 +140,14 @@ export function currentLandmark(s: State): {
   image: string;
   goal: string;
 } {
+  if(s.lizhao.location!=="away") return {chapter:"road",key:s.lizhao.location==="bay"?"fuchao-bay":"lizhao-harbor",title:s.lizhao.location==="bay"?"伏潮湾":"离照洞天",image:"/art/world-story/lizhao/chamber.webp",goal:lizhaoGoal(s)};
+  if(s.realm===3) return {chapter:"road",key:"outer-ferry",title:"古渡灵地 · 元婴初成",image:"/art/outer-sea/ferry.webp",goal:nascentGoal(s)};
   if(s.realm===2 && s.conclave.location!=='away')return {chapter:'road',key:s.conclave.location==='court'?'conclave-court':'conclave-vault',title:s.conclave.location==='court'?'诸宗会谷':'归潮秘境',image:s.conclave.location==='court'?'/art/conclave/court.webp':'/art/conclave/vault.webp',goal:conclaveGoal(s)};
   if(s.realm===2){const o=s.outerSea;return {chapter:"road",key:o.location==='home'?'home':o.location==='ferry'?'outer-ferry':'outer-ruins',title:o.location==='home'?'听松行前居':o.location==='ferry'?'外海古渡':'退潮遗迹',image:o.location==='home'?'/scenes/moon-terrace.png':o.location==='ferry'?'/art/outer-sea/ferry.webp':'/art/outer-sea/ruins.webp',goal:seaGoal(s)};}
+  if ((s.realm === 1 && !showingMistRoute(s)) || qiNarrativeActive(s)) {
+    const node = narrativeMapNodes(s).find(n=>n.current);
+    if(node)return {chapter:"road",key:node.key,title:node.title,image:node.image,goal:node.condition};
+  }
   const a = s.adventure;
   if (a.step !== "done")
     return {
@@ -177,7 +188,7 @@ export interface RouteNode {
 }
 type ActiveRouteNode = Omit<RouteNode, "x" | "y" | "label" | "active">;
 function activeRouteNodes(s: State): ActiveRouteNode[] {
-  if(s.realm===2)return [];
+  if(s.realm>=2 || (s.realm===1 && !showingMistRoute(s)) || qiNarrativeActive(s))return [];
   const current = currentLandmark(s);
   const keys =
     current.chapter === "adventure"
@@ -358,8 +369,8 @@ export function routeNodes(s: State): RouteNode[] {
       title: s.realm===2&&place.key==='home'?'听松行前居':node?.title ?? place.label,
       label: place.label,
       image: node?.image ?? image,
-      x: place.x,
-      y: place.y,
+      x: place.x * 0.55 + 3,
+      y: place.y * 0.68 + 30,
       current: s.realm===2 ? s.conclave.location==='away' && s.outerSea.location==='home' && place.key==='home' : node?.current ?? false,
       active: !!node,
       visited: !!visited[place.key] || !!node?.visited,
@@ -371,9 +382,10 @@ export function routeNodes(s: State): RouteNode[] {
           : "本界已知地标。当前通路尚未开启，沿眼前的行程逐步探索。"),
     };
   });
-  if(s.realm===2 && s.outerSea.notice!==null)nodes.push(...(['court','vault'] as const).map((location,i)=>({key:location==='court'?'conclave-court':'conclave-vault',title:location==='court'?'诸宗会谷':'归潮秘境',image:location==='court'?'/art/conclave/court.webp':'/art/conclave/vault.webp',x:70+i*12,y:20,current:s.conclave.location===location,active:location==='court'?s.outerSea.reminded:s.conclave.wins>=2,visited:location==='court'?s.conclave.introduced:s.conclave.depth>0,condition:'循古渡来信赴会，两场胜绩争得入境资格；地图查看不改变行程。'})));
-  if(s.realm===2)nodes.push(...(['ferry','ruins'] as const).map((location,i)=>({key:location==='ferry'?'outer-ferry':'outer-ruins',title:location==='ferry'?'外海古渡':'退潮遗迹',image:location==='ferry'?'/art/outer-sea/ferry.webp':'/art/outer-sea/ruins.webp',x:88,y:30+i*16,current:s.conclave.location==='away' && s.outerSea.location===location,active:s.outerSea.met,visited:location==='ferry'?s.outerSea.met:s.outerSea.cleared>0,condition:'外海行程从当前冒险出发，退潮时入遗迹；地图查看不会移动角色。'})));
-  return nodes;
+  if(s.realm>=2 && s.outerSea.notice!==null)nodes.push(...(['court','vault'] as const).map((location,i)=>({key:location==='court'?'conclave-court':'conclave-vault',title:location==='court'?'诸宗会谷':'归潮秘境',image:location==='court'?'/art/conclave/court.webp':'/art/conclave/vault.webp',x:65+i*15,y:8,current:s.realm===2&&s.conclave.location===location,active:s.realm===2&&(location==='court'?s.outerSea.reminded:s.conclave.wins>=2),visited:location==='court'?s.conclave.introduced:s.conclave.depth>0,condition:s.realm===3?'会谷与归潮旧境仍在潮路彼端。此番出关，先料理古渡的约定。':'循古渡来信赴会，两场胜绩可争得归潮入境资格。'})));
+  if(s.realm>=2)nodes.push(...(['ferry','ruins'] as const).map((location,i)=>({key:location==='ferry'?'outer-ferry':'outer-ruins',title:location==='ferry'?'外海古渡':'退潮遗迹',image:location==='ferry'?'/art/outer-sea/ferry.webp':'/art/outer-sea/ruins.webp',x:95,y:8+i*19,current:s.lizhao.location==='away' && s.conclave.location==='away' && s.outerSea.location===location,active:s.outerSea.met,visited:location==='ferry'?s.outerSea.met:s.outerSea.cleared>0,intent:location==='ferry'&&s.lizhao.location==='harbor'&&!lizhaoQuote(s,{kind:'leave'}).error?{type:'lizhao' as const,action:{kind:'leave' as const}}:undefined,condition:location==='ferry'?(s.lizhao.location!=='away'?'从离照泊岸循潮路返航，整程六个月。':'古渡旧静室可筹备长关，近岸有试雷台；出关后可循渡口去往潮隙。'):'候退潮时循古渡海路入境，先备好护体与退路。'})));
+  nodes.push(...narrativeMapNodes(s));
+  return nodes.filter(n => n.current || n.visited || knowsLandmark(s,n.key) || (!!n.intent && qingxuanLandmarks.some(p=>p.key===n.key)));
 }
 
 export function landmarkLabel(title: string): string {

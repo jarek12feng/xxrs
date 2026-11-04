@@ -1,3 +1,4 @@
+import { isQiNarrativeAction, runQiNarrative, qiNarrativeQuote, qiNarrativeActive, qiCaveComplete, qiNarrativeGoal, qiNotesPower } from "./narrative";
 import { quoteSettlement, settleResources, type ResourceSettlement } from "../economy";
 import { inspectInteraction } from "../story-interactions";
 import type { CombatAdjustment } from "../combat";
@@ -33,6 +34,8 @@ export type { QiAction } from "./content";
 export function qiGoal(s: State) {
   const q = s.qiJourney;
   if (s.realm || !q) return null;
+  if (qiNarrativeActive(s)) return qiNarrativeGoal(s);
+  if(q.gates===1 && preparationReady(s) && !qiCaveComplete(s)) return "赴石涧药窟：先完成实战、药性处置与实际运用，再往凝元内府。";
   if (q.trial)
     return `${preparationRoutes[q.trial].name}：独自闯过此关，再往秘境取材。`;
   if (q.node)
@@ -61,6 +64,7 @@ function qiRequirementError(s: State, a: QiAction): string {
     s.foundationJourney.duel
   )
     return "先处理眼前事件或结束交锋";
+  if(qiNarrativeActive(s)) return "先结束药窟或青嶂支路行程";
   if (a === "withdraw") return q.node ? "" : "当前没有外出历练";
   if (q.duel)
     return ["guard", "strike", "discern"].includes(a) ? "" : "先结束交锋或撤回";
@@ -98,6 +102,7 @@ function qiRequirementError(s: State, a: QiAction): string {
       return "先择药谷、宗门或散修一路，备妥行装并亲自闯关";
     if (s.adventure.step !== "done") return "先救回药工，取得泉谷线索";
     if (s.qi < qiSites[q.gates]!.qi) return `需要修为 ${qiSites[q.gates]!.qi}`;
+    if (q.gates === 1 && !qiCaveComplete(s)) return "先完成石涧药窟实战、处置与实际运用";
     if (q.gates === 1 && !hasFoundationRecipe(s))
       return "先赴青石遗府取得丹方与内府图";
     if (s.injury >= 3) return "先养伤至 2 以下";
@@ -111,6 +116,7 @@ function qiRequirementError(s: State, a: QiAction): string {
     return "";
   }
   if (["refine", "mentor", "artisan"].includes(a)) {
+    if(q.gates===1 && !qiCaveComplete(s)) return "先完成石涧药窟实战、处置与实际运用";
     if (!q.essence)
       return `先从${qiSites[q.gates]!.name}带回${qiSites[q.gates]!.material}`;
     const fee = a === "refine" ? 24 : a === "mentor" ? 12 : 48;
@@ -127,6 +133,7 @@ function qiRequirementError(s: State, a: QiAction): string {
   return "未知行动";
 }
 export function qiQuote(s: State, a: QiAction) {
+  if(isQiNarrativeAction(a))return qiNarrativeQuote(s,a);
   const error = qiRequirementError(s, a);
   const settlement: ResourceSettlement = { cost: {}, reward: {} };
   if (isPersonAction(a)) return { ...personQuote(s, a), error };
@@ -174,8 +181,8 @@ export function qiPower(s: State) {
   return {
     ...p,
     hp: p.hp + (q.route === "medicine" ? 12 : 0),
-    damage: p.damage + q.gates * 2 + (q.route === "sword" ? 3 : 0),
-    armor: p.armor + q.gates,
+    damage: p.damage + q.gates * 2 + (q.route === "sword" ? 3 : 0) + qiNotesPower(s),
+    armor: p.armor + q.gates + (q.gates===1 && qiCaveComplete(s) ? 1 : 0),
   };
 }
 export function qiPreview(s: State, move: Move) {
@@ -244,6 +251,7 @@ export function runQiJourney(
   id: string,
   tick: (s: State) => State,
 ): State {
+  if(isQiNarrativeAction(a))return runQiNarrative(input,a,id,tick);
   const { quote } = inspectInteraction(input, a, qiQuote);
   if (quote.error) return input;
   if (a === "buy:healing" || a === "buy:sword" || a === "buy:vial")
@@ -346,7 +354,7 @@ export function runQiJourney(
     s.foundation = Math.min(24, s.foundation + (q.gates === 1 ? 3 : 4));
     q.last =
       q.gates === 1
-        ? "凝露草药力入脉，后期瓶颈已开。根基 +3；修至 240 后进入凝元内府，途中可凭淬脉后的经脉直接行气穿过逆流，不再耗药护脉。"
+        ? "凝露草药力入脉，后期瓶颈已开。根基 +3；先赴石涧旧药窟实测杂气、处理药性并应用一次，修至 240 后再进入凝元内府，途中可凭淬脉后的经脉直接行气穿过逆流，不再耗药护脉。"
         : "凝元晶髓炼入气海，圆满瓶颈已开。根基 +4；积累到 360 修为后，可持筑基丹叩关。";
   }
   s.log.unshift({ month: s.month, kind: "major", text: q.last });

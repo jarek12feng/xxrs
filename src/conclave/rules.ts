@@ -251,7 +251,7 @@ export function conclaveGoal(s: State) {
   if (c.method === "none") return "参悟抱元凝神录，选择承接旧法或转修守神法。";
   return c.stage === 1
     ? goldenBlock(s)
-    : "宝物与凝婴法门已备；继续积累后期修为。圆满试炼、化婴丹与元婴叩关尚未开放。";
+    : "宝物与凝婴法门已备；返回古渡，循潮路赴离照取药、验证丹方，再筹备圆满与凝婴。";
 }
 export function runConclave(
   input: State,

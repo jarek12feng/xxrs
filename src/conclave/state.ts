@@ -1,7 +1,7 @@
 import { validEffort, type BattleEffort, type Victory } from "./victories";
 import type { State } from "../world";
 export interface Conclave {
-  stage: 0 | 1 | 2;
+  stage: 0 | 1 | 2 | 3;
   location: "away" | "court" | "vault";
   introduced: boolean;
   preparation: "none" | "ward" | "insight";
@@ -47,7 +47,7 @@ export function goldenBlock(s: { conclave?: { stage: number } }) {
     ? "修满 299，走通退潮内府、温养镇潮印并参悟澄息篇，再凝炼丹元突破中期。"
     : s.conclave?.stage === 1
       ? "修满 599，温养定神珠、走通归潮秘境并参悟凝婴法门，再融汇丹元突破后期。"
-      : "已至金丹后期瓶颈；圆满试炼与化婴丹筹备仍待后续道途。";
+      : s.conclave?.stage === 2 ? "修满899，走通离照洞天、验证丹方，再赴圆满试炼。" : "金丹圆满，安顿承诺、备齐化婴丹与凝婴灵地，再叩元婴关。";
 }
 export function validConclave(s: State, legacy = false) {
   const c = s.conclave;
@@ -55,7 +55,7 @@ export function validConclave(s: State, legacy = false) {
     Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= max;
   if (
     !c ||
-    !int(c.stage, 2) ||
+    !int(c.stage, 3) ||
     !int(c.wins, 3) ||
     !int(c.depth, 2) ||
     !int(c.retryAt) ||
@@ -72,7 +72,7 @@ export function validConclave(s: State, legacy = false) {
   )
     return false;
   if (!legacy && (!Array.isArray(c.victories) || c.victories.length>5 || new Set(c.victories.map(v=>`${v?.kind}/${v?.index}`)).size!==c.victories.length || c.victories.some(v=>!v || !int(v.turns,18) || v.turns<1 || !validEffort(v,v.turns) || !int(v.index,2) || (v.kind==='contest' ? v.index>=c.wins : v.kind!=='vault' || v.index>=c.depth)))) return false;
-  if (s.realm !== 2) {
+  if (s.realm < 2) {
     const {victories: _records,...rest}=c;
     const {victories: _fresh,...fresh}=freshConclave();
     return JSON.stringify(rest)===JSON.stringify(fresh) && (legacy || c.victories.length===0);
@@ -111,7 +111,7 @@ export function validConclave(s: State, legacy = false) {
   if (c.attuned && c.depth < 1) return false;
   if (c.depth === 2 && !c.attuned) return false;
   if (c.method !== "none" && c.depth < 2) return false;
-  if (c.stage === 2 && c.method === "none") return false;
+  if (c.stage >= 2 && c.method === "none") return false;
   if (c.duel === null) return true;
   const d = c.duel;
   return (

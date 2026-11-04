@@ -1,0 +1,8 @@
+{
+  "src/lizhao/LizhaoPanel.vue": "4c36a10f1991074ca487667e696a33d71720a12f5a6cd46bad9debf06601ee0d",
+  "src/scene2d/NarrativeStage.vue": "2d4dcbed56b299de9c1aa4a83eed04b9ffdebbca139b0f852741e45076bf5448",
+  "src/nascent-soul/NascentPanel.vue": "ea4b007bf355cd2582b1dbca3c04a68dc4661bb9533a93965d4e0326ad6ef70e",
+  "src/nascent-soul/NascentPracticeWorld.vue": "4ff40b28fa473c8c6ff23b5aa5e9d42e36b089b9173154742d038fc8a4a24bc1",
+  "src/nascent-soul/NascentAfterWorld.vue": "03c6e92d60a0f856efcddf7d11464da8d229ae6276dad0a5f033f788f6145f0b",
+  "tests/review-experience-ui.test.ts": "2555d12fe0e6413cc64ffada24281153a02337861fe31d823111bde2e972bc0a"
+}

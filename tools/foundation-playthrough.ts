@@ -1,3 +1,4 @@
+import { qiNarrativeActive } from "../src/qi-journey/narrative";
 import type { PreparationRoute } from "../src/qi-journey/preparation";
 import { qiJourneyStep } from "./qi-journey-policy";
 import {
@@ -57,7 +58,7 @@ export function foundationStep(
     return { type: "adventure", action };
   }
   if (!s.journey.learning.book) return { type: "learning", choice: s.path === "sword" ? "blade" : "spring" };
-  if (s.qiJourney.node) return qiJourneyStep(s, route)!;
+  if (s.qiJourney.node || qiNarrativeActive(s)) return qiJourneyStep(s, route)!;
   if (s.injury) return { type: "advance", activity: "rest", months: 3 };
   if (!hasFoundationRecipe(s) && !s.pills) {
     if (s.qi < 180)

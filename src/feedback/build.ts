@@ -15,4 +15,4 @@ export const build =
       }
     : __BUILD_INFO__;
 export const playableScope =
-  "免费试玩 · 炼气至金丹后期，含诸宗会与归潮秘境；金丹圆满和元婴尚未开放。";
+  "本地开发版 · 炼气至金丹圆满，含离照取药、凝婴与出关大典；元婴长期修行与灵界尚未开放。";

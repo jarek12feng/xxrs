@@ -1,0 +1,46 @@
+[
+  {
+    "width": 1920,
+    "checkpoint": "lizhao-battle",
+    "hit": {
+      "target": "narrative-inspector battle-inspector",
+      "reachable": false
+    },
+    "error": "locator.click: Timeout 1800ms exceeded.",
+    "location": "inner",
+    "duel": true
+  },
+  {
+    "width": 1920,
+    "checkpoint": "bay-fight",
+    "hit": {
+      "target": "narrative-inspector battle-inspector",
+      "reachable": false
+    },
+    "error": "locator.click: Timeout 1800ms exceeded.",
+    "location": "bay",
+    "duel": true
+  },
+  {
+    "width": 1280,
+    "checkpoint": "lizhao-battle",
+    "hit": {
+      "target": "narrative-inspector battle-inspector",
+      "reachable": false
+    },
+    "error": "locator.click: Timeout 1800ms exceeded.",
+    "location": "inner",
+    "duel": true
+  },
+  {
+    "width": 1280,
+    "checkpoint": "bay-fight",
+    "hit": {
+      "target": "narrative-inspector battle-inspector",
+      "reachable": false
+    },
+    "error": "locator.click: Timeout 1800ms exceeded.",
+    "location": "bay",
+    "duel": true
+  }
+]

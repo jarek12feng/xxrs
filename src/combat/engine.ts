@@ -16,6 +16,8 @@ export interface ActionContext {
   profile: CombatProfile;
   effect: string;
   arrayCore?: boolean;
+  /** An already falling hazard still lands even when its source is dispersed. */
+  retaliateOnDefeat?: boolean;
   /** prepared preserves the existing foundation clamp and healing rules. */
   rules?: "standard" | "prepared";
   adjustments?: readonly CombatAdjustment[];
@@ -30,13 +32,14 @@ export function previewAction({
   profile,
   effect,
   arrayCore = false,
+  retaliateOnDefeat = false,
   rules = "standard",
   adjustments = [],
   arrayDiscernBonus = 7,
 }: ActionContext) {
   battle(d);
   pattern(e.pattern, ["guard", "strike", "discern"]);
-  if(e.responses) pattern(e.responses,["guard", "strike", "discern"]);
+  if (e.responses) pattern(e.responses, ["guard", "strike", "discern"]);
   finiteTree({ profile, encounter: e, adjustments, arrayDiscernBonus });
   for (const key of ["hp", "damage", "armor"] as const)
     number(profile.power[key], key);
@@ -63,7 +66,7 @@ export function previewAction({
   }
   const effects: CombatEffect[] = [];
   if (!["guard", "strike", "discern"].includes(move)) return null;
-  const correct = correctResponse(e,d.turn,move);
+  const correct = correctResponse(e, d.turn, move);
   let damage =
       power.damage +
       (correct ? 6 : 0) +
@@ -149,7 +152,9 @@ export function previewAction({
     if (pressure.gap) note += pressure.description;
   }
   incoming =
-    d.enemy <= damage ? 0 : Math.max(rules === "prepared" ? 0 : 1, incoming);
+    d.enemy <= damage && !retaliateOnDefeat
+      ? 0
+      : Math.max(rules === "prepared" ? 0 : 1, incoming);
   const remaining = d.hp - incoming;
   const healing =
     (rules === "prepared" || profile.mainActive) &&

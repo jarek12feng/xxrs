@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import {it,expect} from 'vitest';
 import {dispatch,migrateSave,validState,type State} from '../src/core';
 import {conclavePlayer,chooseConclaveMove} from '../tools/conclave-checkpoint';
@@ -57,7 +58,7 @@ it('v36迁移保留破境与战斗现场，不编造旧打法；v37损坏记录�
  const p=ready();p.act({kind:'contest'});p.act({kind:'move',move:'guard'});
  const current=p.state;const old=JSON.parse(JSON.stringify(current));old.version=36;delete old.conclave.victories;delete old.conclave.duel.effort;
  const copy=JSON.stringify(old),n=migrateSave(old);
- expect(n.version).toBe(37);expect(n.conclave.duel!.hp).toBe(current.conclave.duel!.hp);expect(n.conclave.duel!.effort).toBeNull();expect(n.conclave.victories).toEqual([]);expect(JSON.stringify(old)).toBe(copy);
+ expect(n.version).toBe(SAVE_VERSION);expect(n.conclave.duel!.hp).toBe(current.conclave.duel!.hp);expect(n.conclave.duel!.effort).toBeNull();expect(n.conclave.victories).toEqual([]);expect(JSON.stringify(old)).toBe(copy);
  const corrupt=structuredClone(current);corrupt.conclave.duel!.effort!.moves.strike=19;expect(()=>migrateSave(corrupt)).toThrow();
- expect(()=>migrateSave({...n,version:38})).toThrow();
+ expect(()=>migrateSave({...n,version:SAVE_VERSION + 1})).toThrow();
 });

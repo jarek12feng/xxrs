@@ -1,0 +1,12 @@
+
+> cultivation-life@0.15.0 test
+> vitest run tests/golden-completion-safety.test.ts tests/golden-save-travel.test.ts tests/important-scenes.test.ts tests/nascent-review-fixes.test.ts tests/nascent-soul.test.ts tests/nascent-thunder-save.test.ts tests/golden-completion-integration.test.ts --maxWorkers=2
+
+
+ RUN  v5.0.5 /Users/admin/Documents/ChatGPT/xxrs
+
+
+ Test Files  7 passed (7)
+      Tests  51 passed (51)
+   Start at  18:43:35
+   Duration  9.70s (tests 96%, import 2%, transform 1%, environment 1%)

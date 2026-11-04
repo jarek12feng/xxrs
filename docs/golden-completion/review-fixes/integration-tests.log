@@ -1,0 +1,63 @@
+
+> cultivation-life@0.15.0 test
+> vitest run --maxWorkers=2
+
+
+ RUN  v5.0.5 /Users/admin/Documents/ChatGPT/xxrs
+
+ ❯ tests/conclave-ui.test.ts (4 tests | 1 failed) 2097ms
+   × 来信赴会、两胜入境、温养与深处取法均通过真实按钮提交命令 548ms
+ ❯ tests/outer-sea-ui.test.ts (1 test | 1 failed) 369ms
+   × 外海按钮从相识到探险、法宝与闭关均发送命令，显示五十年约定 369ms
+ ❯ tests/golden-core-ui.test.ts (1 test | 1 failed) 308ms
+   × 实际按钮走通分药、炼丹、灵地、护持、凝丹和初行，重载保留成果 307ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/conclave-ui.test.ts > 来信赴会、两胜入境、温养与深处取法均通过真实按钮提交命令
+TypeError: Cannot read properties of undefined (reading 'click')
+ ❯ openSceneNotes tests/golden-scene-navigation.ts:35:42
+     33| export async function openSceneNotes(host: HTMLElement) {
+     34|   [...host.querySelectorAll<HTMLButtonElement>("button")]
+     35|     .find((b) => b.textContent === "此地见闻")!
+       |                                          ^
+     36|     .click();
+     37|   await nextTick();
+ ❯ tests/conclave-ui.test.ts:52:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/golden-core-ui.test.ts > 实际按钮走通分药、炼丹、灵地、护持、凝丹和初行，重载保留成果
+TypeError: Cannot read properties of undefined (reading 'click')
+ ❯ openSceneNotes tests/golden-scene-navigation.ts:35:42
+     33| export async function openSceneNotes(host: HTMLElement) {
+     34|   [...host.querySelectorAll<HTMLButtonElement>("button")]
+     35|     .find((b) => b.textContent === "此地见闻")!
+       |                                          ^
+     36|     .click();
+     37|   await nextTick();
+ ❯ tests/golden-core-ui.test.ts:32:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/outer-sea-ui.test.ts > 外海按钮从相识到探险、法宝与闭关均发送命令，显示五十年约定
+TypeError: Cannot read properties of undefined (reading 'click')
+ ❯ openSceneNotes tests/golden-scene-navigation.ts:35:42
+     33| export async function openSceneNotes(host: HTMLElement) {
+     34|   [...host.querySelectorAll<HTMLButtonElement>("button")]
+     35|     .find((b) => b.textContent === "此地见闻")!
+       |                                          ^
+     36|     .click();
+     37|   await nextTick();
+ ❯ tests/outer-sea-ui.test.ts:78:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 176 passed (179)
+      Tests  3 failed | 1265 passed (1268)
+   Start at  18:53:27
+   Duration  91.73s (tests 86%, import 8%, environment 5%, transform 1%)
+
+    Isolate  179 workers spawned · ~103ms startup each (spawn + environment, per file)
+             at least ~9.14s faster with isolate: false — reuses workers across files instead of one per file

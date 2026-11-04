@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { writeFileSync, mkdirSync } from "node:fs";
-import { outerSeaCheckpoint, seaPlayer } from "./outer-sea-checkpoint";
+import { outerSeaCheckpoint, seaPlayer, observeTide } from "./outer-sea-checkpoint";
 import { seaFoe } from "../src/outer-sea/rules";
 const output = process.argv[2] ?? "docs/outer-sea-review";
 mkdirSync(output, { recursive: true });
@@ -28,6 +28,7 @@ for (const main of ["spring", "blade", "breath"] as const)
       p.herbs(12);
       sea({ kind: "sail" });
       sea({ kind: "meet" });
+      observeTide(p.send);
       sea({ kind: "pact", pact });
       sea({ kind: "prepare" });
       sea({ kind: "enter" });

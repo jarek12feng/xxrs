@@ -1,3 +1,4 @@
+import type { QiNarrativeAction } from "./narrative";
 import type { PersonAction } from "./people";
 import type { PreparationAction } from "./preparation";
 import type { Move } from "../expedition/content";
@@ -101,6 +102,7 @@ export const qiRoutes = {
   },
 } as const;
 export type QiAction =
+  | QiNarrativeAction
   | PersonAction
   | PreparationAction
   | "buy:healing"

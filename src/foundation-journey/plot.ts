@@ -25,13 +25,13 @@ export function advancePlot(s: State, a: JourneyAction) {
       q.location = a.destination;
       const firstFerry = a.destination === "ferry" && !q.ferry;
       if (firstFerry) q.ferry = 1;
-      q.last = `你来到${destinations[a.destination].name}。` + (firstFerry ? "井口寒气扑面，你运转筑基灵元便将它压回石沿。守渡修士收起原本要递来的护符，将通往井底的石阶让给你。进入沉井后，前两合灵元初运伤害 +6、承伤 −6；无需再领一次奖励。" : "");
+      q.last = `你来到${destinations[a.destination].name}。` + (firstFerry ? "井口寒气扑面，你运转筑基灵元便将它压回石沿。守渡修士收起原本要递来的护符，将通往井底的石阶让给你。进入沉井后，前两合灵元初运伤害 +6、承伤 −6；渡边旧图还标着晴川药庄、雪线旧门与云外古道，三条路都在听雨旅亭分岔。你照着渡夫的指点，将方位抄入随身路图。" : "");
       return;
     case "inherit":
       q.inheritance = a.technique;
       grantTechnique(s, a.technique);
       s.growth.training[a.technique] = 2;
-      q.last = `${{ spring: "长春续脉", blade: "剑经分流", breath: "归元定枢" }[a.technique]}传承已领悟，对应主修研修至通达。装配它，在筑基挑战使用${{ spring: "守势", blade: "反击", breath: "辨影" }[a.technique]}时额外伤害 +4、承伤 −2。你循着古院铭记走完一遍行功路线，曾经淤在腕脉的灵息顺着指尖散开。门外却响起了催你登记名籍的铜铃。出口执卫是筑基中期，装配传承后可尝试越阶，也可先修到同阶再来。`;
+      q.last = `${{ spring: "长春续脉", blade: "剑经分流", breath: "归元定枢" }[a.technique]}传承已领悟，对应主修研修至通达。装配它，在筑基挑战使用${{ spring: "守势", blade: "反击", breath: "辨影" }[a.technique]}时额外伤害 +4、承伤 −2。你循着古院铭记走完一遍行功路线，曾经淤在腕脉的灵息顺着指尖散开。门外却响起了催你登记名籍的铜铃。出口执卫是筑基中期，装配传承后可尝试越阶。若要先稳步修至中期，石壁回声中还封着分念诀：探阵取法、研修护神，再亲自试运新法。`;
       return;
     case "sister":
       q.sister = "promised";

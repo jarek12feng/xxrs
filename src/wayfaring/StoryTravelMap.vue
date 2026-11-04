@@ -36,11 +36,13 @@ const edges = computed(() =>
 const name = (id: string) =>
   props.route.sites.find((p) => p.id === id)?.name ?? id;
 const remaining = computed(
-  () => props.game.wayfaring.passage?.remaining ?? props.route.months,
+  () => (props.route.domain === "inland" ? props.game.wayfaring.trip?.remaining : props.game.wayfaring.passage?.remaining) ?? props.route.months,
 );
 const progress = computed(() =>
   props.arrived
     ? props.route.startProgress
+    : props.route.domain === "inland" && props.game.wayfaring.trip
+      ? 1 - props.game.wayfaring.trip.remaining / props.game.wayfaring.trip.total
     : props.game.wayfaring.passage
       ? 1 -
         props.game.wayfaring.passage.remaining /
@@ -105,13 +107,13 @@ function pause() {
             route.mode === "sail"
               ? "循潮行舟"
               : route.mode === "flight"
-                ? "丹元护体飞行"
+                ? (game.realm >= 2 ? "丹元护体飞行" : "御剑行路")
                 : "沿路行走"
           }}
         </p>
         <template v-if="!arrived">
           <p>
-            本次{{ game.wayfaring.passage ? "剩余" : "耗时" }}
+            本次{{ (game.wayfaring.passage || game.wayfaring.trip) ? "剩余" : "耗时" }}
             <strong>{{
               remaining ? formatLifeMonths(remaining) : "不另扣年月"
             }}</strong>
@@ -140,7 +142,7 @@ function pause() {
           <p v-if="route.error" role="status">{{ route.error }}</p>
 
           <button
-            v-if="game.wayfaring.passage"
+            v-if="game.wayfaring.passage || game.wayfaring.trip"
             :disabled="busy || !!game.pending || game.status !== 'alive'"
             @click="emit('cancel')"
           >
@@ -172,7 +174,7 @@ function pause() {
           :disabled="busy || !!route.error"
           @click="emit('depart')"
         >
-          {{ game.wayfaring.passage ? "继续剩余航程" : "动身前往" }}
+          {{ (game.wayfaring.passage || game.wayfaring.trip) ? "继续剩余行程" : "动身前往" }}
         </button>
       </div>
       <span>Esc 返回现场 · 暂停或跳过演出不改变行程结果</span>

@@ -21,13 +21,14 @@ it.each(['medicine','sect','wander'] as const)('maps %s trial and retreat withou
   s=travel(s,{type:'qiJourney',action:'withdraw'});
   expect(s.qiJourney.preparations[0]![route]).toBe(2);
 });
-it('maps the optional pact entry and retreat using its actual quote',()=>{
+it('maps travel to the required estate; local entry and division do not create a second journey',()=>{
   let s=journeyCheckpoint();
   s.foundationJourney.location='frontier';s.foundationJourney.cultivation=200;
   s.foundationJourney.ferry=4;s.foundationJourney.won.push('frontier');s.secretPact.stage='promised';
-  s=travel(s,{type:'secretPact',action:'enterLight'});
-  s=travel(s,{type:'secretPact',action:'leave'});
-  expect(s.secretPact.outcome).toBe('left');
+  s=travel(s,{type:'wayfaring',action:{kind:'visit',site:'zhaoxuan'}});
+  expect(s.secretPact.site).toBe('zhaoxuan');
+  expect(storyRoute(s,{type:'secretPact',action:'enterLight'})).toBeNull();
+  expect(storyRoute(s,{type:'secretPact',action:'leave'})).toBeNull();
 });
 it('forfeiting remaining contest matches is not leaving the venue',()=>{
   let s=journeyCheckpoint();s.journey.branch='dan';s.sectContest.stage='invited';s.sectContest.starts=s.month;
@@ -52,7 +53,7 @@ it('optional exploration maps only departure, not the local rescue decision',()=
 });
 it('invalid departures keep the domain error and cannot announce arrival',()=>{
   const s=createGame('不可出发','wood');
-  const intent:Intent={type:'secretPact',action:'enterLight'};
+  const intent:Intent={type:'wayfaring',action:{kind:'visit',site:'zhaoxuan'}};
   const route=storyRoute(s,intent)!;
   expect(route.error).not.toBe('');
   const next=dispatch(s,{...intent,id:'blocked'});

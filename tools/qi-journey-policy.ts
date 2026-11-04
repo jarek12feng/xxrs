@@ -1,3 +1,4 @@
+import { qiNarrativeNext, qiNarrativeActive } from "../src/qi-journey/narrative";
 import {
   preparationReady,
   type PreparationRoute,
@@ -14,6 +15,8 @@ export function qiJourneyStep(
   const send = (
     action: Extract<Intent, { type: "qiJourney" }>["action"],
   ): Intent => ({ type: "qiJourney", action });
+  const narrative = qiNarrativeNext(s);
+  if (narrative && qiNarrativeActive(s)) return send(narrative);
   if (q.duel) {
     const lethal = (["strike", "discern", "guard"] as const).find(
       (m) => qiPreview(s, m)!.damage >= q.duel!.enemy,
@@ -71,6 +74,7 @@ export function qiJourneyStep(
     if (progress === 1) return send(`prep:${preferred}:careful`);
     return send(`prep:${preferred}:trial`);
   }
+  if (narrative) return send(narrative);
   return (
     funds(q.gates ? 10 : 6) ??
     send(s.path === "sword" ? "enter:sword" : "enter:medicine")

@@ -5,7 +5,7 @@ export function openingGuide(s: State) {
   if (s.status !== "alive" || s.adventure.step !== "done") return null;
   if (s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel)
     return null;
-  if (s.realm === 2) return null;
+  if (s.realm >= 2) return null;
   if (s.realm === 1) {
     if (!s.expedition.accepted || s.expedition.cleared !== 2) return null;
     return {

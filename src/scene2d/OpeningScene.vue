@@ -14,6 +14,7 @@ import {
   type AdventureAction,
 } from "../adventure";
 import { characterArt, heroArt } from "../presentation/art";
+import QiOrigin from "../qi-journey/QiOrigin.vue";
 import OriginNotes from "../OriginNotes.vue";
 import { openingScene } from "./opening";
 import type { StageHandle } from "./renderer";
@@ -309,6 +310,7 @@ function act(action: AdventureAction) {
           <button @click="closeInteraction" aria-label="收起现场操作">×</button>
         </div>
         <p class="observation">{{ target.detail }}</p>
+        <QiOrigin v-if="target.id==='origin'" :game="game" :busy="busy" @act="emit('act',$event)" />
         <p
           v-if="responseTarget === selected && scene.briefResult"
           class="immediate-response"

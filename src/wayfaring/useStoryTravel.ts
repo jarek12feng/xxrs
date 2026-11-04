@@ -23,8 +23,9 @@ export function useStoryTravel(
       ? (storyRoute(game()!, selected.value.intent) ?? selected.value)
       : selected.value,
   );
+  const resumable = () => game()?.wayfaring.passage;
   watch(
-    () => game()?.wayfaring.passage,
+    resumable,
     (p) => {
       if (p && !selected.value && !includeAdditional) {
         selected.value = resumedStoryRoute(game()!);
@@ -48,7 +49,7 @@ export function useStoryTravel(
   function act(intent: Intent) {
     if (busy() || !game()) return;
     const next = storyRoute(game()!, intent);
-    if (!next || (!includeAdditional && additionalDomains.has(next.domain))) {
+    if (!next || next.domain === "inland" || (!includeAdditional && additionalDomains.has(next.domain))) {
       send(intent);
       return;
     }
@@ -76,7 +77,7 @@ export function useStoryTravel(
     if (!next || !old || !selected.value || !submitted.value || next === old)
       return;
     const plan = selected.value;
-    if (!next.wayfaring.passage && storyArrived(next, old, plan))
+    if (!next.wayfaring.passage && !next.wayfaring.trip && storyArrived(next, old, plan))
       arrived.value = true;
   });
   function cancel() {
@@ -85,7 +86,7 @@ export function useStoryTravel(
     send({ type: "wayfaring", action: { kind: "cancel" } });
   }
   watch(
-    () => game()?.wayfaring.passage,
+    resumable,
     (next, old) => {
       if (old && !next && !submitted.value) close();
     },

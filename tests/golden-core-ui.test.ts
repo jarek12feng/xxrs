@@ -69,6 +69,11 @@ it("实际按钮走通分药、炼丹、灵地、护持、凝丹和初行，重�
     expect(statusHost.textContent).toContain("金丹前期");
     expect(statusHost.textContent).not.toContain("360");
     statusApp.unmount();
+    host.querySelector<HTMLButtonElement>('[data-hotspot="golden-story"]')!.click();
+    await nextTick();
+    await click("以散修身份请人引荐");
+    host.querySelector<HTMLButtonElement>('[data-hotspot="exit"]')!.click();
+    await nextTick();
     await click("独自越过云壁");
     expect(state.value.goldenCore.farShore).toBe(true);
     await openSceneNotes(host);

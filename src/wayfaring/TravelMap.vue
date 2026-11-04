@@ -1,27 +1,29 @@
 <script setup lang="ts">
+import { knowsInland } from "./discovery";
 import { computed, nextTick, ref, watch } from "vue";
 import type { State, Intent } from "../world";
-import type { Destination } from "../foundation-journey/state";
+import type { TravelDestination } from "./routes";
 import { characterArt, heroArt } from "../presentation/art";
 import RouteCanvas from "../presentation/movement/RouteCanvas.vue";
 import { useMapFocus } from "../presentation/movement/useMapFocus";
 import { travelWalkSheet } from "../presentation/movement/appearance";
 import PathTraveler from "../presentation/movement/PathTraveler.vue";
 import { sites, roads, type TravelMode } from "./routes";
-import { preferredTravelMode, travelQuote, studyError } from "./rules";
+import { preferredTravelMode, travelQuote, studyError, travelLocation } from "./rules";
 import { formatLifeMonths } from "../progression";
 const props = defineProps<{
   game: State;
   busy: boolean;
-  destination?: Destination;
+  destination?: TravelDestination;
 }>();
 const emit = defineEmits<{ act: [intent: Intent]; close: [] }>();
 const { root, keyboard } = useMapFocus(() => {
   if (!props.busy) emit("close");
 });
-const mapSites = Object.entries(sites).map(([id, site]) => ({ id, ...site }));
-const mapEdges = roads.map(([a, b]) => [a, b] as const);
-const selected = ref<Destination>(
+const visibleSites = computed(() => Object.fromEntries(Object.entries(sites).filter(([id]) => knowsInland(props.game,id as TravelDestination))) as Partial<typeof sites>);
+const mapSites = computed(() => Object.entries(visibleSites.value).map(([id, site]) => ({ id, ...site! })));
+const mapEdges = computed(() => roads.filter(([a,b]) => visibleSites.value[a] && visibleSites.value[b]).map(([a, b]) => [a, b] as const));
+const selected = ref<TravelDestination>(
   props.game.wayfaring.trip?.to ?? props.destination ?? "ferry",
 );
 const mode = ref<TravelMode>(
@@ -62,13 +64,17 @@ const deadline = computed(() => {
 function depart() {
   if (props.busy || quote.value.error) return;
   departure.value = { ...quote.value };
+  if (selected.value === "pact" || selected.value === "stele") {
+    emit("act", {type:"wayfaring",action:{kind:"visit",site:selected.value === "pact" ? "zhaoxuan" : "brokenStele",mode:mode.value}});
+    return;
+  }
   emit("act", {
     type: "foundationJourney",
     action: { kind: "travel", destination: selected.value, mode: mode.value },
   });
 }
-function select(id: Destination) {
-  if (!props.busy && !props.game.wayfaring.trip && !arrived.value)
+function select(id: TravelDestination) {
+  if (knowsInland(props.game,id) && !props.busy && !props.game.wayfaring.trip && !arrived.value)
     selected.value = id;
 }
 watch(
@@ -77,8 +83,8 @@ watch(
     if (next === old || !departure.value) return;
     if (
       !next.wayfaring.trip &&
-      next.foundationJourney.location === departure.value.to &&
-      old.foundationJourney.location !== next.foundationJourney.location
+      travelLocation(next) === departure.value.to &&
+      travelLocation(old) !== travelLocation(next)
     ) {
       arrived.value = true;
       playing.value = true;
@@ -119,7 +125,7 @@ function pause() {
         selectable
         title="青玄内陆 · 听松药路"
         :flight="shown.mode === 'flight'"
-        @select="select($event as Destination)"
+        @select="select($event as TravelDestination)"
       >
         <PathTraveler
           ref="traveler"
@@ -155,8 +161,8 @@ function pause() {
               v-model="selected"
               :disabled="busy || !!game.wayfaring.trip"
             >
-              <option v-for="(site, id) in sites" :key="id" :value="id">
-                {{ site.name }}
+              <option v-for="(site, id) in visibleSites" :key="id" :value="id">
+                {{ site!.name }}
               </option>
             </select></label
           >

@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { expeditionSession } from "../tools/expedition-simulation";
 import { expect, it } from "vitest";
 import {
@@ -127,7 +128,7 @@ it("migrates real v14 without invented memories, retaining existing relationship
     copy = structuredClone(old);
   expect(() => migrateSave(old)).toThrow();
   const n = s;
-  expect(n.version).toBe(37);
+  expect(n.version).toBe(SAVE_VERSION);
   expect(n.social.origins).toEqual([]);
   expect(n.social.scene).toEqual(old.social.scene);
   expect(n.social.answers).toEqual(old.social.answers);

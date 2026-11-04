@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { actionReceipt } from "../src/action-feedback";
 import { expect, it } from "vitest";
 import {
@@ -152,7 +153,7 @@ it("saves preserve earned history; v23 migration creates no fictitious appointme
   old.version = 23;
   delete old.recognition;
   const migrated = migrateSave(old)!;
-  expect(migrated.version).toBe(37);
+  expect(migrated.version).toBe(SAVE_VERSION);
   expect(migrated.recognition.appointments).toEqual([]);
   expect(migrated.cultivationRemainder).toBe(s.cultivationRemainder);
   expect(old.version).toBe(23);

@@ -1,3 +1,4 @@
+import { observeTide } from "../tools/outer-sea-checkpoint";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick } from "vue";
 import { expect, it } from "vitest";
@@ -35,7 +36,7 @@ it.each([
         ...host.querySelectorAll<HTMLButtonElement>("[data-hotspot]"),
       ];
       expect(points.length).toBeGreaterThan(0);
-      for (const point of points.filter(p=>p.dataset.hotspot!=="shore"&&p.dataset.hotspot!=="letter")) {
+      for (const point of points.filter(p=>p.dataset.hotspot!=="shore"&&p.dataset.hotspot!=="letter"&&p.dataset.hotspot!=="golden-story")) {
         point.click();
         await nextTick();
         expect(host.querySelector(".narrative-inspector")).not.toBeNull();
@@ -94,6 +95,7 @@ it("恢复遗迹交锋时无需选中对象便能应对并显示来势", async (
   };
   run({ kind: "sail" });
   run({ kind: "meet" });
+  observeTide(intent => { game = dispatch(game, { ...intent, id: `scene-tide-${++serial}` }); });
   run({ kind: "pact", pact: "share" });
   run({ kind: "prepare" });
   run({ kind: "enter" });

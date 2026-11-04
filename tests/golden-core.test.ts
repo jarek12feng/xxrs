@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { legacyEquipment } from "./legacy-equipment";
 import { describe, it, expect } from "vitest";
 import {
@@ -82,6 +83,7 @@ describe("凝丹双路与突破", () => {
       expect(validState(s)).toBe(true);
       s = migrateSave(JSON.parse(JSON.stringify(s)));
       expect(dispatch(s, c)).toBe(s);
+      s = dispatch(s, { id: "golden-direction", type: "goldenStory", action: { kind: "direction", choice: "independent" } });
       const before = s;
       s = act(s, { kind: "farShore" });
       expect(s.goldenCore.farShore).toBe(true);
@@ -217,7 +219,7 @@ describe("凝丹双路与突破", () => {
     const old = { ...s, treasures: legacyEquipment(s), version: 28 } as Record<string, unknown>;
     delete old.goldenCore;
     const n = migrateSave(old);
-    expect(n.version).toBe(37);
+    expect(n.version).toBe(SAVE_VERSION);
     expect(n.goldenCore.medicine).toBe(0);
     expect(validState(n)).toBe(true);
     expect(old.goldenCore).toBeUndefined();

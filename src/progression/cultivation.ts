@@ -8,6 +8,7 @@ import type { FoundationProgress } from "../foundation-journey/growth-state";
 import type { QiJourney } from "../qi-journey/state";
 /** Shared pure cultivation rules; optional fields also support the first-volume core. */
 export interface Cultivator {
+  secretPact?: import("../secret-pact/state").SecretPact;
   realm: number;
   conclave?: { stage: number; method: string };
   outerSea?: {
@@ -39,7 +40,8 @@ export interface Cultivator {
 }
 export const minorStageNames = ["前期", "中期", "后期", "圆满"] as const;
 export function cultivationStageIndex(s: Cultivator): 0 | 1 | 2 | 3 {
-  if (s.realm === 2) return (s.conclave?.stage ?? 0) as 0 | 1 | 2;
+  if (s.realm >= 3) return 0;
+  if (s.realm === 2) return (s.conclave?.stage ?? 0) as 0 | 1 | 2 | 3;
   return Math.min(
     3,
     Math.floor(
@@ -49,7 +51,7 @@ export function cultivationStageIndex(s: Cultivator): 0 | 1 | 2 | 3 {
   ) as 0 | 1 | 2 | 3;
 }
 export function realmStageLabel(s: Cultivator) {
-  return `${s.realm === 2 ? "金丹" : s.realm === 1 ? "筑基" : "炼气"}${minorStageNames[cultivationStageIndex(s)]}`;
+  return `${s.realm >= 3 ? "元婴" : s.realm === 2 ? "金丹" : s.realm === 1 ? "筑基" : "炼气"}${minorStageNames[cultivationStageIndex(s)]}`;
 }
 export const remainingLifeMonths = (s: Pick<Cultivator, "age" | "limit">) =>
   Math.max(0, s.limit - s.age);
@@ -65,6 +67,7 @@ export function lifeEfficiency(s: Pick<Cultivator, "age" | "limit">) {
   return left === 0 ? 0 : 0.25 + 0.75 * Math.min(1, left / 240);
 }
 export function cultivationBaseGain(s: Cultivator) {
+  if (s.realm >= 3) return 0;
   const technique = techniqueCultivationBonus(s);
   if (s.realm === 2) return 6 + technique;
   if (s.realm === 1)
@@ -85,7 +88,7 @@ export function cultivationBaseGain(s: Cultivator) {
 /** Integer fractional progress is saved, so pausing, switching activities or loading never loses effort. */
 export function cultivationMonth(s: Cultivator) {
   const remainder = s.cultivationRemainder ?? 0;
-  if (s.status !== "alive" || remainingLifeMonths(s) === 0)
+  if (s.realm >= 3 || s.status !== "alive" || remainingLifeMonths(s) === 0)
     return { gain: 0, remainder };
   // A full point takes sustained practice. Main training, root and earned methods shorten it.
   const units = Math.max(
@@ -104,7 +107,7 @@ export function cultivationGainAtAge(s: Cultivator) {
   return cultivationMonth(s).gain;
 }
 export const cultivationMonthlyGain = (s: Cultivator) =>
-  (
+  s.realm >= 3 ? 0 : (
     s.realm === 2
       ? (s.outerSea?.cultivation ?? 0) >= goldenCap(s)
       : s.realm === 1
@@ -119,6 +122,16 @@ export function cultivationProjection(
   requestedTarget?: number,
   batchLimit = 12,
 ) {
+  // Nascent growth is not yet a numeric cultivation track. Do not display old qi,
+  // simulate months of zero gain, or offer a target from an earlier realm.
+  if (s.realm >= 3) {
+    const remainingMonths = remainingLifeMonths(s);
+    return {
+      current: 0, bottleneck: true, target: 0, missing: 0,
+      monthlyGain: 0, efficiency: lifeEfficiency(s), monthsToTarget: null,
+      batchMonths: 0, batchGain: 0, remainingMonths, remainingAfterTarget: null,
+    };
+  }
   const current =
     s.realm === 2
       ? (s.outerSea?.cultivation ?? 0)
@@ -169,7 +182,7 @@ export function cultivationProjection(
   const monthsToTarget = gain >= missing ? elapsed : null;
   return {
     current,
-    bottleneck: cap < (s.realm === 2 ? 900 : s.realm === 1 ? 600 : 360),
+    bottleneck: cap < (s.realm === 2 ? 1200 : s.realm === 1 ? 600 : 360),
     target,
     missing,
     monthlyGain: cultivationMonthlyGain(s),

@@ -1,14 +1,14 @@
 import { validJourneyPlan, type JourneyPlan } from './engine';
 import { validPassage, type Passage } from "./passage";
-import type { Destination } from "../foundation-journey/state";
+import type { TravelDestination } from "./routes";
 import type { State } from "../world";
 import { routeBetween, sites, type TravelMode } from "./routes";
 export interface Wayfaring {
   passage: Passage | null;
   swordFlight: "none" | "practiced" | "learned";
   trip: null | {
-    from: Destination;
-    to: Destination;
+    from: TravelDestination;
+    to: TravelDestination;
     mode: TravelMode;
     plan: JourneyPlan;
     total: number;
@@ -42,7 +42,7 @@ export function validWayfaring(s: State) {
     ["land", "flight"].includes(t.mode) &&
     s.realm >= 1 &&
     !!s.foundationJourney &&
-    s.foundationJourney.location === t.from &&
+    (s.secretPact?.site === "zhaoxuan" ? "pact" : s.secretPact?.site === "brokenStele" ? "stele" : s.foundationJourney.location) === t.from &&
     (t.mode !== "flight" || w.swordFlight !== "none") &&
     Number.isInteger(t.total) &&
     validJourneyPlan(t.plan) &&

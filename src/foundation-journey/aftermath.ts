@@ -1,3 +1,4 @@
+import { homeCouncil, sharedRouteRecall } from "./continuity";
 import type { State } from "../world";
 import type { Side } from "./state";
 export const aftermathScenes: Record<
@@ -100,6 +101,8 @@ export function chapterEnding(s: State) {
       ? "山门榜前有人认出本届魁首，侧身为你让路。"
       : "听松山门仍有新弟子在练剑，你从他们身旁走过，想起自己初来时的脚步。",
     ...(s.secretPact.stage === "resolved" ? [s.secretPact.settled ? "照玄府的旧怨已了。那封止争的回信，你仍收在行囊底。" : s.secretPact.aggressor === "player" ? "归来的名帖里没有叶照。照玄府先伸手夺简的那一刻，你也失去了一位同道。" : s.secretPact.aggressor === "rival" ? "叶照寄来一张新路图，避开了贺崇常走的渡口。照玄府的争执尚未了结。" : ["exchange","yield"].includes(s.secretPact.outcome) ? "贺崇托人报了平安，叶照寄来照玄府的阵图抄本。那场分取没有散掉这段交情。" : "照玄府的机缘留给了别人，你仍记得自己为何离开。"] : []),
+    sharedRouteRecall(s),
+    homeCouncil(s),
     "你将行囊放回窗下。山中暮钟响起，明日再续修行。",
   ];
 }

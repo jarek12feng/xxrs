@@ -28,7 +28,7 @@ const poses: Record<CharacterId, readonly Pose[]> = {
 export function heroArt(gender?: string | null, realm = 0): CharacterId {
   return gender === "female"
     ? "hero-female"
-    : realm === 1
+    : realm >= 1
       ? "hero-male"
       : "hero-male-qi";
 }

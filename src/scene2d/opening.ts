@@ -55,6 +55,7 @@ export function openingScene(a: Adventure) {
     case "ferry":
       image = "/art/scene2d/ferry.png";
       objects.push(
+        object("origin", "家中药囊", 43, 78, "药囊缝边还留着家乡晒药的草屑。你带着初学的引气法来到听松，尚未拜入宗门。", []),
         object(
           "basket",
           a.clue ? "药篓 · 已查明" : "漂回的药篓",

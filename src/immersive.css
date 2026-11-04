@@ -1090,3 +1090,7 @@
   .story-scenes .travel-map footer, .story-scenes .story-travel footer { display: block; }
   .story-scenes .travel-actions { width: 100%; }
 }
+
+@media (min-width: 1000px) {
+  .modal[data-panel="world"] { width: min(1520px, calc(100vw - 64px)); max-height: 94dvh; }
+}

@@ -1,3 +1,15 @@
+import { freshCovenant } from './nascent-soul/covenant';
+import { freshSpirit, senseLimit, type SpiritState } from "./spirit";
+import { runSpirit, validSpirit, type SpiritAction } from "./spirit/rules";
+import {freshThunderPath} from "./nascent-soul/thunder-state";
+import { freshGoldenStory, validGoldenStory, type GoldenStory } from "./golden-story/state";
+import { runGoldenStory, type GoldenStoryAction } from "./golden-story/rules";
+import { freshLizhao, validLizhao, type Lizhao } from "./lizhao/state";
+import { runLizhao, lizhaoActivity, lizhaoGoal, type LizhaoAction } from "./lizhao/rules";
+import { freshNascentSoul, validNascentSoul, type NascentSoul } from "./nascent-soul/state";
+import { runNascent, nascentActive, nascentGoal, type NascentAction } from "./nascent-soul/rules";
+import { freshQiNarrative } from "./qi-journey/narrative-state";
+import { qiNarrativeActive } from "./qi-journey/narrative";
 import { runAscension, type AscensionAction } from "./ascension/rules";
 import { validAscension, type Ascension } from "./ascension/state";
 import { settleResources } from "./economy";
@@ -22,7 +34,7 @@ import { runContest, discoverContest, updateContestCalendar, type ContestAction 
 import { freshTreasures, validTreasures, type Treasures } from "./treasures/state";
 import { runTreasure, isEquipmentAction, type TreasureAction } from "./treasures/rules";
 import { freshLearning, validLearning, runLearning, type LearningChoice } from "./learning";
-import { freshSecretPact, validSecretPact, type SecretPact } from "./secret-pact/state";
+import { freshSecretPact, validSecretPact, upgradeSecretPact, pactActivity, type SecretPact } from "./secret-pact/state";
 import { runPact, type PactAction } from "./secret-pact/rules";
 import { freshRecognition, validRecognition, type Recognition } from "./recognition/state";
 import { runRecognition, type RecognitionAction } from "./recognition/rules";
@@ -201,6 +213,10 @@ import {
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
   version: typeof SAVE_VERSION;
+  spirit: SpiritState;
+  goldenStory: GoldenStory;
+  lizhao: Lizhao;
+  nascentSoul: NascentSoul;
   ascension: Ascension | null;
   wayfaring: Wayfaring;
   conclave: Conclave;
@@ -222,6 +238,10 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | {id:string;type:"spirit";action:SpiritAction}
+  | {id:string;type:"goldenStory";action:GoldenStoryAction}
+  | {id:string;type:"lizhao";action:LizhaoAction}
+  | {id:string;type:"nascentSoul";action:NascentAction}
   | { id:string; type:"ascension"; action:AscensionAction }
   | {id:string;type:"wayfaring";action:WayfaringAction}
   | {id:string;type:"conclave";action:ConclaveAction}
@@ -318,6 +338,10 @@ function lift(
   return {
     ...s,
     version: SAVE_VERSION,
+    spirit: s.spirit ? structuredClone(s.spirit) : freshSpirit(),
+    goldenStory: freshGoldenStory(),
+    lizhao: freshLizhao(),
+    nascentSoul: freshNascentSoul(),
     ascension: null,
     wayfaring: freshWayfaring(),
     conclave: freshConclave(),
@@ -372,6 +396,8 @@ export const breakthroughDetails = (s: State, pill = false) =>
 export const refineCost = (s: State) => chapter.refineCost(base(s));
 export const replayHints = (s: State) => chapter.replayHints(base(s));
 export const actionError = (s: State, a: chapter.Activity) =>
+  nascentActive(s) || s.lizhao.duel ? "先结束眼前的试炼" :
+  s.realm === 3 && a === "cultivate" ? "元婴已成，先安顿出关与大典，亲自验证新得神通。" :
   s.conclave.duel || s.conclave.location === "vault" ? "先结束诸宗交锋或撤出秘境" :
   s.outerSea.location === "ruins" ? "先结束遗迹探索或撤回古渡" :
   s.goldenCore.expedition !== "idle" ? "先结束药圃探索或撤回" :
@@ -460,6 +486,8 @@ export function aidError(s: State, p: TrialPlace, helper: "mentor" | "luchi") {
   return "";
 }
 export function nextGoal(s: State) {
+  if (s.realm === 3 || (s.realm === 2 && s.conclave.stage >= 2 && !lizhaoActivity(s))) return nascentGoal(s);
+  if (lizhaoActivity(s)) return lizhaoGoal(s);
   if(s.realm===2 && s.goldenCore.farShore) return seaGoal(s);
   if(s.status === "alive" && !s.pending && (s.realm === 2 || s.foundationJourney.epilogue || s.goldenCore.expedition !== "idle")) return goldenGoal(s);
   if (s.realm === 1 && s.adventure.road.surveyed) return foundationGoal(s);
@@ -512,6 +540,10 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  if (n.status !== "alive") n.spirit.trial = null;
+  n.goldenStory = structuredClone(old.goldenStory);
+  n.lizhao = structuredClone(old.lizhao);
+  n.nascentSoul = structuredClone(old.nascentSoul);
   n.ascension = n.life === old.life && n.realm === old.realm && n.status === "alive" ? structuredClone(old.ascension) : null;
   n.wayfaring = n.life === old.life ? structuredClone(old.wayfaring) : freshWayfaring();
   n.conclave = n.life === old.life ? structuredClone(old.conclave) : freshConclave();
@@ -532,6 +564,13 @@ function normalize(n: State, old: State) {
     n.qiJourney.node = 0;
     n.qiJourney.duel = null;
     n.qiJourney.trial = null;
+    if (n.qiJourney.narrative) {
+      n.qiJourney.narrative.location = "home";
+      n.qiJourney.narrative.duel = null;
+      if (n.qiJourney.narrative.phase === "challenge") n.qiJourney.narrative.phase = "prepared";
+      if (n.qiJourney.narrative.pursuit === "fighting") n.qiJourney.narrative.pursuit = "warned";
+    }
+    n.secretPact.hazard = null;
   }
   if (!n.realm) n.qi = Math.min(n.qi, qiCap(n));
   n.foundationJourney =
@@ -595,10 +634,22 @@ export function dispatch(input: State, c: Command): State {
 }
 function dispatchCommand(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (input.spirit.trial && c.type !== "spirit" && c.type !== "choose") return input;
+  if (c.type === "spirit") return runSpirit(input,c.action,c.id,s=>workshopMonth(s,"炼神调息"));
+  if (input.status === "alive" && qiNarrativeActive(input) && c.type !== "qiJourney" && c.type !== "choose") return input;
+  if (input.status === "alive" && pactActivity(input.secretPact) && c.type !== "secretPact" && c.type !== "choose" && !(c.type === "foundationJourney" && (["move","withdraw"].includes(c.action.kind) || (c.action.kind === "battle" && c.action.battle === "pactRival")))) return input;
+  if (input.secretPact.site !== "away" && c.type === "foundationJourney" && c.action.kind !== "travel" && !["move","withdraw"].includes(c.action.kind) && !(c.action.kind === "battle" && c.action.battle === "pactRival")) return input;
   if (c.type === "ascension") return runAscension(input,c.action,c.id,dispatchCommand,s=>workshopMonth(s,"收势调息"));
   if (input.ascension && !input.pending && !(input.ascension.step === 3 && (input.ascension.realm === 0 ? c.type === "break" : c.type === "goldenCore" && c.action.kind === "break"))) return input;
   if (input.wayfaring.passage && !(c.type === "choose" || (c.type === "wayfaring" && c.action.kind === "cancel") || isPassageContinuation(input,c))) return input;
   if (input.wayfaring.trip && !(c.type === "choose" || c.type === "wayfaring" || (c.type === "foundationJourney" && c.action.kind === "travel"))) return input;
+  if (nascentActive(input) && c.type !== "nascentSoul" && c.type !== "choose") return input;
+  if (input.lizhao.duel && c.type !== "lizhao" && c.type !== "choose") return input;
+  if (c.type === "goldenStory" && lizhaoActivity(input)) return input;
+  if (c.type === "goldenStory") return runGoldenStory(input,c.action,c.id,workshopMonth);
+  if (c.type === "lizhao") return runLizhao(input,c.action,c.id,workshopMonth);
+  if (c.type === "nascentSoul") return runNascent(input,c.action,c.id,workshopMonth);
+  if (lizhaoActivity(input) && !["choose","advance","queue","queueTick","equipRelic","treasure","learning","supplies"].includes(c.type) && !(c.type === "wayfaring" && c.action.kind === "cancel")) return input;
   if (c.type === "wayfaring") return runWayfaring(input,c.action,c.id,wayfaringMonth);
   if(c.type === "conclave") return runConclave(input,c.action,c.id,workshopMonth);
   if(input.conclave.duel || input.conclave.location === "vault") return input;
@@ -1237,14 +1288,23 @@ export function validState(x: unknown): x is State {
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
     (x as { version: unknown }).version !== version ||
+    (version >= 41 && !validSpirit(s)) ||
+    (version < 41 && s.sense > senseLimit(s.realm)) ||
+    (version < 39 && (s.realm > 2 || s.conclave?.stage > 2)) ||
+    (version >= 39 && (!validGoldenStory(s,version<42) || !validLizhao(s) || !validNascentSoul(s,version<40,version<42))) ||
+    (version >= 39 && s.conclave.stage === 3 && (!s.nascentSoul.trialWon || !s.lizhao.cleared || !s.lizhao.recipeVerified)) ||
+    (version >= 39 && s.lizhao.location !== "away" && (s.realm !== 2 || s.outerSea.location !== "ferry" || s.conclave.location !== "away" || nascentActive(s))) ||
+    (version >= 39 && (s.lizhao.duel || nascentActive(s)) && (s.status !== "alive" || s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel || s.foundationJourney.duel || s.sectContest.duel || s.conclave.duel || s.outerSea.duel || s.qiJourney.node || s.ascension || s.wayfaring.trip || s.wayfaring.passage || (s.treasures.auction?.entered && !s.treasures.auction.closed))) ||
     (version >= 36 && (!validAscension(s.ascension,s.realm) || (s.ascension && (s.status !== "alive" || s.qiJourney?.node || s.foundationJourney?.duel || s.goldenCore?.expedition !== "idle" || s.social?.scene || s.social?.arena?.duel || s.expedition?.duel || s.sectContest?.duel || s.wayfaring?.trip || s.wayfaring?.passage || s.outerSea?.location !== "home" || s.conclave?.location !== "away" || (s.treasures?.auction?.entered && !s.treasures.auction.closed))))) ||
+    (version >= 38 && s.secretPact?.site !== "away" && (s.realm !== 1 || (s.secretPact?.site === "zhaoxuan" ? s.foundationJourney?.location !== "frontier" : s.foundationJourney?.location !== "inn"))) ||
+    (version >= 38 && s.secretPact?.hazard && (s.status !== "alive" || s.pending || s.social?.scene || s.ascension || s.wayfaring?.trip || s.wayfaring?.passage || s.foundationJourney?.duel || s.social?.arena?.duel || s.expedition?.duel || s.sectContest?.duel)) ||
     (version >= 32 && !validWayfaring(s)) ||
     (version < 35 && s.sense > 12) ||
     (version >= 31 && !validConclave(s,version<37)) ||
@@ -1254,14 +1314,14 @@ function validWorldState(
     (version >= 28 && !validSectContest(s)) ||
     (version >= 27 && !validTreasures(s.treasures,s.realm,version < 35)) ||
     (version >= 23 && (!Number.isInteger(s.cultivationRemainder) || s.cultivationRemainder < 0 || s.cultivationRemainder >= 240)) ||
-    (version >= 25 && !validSecretPact(s.secretPact,s.month,s.realm,s.foundationJourney?.won ?? [],s.foundationJourney?.duel?.id)) ||
+    (version >= 25 && !validSecretPact(s.secretPact,s.month,s.realm,s.foundationJourney?.won ?? [],s.foundationJourney?.duel?.id,version < 38)) ||
     (version >= 24 && !validRecognition(s.recognition, s.month, s.realm, s.journey?.branch)) ||
     !j ||
     (version >= 26 && !validLearning(j.learning)) ||
-    !chapter.validState(base(s)) ||
+    !chapter.validState(version >= 41 ? base(s) : {...base(s),spirit:undefined}) ||
     !validSocial(s) ||
     (version >= 21 && !validWorkshop(s.workshop, j.relics, s.realm)) ||
-    (version >= 19 && !validQiJourney(s, version < 20)) ||
+    (version >= 19 && !validQiJourney(s, version < 20, version >= 38)) ||
     (version >= 16 && !validCompanionship(s)) ||
     (version >= 17 && !validFoundationJourney(s, version < 18, version < 22)) ||
     !(version === 10
@@ -1339,6 +1399,44 @@ function validWorldState(
 }
 export function migrateSave(x:unknown):State {
   if(validState(x)) return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && x.version===41) {
+    if(!validWorldState(x,41)) throw new Error('旧存档损坏，原档未修改。');
+    const n=upgradeImportantScenes(structuredClone(x) as State);
+    n.version=SAVE_VERSION;
+    if(!validState(n)) throw new Error('旧存档无法安全迁移，原档未修改。');
+    return n;
+  }
+  if(x && typeof x === "object" && "version" in x && x.version === 40) {
+    if(!validWorldState(x,40)) throw new Error("旧存档损坏，原档未修改。");
+    const n = upgradeImportantScenes({...structuredClone(x) as State, version:SAVE_VERSION, spirit:freshSpirit()});
+    if(!validState(n)) throw new Error("旧存档无法安全迁移，原档未修改。");
+    return n;
+  }
+  if(x && typeof x==='object' && 'version' in x && x.version===39){
+    if(!validWorldState(x,39))throw new Error('旧存档损坏，原档未修改。');
+    const n=structuredClone(x) as State;
+    n.spirit=freshSpirit();
+    n.nascentSoul.thunder=freshThunderPath();
+    // Preserve an already-earned realm without inventing a historical thunder battle.
+    if(n.realm===3)n.nascentSoul.thunder.legacyCompleted=true;
+    if(n.nascentSoul.attempt){
+      n.nascentSoul.attempt=null;
+      n.nascentSoul.pills++;
+      n.nascentSoul.last='凝婴流程已补全元婴续篇与天劫。原行功安全收势，本次已服丹药退回一枚，已耗年月保留；研法、试雷后可重新叩关。';
+    }
+    upgradeImportantScenes(n);
+    n.version=SAVE_VERSION;
+    if(!validState(n))throw new Error('旧存档无法安全迁移，原档未修改。');
+    return n;
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 38) {
+    if (!validWorldState(x,38)) throw new Error("旧存档损坏，原档未修改。");
+    return upgradeNarrative(structuredClone(x) as State);
+  }
+  if (x && typeof x === "object" && "version" in x && x.version === 37) {
+    if (!validWorldState(x,37)) throw new Error("旧存档损坏，原档未修改。");
+    return upgradeNarrative(structuredClone(x) as State);
+  }
   if (x && typeof x === "object" && "version" in x && x.version === 36) {
     if (!validWorldState(x,36)) throw new Error("旧存档损坏，原档未修改。");
     return upgradeConclave(structuredClone(x) as State);
@@ -1689,6 +1787,25 @@ function upgradeConclave(s:State):State {
   s.version=SAVE_VERSION;
   s.conclave.victories=[];
   if(s.conclave.duel) s.conclave.duel.effort=null;
-  if(!validState(s))throw new Error("旧存档损坏，原档未修改。");
+  return upgradeNarrative(s);
+}
+
+function upgradeNarrative(s: State): State {
+  s.spirit = freshSpirit();
+  s.goldenStory ??= freshGoldenStory();
+  s.lizhao ??= freshLizhao();
+  s.nascentSoul ??= freshNascentSoul();
+  upgradeImportantScenes(s);
+  s.version = SAVE_VERSION;
+  s.qiJourney.narrative ??= freshQiNarrative();
+  s.secretPact = upgradeSecretPact(s.secretPact);
+  if (!validState(s)) throw new Error("旧存档损坏，原档未修改。");
   return s;
+}
+
+function upgradeImportantScenes(s:State):State {
+ s.goldenStory.practice ??= null;
+ s.goldenStory.teachingPracticeResults ??= [];
+ s.nascentSoul.covenant ??= freshCovenant();
+ return s;
 }

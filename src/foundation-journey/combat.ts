@@ -59,6 +59,8 @@ export function foundationExchange(s: State, move: Move) {
   const preparation = foundationBattleReadiness(s, d.id);
   const adjustments: CombatAdjustment[] = [];
   if (d.id === "well" && d.turn < 2) adjustments.push({phase:"exchange",damage:6,incoming:-6,note:"筑基灵元初运：前两合伤害 +6、承伤 −6。炼气时难以承受的井底寒压已能自行化开。"});
+  if (d.id === "application" && s.spirit?.manual === "learned" && move === "discern" && d.effect === "guard")
+    adjustments.push({ phase: "exchange", damage: 4, incoming: -3, note: "分念诀稳住逆流：守势后辨影伤害 +4、承伤 −3。沉井取法的护神功夫已用在新法中。" });
   if (trained)
     adjustments.push({
       phase: "exchange",

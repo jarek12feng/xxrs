@@ -1,3 +1,5 @@
+import { finishSpiritManual } from "./spirit-policy";
+import { finishPactTrial } from "./foundation-pact-policy";
 import { dispatch, validState, type Intent, type Gender, type Path } from "../src/core";
 import { cultivationProjection } from "../src/progression";
 import { mistCheckpoint } from "./mist-checkpoint";
@@ -23,6 +25,9 @@ export function journeyPlayer(initial = mistCheckpoint()) {
   const act = (action: JourneyAction) =>
     send({ type: "foundationJourney", action });
   const cultivate = (target: number) => {
+    if(target >= 400 && state.foundationJourney.growth.refined && state.secretPact.trial !== "complete") {
+      finishPactTrial({get state(){return state;},send,act},true);
+    }
     let guard = 0;
     while (state.foundationJourney.cultivation < target) {
       if (++guard > 100 || state.status !== "alive")
@@ -41,6 +46,7 @@ export function journeyPlayer(initial = mistCheckpoint()) {
   };
   const fight = (id: BattleId) => {
     if(id === "well" && state.social.gender === "male" && state.foundationJourney.heroine.purpose === "none")act({kind:"journeyPurpose",purpose:"longevity"});
+    if(id === "application") finishSpiritManual({get state(){return state;},send});
     if(id === "application" && state.foundationJourney.inheritance !== "none")send({type:"equip",technique:state.foundationJourney.inheritance});
     if(id === "exit" && !state.foundationJourney.won.includes("application"))fight("application");
     cultivate(challenges[id].cultivation);

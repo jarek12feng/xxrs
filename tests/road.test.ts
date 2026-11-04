@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 
 import { foundationStep } from "../tools/foundation-playthrough";
 import { expect, it } from "vitest";
@@ -350,7 +351,7 @@ it("migrates v6 without changing resources, scene, old story or RNG; rejects cor
   expect(upgraded).toEqual({
     ...s,
     journey: { ...s.journey, learning: { book: true, relic: false } },
-    version: 37,
+    version: SAVE_VERSION,
     adventure: { ...adventure, rescueChoice: "legacy", road: freshRoad() },
   });
   expect(() =>

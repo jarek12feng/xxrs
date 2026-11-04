@@ -1,0 +1,15 @@
+
+> cultivation-life@0.15.0 test
+> vitest run --maxWorkers=2
+
+
+ RUN  v5.0.5 /Users/admin/Documents/ChatGPT/xxrs
+
+
+ Test Files  180 passed (180)
+      Tests  1270 passed (1270)
+   Start at  19:02:36
+   Duration  92.11s (tests 86%, import 8%, environment 5%, transform 1%)
+
+    Isolate  180 workers spawned · ~106ms startup each (spawn + environment, per file)
+             at least ~9.42s faster with isolate: false — reuses workers across files instead of one per file

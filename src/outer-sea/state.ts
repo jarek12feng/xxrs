@@ -59,7 +59,7 @@ export function validOuterSea(s: State) {
     o.last.length > 2000
   )
     return false;
-  if (s.realm !== 2)
+  if (s.realm < 2)
     return JSON.stringify(o) === JSON.stringify(freshOuterSea());
   if ((o.location !== "home" || o.met) && !s.goldenCore.farShore) return false;
   if (

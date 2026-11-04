@@ -1,3 +1,7 @@
+import { spiritQuote } from "./spirit/rules";
+import { goldenStoryQuote } from "./golden-story/rules";
+import { lizhaoQuote } from "./lizhao/rules";
+import { nascentQuote } from "./nascent-soul/rules";
 import { ascensionError, ascensionOptions } from "./ascension/rules";
 import { quoteSettlement } from "./economy";
 import { arenaError, arenaPrize } from "./social";
@@ -19,10 +23,15 @@ import { trainingError, medicineError } from "./growth";
 import { studyError } from "./wayfaring/rules";
 /** Explain a rejected command using existing domain quotes. Never execute or consume RNG. */
 export function rejectedActionReason(s: State, intent: Intent): string {
+  if (s.spirit.trial && intent.type !== "spirit") return "先完成识海探阵或收念撤回";
   if (s.ascension && intent.type !== "ascension" && !s.pending) return "先完成当前行功或收势调息";
   if (intent.type === "ascension") return intent.action === "start" ? ascensionError(s) : s.pending ? "先处理眼前事件，再接续行功" : ascensionOptions(s).find(x=>x.id===intent.action)?.error || "当前行功阶段不能执行此动作";
   let error = "";
   switch (intent.type) {
+    case "spirit": error=spiritQuote(s,intent.action).error; break;
+    case "goldenStory": error=goldenStoryQuote(s,intent.action).error; break;
+    case "lizhao": error=lizhaoQuote(s,intent.action).error; break;
+    case "nascentSoul": error=nascentQuote(s,intent.action).error; break;
     case "supplies":
       error = quoteSettlement(s, { stones: 8 }, { herbs: 4 }).error;
       break;
@@ -101,7 +110,7 @@ export function rejectedActionReason(s: State, intent: Intent): string {
       }).error;
       break;
     case "consume":
-      error = medicineError(s, intent.medicine, true);
+      error = medicineError(s, intent.medicine, true, intent.purpose);
       break;
     case "trainTechnique":
       error = trainingError(s, intent.technique);

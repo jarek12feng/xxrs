@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import SpiritScene from "../spirit/SpiritScene.vue";
+import { spiritSite } from "../spirit/rules";
+const spiritOpen=ref(false);
+import GoldenStoryScene from "../golden-story/GoldenStoryScene.vue";
+const storyOpen = ref(false);
 import { projectInteractions } from "../story-interactions";
 import GoldenWorld from "../golden-scene/GoldenWorld.vue";
 import CombatBar from "../scene2d/combat/CombatBar.vue";
@@ -21,6 +26,7 @@ import {
 import CultivationOutlook from "../CultivationOutlook.vue";
 const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent]; shore: []; meeting: [] }>();
+watch(() => props.game.spirit.trial, trial => { if(trial?.source === "tide") spiritOpen.value = true; }, {immediate:true});
 const o = computed(() => props.game.outerSea);
 const options = computed(() => {
   const s = props.game,
@@ -190,15 +196,31 @@ const shown = computed(() =>
 watch(stageKey, () => {
   selected.value = "";
 });
-watch(() => o.value.pact, () => { selected.value = ""; });
+watch(
+  () => o.value.pact,
+  () => {
+    selected.value = "";
+  },
+);
 watch(hotspots, (objects) => {
   if (selected.value && !objects.some((o) => o.id === selected.value))
     selected.value = "";
 });
 </script>
 <template>
+  <SpiritScene v-if="spiritOpen || game.spirit.trial?.source==='tide'" :game="game" :busy="busy" @act="emit('act',$event)" @close="spiritOpen=false" />
+  <template v-else>
+  <GoldenStoryScene
+    v-if="storyOpen"
+    :game="game"
+    :busy="busy"
+    place="sea"
+    @act="emit('act', $event)"
+    @close="storyOpen = false"
+  />
   <NarrativeStage
     v-if="
+      !storyOpen &&
       game.realm === 2 &&
       game.goldenCore.farShore &&
       game.conclave.location === 'away'
@@ -217,10 +239,24 @@ watch(hotspots, (objects) => {
             : '退潮遗迹 · 外府'
     "
     :goal="seaGoal(game)"
-    :hotspots="hotspots"
+    :hotspots="
+      game.realm === 2 && !o.duel && o.location === 'ferry'
+        ? [
+            ...hotspots,
+            ...(spiritSite(game)==='tide'?[{id:'spirit',label:game.spirit.jade==='refined'?'潮隙 · 玉髓已炼化':'归潮拓本 · 潮隙取髓',x:71,y:36}]:[]),
+            { id: 'golden-story', label: '潮堤与公开问法', x: 82, y: 58 },
+          ]
+        : hotspots
+    "
     :active="selected"
     :battle="!!o.duel"
-    @select="$event === 'letter' ? emit('meeting') : (selected = $event)"
+    @select="
+      $event === 'spirit' ? (spiritOpen=true) : $event === 'golden-story'
+        ? (storyOpen = true)
+        : $event === 'letter'
+          ? emit('meeting')
+          : (selected = $event)
+    "
     @close="selected = ''"
   >
     <template #status
@@ -238,7 +274,9 @@ watch(hotspots, (objects) => {
         domain="sea"
         :focus="selected"
         @performed="selected = ''"
-        @select="selected = $event"
+        @select="
+          $event === 'golden-story' ? (storyOpen = true) : (selected = $event)
+        "
       />
       <CombatBar
         v-if="combat && o.duel"
@@ -277,7 +315,8 @@ watch(hotspots, (objects) => {
       <figure v-if="o.seal">
         <img src="/art/outer-sea/seal.webp" alt="镇潮印" />
         <figcaption>
-          镇潮印 · {{ o.attuned ? "已温养；出战后伤害 +4 / 护体 +3" : "待温养" }}
+          镇潮印 ·
+          {{ o.attuned ? "已温养；出战后伤害 +4 / 护体 +3" : "待温养" }}
         </figcaption>
       </figure>
       <figure v-if="o.manual">
@@ -390,6 +429,7 @@ watch(hotspots, (objects) => {
       <p v-if="o.last">{{ o.last }}</p>
     </template>
   </NarrativeStage>
+  </template>
 </template>
 <style scoped>
 .outer-sea :deep(.battle-inspector) {

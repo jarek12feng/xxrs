@@ -83,7 +83,7 @@ export function applyGrowth(s: State,a: GrowthAction) {
     const p=g.routes[a.route],info=routeInfo[a.route];
     if(a.kind==='routePrepare'){p.prepared=true;q.last=`${info.name}整备完成。${a.method==='relic'?'你以二阶灵器的器光探出避寒落点，省下了护寒药。':a.method==='training'?'你用六个月将通达功法调到寒流的节律，省下了护寒药。':''}${info.intro}`;}
     if(a.kind==='routeChoose'){p.choice=a.choice;q.last=`你选择${a.choice==='careful'?info.careful:info.swift}。此番安排已定，败退后仍可循此路再来。`;}
-    if(a.kind==='routeProcess'){p.processed=true;g.refined=true;if(s.social.gender === "male" && q.heroine.route === "none")q.heroine.route=a.route;q.last=`${info.material}经处理融入灵元。灵元凝练已成，修行至 400 可入后期，至 599 再遇瓶颈。后期前往古道时，凝练灵元可抵住外缘与接应交锋的前两合冲击，承伤 −3；不必另找主材。`;}
+    if(a.kind==='routeProcess'){p.processed=true;g.refined=true;if(s.social.gender === "male" && q.heroine.route === "none")q.heroine.route=a.route;q.last=`${info.material}经处理融入灵元。灵元凝练已成。叶照留下照玄会合图：持续逆流能检验中期灵元是否接得住后期运转；须完成共同行险、分宝与离府实战，才可修至 400 入后期。药庄、雪线和古道三路都可直接赴约，不必再取另一份主材。后期前往古道时，凝练灵元可抵住外缘与接应交锋的前两合冲击，承伤 −3；不必另找主材。`;}
     if(a.kind==='routeRevisit'){
       p.revisited=true;
       const reward=cost.settlement.reward.stones!;

@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { foundationStep } from "../tools/foundation-playthrough";
 import { describe, expect, it } from "vitest";
 import {
@@ -241,7 +242,7 @@ describe("v4 world progression", () => {
     const before = structuredClone(old),
       s = migrateSave(old);
     expect(old).toEqual(before);
-    expect(s.version).toBe(37);
+    expect(s.version).toBe(SAVE_VERSION);
     expect(s.seed).toBe(91);
     expect(s.status).toBe("complete");
     expect(act(s, { type: "continue" }).legacy).toBe(5);

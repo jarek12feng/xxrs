@@ -1,0 +1,132 @@
+[
+  {
+    "file": "/Users/admin/Documents/ChatGPT/xxrs/public/art/nascent-tribulation/tribulation-platform-v1.webp",
+    "original": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/nascent-tribulation-20261104/originals/tribulation-platform-v1.png",
+    "originalSize": [
+      1672,
+      941
+    ],
+    "exportSize": [
+      1920,
+      1080
+    ],
+    "alphaExtrema": [
+      255,
+      255
+    ],
+    "transparentPixels": 0,
+    "partialAlphaPixels": 0,
+    "outerEdgeMaxAlpha": 255,
+    "alphaBounds": [
+      0,
+      0,
+      1920,
+      1080
+    ],
+    "sha256": "9ea33d980851cad45fb82bb6ea48f1dc3186c339993631381eafa0e435850131"
+  },
+  {
+    "file": "/Users/admin/Documents/ChatGPT/xxrs/public/art/nascent-tribulation/tribulation-cleared-v1.webp",
+    "original": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/nascent-tribulation-20261104/originals/tribulation-cleared-v1.png",
+    "originalSize": [
+      1672,
+      941
+    ],
+    "exportSize": [
+      1920,
+      1080
+    ],
+    "alphaExtrema": [
+      255,
+      255
+    ],
+    "transparentPixels": 0,
+    "partialAlphaPixels": 0,
+    "outerEdgeMaxAlpha": 255,
+    "alphaBounds": [
+      0,
+      0,
+      1920,
+      1080
+    ],
+    "sha256": "3787f82061e0d5d5c74ee5380be48bfdc9eb0220e63c98c3a8b41b4e1d5968b3"
+  },
+  {
+    "file": "/Users/admin/Documents/ChatGPT/xxrs/public/art/nascent-tribulation/lightning-strike-v1.webp",
+    "original": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/nascent-tribulation-20261104/originals/lightning-strike-v1.png",
+    "originalSize": [
+      1024,
+      1536
+    ],
+    "exportSize": [
+      768,
+      1536
+    ],
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "transparentPixels": 865187,
+    "partialAlphaPixels": 314461,
+    "outerEdgeMaxAlpha": 0,
+    "alphaBounds": [
+      16,
+      232,
+      751,
+      1320
+    ],
+    "sha256": "bf1444a3338b9a3c374a8f67336919685373a1598b69478330bc4980fda8727a"
+  },
+  {
+    "file": "/Users/admin/Documents/ChatGPT/xxrs/public/art/nascent-tribulation/lightning-impact-v1.webp",
+    "original": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/nascent-tribulation-20261104/originals/lightning-impact-v1.png",
+    "originalSize": [
+      1774,
+      887
+    ],
+    "exportSize": [
+      1536,
+      768
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "transparentPixels": 899147,
+    "partialAlphaPixels": 280487,
+    "outerEdgeMaxAlpha": 0,
+    "alphaBounds": [
+      32,
+      16,
+      1504,
+      752
+    ],
+    "sha256": "c941e80b665c2e052384820794ff3c801b0e362ed289b42d7382aa9cfa37b110"
+  },
+  {
+    "file": "/Users/admin/Documents/ChatGPT/xxrs/public/art/nascent-tribulation/tribulation-ward-v1.webp",
+    "original": "/Users/admin/Documents/ChatGPT/xxrs/docs/art-candidates/nascent-tribulation-20261104/originals/tribulation-ward-v1.png",
+    "originalSize": [
+      1254,
+      1254
+    ],
+    "exportSize": [
+      1024,
+      1024
+    ],
+    "alphaExtrema": [
+      0,
+      253
+    ],
+    "transparentPixels": 457863,
+    "partialAlphaPixels": 590713,
+    "outerEdgeMaxAlpha": 0,
+    "alphaBounds": [
+      16,
+      16,
+      1007,
+      1008
+    ],
+    "sha256": "d35af969de75f4c9525cac68e04e8f9385a8fcb39df655ccfd319222b80c860f"
+  }
+]

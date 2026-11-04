@@ -3,6 +3,8 @@ import type { State, Intent } from "../world";
 /** Long sea journeys retain their own command and remaining time across events/reloads.
  * No second position is stored: the chapter remains at its last safe origin. */
 export const passageRoutes = {
+  "lizhao:visit": {from:"away",to:"harbor",months:6},
+  "lizhao:leave": {from:"harbor",to:"away",months:6},
   "sea:sail": { from: "home", to: "ferry", months: 6 },
   "sea:home": { from: "ferry", to: "home", months: 6 },
   "sea:enter": { from: "ferry", to: "ruins", months: 2 },
@@ -18,7 +20,7 @@ export interface Passage {
   remaining: number;
 }
 export function passageKey(
-  domain: "sea" | "conclave",
+  domain: "sea" | "conclave" | "lizhao",
   kind: string,
 ): PassageRoute | null {
   const key = `${domain}:${kind}`;
@@ -32,7 +34,7 @@ export function passageTotal(s: State, route: PassageRoute) {
 export function passageIntent(route: PassageRoute): Intent {
   const [domain, kind] = route.split(":");
   return {
-    type: domain === "sea" ? "outerSea" : "conclave",
+    type: domain === "sea" ? "outerSea" : domain === "lizhao" ? "lizhao" : "conclave",
     action: { kind },
   } as Intent;
 }
@@ -40,9 +42,9 @@ export function isPassageContinuation(s: State, intent: Intent) {
   const p = s.wayfaring.passage;
   return (
     !!p &&
-    (intent.type === "outerSea" || intent.type === "conclave") &&
+    (intent.type === "outerSea" || intent.type === "conclave" || intent.type === "lizhao") &&
     passageKey(
-      intent.type === "outerSea" ? "sea" : "conclave",
+      intent.type === "outerSea" ? "sea" : intent.type === "lizhao" ? "lizhao" : "conclave",
       intent.action.kind,
     ) === p.route
   );
@@ -68,15 +70,15 @@ export function validPassage(s: State) {
     !p ||
     !Object.hasOwn(passageRoutes, p.route) ||
     s.wayfaring.trip ||
-    s.realm !== 2 ||
+    s.realm < 2 ||
     !s.goldenCore.farShore
   )
     return false;
   const sea = p.route.startsWith("sea:");
   return (
-    (sea ? s.outerSea.location : s.conclave.location) ===
+    (p.route.startsWith("lizhao:") ? s.lizhao.location : sea ? s.outerSea.location : s.conclave.location) ===
       passageRoutes[p.route].from &&
-    (sea
+    (p.route.startsWith("lizhao:") ? !s.lizhao.duel && s.outerSea.location === "ferry" && s.conclave.location === "away" : sea
       ? !s.outerSea.duel && s.conclave.location === "away"
       : !s.conclave.duel && s.outerSea.location === "ferry") &&
     Number.isInteger(p.total) &&

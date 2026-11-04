@@ -1,0 +1,49 @@
+[
+  {
+    "name": "dao-demonstration",
+    "source": "/Users/admin/.codex/generated_images/01a1a5e1-c8c5-79e1-9c50-02393bb8db69/exec-33cb35d1-2fbe-44de-a05d-4c7612c6301b.png",
+    "original_size": [
+      1672,
+      941
+    ],
+    "export_size": [
+      1920,
+      1080
+    ],
+    "mode": "RGB",
+    "bytes": 475938
+  },
+  {
+    "name": "covenant-courtyard",
+    "source": "/Users/admin/.codex/generated_images/01a1a5e1-c8c5-79e1-9c50-02393bb8db69/exec-ce61991b-2352-452d-b88e-5cbfdd458724.png",
+    "original_size": [
+      1672,
+      941
+    ],
+    "export_size": [
+      1920,
+      1080
+    ],
+    "mode": "RGB",
+    "bytes": 513546
+  },
+  {
+    "name": "covenant-keepsakes",
+    "source": "/Users/admin/.codex/generated_images/01a1a5e1-c8c5-79e1-9c50-02393bb8db69/exec-6e243e80-9826-441b-9888-44cb462670c7.png",
+    "original_size": [
+      1254,
+      1254
+    ],
+    "export_size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "bytes": 82940,
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "edge_alpha_max": 1
+  }
+]

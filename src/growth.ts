@@ -20,15 +20,16 @@ export type Medicine = keyof typeof medicines;
 export type GrowthCommand =
   | { id: string; type: "trainTechnique"; technique: Technique }
   | { id: string; type: "brew"; medicine: Medicine }
-  | { id: string; type: "consume"; medicine: Medicine };
+  | { id: string; type: "consume"; medicine: Medicine; purpose?: "grow" | "restore" };
 export function trainingError(s: State, t: Technique) {
   if (!techniqueIds.includes(t)) return "先习得这册功法";
   return techniqueChangeError(s, { kind: "train", id: t });
 }
-export function medicineError(s: State, m: Medicine, use = false) {
+export function medicineError(s: State, m: Medicine, use = false, purpose: "grow" | "restore" = "grow") {
+  if (s.spirit?.trial || s.ascension || s.nascentSoul.trial || s.nascentSoul.attempt || s.nascentSoul.thunder?.battle) return "先结束探阵或行功";
   if (workshopLock(s)) return "先处理眼前事件或结束历练";
   if (!Object.hasOwn(medicines, m)) return "未知丹方";
-  return use ? dailyMedicineQuote(s, m).error : workshopQuote(s, { product: m, method: "craft" }).error;
+  return use ? dailyMedicineQuote(s, m, purpose).error : workshopQuote(s, { product: m, method: "craft" }).error;
 }
 
 export function runGrowth(
@@ -39,7 +40,7 @@ export function runGrowth(
   const error =
     c.type === "trainTechnique"
       ? trainingError(input, c.technique)
-      : medicineError(input, c.medicine, c.type === "consume");
+      : medicineError(input, c.medicine, c.type === "consume", c.purpose);
   if (error) return input;
   const s = structuredClone(input);
   let text = "";
@@ -47,8 +48,8 @@ export function runGrowth(
     applyTechnique(s, { kind: "train", id: c.technique });
     text = `功法研修至${s.growth.training[c.technique] === 1 ? "熟练" : "通达"}；装配后生效。灵石 −12、灵草 −2。`;
   } else {
-    const used = applyDailyMedicine(s, c.medicine);
-    text = c.medicine === "healing"
+    const used = applyDailyMedicine(s, c.medicine, c.purpose);
+    text = c.purpose === "restore" ? `服用${medicines[c.medicine].name}疗复识海：创伤 −${used.restored}，不增神识、不推进月份。` : c.medicine === "healing"
       ? `服用回春散：伤势 −${used.healed}，不推进月份；单场气势不受影响。`
       : `服用${medicines[c.medicine].name}：神识 +${used.sense}，不推进月份。下次可服养神药：第 ${used.nextUseMonth} 月。`;
 
@@ -78,6 +79,11 @@ export function validGrowth(s: State, legacy = false) {
 }
 export function growthGoals(s: State): string[] {
   const goals: string[] = [];
+  if (s.realm >= 3) {
+    if (s.injury) goals.push("丹药：伤势未愈，可先服药或静养。");
+    goals.push("境界：元婴初成，先出关安顿，再决定如何与故人相见，并试用新成的神通。");
+    return goals;
+  }
   if (!s.journey.main)
     goals.push(
       "功法：装配营救谢礼中的主修；也可经宗门、擂台或坊市取得其他法门。",

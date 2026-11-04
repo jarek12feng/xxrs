@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { describe,it,expect } from 'vitest';
 import { createGame, dispatch, validState, migrateSave, type State, type Intent } from '../src/core';
 import { foundationStep } from '../tools/foundation-playthrough';
@@ -52,8 +53,8 @@ describe('三段行功',()=>{
  });
  it('旧35档保留装备并初始化行功，损坏与未来档拒绝',()=>{
   const s=outerSeaCheckpoint(),old={...s,version:35};
-  const n=migrateSave(old);expect(n.version).toBe(37);expect(n.treasures).toEqual(s.treasures);expect(n.ascension).toBeNull();
-  expect(()=>migrateSave({...s,version:38})).toThrow();
+  const n=migrateSave(old);expect(n.version).toBe(SAVE_VERSION);expect(n.treasures).toEqual(s.treasures);expect(n.ascension).toBeNull();
+  expect(()=>migrateSave({...s,version:SAVE_VERSION + 1})).toThrow();
   expect(validState({...s,ascension:{realm:1,step:3,strain:-1,history:[]}})).toBe(false);
  });
  it('凝丹行功的稳定结果独立于旧随机把握',()=>{

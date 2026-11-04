@@ -85,6 +85,15 @@ export function outerSeaCheckpoint(
   while (p.state.injury)
     p.send({ type: "advance", activity: "rest", months: 1 });
   p.send({ type: "goldenCore", action: { kind: "break" } });
+  p.send({ type: "goldenStory", action: { kind: "direction", choice: "independent" } });
   p.send({ type: "goldenCore", action: { kind: "farShore" } });
   return p.state;
+}
+
+/** Complete the required tide observation through public commands, preserving route choice. */
+export function observeTide(send: (intent: Intent) => void) {
+  send({ type: "goldenStory", action: { kind: "observe", point: "gauge" } });
+  send({ type: "goldenStory", action: { kind: "observe", point: "flow" } });
+  send({ type: "goldenStory", action: { kind: "duty", duty: "ward" } });
+  send({ type: "goldenStory", action: { kind: "measure" } });
 }

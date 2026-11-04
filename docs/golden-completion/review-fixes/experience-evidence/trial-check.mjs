@@ -1,0 +1,8 @@
+import {chromium} from '/Users/admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const dir='docs/golden-completion/review-fixes/experience-evidence/';const browser=await chromium.launch({headless:true,channel:'chrome'});const records=[];
+for(const width of [1920,1280]){const page=await browser.newPage({viewport:{width,height:width===1920?1080:720},reducedMotion:'reduce'});await page.goto('http://127.0.0.1:5386/'+dir+'preview.html');await page.waitForFunction(()=>window.visualReview,{timeout:60000});await page.getByRole('button',{name:'completion-trial',exact:true}).click();
+for(const [name,label] of [['trial-fire','护体回元'],['trial-echo','守神调息'],['trial-open','破开禁纹']]){await page.waitForTimeout(100);await page.screenshot({path:dir+name+'-'+width+'.png'});await page.getByRole('button',{name:new RegExp(label)}).click();}
+assert.equal(await page.locator('[data-broken="true"]').count(),3);await page.screenshot({path:dir+'trial-three-seals-'+width+'.png'});records.push({width,reducedMotion:'reduce',seals:3});
+await page.getByRole('button',{name:'nascent-phase-0',exact:true}).click();await page.getByRole('button',{name:/中止叩关/}).click();assert.equal(await page.locator('.practice-world.recovering').count(),1);await page.screenshot({path:dir+'attempt-recovery-'+width+'.png'});assert((await page.evaluate(()=>window.visualReview.state())).injury>0);await page.close();}
+await browser.close();fs.writeFileSync(dir+'trial-results.json',JSON.stringify(records,null,2));console.log(JSON.stringify(records));

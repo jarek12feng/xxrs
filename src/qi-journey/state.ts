@@ -1,3 +1,4 @@
+import { freshQiNarrative, validQiNarrative, type QiNarrative } from "./narrative-state";
 import { freshQiPeople, validQiPeople, type QiPeople } from "./people";
 import {
   freshPreparation,
@@ -7,6 +8,7 @@ import {
 } from "./preparation";
 export type QiRoute = "medicine" | "sword" | "array";
 export interface QiJourney {
+  narrative: QiNarrative;
   people: QiPeople;
   preparations: PreparationProgress[];
   trial: PreparationRoute | null;
@@ -20,6 +22,7 @@ export interface QiJourney {
   last: string;
 }
 export const freshQiJourney = (): QiJourney => ({
+  narrative: freshQiNarrative(),
   people: freshQiPeople(),
   preparations: [freshPreparation(), freshPreparation()],
   trial: null,
@@ -44,8 +47,14 @@ export function validQiJourney(
     foundationJourney: { duel: unknown };
   },
   legacy = false,
+  narrativeRequired = false,
 ) {
   const q = s.qiJourney;
+  if (narrativeRequired || q?.narrative !== undefined) {
+    if (!validQiNarrative(q?.narrative)) return false;
+    if(q.narrative.phase!=="unknown" && q.gates<1) return false;
+    if (q.narrative.location !== "home" && (s.realm !== 0 || s.status !== "alive" || s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel || s.foundationJourney.duel || q.node || q.duel)) return false;
+  }
   if (
     !q ||
     !Number.isSafeInteger(q.vigor) ||

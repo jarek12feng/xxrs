@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { legacyEquipment } from "./legacy-equipment";
 import { describe, it, expect } from "vitest";
 import { dispatch, validState, migrateSave, type State } from "../src/core";
@@ -180,10 +181,11 @@ describe("剧情中的十年内比之约", () => {
   });
   it("v27 不补造参赛与邀约，更新后仍保留原进度", () => {
     const s = eligible();
-    const old = { ...s, treasures: legacyEquipment(s), version: 27 } as Record<string, unknown>;
+    const old = { ...s, sense:Math.min(12,s.sense), treasures: legacyEquipment(s), version: 27 } as Record<string, unknown>;
     delete old.sectContest;
+    delete old.spirit;
     const n = migrateSave(old);
-    expect(n.version).toBe(37);
+    expect(n.version).toBe(SAVE_VERSION);
     expect(n.sectContest.stage).toBe("unheard");
     expect(n.foundationJourney).toEqual(s.foundationJourney);
     expect(old.version).toBe(27);

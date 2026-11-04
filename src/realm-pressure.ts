@@ -4,12 +4,12 @@ import { cultivationStageIndex } from "./progression";
 import { mainTraining } from "./growth";
 
 export interface OpponentRealm {
-  realm: 0 | 1 | 2;
+  realm: 0 | 1 | 2 | 3;
   stage: number;
 }
 const stages = ["前期", "中期", "后期", "圆满"];
 export const opponentRealmName = (enemy: OpponentRealm) =>
-  `${enemy.realm === 2 ? "金丹" : enemy.realm === 1 ? "筑基" : "炼气"}${stages[enemy.stage]}`;
+  `${enemy.realm === 3 ? "元婴" : enemy.realm === 2 ? "金丹" : enemy.realm === 1 ? "筑基" : "炼气"}${stages[enemy.stage]}`;
 
 // These are earned capabilities, not extra rewards or a random chance to ignore a realm.
 export function realmPressure(

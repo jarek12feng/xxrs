@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { narrativeAtlasPaths } from "./wayfaring/narrative-map";
 import { computed } from "vue";
 import { currentWorldMap as worldMap, qingxuanPaths } from "./world-geography";
 import { routeNodes, landmarkLabel } from "./landmarks";
@@ -9,10 +10,11 @@ const props = defineProps<{
   story?: boolean;
   selectedStory?: string;
 }>();
+const regions = computed(() => worldMap.regions.slice(0, props.game.realm >= 2 ? 5 : props.game.realm >= 1 ? 4 : props.game.adventure.road.met ? 3 : 1));
 const routes = computed(() => routeNodes(props.game));
 const paths = computed(() => {
   const byKey = new Map(routes.value.map((n) => [n.key, n]));
-  return qingxuanPaths.map(([from, to]) => {
+  return [...qingxuanPaths, ...narrativeAtlasPaths].filter(([from,to])=>byKey.has(from)&&byKey.has(to)).map(([from, to]) => {
     const a = byKey.get(from)!,
       b = byKey.get(to)!;
     return {
@@ -43,14 +45,14 @@ const points: Record<Place, { x: number; y: number }> = {
       <p>所在界域 · {{ worldMap.name }}</p>
     </header>
     <div class="atlas-scope">
-      <p>{{ worldMap.overview }}</p>
+      <p>{{ game.realm >= 2 ? "穿云壁外潮路纵横，循来信与旧图，渐知海上山川。" : game.realm >= 1 ? "山门之外，江河雪岭相接；随同行指点，将走过的路记入图中。" : "眼前是听松山下的药路。远方山河，尚待日后亲行。" }}</p>
       <p class="atlas-scope-note">
         点选地标，查看去路与行前准备。此图只作地域示意，距离与耗时以出发行程为准。
       </p>
       <details class="atlas-regions">
         <summary>本界地域一览 · 听松山之外还有什么</summary>
         <div class="atlas-region-grid">
-          <article v-for="region in worldMap.regions" :key="region.name">
+          <article v-for="region in regions" :key="region.name">
             <strong>{{ region.name }}</strong
             ><small>{{ region.status }} · 按进展前往</small>
             <p>{{ region.detail }}</p>
@@ -400,10 +402,12 @@ const points: Record<Place, { x: number; y: number }> = {
 </style>
 
 <style>
+.world-panel nav.atlas-list,
 .atlas-list {
   display: none;
 }
 @media (max-width: 650px) {
+  .world-panel nav.atlas-list,
   .atlas-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -481,7 +485,7 @@ const points: Record<Place, { x: number; y: number }> = {
 
 <style>
 .story-atlas {
-  min-width: 840px;
+  min-width: 1400px;
 }
 .story-atlas .atlas-path {
   stroke: #294a3d;
@@ -497,7 +501,7 @@ const points: Record<Place, { x: number; y: number }> = {
 }
 @media (max-width: 650px) {
   .story-atlas {
-    min-width: 840px;
+    min-width: 1400px;
   }
 }
 </style>

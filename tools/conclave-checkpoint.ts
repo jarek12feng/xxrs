@@ -1,4 +1,4 @@
-import { outerSeaCheckpoint, seaPlayer } from "./outer-sea-checkpoint";
+import { outerSeaCheckpoint, seaPlayer, observeTide } from "./outer-sea-checkpoint";
 import { seaFoe, type SeaAction } from "../src/outer-sea/rules";
 import {
   conclaveExchange,
@@ -13,6 +13,7 @@ export function conclaveCheckpoint(
   p.herbs(16);
   sea({ kind: "sail" });
   sea({ kind: "meet" });
+  observeTide(p.send);
   sea({ kind: "pact", pact: "share" });
   for (let i = 0; i < 2; i++) {
     if (i) {
@@ -21,6 +22,8 @@ export function conclaveCheckpoint(
       p.work(12);
       p.herbs(6);
     }
+    p.herbs(2);
+    p.work(6);
     sea({ kind: "prepare" });
     sea({ kind: "enter" });
     sea({ kind: "fight" });

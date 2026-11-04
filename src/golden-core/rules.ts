@@ -119,7 +119,7 @@ export function goldenQuote(s: State, a: GoldenAction) {
       return { stones, herbs, ward, months, error };
     error ||= "先结束药圃交锋";
   } else if (a.kind === "move") error ||= "尚未开始药圃交锋";
-  if (s.realm === 2 && a.kind !== "farShore")
+  if (s.realm >= 2 && a.kind !== "farShore")
     error ||= "金丹已成，先越过云壁试用新能力";
   if (a.kind === "champion") {
     if (g.champion !== "pending" || !["haven", "guard"].includes(a.reward))
@@ -180,6 +180,7 @@ export function goldenQuote(s: State, a: GoldenAction) {
   } else if (a.kind === "farShore") {
     months = 1;
     if (s.realm !== 2 || g.farShore) error ||= "金丹初成后可首次越过云壁";
+    if (s.goldenStory.direction === "none") error ||= "先在行前居问明外海与后续修行的去向";
   }
   if (
     !["prepare", "route", "fight", "withdraw", "take", "move"].includes(

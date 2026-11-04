@@ -68,7 +68,10 @@ it("yield gives compensation and follow-up, never the exclusive method", async (
     expect(host.textContent).not.toContain("已得照玄护脉法");
     expect(host.textContent).toContain("分取守约");
     const before = state.value.growth.medicines.healing;
-    await click("照玄来信");
+    await click("护住阵脚");
+    await click("辨明回流");
+    await click("切开阵隙");
+    await click("封简石台");
     await click("收取贺崇");
     expect(state.value.growth.medicines.healing).toBe(before + 2);
     expect(
@@ -109,7 +112,6 @@ it("the actual journey panel starts a named human battle and retreat returns the
     await nextTick();
   };
   try {
-    await click("照玄之约");
     await click("封简石台");
     await click("要求继续议价");
     expect(state.value.foundationJourney.duel).toBeNull();
@@ -120,11 +122,31 @@ it("the actual journey panel starts a named human battle and retreat returns the
       host.querySelector('img[alt="贺崇"]')?.getAttribute("src"),
     ).toContain("he-chong-combat");
     await click("撤退");
-    await click("照玄之约");
-    await click("照玄来信");
+    await click("封简石台");
     expect(host.textContent).toContain("追索玉简");
     expect(state.value.secretPact.outcome).toBe("retreated");
   } finally {
     app.unmount();
   }
+});
+
+it('shows the actual broken-stele location and closes an aggressor-specific dispute through the UI', async () => {
+  let state=secretPactCheckpoint();let serial=0;
+  const send=(intent:Intent)=>{state=dispatch(state,{...intent,id:`stele-ui-setup-${++serial}`});expect(validState(state)).toBe(true);};
+  send({type:'secretPact',action:'seize'});send({type:'secretPact',action:'leave'});
+  for(const action of ['guardFlow','readFlow','breakFlow'] as const)send({type:'secretPact',action});
+  send({type:'foundationJourney',action:{kind:'travel',destination:'inn'}});
+  send({type:'secretPact',action:'notice'});send({type:'wayfaring',action:{kind:'visit',site:'brokenStele'}});
+  expect(state.secretPact.site).toBe('brokenStele');
+  const current=shallowRef(state),host=document.createElement('div');
+  const app=createApp({render:()=>h(FoundationPanel,{game:current.value,busy:false,onAct:(intent:Intent)=>{current.value=dispatch(current.value,{...intent,id:`stele-ui-${++serial}`});expect(validState(current.value)).toBe(true);}})});app.mount(host);
+  try {
+    expect(host.querySelector('.scene-landscape')?.getAttribute('style')).toContain('broken-stele-inn');
+    expect(host.querySelector('.return-to-place')).toBeNull();
+    host.querySelector<HTMLButtonElement>('[data-hotspot="terms"]')!.click();await nextTick();
+    const button=[...host.querySelectorAll('button')].find(b=>b.textContent?.includes('请见证人核对旧约'))!;
+    expect(button.disabled).toBe(false);button.click();await nextTick();
+    expect(current.value.secretPact.settled).toBe(true);expect(current.value.secretPact.pursuit).toBe('closed');
+    expect(current.value.secretPact.last).toContain('仍拒绝同行');expect(current.value.secretPact.manual).toBe(false);
+  } finally {app.unmount();}
 });

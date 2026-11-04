@@ -112,6 +112,7 @@ export function grantTechnique(
 export function techniqueCultivationBonus(s: TechniqueEffectsContext) {
   const training = mainTraining(s),
     main = s.journey?.main;
+  if (s.realm >= 3) return 0;
   if (s.realm === 2)
     return (
       (training >= 2 ? 1 : 0) +

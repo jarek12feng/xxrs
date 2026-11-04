@@ -68,13 +68,13 @@ it("reveals current-world geography without pretending distant lands are open or
   expect(document.querySelector("h3")?.textContent).toBe("青玄界 · 本界全图");
   const catalogue = document.querySelector(".atlas-regions")!;
   expect(catalogue.textContent).toContain("听松山及山下药路");
-  expect(catalogue.textContent).toContain("青嶂关与云栈");
-  expect(catalogue.textContent).toContain("雾岭与雾海");
-  expect(catalogue.querySelectorAll("article")).toHaveLength(5);
+  expect(catalogue.textContent).not.toContain("青嶂关与云栈");
+  expect(catalogue.textContent).not.toContain("雾岭与雾海");
+  expect(catalogue.querySelectorAll("article")).toHaveLength(1);
   expect(catalogue.querySelectorAll("button")).toHaveLength(0);
-  expect(catalogue.textContent).toContain("筑基内陆六地");
-  expect(catalogue.textContent).toContain("穿云壁与外海");
-  expect(catalogue.textContent).toContain("随金丹行旅展开");
+  expect(catalogue.textContent).not.toContain("筑基内陆六地");
+  expect(catalogue.textContent).not.toContain("穿云壁与外海");
+  expect(catalogue.textContent).not.toContain("随金丹行旅展开");
   expect(document.querySelector(".atlas-boundary")?.textContent).toContain(
     "发现新的界域",
   );
@@ -82,7 +82,7 @@ it("reveals current-world geography without pretending distant lands are open or
   expect(game).toEqual(before);
 });
 
-it("story mode shows fixed future landmarks as selectable previews without inventing travel", async () => {
+it("story map conceals unknown locations without inventing travel", async () => {
   const game = createGame("地理", "wood", 42),
     before = structuredClone(game);
   const selectStory = vi.fn();
@@ -97,12 +97,8 @@ it("story mode shows fixed future landmarks as selectable previews without inven
   const gate = [
     ...document.querySelectorAll<HTMLButtonElement>("button.atlas-pin"),
   ].find((b) => b.textContent?.includes("雾海回声阵"))!;
-  expect(gate.getAttribute("aria-label")).toContain("循线索开启");
-  gate.click();
-  await nextTick();
-  expect(selectStory).toHaveBeenCalledWith("gate");
+  expect(gate).toBeUndefined();
+  expect(selectStory).not.toHaveBeenCalled();
   expect(game).toEqual(before);
-  expect(
-    document.querySelectorAll(".story-atlas button.atlas-pin"),
-  ).toHaveLength(14);
+  expect(document.querySelectorAll(".story-atlas button.atlas-pin")).toHaveLength(1);
 });

@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { knowsInland } from "../wayfaring/discovery";
+import SpiritScene from "../spirit/SpiritScene.vue";
+import { spiritSite } from "../spirit/rules";
+const spiritOpen = ref(false);
 import TravelMap from "../wayfaring/TravelMap.vue";
-import type { Destination } from "./state";
 import { preferredTravelMode, travelQuote } from "../wayfaring/rules";
 import { foundationApproachPoint } from "./scene-approach";
 import FoundationWorld from "./FoundationWorld.vue";
@@ -13,6 +16,7 @@ import { heroArt } from "../presentation/art";
 import { computed, ref, watch } from "vue";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
 import { pactView } from "../secret-pact/view";
+import { foundationStoryObjects } from "./local-story";
 import { foundationActionObject } from "./scene-objects";
 import CombatFeedbackView from "./CombatFeedback.vue";
 import type { CombatFeedback } from "./feedback";
@@ -48,6 +52,7 @@ const props = withDefaults(
   { mode: "journey" },
 );
 const emit = defineEmits<{ act: [intent: Intent]; equipment: []; road: [] }>();
+watch(() => props.game.spirit.trial, trial => { if(trial?.source === "well") spiritOpen.value = true; }, {immediate:true});
 const preparation = computed(() =>
   journeyPreparation(props.game, props.mode === "board"),
 );
@@ -89,12 +94,13 @@ const presentation = computed(() =>
 const scene = computed(() =>
   props.mode === "board"
     ? "/scenes/sect-arena.png"
-    : `/art/foundation-journey/${destinations[q.value.location].image}.webp`,
+    : props.game.secretPact.site === "zhaoxuan" ? "/art/secret-pact/zhaoxuan-chamber.webp" : props.game.secretPact.site === "brokenStele" ? "/art/world-story/foundation/broken-stele-inn.webp" : `/art/foundation-journey/${destinations[q.value.location].image}.webp`,
 );
 const active = ref("");
 const world = ref<InstanceType<typeof FoundationWorld>>();
 function selectObject(id: string) {
   if(props.busy || q.value.duel)return;
+  if(id === "spirit"){spiritOpen.value=true;return;}
   active.value='';
   const arrived=()=>{if(!props.busy && !q.value.duel)active.value=id;};
   if(world.value)world.value.approachObject(foundationApproachPoint(q.value.location,id),arrived);else arrived();
@@ -109,6 +115,12 @@ watch(stageKey, () => {
   active.value = "";
 });
 const pact = computed(() => pactView(props.game));
+const storyObjects = computed(() => props.mode === 'journey' ? foundationStoryObjects(props.game) : []);
+const storyObject = computed(() => storyObjects.value.find(object => object.id === active.value));
+const storyActions = computed(() => pact.value.actions.filter(option => storyObject.value?.actions.includes(option.action)));
+const storyReceipt = ref('');
+watch(active, () => { storyReceipt.value = ''; });
+watch(() => props.game.secretPact.last, value => { if(storyObject.value) storyReceipt.value = value; });
 const hotspots = computed(() => [
   {
     id: "encounter",
@@ -134,8 +146,10 @@ const hotspots = computed(() => [
     ? [{ id: "road", label: "山路与去向", x: 77, y: 49 }]
     : []),
   ...(props.mode === "journey" && pact.value.visible
-    ? [{ id: "pact", label: "照玄之约", x: 59, y: 65 }]
+    ? [{ id: "pact", label: "照玄之约", x: 82, y: 67 }]
     : []),
+  ...storyObjects.value,
+  ...(props.mode === "journey" && spiritSite(props.game) === "well" ? [{id:"spirit",label:props.game.spirit.manual==='learned'?"回声石壁 · 分念诀已通":"沉井回声 · 炼神残篇",x:62,y:42}] : []),
 ]);
 const selectedOptions = computed(() =>
   props.mode === "board"
@@ -144,9 +158,9 @@ const selectedOptions = computed(() =>
         (option) => foundationActionObject(option.action) === active.value,
       ),
 );
-const mapOpen=ref(false),mapDestination=ref<Destination>('ferry');
+const mapOpen=ref(false),mapDestination=ref<import('../wayfaring/routes').TravelDestination>('ferry');
 watch(()=>props.game.wayfaring.trip,trip=>{if(trip){mapDestination.value=trip.to;mapOpen.value=true;}},{immediate:true});
-function openTravel(destination:Destination){mapDestination.value=destination;mapOpen.value=true;}
+function openTravel(destination:import("../wayfaring/routes").TravelDestination){mapDestination.value=destination;mapOpen.value=true;}
 function act(action: JourneyAction) {
   if(props.busy || journeyActionError(props.game,action))return;
   if(action.kind==='travel' && world.value){
@@ -173,18 +187,20 @@ function act(action: JourneyAction) {
           : '筑基行旅'
     "
   >
+    <SpiritScene v-if="spiritOpen || game.spirit.trial?.source==='well'" :game="game" :busy="busy" @act="emit('act',$event)" @close="spiritOpen=false" />
+    <template v-else>
     <TravelMap v-if="mapOpen" :game="game" :busy="busy" :destination="mapDestination" @act="emit('act',$event)" @close="mapOpen=false" />
     <button v-if="!mapOpen && game.wayfaring.trip" @click="openTravel(game.wayfaring.trip.to)">展开途中路图 · 继续剩余行程</button>
     <div v-show="!mapOpen">
-    <template v-if="active === 'pact' && !q.duel">
-      <button class="return-to-place" @click="active = ''">
+    <template v-if="(active === 'pact' || game.secretPact.site !== 'away') && !q.duel">
+      <button v-if="game.secretPact.site === 'away'" class="return-to-place" @click="active = ''">
         返回{{ destinations[q.location].name }}
       </button>
       <SecretPactPanel :game="game" :busy="busy" @act="emit('act', $event)" />
     </template>
     <NarrativeStage
       v-else
-      :image="mode === 'board' ? scene : presentation.image"
+      :image="mode === 'board' || game.secretPact.site !== 'away' ? scene : presentation.image"
       :title="
         mode === 'board' ? '听松试剑榜 · 筑基组' : destinations[q.location].name
       "
@@ -242,6 +258,16 @@ function act(action: JourneyAction) {
         :game="game"
         :result="combatFeedback"
       />
+      <section v-if="storyObject && !q.duel" :aria-label="storyObject.label">
+        <h3>{{ storyObject.label }}</h3>
+        <p>{{ storyObject.body }}</p>
+        <p v-if="storyReceipt" role="status">{{ storyReceipt }}</p>
+        <button v-for="option in storyActions" :key="option.action"
+          :disabled="busy || !option.available"
+          @click="emit('act', {type:'secretPact', action:option.action})">
+          {{ option.label }}<small>{{ option.detail }}</small><small v-if="option.error">{{ option.error }}</small>
+        </button>
+      </section>
       <aside
         v-if="
           active === 'prepare' &&
@@ -419,6 +445,7 @@ function act(action: JourneyAction) {
             <nav class="destination-list" aria-label="筑基行旅地点">
               <button
                 v-for="(place, id) in destinations"
+                v-show="knowsInland(game,id)"
                 :key="id"
                 :disabled="
                   busy ||
@@ -539,6 +566,7 @@ function act(action: JourneyAction) {
       >
     </NarrativeStage>
     </div>
+    </template>
   </section>
 </template>
 <style scoped>

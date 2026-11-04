@@ -1,3 +1,5 @@
+import { finishSpiritManual } from "./spirit-policy";
+import { finishPactTrial } from "./foundation-pact-policy";
 import { foundationCap } from "../src/foundation-journey/growth-state";
 import { growthQuote } from "../src/foundation-journey/growth";
 import { cultivationProjection } from "../src/progression";
@@ -274,6 +276,7 @@ export function runRoute(
     act({ kind: "travel", destination: "ferry" });
     fight("well");
     act({ kind: "inherit", technique });
+    finishSpiritManual({get state(){return s;},send});
     fight("application");
     fight("exit");
     act({ kind: "ferryOutcome", outcome: "escort" });
@@ -299,6 +302,9 @@ export function runRoute(
     funds(growthQuote(s, snowPreparation).stones);act(snowPreparation);
     act({kind:"routeChoose",route:"snow",choice:"careful"});fight("deer");
     herbs(6);funds(4);act({kind:"routeProcess",route:"snow",method:"self"});
+    phase = "required-zhaoxuan";
+    finishPactTrial({get state(){return s;},send:intent=>{send(intent);return s;},act:action=>{act(action);return s;}},true);
+    phase = "frontier";
     act({ kind: "travel", destination: "frontier" });
     act({ kind: "report" });
     act({ kind: "signal" });
@@ -370,7 +376,7 @@ if (
             rows.push(runRoute(seed, technique, profile, aptitude, policy));
   const output = {
     method:
-      "Public commands from createGame; no checkpoints or state grants. Policies: preview maximizes current damage-incoming+healing; cue assumes perfect interpretation of the current correct response; combo repeats the advertised setup/follow-up with a visible lethal override. No future search. Mistakes chooses the worst immediate trade on turn two of first attempts and skips initial herb top-up. Recovery: rest/top-up, main training 2, foundation 24, then relic 2/support 2/sense 12 and up to 120 extra cultivation. Maximum four attempts per battle. Mainline and mistakes skip optional branches; explorer gifts the first pill and visits estate/snow/inn. All use the array pass route; no romance, rankings, escort expedition or mist branch coverage. Command counts and game months are not human time.",
+      "Public commands from createGame; no checkpoints or state grants. Policies: preview maximizes current damage-incoming+healing; cue assumes perfect interpretation of the current correct response; combo repeats the advertised setup/follow-up with a visible lethal override. No future search. Mistakes chooses the worst immediate trade on turn two of first attempts and skips initial herb top-up. Recovery: rest/top-up, main training 2, foundation 24, then relic 2/support 2/sense 12 and up to 120 extra cultivation. Maximum four attempts per battle. Mainline and mistakes complete required Zhaoxuan and skip optional branches; explorer gifts the first pill and visits estate/snow/inn. All use the array pass route; no romance, rankings, escort expedition or mist branch coverage. Command counts and game months are not human time.",
     rows,
   };
   const destination =

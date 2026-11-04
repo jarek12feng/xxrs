@@ -31,8 +31,12 @@ export async function clickSceneAction(host: HTMLElement, label: string) {
   await nextTick();
 }
 export async function openSceneNotes(host: HTMLElement) {
-  [...host.querySelectorAll<HTMLButtonElement>("button")]
-    .find((b) => b.textContent === "此地见闻")!
-    .click();
+  const button = [...host.querySelectorAll<HTMLButtonElement>("button")].find(
+    (b) => (b.getAttribute("aria-label") ?? b.textContent ?? "").replace(/\s+/g, " ").trim() === "此地见闻",
+  );
+  expect(button, "此地见闻入口应存在").toBeTruthy();
+  expect(button!.disabled, "此地见闻入口应可操作").toBe(false);
+  button!.click();
   await nextTick();
+  expect(host.querySelector('.narrative-notes[aria-label="此地见闻"]'), "点击后应展开此地见闻").not.toBeNull();
 }

@@ -21,6 +21,9 @@ export function secretPactCheckpoint(inside = true) {
   p.act({ kind: "routePrepare", route: "frontier", method: "service" });
   p.act({ kind: "routeChoose", route: "frontier", choice: "careful" });
   p.fight("frontier");
+  p.send({ type: "wayfaring", action: { kind: "visit", site: "zhaoxuan" } });
   p.send({ type: "secretPact", action: "enterAnchor" });
+  for (const action of ["guardFlow", "readFlow", "breakFlow"] as const)
+    p.send({ type: "secretPact", action });
   return p.state;
 }

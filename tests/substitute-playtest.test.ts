@@ -1,3 +1,4 @@
+import { finishPactTrial } from "../tools/foundation-pact-policy";
 import { expect, it } from "vitest";
 import { runRoute } from "../tools/substitute-playtest";
 import {
@@ -36,6 +37,13 @@ it("exposes future combo value without changing state and advances the goal afte
   p.act({ kind: "ferryOutcome", outcome: "escort" });
   expect(foundationGoal(p.state)).toContain("点到筑基中期");
   p.cultivate(240);
+  p.act({kind:"travel",destination:"snow"});
+  while(p.state.stones<90)p.send({type:"advance",activity:"work",months:12});
+  while(p.state.herbs<6)p.send({type:"supplies"});
+  p.act({kind:"routePrepare",route:"snow",method:"service"});
+  p.act({kind:"routeChoose",route:"snow",choice:"careful"});p.fight("deer");
+  p.act({kind:"routeProcess",route:"snow",method:"self"});
+  finishPactTrial(p,true);
   p.act({ kind: "travel", destination: "frontier" });
   p.act({ kind: "report" });
   p.act({ kind: "signal" });

@@ -1,0 +1,31 @@
+{
+  "name": "沈观微·问法",
+  "tool": "built-in image_gen",
+  "source": "/Users/admin/.codex/generated_images/01a1a61f-eaad-7482-be1d-bf6f090d1b21/exec-ab2a73a2-7438-464d-91ce-db7e82969e9b.png",
+  "original": "docs/art-candidates/review-fixes-shen-guanwei-20261104/originals/shen-guanwei-teaching.png",
+  "original_dimensions": [
+    1024,
+    1536
+  ],
+  "export": "public/art/review-fixes/shen-guanwei-teaching-v1.webp",
+  "export_dimensions": [
+    768,
+    1152
+  ],
+  "format": "WebP RGBA",
+  "bytes": 147136,
+  "sha256": "f07de14ccc4b4cb94eae768f174748e5acc8d198b91375822e259f5b87a4ded5",
+  "alpha_extrema": [
+    0,
+    255
+  ],
+  "transparent_fraction": 0.5642609772858797,
+  "alpha_above_128_bounds": [
+    123,
+    11,
+    701,
+    1141
+  ],
+  "qa": "QA/light-dark-450.png",
+  "status": "integrated: conditional personal presence; 4 browser scene checks passed"
+}

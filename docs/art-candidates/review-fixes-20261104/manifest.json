@@ -1,0 +1,75 @@
+[
+  {
+    "name": "survey-boat",
+    "original": "docs/art-candidates/review-fixes-20261104/originals/survey-boat.png",
+    "originalDimensions": [
+      1536,
+      1024
+    ],
+    "output": "public/art/review-fixes/survey-boat.webp",
+    "outputDimensions": [
+      1152,
+      768
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      255
+    ],
+    "sha256": "a8b256c3309ee052d64a83ef058af3a1f3dfcee83d1f6e9a308fe1f799edf4a3"
+  },
+  {
+    "name": "duty-envoy",
+    "original": "docs/art-candidates/review-fixes-20261104/originals/duty-envoy.png",
+    "originalDimensions": [
+      1024,
+      1536
+    ],
+    "output": "public/art/review-fixes/duty-envoy.webp",
+    "outputDimensions": [
+      768,
+      1152
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      255
+    ],
+    "sha256": "a25dca113a7932cf730e7bd0b468d00798fc9cb967246efc1adf05f17ca04f59"
+  },
+  {
+    "name": "fuchao-bay",
+    "original": "docs/art-candidates/review-fixes-20261104/originals/fuchao-bay.png",
+    "originalDimensions": [
+      1672,
+      941
+    ],
+    "output": "public/art/review-fixes/fuchao-bay.webp",
+    "outputDimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "alphaRange": null,
+    "sha256": "c6f91b69f78820b151a641cd18534683911112f5ffde1b8fde480b0d381c413d"
+  },
+  {
+    "name": "han-lizhou",
+    "original": "docs/art-candidates/review-fixes-20261104/originals/han-lizhou.png",
+    "originalDimensions": [
+      1024,
+      1536
+    ],
+    "output": "public/art/review-fixes/han-lizhou.webp",
+    "outputDimensions": [
+      768,
+      1152
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      255
+    ],
+    "sha256": "3b7d5fa60b7e9aa53e47f8ecf01177a82073b9115fac7805e5d6ceb51ca1741a"
+  }
+]

@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { describe, it, expect } from "vitest";
 import {
   createGame,
@@ -26,7 +27,7 @@ import { legacyEquipment } from "./legacy-equipment";
 import { treasureQuote } from "../src/treasures/rules";
 import { condensationCheckpoint } from "../tools/golden-core-checkpoint";
 import { seaFoe } from "../src/outer-sea/rules";
-import { outerSeaCheckpoint, seaPlayer } from "../tools/outer-sea-checkpoint";
+import { outerSeaCheckpoint, seaPlayer, observeTide } from "../tools/outer-sea-checkpoint";
 
 function ready() {
   const s = createGame("御器", "wood", 123);
@@ -226,10 +227,10 @@ describe("神识成长与御器", () => {
       activity: "meditate",
       months: 12,
     });
-    expect(n.sense).toBe(48);
-    expect(n.month - gold.month).toBe(1);
+    expect(n.sense).toBe(senseLimit(gold.realm, gold.spirit));
+    expect(n.month - gold.month).toBe(senseLimit(gold.realm, gold.spirit) - gold.sense);
     expect(validState(n)).toBe(true);
-    const illegal = { ...n, sense: 49 };
+    const illegal = { ...n, sense: senseLimit(n.realm, n.spirit) + 1 };
     expect(validState(illegal)).toBe(false);
   });
   it("养神丹接入原工坊收支、库存与服用命令，不低价跨境囤药", () => {
@@ -290,7 +291,7 @@ describe("神识成长与御器", () => {
     const before = structuredClone(old);
     const n = migrateSave(old);
     expect(old).toEqual(before);
-    expect(n.version).toBe(37);
+    expect(n.version).toBe(SAVE_VERSION);
     expect(n.sense).toBe(s.sense);
     expect(n.treasures.equipped).toEqual(["bell"]);
     expect(n.treasures.artifacts).toEqual([]);
@@ -455,7 +456,10 @@ it("清心丹后段报价说明完整制作成本与免费凝神替代", () => {
 it("低血量旧战档提示法宝变化，仍可撤退重整并重新出战", () => {
   const p = seaPlayer(outerSeaCheckpoint());
   p.work(100); p.herbs(30);
-  for (const action of [{kind:"sail"}, {kind:"meet"}, {kind:"pact",pact:"share"}, {kind:"prepare"}, {kind:"enter"}, {kind:"fight"}] as const)
+  p.send({type:"outerSea", action:{kind:"sail"}});
+  p.send({type:"outerSea", action:{kind:"meet"}});
+  observeTide(p.send);
+  for (const action of [{kind:"pact",pact:"share"}, {kind:"prepare"}, {kind:"enter"}, {kind:"fight"}] as const)
     p.send({type:"outerSea", action});
   while(p.state.outerSea.duel) {
     const d=p.state.outerSea.duel;

@@ -73,6 +73,7 @@ const outlook = computed(() => cultivationProjection(props.game, props.target));
       <template v-else-if="game.realm === 0 && outlook.current >= 360"
         >须备齐筑基丹才能尝试突破筑基。</template
       >
+      <template v-else-if="game.realm === 3">元婴已成，可出关安顿、决定大典并亲试护渡神通。</template>
       <template v-else>可继续积累或寻找机缘。</template>
     </p>
     <p v-if="!compact">

@@ -27,7 +27,8 @@ const progress = computed(() => {
 </script>
 <template>
   <small class="cultivation-status" aria-label="当前修为">
-    <span v-if="game.realm === 2"
+    <span v-if="game.realm === 3">元婴初成 · 出关安顿与首次护渡</span>
+    <span v-else-if="game.realm === 2"
       >{{realmStageLabel(game)}} · 修为 {{ game.outerSea.cultivation }} / {{goldenCap(game)}} ·
       {{ game.outerSea.cultivation >= goldenCap(game) ? "瓶颈待破" : "积累丹元" }}</span
     >

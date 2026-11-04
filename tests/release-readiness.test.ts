@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { SAVE_VERSION } from "../src/save-version";
 import { afterEach, expect, it, vi } from "vitest";
 import { createApp, h, nextTick, reactive, type App as VueApp } from "vue";
 import { createPinia } from "pinia";
@@ -107,7 +108,7 @@ it("system help and feedback remain available during a pending story without cha
   await click("版本与反馈");
   expect(
     document.querySelector<HTMLTextAreaElement>("#feedback-summary")?.value,
-  ).toContain("存档格式：37");
+  ).toContain(`存档格式：${SAVE_VERSION}`);
   await click("打开本机记录工具");
   await flush();
   // Lazy observer must be opt-in; opening it must never persist game changes.

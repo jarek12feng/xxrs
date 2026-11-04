@@ -1,3 +1,4 @@
+import { finishPactTrial } from "../tools/foundation-pact-policy";
 import { expect, it } from "vitest";
 import {
   dispatch,
@@ -297,6 +298,7 @@ it.each(["female"] as ("male" | "female")[])(
     p.fight("deer");
     while(p.state.herbs<6)p.send({type:"supplies"});
     p.act({kind:"routeProcess",route:"snow",method:"self"});
+    finishPactTrial(p,true);
     p.act({kind:"travel",destination:"frontier"});
     p.act({ kind: "report" });
     expect(p.state.foundationJourney.whereabouts).toBe("missing");

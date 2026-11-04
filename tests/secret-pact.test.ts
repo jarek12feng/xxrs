@@ -45,8 +45,17 @@ function ready(main: "spring" | "blade" | "breath" = "spring") {
   p.act({ kind: "routeChoose", route: "frontier", choice: "careful" });
   p.fight("frontier");
   expect(validState(p.state)).toBe(true);
+  p.send({ type: "wayfaring", action: { kind: "visit", site: "zhaoxuan" } });
+  expect(p.state.secretPact.site).toBe("zhaoxuan");
   cache.set(main, p.state);
   return structuredClone(p.state);
+}
+function enter(s: State, action: "enterAnchor" | "enterLight") {
+  let n = send(s, action);
+  for (const a of ["guardFlow", "readFlow", "breakFlow"] as const)
+    n = send(n, a);
+  expect(n.secretPact.trial).toBe("division");
+  return n;
 }
 function prepare(s: State) {
   const p = journeyPlayer(s);
@@ -79,7 +88,7 @@ it.each(["spring", "blade", "breath"] as const)(
   "%s prepares and wins the exclusive reward without replaying the cleared route",
   (main) => {
     const initial = prepare(ready(main)),
-      entered = send(initial, "enterAnchor");
+      entered = enter(initial, "enterAnchor");
     expect(entered.month).toBe(initial.month + 1);
     expect(entered.herbs).toBe(initial.herbs - 2);
     expect(send(entered, "exchange")).toEqual(entered);
@@ -90,8 +99,12 @@ it.each(["spring", "blade", "breath"] as const)(
     expect(n.stones).toBe(entered.stones);
     expect(validState(n)).toBe(true);
     expect(send(n, "exchange")).toEqual(n);
-    expect(n.foundationJourney.won).toEqual([...initial.foundationJourney.won, "pactRival"]);
+    expect(n.foundationJourney.won).toEqual([
+      ...initial.foundationJourney.won,
+      "pactRival",
+    ]);
     expect(send(n, "supplies")).toEqual(n);
+    p.act({ kind: "travel", destination: "frontier" });
     p.act({ kind: "routeProcess", route: "frontier", method: "self" });
     expect(p.state.foundationJourney.growth.refined).toBe(true);
     expect(eligibleOffice(p.state)).toBe(2);
@@ -100,7 +113,7 @@ it.each(["spring", "blade", "breath"] as const)(
   },
 );
 it("yield pays once and does not grant the exclusive method; exchange cannot spend missing resources", () => {
-  const s = send(ready(), "enterLight");
+  const s = enter(ready(), "enterLight");
   const poor = structuredClone(s);
   poor.stones = 0;
   expect(send(poor, "exchange")).toEqual(poor);
@@ -114,7 +127,7 @@ it("yield pays once and does not grant the exclusive method; exchange cannot spe
 it.each(["insist", "seize"] as const)(
   "%s leads to actual battle and durable, different relationships",
   (choice) => {
-    const s = send(send(prepare(ready()), "enterAnchor"), choice);
+    const s = send(enter(prepare(ready()), "enterAnchor"), choice);
     expect(s.secretPact.aggressor).toBe(
       choice === "insist" ? "rival" : "player",
     );
@@ -136,7 +149,7 @@ it.each(["insist", "seize"] as const)(
     const n = send(p.state, "settle");
     expect(n.secretPact.settled).toBe(true);
     expect(n.secretPact.manual).toBe(true);
-    expect(n.stones).toBe(p.state.stones - 24);
+    expect(n.stones).toBe(p.state.stones - (choice === "seize" ? 24 : 0));
     expect(validState(n)).toBe(true);
     expect(
       dispatch(n, {
@@ -148,7 +161,7 @@ it.each(["insist", "seize"] as const)(
   },
 );
 it("retreat retains the route material; pursuit remains possible and peace closes it", () => {
-  const initial = send(send(ready(), "enterLight"), "insist");
+  const initial = send(enter(ready(), "enterLight"), "insist");
   const p = journeyPlayer(initial);
   p.act({ kind: "battle", battle: "pactRival" });
   p.act({ kind: "withdraw" });
@@ -164,13 +177,14 @@ it("retreat retains the route material; pursuit remains possible and peace close
   expect(pactView(peace).fight).toBe(false);
   expect(validState(peace)).toBe(true);
   const continued = journeyPlayer(peace);
+  continued.act({ kind: "travel", destination: "frontier" });
   continued.act({ kind: "routeProcess", route: "frontier", method: "self" });
   expect(continued.state.foundationJourney.growth.refined).toBe(true);
 });
 it("preparing a retreat and preserving trust change actual incoming damage", () => {
   const base = ready();
   const start = (anchor: boolean, choice: "insist" | "seize") =>
-    dispatch(send(send(base, anchor ? "enterAnchor" : "enterLight"), choice), {
+    dispatch(send(enter(base, anchor ? "enterAnchor" : "enterLight"), choice), {
       type: "foundationJourney",
       action: { kind: "battle", battle: "pactRival" },
       id: `fight-${anchor}-${choice}`,
@@ -209,6 +223,8 @@ it("locks and interrupted travel cannot debit, award or enter; new records survi
   expect(migrateSave(JSON.parse(JSON.stringify(a)))).toEqual(a);
   const old: any = structuredClone(s);
   old.version = 24;
+  old.sense = Math.min(12, old.sense);
+  delete old.spirit;
   delete old.secretPact;
   const migrated = migrateSave(old);
   expect(migrated.secretPact).toEqual(freshSecretPact());
@@ -224,15 +240,17 @@ it("locks and interrupted travel cannot debit, award or enter; new records survi
 });
 
 it("a failed attempt awards no treasure; recovery and preparation allow a later victory", () => {
-  const initial = send(send(ready(), "enterLight"), "insist");
+  const initial = send(enter(ready(), "enterLight"), "insist");
   const p = journeyPlayer(initial);
   p.act({ kind: "battle", battle: "pactRival" });
-  for (let i = 0; i < 12 && p.state.foundationJourney.duel; i++) p.act({ kind: "move", move: "strike" });
+  for (let i = 0; i < 12 && p.state.foundationJourney.duel; i++)
+    p.act({ kind: "move", move: "strike" });
   expect(p.state.secretPact.outcome).toBe("retreated");
   expect(p.state.secretPact.manual).toBe(false);
   expect(p.state.injury).toBe(initial.injury + 2);
   expect(p.state.foundationJourney.won).toEqual(initial.foundationJourney.won);
-  while (p.state.injury) p.send({ type: "advance", activity: "rest", months: 1 });
+  while (p.state.injury)
+    p.send({ type: "advance", activity: "rest", months: 1 });
   const trained = journeyPlayer(prepare(p.state));
   trained.fight("pactRival");
   expect(trained.state.secretPact.manual).toBe(true);
@@ -242,8 +260,11 @@ it("a failed attempt awards no treasure; recovery and preparation allow a later 
   expect(trained.state).toEqual(final);
 });
 it("treasure mitigates a later battle only after guard into discern", () => {
-  const p = journeyPlayer(send(send(prepare(ready()), "enterAnchor"), "insist"));
+  const p = journeyPlayer(
+    send(enter(prepare(ready()), "enterAnchor"), "insist"),
+  );
   p.fight("pactRival");
+  p.act({ kind: "travel", destination: "home" });
   p.act({ kind: "battle", battle: "rank1" });
   expect(p.state.foundationJourney.duel).not.toBeNull();
   p.act({ kind: "move", move: "guard" });
@@ -253,25 +274,33 @@ it("treasure mitigates a later battle only after guard into discern", () => {
   const baseline = foundationExchange(without, "discern")!;
   expect(actual.damage).toBe(baseline.damage + 6);
   expect(actual.incoming).toBe(Math.max(0, baseline.incoming - 3));
-  expect(foundationExchange(p.state, "strike")).toEqual(foundationExchange(without, "strike"));
+  expect(foundationExchange(p.state, "strike")).toEqual(
+    foundationExchange(without, "strike"),
+  );
 });
 
-it('keeps compensation and mailed supplies unclaimed when storage is full', () => {
-  const s = send(ready(), 'enterLight');
+it("keeps compensation and mailed supplies unclaimed when storage is full", () => {
+  const s = enter(ready(), "enterLight");
   s.stones = 1e9;
-  expect(pactView(s).actions.find(x => x.action === 'yield')?.error).toBe('资源超过可保存上限');
-  expect(send(s, 'yield', 'capacity-yield')).toBe(s);
-  expect(s.secretPact.stage).toBe('inside');
+  expect(pactView(s).actions.find((x) => x.action === "yield")?.error).toBe(
+    "资源超过可保存上限",
+  );
+  expect(send(s, "yield", "capacity-yield")).toBe(s);
+  expect(s.secretPact.stage).toBe("inside");
   s.stones -= 24;
-  const paid = send(s, 'yield', 'capacity-yield');
+  const paid = send(s, "yield", "capacity-yield");
   expect(paid.stones).toBe(1e9);
-  expect(paid.secretPact.outcome).toBe('yield');
+  expect(paid.secretPact.outcome).toBe("yield");
+  let exited = paid;
+  for (const a of ["guardFlow", "readFlow", "breakFlow"] as const)
+    exited = send(exited, a);
+  Object.assign(paid, exited);
   paid.growth.medicines.healing = 1e9 - 1;
-  expect(send(paid, 'supplies', 'capacity-supplies')).toBe(paid);
+  expect(send(paid, "supplies", "capacity-supplies")).toBe(paid);
   expect(paid.secretPact.supplies).toBe(false);
   paid.growth.medicines.healing--;
-  const n = send(paid, 'supplies', 'capacity-supplies');
+  const n = send(paid, "supplies", "capacity-supplies");
   expect(n.growth.medicines.healing).toBe(1e9);
   expect(n.secretPact.supplies).toBe(true);
-  expect(send(migrateSave(n), 'supplies', 'another-claim')).toEqual(n);
+  expect(send(migrateSave(n), "supplies", "another-claim")).toEqual(n);
 });

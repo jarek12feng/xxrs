@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import QiNarrativeScene from "./QiNarrativeScene.vue";
+import { qiNarrativeActive } from "./narrative";
 import QiWorld from "./QiWorld.vue";
 import CombatBar from "../scene2d/combat/CombatBar.vue";
 import { passageIds, passagePlan } from "./passage";
@@ -48,8 +50,10 @@ const passages = computed(() =>
   })),
 );
 const active = ref("");
+const narrativeOpen=ref(false);
 const world = ref<InstanceType<typeof QiWorld>>();
 function select(id:string) {
+  if(id==="narrative" && !props.busy && !props.game.pending && !q.value.node){narrativeOpen.value=true;return;}
   if(props.busy || props.game.pending || props.game.status!=='alive' || q.value.duel)return;
   active.value='';
   const positions:Record<string,number>={journey:53,prepare:37,supplies:22,people:73};
@@ -62,6 +66,7 @@ const hotspots = computed(() => q.value.duel ? [] : q.value.node ? [{ id: "journ
   { id: "journey", label: q.value.essence ? "晋升灵材" : site.value?.name || "筑基前路", x: 60, y: 42 },
   { id: "prepare", label: "山道与历练", x: 35, y: 50 },
   { id: "supplies", label: "坊市摊位", x: 19, y: 72 },
+  { id: "narrative", label: "药坪与药窟", x: 48, y: 65 },
   { id: "people", label: "许照岚与裴铸", x: 78, y: 65 },
 ]);
 watch(stageKey, () => { active.value = ""; });
@@ -73,7 +78,8 @@ const combatOptions=computed(()=>Object.entries(moves).map(([id,label])=>{
 }));
 </script>
 <template>
-  <NarrativeStage class="qi-stage" v-if="!game.realm" :stage-key="stageKey" :image="location?.image || '/scenes/mist-path.jpg'"
+  <QiNarrativeScene v-if="!game.realm && (narrativeOpen || qiNarrativeActive(game))" :game="game" :busy="busy" @act="emit('act',$event)" @close="narrativeOpen=false" />
+  <NarrativeStage class="qi-stage" v-else-if="!game.realm" :stage-key="stageKey" :image="location?.image || '/scenes/mist-path.jpg'"
     :title="location?.name || '听松山道'" :goal="qiGoal(game) || ''" :hotspots="hotspots" :active="active" :battle="!!q.duel"
     @select="select" @close="active = ''; world?.cancel()">
     <template #world><QiWorld ref="world" :game="game" @performed="active = ''" />

@@ -97,6 +97,7 @@ export function seaQuote(s: State, a: SeaAction) {
   } else if (a.kind === "meet") {
     if (o.location !== "ferry" || o.met) error ||= "先到外海古渡相识";
   } else if (a.kind === "pact") {
+    if (!s.goldenStory.tideComplete) error ||= "先在潮堤亲测潮线，并完成一次护堤或校图分工";
     if (
       !o.met ||
       o.location !== "ferry" ||

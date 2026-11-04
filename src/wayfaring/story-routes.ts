@@ -1,3 +1,8 @@
+import { knowsInland, knowsLandmark } from './discovery';
+import { lizhaoQuote } from "../lizhao/rules";
+import { qiNarrativeTravel, qiNarrativeDestinations, qiNarrativeLocation } from "../qi-journey/narrative";
+import { travelQuote, travelLocation, preferredTravelMode } from "./rules";
+import { sites as inlandSites } from "./routes";
 import { additionalStoryRoute, additionalArrival } from "./additional-story";
 import { createTravelEngine } from './engine';
 import { travelProfile } from './profile';
@@ -11,7 +16,6 @@ import { roadError } from "../road";
 import { goldenQuote } from "../golden-core/rules";
 import { seaQuote } from "../outer-sea/rules";
 import { conclaveQuote } from "../conclave/rules";
-import { pactQuote } from "../secret-pact/rules";
 import { contestError } from "../sect-contest/rules";
 import { expeditionError } from "../expedition/rules";
 import { encounters } from "../expedition/content";
@@ -50,7 +54,7 @@ const dew: MapSite[] = [
   { id: "path", name: "凝露药圃", x: 760, y: 190 },
 ];
 export interface StoryRoute {
-  domain: "opening" | "road" | "mist" | "qi" | "golden" | "sea" | "conclave" | "pact" | "contest" | "escort" | "valley" | "peak" | "oldSea" | "relic" | "social" | "companion" | "arena" | "service";
+  domain: "lizhao" | "inland" | "qiNarrative" | "opening" | "road" | "mist" | "qi" | "golden" | "sea" | "conclave" | "pact" | "contest" | "escort" | "valley" | "peak" | "oldSea" | "relic" | "social" | "companion" | "arena" | "service";
   intent: Intent;
   from: string;
   to: string;
@@ -67,6 +71,9 @@ export interface StoryRoute {
   mode: "walk" | "flight" | "sail";
 }
 export function storyLocation(s: State, domain: StoryRoute["domain"]) {
+  if (domain === "lizhao") return s.lizhao.location;
+  if (domain === "inland") return travelLocation(s);
+  if (domain === "qiNarrative") return qiNarrativeLocation(s);
   if (domain === "valley" || domain === "peak" || domain === "oldSea") return s.journey.maps[domain === "oldSea" ? "sea" : domain] ? "site" : "home";
   if (domain === "pact") return ["inside", "betrayed"].includes(s.secretPact.stage) ? "inner" : "frontier";
   if (domain === "contest") return ["entered", "finished"].includes(s.sectContest.stage) ? "court" : "home";
@@ -117,10 +124,27 @@ function authoredStoryRoute(s: State, intent: Intent): StoryRoute | null {
       [intent.place==='sea'?'雾岭旧渡':'听松山居',places[intent.place].name],intent.place==='valley'?120:intent.place==='peak'?600:900,
       {error:explorationError(s,intent.place),months:1},intent.place==='sea'?'sail':'walk');
   }
-  if (intent.type === "secretPact" && ["enterAnchor","enterLight","leave"].includes(intent.action)) {
-    const back=intent.action==='leave';
-    return pair('pact','云外古道 · 照玄赴约',back?'inner':'frontier',back?'frontier':'inner',
-      back?['照玄内府','古道外缘']:['古道外缘','照玄内府'],120,pactQuote(s,intent.action));
+  if (intent.type === "wayfaring" && intent.action.kind === "visit") {
+    const to = intent.action.site === "zhaoxuan" ? "pact" : "stele";
+    const q = travelQuote(s,to,intent.action.mode ?? preferredTravelMode(s));
+    return {...base,domain:"inland",title:"青玄内陆 · 循路赴约",from:q.from,to,
+      sites:Object.entries(inlandSites).filter(([id])=>knowsInland(s,id as import("./routes").TravelDestination)||q.path.includes(id as import("./routes").TravelDestination)).map(([id,p])=>({id,...p})),path:q.path,
+      distance:q.distance,months:q.remaining,error:q.error,
+      startProgress:s.wayfaring.trip ? 1-s.wayfaring.trip.remaining/s.wayfaring.trip.total : 0,
+      mode:q.mode === "flight" ? "flight" : "walk",
+      note:"按完整路程结算，抵达后另行整备与探府；途经古道不授予取材成果。"};
+  }
+  if (intent.type === "lizhao" && ["visit","leave"].includes(intent.action.kind)) {
+    const back=intent.action.kind === "leave";
+    return {...pair("lizhao","外海 · 离照潮路",back?"harbor":"away",back?"away":"harbor",back?["离照泊岸","外海古渡"]:["外海古渡","离照泊岸"],36000,lizhaoQuote(s,intent.action)),mode:"sail",note:back?"循潮路返回外海古渡，整程六个月；途中若有来信，停舟处理后可续行。":"循潮路赴离照，整程六个月；途中若有来信，停舟处理后可续行。"};
+  }
+  if (intent.type === "qiJourney") {
+    const trip = qiNarrativeTravel(s).find(r=>r.action === intent.action);
+    if (trip) {
+      const route=pair("qiNarrative","听松药路 · "+qiNarrativeDestinations[trip.to].name,
+        trip.from,trip.to,[qiNarrativeDestinations[trip.from].name,qiNarrativeDestinations[trip.to].name],trip.distance,trip);
+      return {...route,note:"入窟月份包含行路与勘路；撤回不另收费，已取得的历练成果保留。"};
+    }
   }
   if (intent.type === 'sectContest' && (intent.action.kind==='enter' || (intent.action.kind==='leave' && s.sectContest.stage==='finished'))) {
     const back=intent.action.kind==='leave';
@@ -354,7 +378,7 @@ function authoredStoryRoute(s: State, intent: Intent): StoryRoute | null {
       to,
       title: "青玄外海 · 潮路",
       sites: coast.filter(
-        (p) => !["court", "vault"].includes(p.id) || s.outerSea.notice !== null,
+        (p) => path.includes(p.id) || (p.id === "court" ? knowsLandmark(s,"conclave-court") : p.id === "vault" ? knowsLandmark(s,"conclave-vault") : p.id === "ruins" ? knowsLandmark(s,"outer-ruins") : true),
       ),
       path,
       distance: long ? 54000 : 1800,
@@ -389,7 +413,7 @@ function authoredStoryRoute(s: State, intent: Intent): StoryRoute | null {
       from,
       to,
       title: "外海 · 诸宗会与归潮",
-      sites: coast.filter((p) => ["ferry", "court", "vault"].includes(p.id)),
+      sites: coast.filter((p) => ["ferry", "court", "vault"].includes(p.id) && (p.id!=="vault" || from==="vault" || to==="vault" || knowsLandmark(s,"conclave-vault"))),
       path: [from, to],
       distance: long ? 18000 : 900,
       mode: long ? "sail" : "walk",
@@ -418,6 +442,7 @@ export function storyRoute(s: State, intent: Intent): StoryRoute | null {
   return {...route,path:quote.plan.path,distance:quote.plan.distance,months:quote.plan.months};
 }
 export function resumedStoryRoute(s: State) {
+  if (s.wayfaring.trip?.to === "pact" || s.wayfaring.trip?.to === "stele") return storyRoute(s,{type:"wayfaring",action:{kind:"visit",site:s.wayfaring.trip.to === "pact" ? "zhaoxuan" : "brokenStele",mode:s.wayfaring.trip.mode}});
   return s.wayfaring.passage
     ? storyRoute(s, passageIntent(s.wayfaring.passage.route))
     : null;

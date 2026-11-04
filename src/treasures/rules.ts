@@ -186,7 +186,7 @@ export function runTreasure(
     );
     const manuals = bookIds.filter((k) => !s.journey.known.includes(k));
     const drugs: LotItem[] = s.realm ? ["healing"] : ["healing", "ward"];
-    if (s.sense < Math.min(24, senseLimit(s.realm))) drugs.push("clarity");
+    if (s.sense < Math.min(24, senseLimit(s.realm, s.spirit))) drugs.push("clarity");
     t.auction = {
       venue: a.venue,
       lots: [

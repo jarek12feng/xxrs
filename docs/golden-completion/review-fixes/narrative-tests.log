@@ -1,0 +1,8 @@
+
+ RUN  v5.0.5 /Users/admin/Documents/ChatGPT/xxrs
+
+
+ Test Files  6 passed (6)
+      Tests  39 passed (39)
+   Start at  18:41:41
+   Duration  4.27s (tests 88%, import 5%, environment 5%, transform 2%)

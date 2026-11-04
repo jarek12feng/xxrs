@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { expect, it } from "vitest";
 import {
   createGame,
@@ -117,7 +118,7 @@ it("v25 migration marks past rewards settled without grants and rejects invalid 
   const old = { ...s, version: 25, journey };
   const snapshot = structuredClone(old);
   const n = migrateSave(old);
-  expect(n.version).toBe(37);
+  expect(n.version).toBe(SAVE_VERSION);
   expect(n.journey.learning).toEqual({ book: true, relic: false });
   expect(n.journey.known).toEqual([]);
   expect(n.stones).toBe(s.stones);

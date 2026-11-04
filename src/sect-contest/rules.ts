@@ -32,7 +32,7 @@ export const contestDate = (month: number) =>
   `修行 ${Math.floor(month / 12)} 年 ${month % 12} 月`;
 export function updateContestCalendar(s: State) {
   const t = s.sectContest;
-  if (s.realm === 2) return;
+  if (s.realm >= 2) return;
   if (s.status !== "alive") {
     t.duel = null;
     return;

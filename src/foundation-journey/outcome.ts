@@ -1,3 +1,4 @@
+import { sharedRouteRecall } from "./continuity";
 import type { State } from "../world";
 import { resolvePactBattle } from "../secret-pact/rules";
 import { foundationCap } from "./growth-state";
@@ -90,6 +91,7 @@ export function completeChallenge(s: State) {
           ? "苏婉宁在内侧将路标连成安全带，你从外侧断开支点。最后一人踏上绳桥时，一块路标石被回流掀走。她没有追，转身沿先前留下的第二道标记绕回。你守住桥头，脚下却被回流掀动。她将备用线扣紧，拉住你的退路，才将手搭在你腕上：“图还能重画。先走。”"
           : "尹照川在内侧轮换备用节点，你按节奏截断外部回流。最后一人退出后，旧阵盘卡进了裂缝。他伸手去取，你手中的归绳猛地一紧。他看了你一眼，松开阵盘，踏上绳桥：“记下接法就够了。”"
         : "闻岑在内侧牵绳，你从外侧断开支点；一名队员在断阶前迟疑，闻岑折回接住他的手，将自己的行囊留在石上。你稳住外侧，直到陶泊的船把最后两人接走。") +
+      (q.target === "companion" && s.social.gender === "male" ? sharedRouteRecall(s) + "你们先把伤者安顿在外侧，苏婉宁将断绳摆在桌上：“往后改图，先把人能回来的路试完。”你答应下次仍按双方的记号接应，各自的路也都留着。" : "") +
       "程砚把落脚点交回药队。伤者安顿下来后，他请你再留片刻：“接人出来靠的是大家。接下来，该看看你自己的周天了。”";
   }
   if (d.id === "culmination")

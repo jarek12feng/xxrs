@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import TravelMap from "../wayfaring/TravelMap.vue";
+import { pactDestinationError } from "./revision";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
 import type { State, Intent } from "../core";
 import { destinations } from "../foundation-journey/content";
@@ -11,16 +13,20 @@ const view = computed(() => pactView(props.game));
 const fightError = computed(() =>
   journeyActionError(props.game, { kind: "battle", battle: "pactRival" }),
 );
-const active = ref("");
+const selected = ref("");
+const active = computed({
+  get: () => props.game.secretPact.hazard ? "terms" : selected.value,
+  set: (value: string) => { selected.value = value; },
+});
+const mapDestination = ref<"pact" | "stele" | null>(null);
 watch(
-  () => props.game.secretPact.stage,
+  () =>
+    `${props.game.secretPact.stage}:${props.game.secretPact.trial}:${!!props.game.secretPact.hazard}`,
   () => {
-    active.value = "";
+    active.value = props.game.secretPact.hazard ? "terms" : "";
   },
 );
-const inside = computed(() =>
-  ["inside", "betrayed"].includes(props.game.secretPact.stage),
-);
+const inside = computed(() => props.game.secretPact.site === "zhaoxuan");
 const hotspots = computed(() => [
   { id: "terms", label: inside.value ? "封简石台" : "照玄来信", x: 47, y: 50 },
   { id: "preparation", label: "阵图与退路", x: 25, y: 70 },
@@ -40,19 +46,39 @@ const shownActions = computed(() =>
 </script>
 <template>
   <section v-if="view.visible" class="secret-pact" aria-label="照玄之约">
+    <TravelMap
+      v-if="mapDestination"
+      :game="game"
+      :busy="busy"
+      :destination="mapDestination"
+      @act="emit('act', $event)"
+      @close="mapDestination = null"
+    />
     <NarrativeStage
+      v-else
       :image="
-        inside
-          ? '/art/secret-pact/zhaoxuan-chamber.webp'
-          : '/art/foundation-journey/' +
-            destinations[game.foundationJourney.location].image +
-            '.webp'
+        game.secretPact.site === 'brokenStele'
+          ? '/art/world-story/foundation/broken-stele-inn.webp'
+          : inside
+            ? '/art/secret-pact/zhaoxuan-chamber.webp'
+            : '/art/foundation-journey/' +
+              destinations[game.foundationJourney.location].image +
+              '.webp'
       "
-      title="照玄之约"
+      :title="
+        game.secretPact.site === 'brokenStele'
+          ? '断碑驿对质'
+          : inside
+            ? '照玄遗府'
+            : '同行与交接'
+      "
       :goal="view.relationship"
-      :stage-key="game.secretPact.stage"
+      :stage-key="
+        game.secretPact.site + game.secretPact.trial + game.secretPact.stage
+      "
       :hotspots="hotspots"
       :active="active"
+      :battle="!!game.secretPact.hazard"
       @select="active = $event"
       @close="active = ''"
     >
@@ -123,7 +149,33 @@ const shownActions = computed(() =>
           </ul>
         </section>
       </template>
-      <p v-if="active === 'leave'">{{ view.next }}</p>
+      <template v-if="active === 'leave'">
+        <p>{{ view.next }}</p>
+        <button
+          v-if="game.secretPact.trial !== 'complete'"
+          :disabled="busy || !!pactDestinationError(game, 'zhaoxuan')"
+          @click="mapDestination = 'pact'"
+        >
+          查看赴照玄路程<small>{{
+            pactDestinationError(game, "zhaoxuan")
+          }}</small>
+        </button>
+        <button
+          v-if="game.secretPact.pursuit === 'notified'"
+          :disabled="busy || !!pactDestinationError(game, 'brokenStele')"
+          @click="mapDestination = 'stele'"
+        >
+          查看断碑驿路程<small>{{
+            pactDestinationError(game, "brokenStele")
+          }}</small>
+        </button>
+        <button
+          v-if="!game.secretPact.hazard && game.secretPact.trial !== 'division'"
+          @click="mapDestination = 'pact'"
+        >
+          展开行旅地图 · 选择去向
+        </button>
+      </template>
       <div class="pact-actions">
         <button
           v-for="option in shownActions"
@@ -132,9 +184,7 @@ const shownActions = computed(() =>
           @click="emit('act', { type: 'secretPact', action: option.action })"
         >
           {{ option.label }}<small>{{ option.detail }}</small
-          ><small v-if="option.error">{{
-            option.error
-          }}</small>
+          ><small v-if="option.error">{{ option.error }}</small>
         </button>
         <button
           v-if="view.fight && active === 'terms'"

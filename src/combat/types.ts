@@ -15,7 +15,7 @@ export interface CombatPower {
   armor: number;
 }
 export interface CombatEncounter {
-  realm?: 0 | 1 | 2;
+  realm?: 0 | 1 | 2 | 3;
   stage?: number;
   hp: number;
   attack: number;

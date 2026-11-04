@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { outerSeaCheckpoint, seaPlayer } from "../tools/outer-sea-checkpoint";
+import { outerSeaCheckpoint, seaPlayer, observeTide } from "../tools/outer-sea-checkpoint";
 import { dispatch, validState, migrateSave } from "../src/core";
 import { seaFoe, seaQuote } from "../src/outer-sea/rules";
 import {currentLandmark,routeNodes} from "../src/landmarks";
@@ -12,6 +12,7 @@ function trip(pact: "share" | "private") {
   p.herbs(12);
   p.send({ type: "outerSea", action: { kind: "sail" } });
   p.send({ type: "outerSea", action: { kind: "meet" } });
+  observeTide(p.send);
   p.send({ type: "outerSea", action: { kind: "pact", pact } });
   p.send({ type: "outerSea", action: { kind: "prepare" } });
   p.send({ type: "outerSea", action: { kind: "enter" } });

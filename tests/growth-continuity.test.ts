@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { expect, it } from "vitest";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
 import { mistGoal } from "../src/mist";
@@ -130,7 +131,7 @@ it("migrates v12 conservatively, rejects corrupt growth, and retains it across m
   const old = { ...rest, version: 12 };
   const copy = structuredClone(old);
   const n = migrateSave(old);
-  expect(n.version).toBe(37);
+  expect(n.version).toBe(SAVE_VERSION);
   expect(old).toEqual(copy);
   expect(n.seed).toBe(old.seed);
   expect(

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SpiritSummary from "./spirit/SpiritSummary.vue";
 import type { PreparationSelection } from "./workshop/preparation";
 const preparationSelection = defineModel<PreparationSelection | null>("preparationSelection", {default: null});
 import StoryTravelMap from "./wayfaring/StoryTravelMap.vue";
@@ -533,6 +534,7 @@ const mapImages = {
       aria-label="功法操作区"
     >
       <h3 class="controls-heading">功法研习与装配</h3>
+      <SpiritSummary v-if="game.spirit.manual !== 'none' || game.spirit.jade !== 'none' || game.spirit.trauma" :game="game" :busy="busy" @act="emit('act',$event)" />
       <LearningChoices :game="game" :busy="busy" @act="storyTravel.act($event)" />
       <p>
         主修：{{

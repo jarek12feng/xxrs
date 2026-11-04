@@ -1,0 +1,11 @@
+
+ RUN  v5.0.5 /Users/admin/Documents/ChatGPT/xxrs
+
+
+ Test Files  7 passed (7)
+      Tests  43 passed (43)
+   Start at  19:00:28
+   Duration  5.44s (tests 87%, environment 5%, import 5%, transform 4%)
+
+    Isolate  7 workers spawned · ~130ms startup each (spawn + environment, per file)
+             at least ~325ms faster with isolate: false — reuses workers across files instead of one per file

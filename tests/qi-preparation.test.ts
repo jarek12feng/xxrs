@@ -1,3 +1,5 @@
+import { SAVE_VERSION } from "../src/save-version";
+import { freshQiNarrative } from "../src/qi-journey/narrative-state";
 import { expect, it } from "vitest";
 import { createGame, dispatch, validState, migrateSave, type Intent } from "../src/core";
 import { foundationStep } from "../tools/foundation-playthrough";
@@ -12,6 +14,8 @@ it("凝元历练后缺少内府图时指向取图，不提前声称可进入内�
   const s = createGame("取图指引", "wood");
   s.qi = 256; s.qiJourney.gates = 1;
   s.qiJourney.preparations[1]!.medicine = 3;
+  expect(qiGoal(s)).toContain("石涧药窟");
+  s.qiJourney.narrative={...freshQiNarrative(),phase:"applied",method:"array",company:"alone",retreatMarked:true,mixture:"separated"};
   expect(qiGoal(s)).toContain("先赴青石遗府取得丹方与内府图");
   s.story.choice = "self";
   expect(qiGoal(s)).toContain("凝元晶髓");
@@ -246,7 +250,7 @@ it("rejects malformed progress and future versions; 19 gains no invented route a
   } = s.qiJourney;
   const old = { ...s, version: 19, qiJourney: oldJourney };
   const migrated = migrateSave(old);
-  expect(migrated.version).toBe(37);
+  expect(migrated.version).toBe(SAVE_VERSION);
   expect(migrated.qiJourney.preparations).toEqual([
     freshPreparation(),
     freshPreparation(),
@@ -273,6 +277,7 @@ it("learned beast and construct responses reduce real incoming damage", () => {
   s.qi = 240;
   s.stones = 50;
   s.qiJourney.preparations[1]!.wander = 3;
+  s.qiJourney.narrative={...freshQiNarrative(),phase:"applied",method:"array",company:"alone",retreatMarked:true,mixture:"separated"};
   s = dispatch(s, {
     type: "qiJourney",
     action: "enter:array",

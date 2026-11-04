@@ -84,9 +84,9 @@ export function validGoldenCore(s: State) {
     return false;
   if (
     g.formedAt === null
-      ? s.realm === 2 || g.farShore
+      ? s.realm >= 2 || g.farShore
       : !int(g.formedAt, s.month) ||
-        s.realm !== 2 ||
+        s.realm < 2 ||
         !s.foundationJourney?.epilogue ||
         !g.attempts ||
         g.lastRoll > g.lastChance

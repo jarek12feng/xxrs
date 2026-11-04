@@ -1,0 +1,61 @@
+{
+  "hitTests": [
+    {
+      "label": "守势护丹伤害 12 / 承伤 1 / 回气 0 / 灵草 0 / 积毒 3",
+      "rect": {
+        "x": 96.71875,
+        "y": 986.453125,
+        "width": 464.796875,
+        "height": 59.796875
+      },
+      "centerHits": true,
+      "topElement": ""
+    },
+    {
+      "label": "破枢反击伤害 22 / 承伤 20 / 回气 0 / 灵草 0 / 积毒 19",
+      "rect": {
+        "x": 571.515625,
+        "y": 986.453125,
+        "width": 464.8125,
+        "height": 59.796875
+      },
+      "centerHits": true,
+      "topElement": ""
+    },
+    {
+      "label": "辨影排毒伤害 7 / 承伤 12 / 回气 0 / 灵草 0 / 积毒 0",
+      "rect": {
+        "x": 1046.328125,
+        "y": 986.453125,
+        "width": 464.8125,
+        "height": 59.796875
+      },
+      "centerHits": true,
+      "topElement": ""
+    },
+    {
+      "label": "撤回港口 · 不加伤、不丢材料",
+      "rect": {
+        "x": 1521.140625,
+        "y": 986.453125,
+        "width": 302.140625,
+        "height": 59.796875
+      },
+      "centerHits": false,
+      "topElement": "narrative-inspector battle-inspector"
+    }
+  ],
+  "mouseRetreat": "TimeoutError: locator.click: Timeout 1500ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.combat-retreat')\u001b[22m\n\u001b[2m    - locator resolved to <button data-v-12987b83=\"\" class=\"combat-retreat\">撤回港口 · 不加伤、不丢材料</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <section aria-label=\"现场操作\" data-v-d7a3ecb3=\"\" class=\"narrative-inspector battle-inspector\">…</section> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <section aria-label=\"现场操作\" data-v-d7a3ecb3=\"\" class=\"narrative-inspector battle-inspector\">…</section> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    3 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visibl",
+  "keyboardRetreat": {
+    "duel": null,
+    "location": "harbor"
+  },
+  "mapText": "审查检查点 · 非新档试玩\nlate\nlizhao-battle\nlizhao-outer\nlizhao-verified\ncompletion-trial\ncompletion\ncompanion-contact\ncovenant-discussed\ncovenant-witnessed\ncovenant-married\nnascent-ready\nnascent-phase-0\nnascent-phase-1\nnascent-phase-2\nthunder-start\nnascent\ncelebration\nability\nquestion\nbay\nbay-fight\n世界地图\n山河万里 · 一念长生\n青玄界 · 本界全图\n\n所在界域 · 青玄界\n\n穿云壁外潮路纵横，循来信与旧图，渐知海上山川。\n\n点选地标，查看去路与行前准备。此图只作地域示意，距离与耗时以出发行程为准。\n\n本界地域一览 · 听松山之外还有什么\n◇\n听松归路\n已探访\n◇\n山门药庐\n已探访\n◇\n雨夜渡口\n已探访\n◇\n旧日山祠\n已探访\n◇\n雾林旧道\n已探访\n◇\n青嶂关\n已探访\n◇\n山口行营\n循线索开启\n◇\n山下坊市\n已探访\n◇\n云栈旅亭\n已探访\n◇\n诸宗会谷\n已探访\n◇\n归潮秘境\n已探访\n◉\n外海古渡\n你在此处\n◇\n退潮遗迹\n已探访\n◇\n山门药坪\n循线索开启\n◇\n石涧旧药窟\n已探访\n◇\n听松行前居\n已探访\n◇\n无名渡\n已探访\n◇\n听雨旅亭\n循线索开启\n◇\n晴川药庄\n循线索开启\n◇\n雪线旧门\n已探访\n◇\n云外古道\n已探访\n◇\n照玄遗府\n已探访\n◇\n离照泊岸\n已探访\n山海未尽，仙途方始\n◉ 你在此处 · ◆ 可前往\n✓ 见闻已全\n◇ 待解锁 / 待探险\n点选地标查看条件 · 地标位置固定，亮线表示当前行程\n\n界外的山河尚无图可循。待日后发现新的界域，再另展一卷地图。",
+  "viewport": {
+    "width": 1920,
+    "height": 1080,
+    "dpr": 1
+  },
+  "travelText": "审查检查点 · 非新档试玩\nlate\nlizhao-battle\nlizhao-outer\nlizhao-verified\ncompletion-trial\ncompletion\ncompanion-contact\ncovenant-discussed\ncovenant-witnessed\ncovenant-married\nnascent-ready\nnascent-phase-0\nnascent-phase-1\nnascent-phase-2\nthunder-start\nnascent\ncelebration\nability\nquestion\nbay\nbay-fight\n世界地图\n外海 · 离照潮路\n外海古渡 → 离照泊岸\n进入目的地\n外海 · 离照潮路\n外海古渡\n离照泊岸\n路线示意 · 距离按行程表计算\n\n外海古渡 → 离照泊岸\n\n路程 36,000 里 · 循潮行舟\n\n正在前往目的地。\n\n暂停演出跳过演出\n进入离照泊岸\nEsc 返回现场 · 暂停或跳过演出不改变行程结果",
+  "errors": []
+}

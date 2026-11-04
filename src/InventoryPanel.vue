@@ -221,8 +221,8 @@ const craft = computed(() =>
           {{ controlCapacity(game.sense + dosage.sense) }}。
           <template
             v-if="
-              (Math.floor((game.sense + dosage.sense) / 3) + 1) * 3 <=
-              senseLimit(game.realm)
+              controlCapacity(game.sense + dosage.sense) < 22 && (Math.floor((game.sense + dosage.sense) / 3) + 1) * 3 <=
+              senseLimit(game.realm, game.spirit)
             "
             >下次容量提升需神识
             {{

@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { legacyEquipment } from "./legacy-equipment";
 import "fake-indexeddb/auto";
 import { beforeEach, it, expect } from "vitest";
@@ -29,7 +30,7 @@ it("preserves original-v8 before writing the new letter chapter", async () => {
   const old = { ...current, version: 8, adventure };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(37);
+  expect(migrated.version).toBe(SAVE_VERSION);
   expect(migrated.adventure.mist.stage).toBe("dormant");
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -46,7 +47,7 @@ it("backs up original-v7 before persisting environmental discoveries", async () 
   };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(37);
+  expect(migrated.version).toBe(SAVE_VERSION);
   expect(migrated.adventure.road.discoveries).toEqual([]);
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -59,7 +60,7 @@ it("keeps original-v6 intact before saving the new road chapter", async () => {
   const old = { ...current, version: 6, adventure };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(37);
+  expect(migrated.version).toBe(SAVE_VERSION);
   expect(migrated.adventure.step).toBe(old.adventure.step);
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -69,7 +70,7 @@ it("preserves the original v4 save while migrating social data", async () => {
   const old = v4Game("旧世", "wood", 3);
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(37);
+  expect(upgraded.version).toBe(SAVE_VERSION);
   expect(upgraded.social.gender).toBeNull();
   expect(await raw("current")).toEqual(old);
   await save(upgraded);
@@ -150,7 +151,7 @@ it("upgrades v2 without resetting progress and preserves its first original snap
   old.qi = 28;
   await raw("current", old);
   const upgraded = (await load()).state!;
-  expect(upgraded.version).toBe(37);
+  expect(upgraded.version).toBe(SAVE_VERSION);
   expect(upgraded.qi).toBe(28);
   expect(upgraded.seed).toBe(88);
   expect(await raw("current")).toEqual(old);
@@ -196,7 +197,7 @@ it("preserves original-v9 before recording a different road solution", async () 
   };
   await raw("current", old);
   const migrated = (await load()).state!;
-  expect(migrated.version).toBe(37);
+  expect(migrated.version).toBe(SAVE_VERSION);
   expect(migrated.adventure.road.solution).toBe("none");
   expect(await raw("current")).toEqual(old);
   await save(migrated);
@@ -241,7 +242,7 @@ it("backs up v11 before adding adventure checkpoints", async () => {
   const old = { ...rest, version: 11 };
   await raw("current", old);
   const state = (await load()).state!;
-  expect(state.version).toBe(37);
+  expect(state.version).toBe(SAVE_VERSION);
   expect(state.expedition.accepted).toBe(false);
   expect(await raw("current")).toEqual(old);
   await save(state);
@@ -276,7 +277,7 @@ it("backs up v13 before persisting six-round combat without changing the origina
   const old = { ...createGame("旧旅人", "wood", 42), version: 13 };
   await raw("current", old);
   const state = (await load()).state!;
-  expect(state.version).toBe(37);
+  expect(state.version).toBe(SAVE_VERSION);
   expect(await raw("current")).toEqual(old);
   await save(state);
   expect(await raw("original-v13")).toEqual(old);
@@ -289,7 +290,7 @@ it("preserves original-v14 once, does not invent origin sightings, and rejects f
   const old = { ...current, version: 14, social };
   await raw("current", old);
   const n = (await load()).state!;
-  expect(n.version).toBe(37);
+  expect(n.version).toBe(SAVE_VERSION);
   expect(n.social.origins).toEqual([]);
   expect(await raw("current")).toEqual(old);
   await save(n);
@@ -306,7 +307,7 @@ it("preserves original-v16 before adding foundation progression without fabricat
   const old = { ...rest, version: 16 };
   await raw("current", old);
   const n = (await load()).state!;
-  expect(n.version).toBe(37);
+  expect(n.version).toBe(SAVE_VERSION);
   expect(n.foundationJourney.board.wins).toEqual([]);
   await save(n);
   expect(await raw("original-v16")).toEqual(old);
@@ -319,7 +320,7 @@ it("preserves original-v31 before introducing travel and keeps future saves unto
   const old={...previous,treasures:legacyEquipment(current),version:31};
   await raw("current",old);
   const upgraded=(await load()).state!;
-  expect(upgraded.version).toBe(37);
+  expect(upgraded.version).toBe(SAVE_VERSION);
   expect(upgraded.wayfaring).toEqual({swordFlight:"none",trip:null,passage:null,last:""});
   expect(await raw("current")).toEqual(old);
   await save(upgraded);
@@ -333,13 +334,13 @@ it("preserves original-v31 before introducing travel and keeps future saves unto
 it("backs up v32 before adding resumable sea passage",async()=>{
  const s=createGame('航程迁移','wood');const {passage:_,...wayfaring}=s.wayfaring;
  const old={...s,treasures:legacyEquipment(s),version:32,wayfaring};await raw('current',old);
- const upgraded=(await load()).state!;expect(upgraded.version).toBe(37);expect(upgraded.wayfaring.passage).toBeNull();
+ const upgraded=(await load()).state!;expect(upgraded.version).toBe(SAVE_VERSION);expect(upgraded.wayfaring.passage).toBeNull();
  await save(upgraded);expect(await raw('original-v32')).toEqual(old);
 });
 it('backs up v33 before saving departure snapshots and preserves its original only once',async()=>{
  const old={...createGame('行程快照','wood'),treasures:legacyEquipment(createGame('行程快照','wood')),version:33};await raw('current',old);
  const upgraded=(await load()).state!;
- expect(upgraded.version).toBe(37);expect(await raw('current')).toEqual(old);
+ expect(upgraded.version).toBe(SAVE_VERSION);expect(await raw('current')).toEqual(old);
  await save(upgraded);await save(upgraded);
  expect(await raw('original-v33')).toEqual(old);
  expect((await load()).state).toEqual(upgraded);
@@ -351,7 +352,7 @@ it("backs up actual v34 before storing spirit growth and multi-equipment; curren
   const old={...s,version:34,treasures:legacyEquipment(s),growth:{...s.growth,medicines}};
   await raw("current",old);
   const n=(await load()).state!;
-  expect(n.version).toBe(37);expect(n.treasures.equipped).toEqual([]);
+  expect(n.version).toBe(SAVE_VERSION);expect(n.treasures.equipped).toEqual([]);
   expect(n.growth.medicines.spirit).toBe(0);
   expect(await raw("current")).toEqual(old);
   await save(n);await save(n);

@@ -1,3 +1,4 @@
+import { senseLimit } from "./spirit";
 import { treasures, treasureIds } from "./treasures/catalog";
 import { pactView } from "./secret-pact/view";
 import { recognitionView, advancementChanges } from "./recognition/view";
@@ -81,6 +82,9 @@ export function actionReceipt(
   )
     return null;
   if (
+    (intent.type === "spirit" && !!after.spirit.trial) ||
+    (intent.type === "lizhao" && !!after.lizhao.duel) ||
+    (intent.type === "nascentSoul" && !!(after.nascentSoul.trial || after.nascentSoul.attempt)) ||
     (intent.type === "conclave" && !!after.conclave.duel) ||
     (intent.type === "outerSea" && !!after.outerSea.duel) ||
     (intent.type === "foundationJourney" && !!after.foundationJourney.duel) ||
@@ -141,6 +145,8 @@ export function actionReceipt(
     before.foundationJourney.cultivation,
     after.foundationJourney.cultivation,
   );
+  add("神识上限", senseLimit(before.realm,before.spirit), senseLimit(after.realm,after.spirit));
+  add("识海创伤", before.spirit.trauma, after.spirit.trauma, true);
   add("金丹修行", before.outerSea.cultivation, after.outerSea.cultivation);
   add("道友信任", before.story.trust, after.story.trust);
   add("好感", before.social.affection, after.social.affection);
@@ -253,6 +259,10 @@ export function actionReceipt(
     if (before.realm === after.realm && !dead) title = advancement[0]!;
     growthNotes.push(...advancement);
   }
+  if(effective.type === "spirit" && !dead) { title=after.spirit.trauma>before.spirit.trauma?"识海受创 · 调息再来":effective.action.kind==="study"?"分念诀已通 · 识海拓展":effective.action.kind==="refine"?"玉髓炼化 · 神识破限":"炼神行旅"; growthNotes.push(after.spirit.last); }
+  if(effective.type === "goldenStory" && !dead){ title="外海道途 · 交谈与亲历"; growthNotes.push(after.goldenStory.last); }
+  if(effective.type === "lizhao" && !dead){ title=after.lizhao.cleared&&!before.lizhao.cleared?"离照取药 · 机缘在手":"离照行旅"; growthNotes.push(after.lizhao.last); }
+  if(effective.type === "nascentSoul" && !dead){ title=after.realm>before.realm?"元婴已成":after.conclave.stage>before.conclave.stage?"金丹圆满":"凝婴道途"; growthNotes.push(after.nascentSoul.last); }
   if(effective.type === "conclave" && !dead){title=after.conclave.stage>before.conclave.stage?"丹元凝成 · 境界精进":after.conclave.depth>before.conclave.depth?"归潮取宝":"诸宗会谷";growthNotes.push(after.conclave.last);}
   if (effective.type === "outerSea" && !dead) {title=after.outerSea.cleared>before.outerSea.cleared?"遗迹告捷 · 机缘入手":"外海行旅";growthNotes.push(after.outerSea.last);}
   if (effective.type === "treasure" && !dead) { title = failed ? "宝物行程中断" : "宝物与拍卖会"; growthNotes.push(after.treasures.last); }

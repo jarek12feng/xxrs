@@ -223,10 +223,10 @@ const choices = computed<{ action: RoadAction; label: string }[]>(
 const growth = computed(() => [
   {
     label: "凝神辨雾 · 最多三月",
-    hint: `神识 ${props.game.sense}/${senseLimit(props.game.realm)}；迷雾中达到 8 更有利`,
+    hint: `神识 ${props.game.sense}/${senseLimit(props.game.realm, props.game.spirit)}；迷雾中达到 8 更有利`,
     intent: { type: "advance", activity: "meditate", months: 3 } as Intent,
     error:
-      props.game.sense >= senseLimit(props.game.realm) ? "神识已满" : actionError(props.game, "meditate"),
+      props.game.sense >= senseLimit(props.game.realm, props.game.spirit) ? "神识已满" : actionError(props.game, "meditate"),
   },
   {
     label: "研读航图 · 最多两月",

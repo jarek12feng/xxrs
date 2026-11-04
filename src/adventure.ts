@@ -300,7 +300,7 @@ export function runAdventure(
       a.step = "done";
       s.stones += 12;
       if (a.method === "medicine") s.study = Math.min(4, s.study + 1);
-      if (a.method === "guide") s.sense = Math.min(senseLimit(s.realm), s.sense + 1);
+      if (a.method === "guide") s.sense = Math.min(senseLimit(s.realm, s.spirit), s.sense + 1);
       if (a.method === "ward") s.foundation = Math.min(24, s.foundation + 2);
       a.result =
         rescueEcho(a) +

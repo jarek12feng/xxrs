@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import GoldenStoryScene from "../golden-story/GoldenStoryScene.vue";
+const storyOpen = ref(false);
 import CloudCrossing from "./CloudCrossing.vue";
 import { projectInteractions } from "../story-interactions";
 import { computed, ref, watch } from "vue";
@@ -97,12 +99,19 @@ const options = computed(() => {
           : "备护脉阵请人守关 · 把握 +15",
         { kind: "guard" },
       );
-    add(`凝丹行功 · 直接叩关把握 ${goldenChance(s)}%，稳住三段可至100%`, { kind: "break" });
+    add(`凝丹行功 · 直接叩关把握 ${goldenChance(s)}%，稳住三段可至100%`, {
+      kind: "break",
+    });
   }
   return projectInteractions(s, choices, goldenQuote);
 });
 const send = (action: GoldenAction) =>
-  emit("act", action.kind === "break" ? {type:"ascension",action:"start"} : { type: "goldenCore", action });
+  emit(
+    "act",
+    action.kind === "break"
+      ? { type: "ascension", action: "start" }
+      : { type: "goldenCore", action },
+  );
 
 // The selected object is presentation state; opening it never dispatches a command.
 const selected = ref("");
@@ -162,8 +171,16 @@ watch(hotspots, (objects) => {
 });
 </script>
 <template>
+  <GoldenStoryScene
+    v-if="storyOpen"
+    :game="game"
+    :busy="busy"
+    place="home"
+    @act="emit('act', $event)"
+    @close="storyOpen = false"
+  />
   <NarrativeStage
-    v-if="visible"
+    v-if="visible && !storyOpen"
     class="golden-core"
     aria-label="凝丹机缘与金丹初行"
     :stage-key="stageKey"
@@ -182,13 +199,24 @@ watch(hotspots, (objects) => {
           : '听松行前居 · 凝丹筹备'
     "
     :goal="goal"
-    :hotspots="hotspots"
+    :hotspots="
+      game.realm === 2 && !g.duel
+        ? [
+            ...hotspots,
+            { id: 'golden-story', label: '问路与旧友来信', x: 82, y: 58 },
+          ]
+        : hotspots
+    "
     :active="selected"
     :battle="!!g.duel"
-    @select="selected = $event"
+    @select="
+      $event === 'golden-story' ? (storyOpen = true) : (selected = $event)
+    "
     @close="selected = ''"
   >
-    <template #world><CloudCrossing v-if="game.realm === 2" :game="game" /></template>
+    <template #world
+      ><CloudCrossing v-if="!storyOpen && game.realm === 2" :game="game"
+    /></template>
     <template #status
       ><span v-if="game.realm === 1"
         >主药 {{ g.medicine }} · 丹药 {{ g.pills }} · 灵地{{

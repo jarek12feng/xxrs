@@ -1,3 +1,4 @@
+import { SAVE_VERSION } from "../src/save-version";
 import { legacyEquipment } from "./legacy-equipment";
 import { describe, it, expect } from "vitest";
 import { dispatch, validState, migrateSave, type State } from "../src/core";
@@ -30,6 +31,7 @@ function qualify() {
   p.arrive();
   p.work(12);
   p.herbs(20);
+  p.work(conclaveQuote(p.state, { kind: "training", style: "ward" }).stones);
   p.act({ kind: "training", style: "ward" });
   p.battle("contest");
   p.battle("contest");
@@ -247,7 +249,7 @@ effect: ""
     const v30 = { ...old, treasures: legacyEquipment(old), version: 30, conclave: undefined };
     const migrated = migrateSave(v30);
     expect(migrated.conclave).toEqual(freshConclave());
-    expect(migrated.version).toBe(37);
+    expect(migrated.version).toBe(SAVE_VERSION);
     expect(validState(migrated)).toBe(true);
     expect(() => migrateSave({ ...start, version: 999 })).toThrow();
   });

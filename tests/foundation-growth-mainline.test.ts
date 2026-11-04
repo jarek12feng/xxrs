@@ -1,3 +1,4 @@
+import { finishPactTrial } from './foundation-pact-policy';
 import { expect, it } from 'vitest';
 import { dispatch, validState, migrateSave, createGame } from '../src/core';
 import { freshSocial } from '../src/social';
@@ -42,6 +43,8 @@ function play(route: ResourceRoute, technique: 'spring'|'blade'|'breath') {
  p.fight(routeInfo[route].foe);
  expect(p.state.foundationJourney.heroine.supplied).toBe(false);
  fund();p.act({kind:'routeProcess',route,method:'self'});
+ expect(foundationCap(p.state)).toBe(399);
+ finishPactTrial(p);
  expect(foundationCap(p.state)).toBe(599);
  expect(p.state.foundationJourney.heroine.route).toBe(route);
  p.act({kind:'travel',destination:'home'});p.act({kind:'mapPlan',plan:'detour'});
@@ -100,7 +103,7 @@ it('rejects corrupt earned milestones and does not silently import old foundatio
  for(const update of [(n:typeof s)=>n.foundationJourney.growth.refined=true,(n:typeof s)=>n.foundationJourney.heroine.supplied=true,(n:typeof s)=>n.foundationJourney.cultivation=200]){
   const n=structuredClone(s);update(n);expect(validState(n)).toBe(false);
  }
- const qi=createGame('存档','wood');const legacy={...qi,version:21};expect(migrateSave(legacy).version).toBe(37);
+ const qi=createGame('存档','wood');const legacy={...qi,version:21};expect(migrateSave(legacy).version).toBe(qi.version);
 });
 
 it('does not grant a preparation result when death interrupts its final month', () => {

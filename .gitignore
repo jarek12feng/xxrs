@@ -5,3 +5,6 @@ release/
 
 .local-music/
 music.zip
+
+# Local Vite preview dependency caches
+.vite/

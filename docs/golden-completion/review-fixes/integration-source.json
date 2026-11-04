@@ -1,0 +1,10 @@
+{
+  "scope": [
+    "src",
+    "tests",
+    "tools"
+  ],
+  "files": 547,
+  "sha256": "f12d2c41381f8c354e926f327b5b0352208185842559a9536b4f4c523c78c322",
+  "verifiedAfterTests": true
+}

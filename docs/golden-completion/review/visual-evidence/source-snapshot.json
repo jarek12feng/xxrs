@@ -1,0 +1,42 @@
+{
+  "recorded_at": "2026-11-04T17:37:27.841524+08:00",
+  "note": "Latest source hashes after followup; workspace concurrently changed during audit. Initial screenshots and followup values are separate observations.",
+  "files": [
+    {
+      "file": "src/lizhao/LizhaoPanel.vue",
+      "sha256": "6efd62862bc3bba3ff11503523a3b46321906c2cfc72d99eabe014666a25bd95"
+    },
+    {
+      "file": "src/nascent-soul/NascentPanel.vue",
+      "sha256": "c61ffdc8db98e19cb301dae0895f094f5912480be264537e28f6a87fe3c8e668"
+    },
+    {
+      "file": "src/golden-story/GoldenStoryScene.vue",
+      "sha256": "0e59494dee5213291345e57e5e376b04bbe52a850c05409052619aeec8225efa"
+    },
+    {
+      "file": "src/scene2d/NarrativeStage.vue",
+      "sha256": "baf5e94b4299678773f737dc6efdebe07a0ca8c7fcdb3a62e34426eb5115a01e"
+    },
+    {
+      "file": "src/scene2d/combat/CombatBar.vue",
+      "sha256": "10086220ae739a7084d57612ce4fd5ca387beddf6048f1268d76e472127e7518"
+    },
+    {
+      "file": "src/nascent-soul/view.ts",
+      "sha256": "a4f1cca0162c0d477123f31c401e18bb5bc20ec135392cfd714dae6e5789d0f2"
+    },
+    {
+      "file": "src/wayfaring/discovery.ts",
+      "sha256": "85c435c5fa416487c8b82dcea1c5528db0377b8b03945cdcc65ce93f49a3dcdc"
+    },
+    {
+      "file": "src/wayfaring/narrative-map.ts",
+      "sha256": "b8411a1a6bf306b77042564ba077213221c7d123f69220e90a4f237e00f8943b"
+    },
+    {
+      "file": "tools/golden-completion-checkpoint.ts",
+      "sha256": "13166a9c24aa09c18aa91ac98bac44918aa853c7939f379e2e908f267e54be0a"
+    }
+  ]
+}

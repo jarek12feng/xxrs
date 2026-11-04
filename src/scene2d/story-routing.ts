@@ -1,6 +1,8 @@
 import { sceneOwner } from "../scene-activity";
 import type { State } from "../core";
 export type StoryChapter =
+  | "lizhao"
+  | "nascent"
   | "opening"
   | "road"
   | "mist"
@@ -22,6 +24,7 @@ export function storyChapters(
     (s.expedition.cleared >= 1 && !s.journey.learning.relic)
       ? [{ id: "rewards", label: "归来谢礼" }]
       : [];
+  if (s.realm === 3) return [{id:"nascent",label:"元婴初成"}, ...rewards];
   if (s.realm === 2) {
     if (!s.goldenCore.farShore)
       return [{ id: "golden", label: "云壁之外" }, ...rewards];
@@ -30,6 +33,7 @@ export function storyChapters(
     ];
     if (s.outerSea.notice !== null || s.outerSea.cleared === 2)
       choices.push({ id: "conclave", label: "来信与诸宗会" });
+    if (s.conclave.stage >= 2) choices.push({id:"lizhao",label:"离照洞天"},{id:"nascent",label:"圆满与凝婴"});
     return [...choices, ...rewards];
   }
   if (s.realm === 1) {

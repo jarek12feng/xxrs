@@ -51,10 +51,10 @@ const venueIds: Venue[] = ["market", "foundation"];
     <p>
       灵石 {{ game.stones }} ·
       {{ controlDescription(game) }}。容量随神识提升，每 3 点增加
-      1；器物入袋后需自行出战，交锋与途中不能更换。
+      1，最高22；器物入袋后需自行出战，交锋与途中不能更换。
     </p>
     <p>
-      神识达到 18 后，仅驾驭一件器物可专御：伤害 +2、护体
+      有效神识达到 18 后，仅驾驭一件器物可专御：伤害 +2、护体
       +1。多器共享一回合行动，按各器特性配合。
     </p>
     <p v-if="control.remaining < 4">

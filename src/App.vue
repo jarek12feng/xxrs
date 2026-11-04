@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SpiritSummary from "./spirit/SpiritSummary.vue";
 import AscensionPanel from "./ascension/AscensionPanel.vue";
 import { senseLimit, controlCapacity } from "./spirit";
 import { combatOwner } from "./scene-activity";
@@ -12,7 +13,6 @@ import { advanceStoryPreference } from './scene2d/story-preference';
 import EventScene from "./scene2d/EventScene.vue";
 import {goldenCap} from "./conclave/state";
 import { goldenGoal } from "./golden-core/rules";
-import {seaGoal} from "./outer-sea/rules";
 import LearningChoices from "./LearningChoices.vue";
 import FirstPractice from "./scene2d/FirstPractice.vue";
 import { techniques } from "./core";
@@ -272,6 +272,8 @@ const currentScene = computed(() => {
   const g = game.value;
   if (!g || titleScreen.value || (view.value === "cultivation" && g.outerSea.location === "home"))
     return { image: "/scenes/moon-terrace.png", name: "听松山居" };
+  if(g.lizhao.location!=="away") return {image:"/art/world-story/lizhao/chamber.webp",name:g.lizhao.location==="bay"?"伏潮湾":"离照洞天"};
+  if(g.realm===3) return {image:"/art/outer-sea/ferry.webp",name:"外海古渡 · 元婴初成"};
   if(g.realm===2 && g.conclave.location!=="away") return {image:g.conclave.location==="vault"?"/art/conclave/vault.webp":"/art/conclave/court.webp",name:g.conclave.location==="vault"?"归潮秘境":"诸宗会谷"};
   if(g.realm===2 && g.outerSea.location!=="home") return {image:g.outerSea.location==="ruins" ? (g.outerSea.cleared?"/art/outer-sea/inner.webp":"/art/outer-sea/ruins.webp"):"/art/outer-sea/ferry.webp",name:g.outerSea.location==="ruins"?"退潮遗迹":"外海古渡"};
   if(g.realm===2) return {image:"/scenes/moon-terrace.png",name:g.outerSea.met?"听松行前居":"云外石台"};
@@ -286,7 +288,7 @@ const currentScene = computed(() => {
 const currentGoal = computed(() => {
   const g = game.value;
   if (!g) return "";
-  if(g.realm===2 && g.goldenCore.farShore) return seaGoal(g);
+  if(g.realm>=2) return nextGoal(g);
   if(g.realm === 2 || g.goldenCore.expedition !== "idle") return goldenGoal(g);
   if (atContest.value && view.value === "story") return g.sectContest.stage === "finished" ? "内比已毕，领取新成绩奖励后与同门道别。" : "按来招斗法，场间可整备，也可交还赛签。";
   if (view.value === "cultivation") return nextGoal(g);
@@ -1194,7 +1196,7 @@ onUnmounted(() => {
               <div v-show="cultivationPane !== 'notes'">
               <div class="progress-label">
                 <h2>
-                  {{ game.realm === 2 ? realmStageLabel(game) + " · 外海道途" : game.realm ? "筑基已成 · 构筑与历练" : "炼气 → 筑基" }}
+                  {{ game.realm >= 2 ? realmStageLabel(game) + " · 外海道途" : game.realm ? "筑基已成 · 构筑与历练" : "炼气 → 筑基" }}
                 </h2>
                 <strong v-if="game.realm === 0"
                   >{{ game.qi }} / {{ MAX_QI }}</strong
@@ -1547,7 +1549,7 @@ onUnmounted(() => {
               </div>
               <div>
                 <strong>{{ game.sense }}</strong
-                ><span>神识</span><small>本境上限 {{ senseLimit(game.realm) }} · 御器容量 {{ controlCapacity(game.sense) }}</small>
+                ><span>神识</span><small>本境上限 {{ senseLimit(game.realm, game.spirit) }} · 御器容量 {{ controlCapacity(game.sense) }}</small>
               </div>
             </div>
             <p class="fineprint">
@@ -1557,6 +1559,7 @@ onUnmounted(() => {
                   : ""
               }}
             </p>
+            <SpiritSummary :game="game" :busy="ui.busy || ui.running" @act="act" />
             <p class="save-status">{{ saved }}</p>
             <button
               v-if="game.archive"
