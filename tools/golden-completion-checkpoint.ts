@@ -68,7 +68,7 @@ export function finishGoldenCompletion(initial:State, brew:'self'|'commission'='
  const fight=()=>{p.lizhao({kind:'fight'});p.remember(p.state.lizhao.cleared?'battle':'lizhao-battle');p.until(()=>!p.state.lizhao.duel,()=>p.lizhao({kind:'move',move:chooseLizhaoMove(p.state)}),'lizhao fight',18);};
  fight();if(!p.state.lizhao.outerCleared)throw Error('Lost outer lizhao');p.remember('lizhao-outer');
  p.lizhao({kind:'deeper'});fight();if(!p.state.lizhao.cleared)throw Error('Lost inner lizhao');
- p.lizhao({kind:'chamber'});p.lizhao({kind:'verify'});p.lizhao({kind:'allocate',allocation:'share'});p.remember('lizhao-verified');p.lizhao({kind:'return'});p.lizhao({kind:'leave'});
+ p.lizhao({kind:'chamber'});p.lizhao({kind:'verify'});p.lizhao({kind:'assay',move:'drain'});p.lizhao({kind:'assay',move:'bind'});p.lizhao({kind:'allocate',allocation:'share'});p.remember('lizhao-verified');p.lizhao({kind:'return'});p.lizhao({kind:'leave'});
  p.cultivate(899);p.rest();p.nascent({kind:'trial'});p.remember('completion-trial');
  for(const move of ['body','mind','break','body','mind','break'] as const)p.nascent({kind:'trialMove',move});
  if(!p.state.nascentSoul.trialWon)throw Error('Lost completion trial');
@@ -91,6 +91,6 @@ export function finishGoldenCompletion(initial:State, brew:'self'|'commission'='
  if(brew==='self')p.until(()=>p.state.study>=4,()=>p.send({type:'advance',activity:'study',months:1}),'pill knowledge',4);
  p.nascent({kind:'brew',method:brew,fire:'steady'});p.nascent({kind:'land',choice:'independent'});p.nascent({kind:'protection',choice:'array'});p.nascent({kind:'discoverMethod'});p.nascent({kind:'studyMethod',method:p.state.journey.main==='spring'?'stillness':'continuity'});p.nascent({kind:'practiceThunder'});p.until(()=>!p.state.nascentSoul.thunder.battle,()=>p.nascent({kind:'thunderMove',move:chooseThunderMove(p.state)}),'practice thunder',12);if(!p.state.nascentSoul.thunder.practiced)throw Error('Lost practice thunder');p.rest();p.herbs(24);p.remember('nascent-ready');
  p.nascent({kind:'begin'});p.remember('nascent-phase-0');p.nascent({kind:'step',move:'channel'});p.remember('nascent-phase-1');p.nascent({kind:'step',move:'observe'});p.remember('nascent-phase-2');p.nascent({kind:'step',move:'unite'});p.remember('thunder-start');p.until(()=>!p.state.nascentSoul.thunder.battle,()=>p.nascent({kind:'thunderMove',move:chooseThunderMove(p.state)}),'tribulation',36);if(p.state.realm!==3)throw Error('Lost tribulation '+JSON.stringify({foundation:p.state.foundation,sense:p.state.sense,last:p.state.nascentSoul.thunder.last}));p.remember('nascent');
- p.nascent({kind:'emerge'});p.nascent({kind:'celebrate',choice:'simple',office:'declined'});p.remember('celebration');p.nascent({kind:'survey'});p.nascent({kind:'shelter'});p.nascent({kind:'cross'});p.remember('ability');
+ p.nascent({kind:'emerge'});p.nascent({kind:'celebrate',choice:'simple',office:'declined'});p.remember('celebration');p.nascent({kind:'survey'});p.nascent({kind:'shelter'});p.nascent({kind:'cross'});p.remember('crossing-eddy');p.nascent({kind:'crossing',move:'shore'});p.nascent({kind:'cross'});p.remember('ability');
  return {state:p.state,checkpoints:p.checkpoints};
 }

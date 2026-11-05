@@ -2,7 +2,7 @@ import type { State } from "../world";
 import type { Move } from "../expedition/content";
 import type { ResourceAmounts } from "../economy";
 import { quoteSettlement, settleResources } from "../economy";
-import { startBattle, resolveTurn } from "../combat";
+import { startBattle, executeBattleAction } from "../combat";
 import { readiness, tacticalPreview } from "../combat/game";
 import { preparationReady } from "./preparation";
 import type { CaveMethod } from "./narrative-state";
@@ -424,14 +424,14 @@ export function runQiNarrative(
         ? "你踏上药床干地，旧阵的杂气开始冲击经脉。三种来势须亲自应对。"
         : "段厉堵住侧径，持刀来夺札记。你已留好退路，可以击退、擒送或撤离。";
   } else if (a.startsWith("narrative:")) {
-    const move = a.slice(10) as Move,
-      p = qiNarrativePreview(s, move)!;
-    const turn = resolveTurn(n.duel!, p, {
-      turnLimit: 16,
-      resolution: "journey",
-    });
+    const move = a.slice(10) as Move;
+    const turn = executeBattleAction(n.duel!, s.herbs, {
+      turnLimit: 16, resolution: "journey",
+    }, () => qiNarrativePreview(s, move));
+    if (!turn) return input;
+    const p = turn.exchange;
     n.duel = { ...turn.battle, effect: move };
-    s.herbs -= turn.herbs;
+    s.herbs = turn.remainingHerbs;
     n.last = `${qiNarrativeEnemy(s).name}气势 −${turn.damage}，自身气势 −${turn.incoming}${turn.healing ? `、回气 +${turn.healing}` : ""}。${p.note}`;
     if (turn.outcome === "win") {
       n.duel = null;

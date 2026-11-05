@@ -1,7 +1,10 @@
+import {clickPractice} from './helpers/practice-scene';
+import {teachingSolution} from '../src/golden-story/teaching';
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { afterEach, it, expect } from "vitest";
 import { createApp, h, shallowRef, nextTick, type App } from "vue";
-import { createGame, dispatch, type Intent } from "../src/core";
+import { dispatch, type Intent } from "../src/core";
 import SeaPanel from "../src/outer-sea/OuterSeaPanel.vue";
 import GoldenPanel from "../src/golden-core/GoldenCorePanel.vue";
 import ConclavePanel from "../src/conclave/ConclavePanel.vue";
@@ -69,8 +72,7 @@ it("古渡热点正常命令完成观潮、保存重挂载并返回单一主场�
   await click("论法实录");
   await click("画出灵流缺口");
   expect(game.value.goldenStory.teachings).not.toContain("ground");
-  await click("移开西侧阵石");
-  await click("沿外槽布护阵");
+  for(const move of teachingSolution('ground')) await clickPractice('ground',move);
   expect(game.value.goldenStory.teachings).toContain("ground");
   await click("回古渡");
   expect(document.querySelectorAll(".narrative-stage")).toHaveLength(1);
@@ -124,8 +126,7 @@ it("会谷非冠军可问法，选择拓本保留原领域资源", async () => {
   await click("交照霜原卷拓页");
   await click("沈观微");
   await click("演示旧法滞涩");
-  await click("缓下旧脉");
-  await click("候新流回转");
+  for(const move of teachingSolution('method')) await clickPractice('method',move);
   expect(game.value.goldenStory.teachings).toContain("method");
   expect(game.value.conclave).toEqual(before);
   await click("回会谷");

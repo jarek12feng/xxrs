@@ -113,7 +113,7 @@ it("the actual journey panel starts a named human battle and retreat returns the
   };
   try {
     await click("封简石台");
-    await click("要求继续议价");
+    await click("拒绝让宝，要求依约商议");
     expect(state.value.foundationJourney.duel).toBeNull();
     await click("封简石台");
     await click("与贺崇争夺玉简");

@@ -1,0 +1,68 @@
+import { expect, it } from 'vitest';
+import { dispatch, migrateSave, validState } from '../src/core';
+import { foundationObjective } from '../src/growth-continuity/foundation-objective';
+import { journeyCheckpoint, journeyPlayer } from '../tools/foundation-journey-checkpoint';
+import { retreatPlan } from '../src/retreat';
+import { tacticalAdjustment } from '../src/foundation-journey/tactics';
+
+it('将后期积累接到行功、实际换招、归流和圆满归山，刷新不丢去路', () => {
+  let s = journeyCheckpoint('male', true);
+  s.foundationJourney.condensation = false;
+  s.foundationJourney.cultivation = 492;
+  const before = structuredClone(s);
+  const goal = foundationObjective(s)!;
+  expect(goal.target).toBe(500);
+  expect(goal.next).toBeNull();
+  expect(s).toEqual(before);
+  const plan = retreatPlan(s,'long',goal.target);
+  s = dispatch(s,{id:'objective-retreat',type:'advance',activity:'cultivate',months:plan.batchMonths});
+  expect(s.foundationJourney.cultivation).toBe(500);
+  expect(s.age).toBe(plan.exitAge);
+  expect(retreatPlan(s,'long',foundationObjective(s)!.target).batchMonths).toBe(0);
+  const finish = foundationObjective(s)!.next!;
+  expect(finish.error).toBe('');
+  expect(finish.intent).toEqual({type:'foundationJourney',action:{kind:'finish'}});
+  const month = s.month, stones = s.stones;
+  s = dispatch(s,{...finish.intent,id:'objective-finish'});
+  expect(s.foundationJourney.condensation).toBe(true);
+  expect(s.month).toBe(month);
+  expect(s.stones).toBe(stones);
+  expect(dispatch(s,{...finish.intent,id:'duplicate-finish'})).toBe(s);
+  s = migrateSave(JSON.parse(JSON.stringify(s)));
+  expect(validState(s)).toBe(true);
+  expect(foundationObjective(s)!.next!.intent).toEqual({type:'foundationJourney',action:{kind:'battle',battle:'culmination'}});
+  let battle = dispatch(s,{...foundationObjective(s)!.next!.intent,id:'objective-battle'});
+  battle = dispatch(battle,{type:'foundationJourney',action:{kind:'move',move:'guard'},id:'objective-guard'});
+  expect(foundationObjective(battle)).toBeNull();
+  const earned = tacticalAdjustment(battle,'discern');
+  const without = structuredClone(battle);
+  without.foundationJourney.condensation = false;
+  const baseline = tacticalAdjustment(without,'discern');
+  expect(earned.damage - baseline.damage).toBe(5);
+  expect(earned.incoming - baseline.incoming).toBe(-2);
+  const player = journeyPlayer(s);
+  player.fight('culmination');
+  expect(foundationObjective(player.state)!.target).toBe(600);
+  player.cultivate(600);
+  const route = foundationObjective(player.state)!.next!;
+  expect(route.error).toBe('');
+  player.send(route.intent);
+  // A route may be interrupted; resume using the existing journey command.
+  while (player.state.wayfaring.trip) player.act({kind:'travel',destination:'home',mode:player.state.wayfaring.trip.mode});
+  expect(foundationObjective(player.state)!.next!.intent).toEqual({type:'foundationJourney',action:{kind:'epilogue'}});
+  player.send(foundationObjective(player.state)!.next!.intent);
+  expect(player.state.foundationJourney.epilogue).toBe(true);
+  expect(foundationObjective(player.state)).toBeNull();
+});
+
+it('推荐不构成新上限，缺资源、伤势及现场互斥仍由原规则拒绝', () => {
+  const s = journeyCheckpoint('male',true);
+  expect(retreatPlan(s,'long',599).batchMonths).toBeGreaterThan(0);
+  s.stones = 0;
+  expect(foundationObjective(s)!.next!.error).toContain('灵石');
+  s.stones = 100;
+  s.injury = 3;
+  expect(foundationObjective(s)!.next!.error).toContain('静养');
+  s.status = 'dead';
+  expect(foundationObjective(s)).toBeNull();
+});

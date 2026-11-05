@@ -1,3 +1,4 @@
+import { admissionStep } from './initiation-policy';
 import { dispatch, validState, type State } from "../src/core";
 import {
   journeyPlayer,
@@ -18,8 +19,13 @@ export function contestCheckpoint(
   p.cultivate(200);
   p.fight("exit");
   p.act({ kind: "ferryOutcome", outcome: "escort" });
-  p.send({ type: "join", branch: "dan" });
   p.act({ kind: "travel", destination: "home" });
+  for(let i=0;i<4 && p.state.journey.branch==='none';i++) {
+    const step=admissionStep(p.state,'dan'); if(!step)throw Error('Missing admission witness');
+    p.send(step);
+  }
+  // A new member reports after admission to receive the next meeting notice.
+  p.send({type:'duty',duty:'copy'});
   let s = p.state;
   if (open) {
     s = dispatch(s, {

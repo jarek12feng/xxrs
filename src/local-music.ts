@@ -1,6 +1,7 @@
 import { foundationMusic, audioUrl } from "./foundation-audio";
 // Original file score, loaded after app mount; mute/gesture/visibility gates apply.
 export type MusicCue =
+  | "last-lamp" | "lost-tide" | "silent-thunder"
   | "foundation-rise"
   | "golden-rise"
   | "home"
@@ -11,6 +12,9 @@ export type MusicCue =
   | keyof typeof foundationMusic;
 export const musicNames: Record<MusicCue, string> = {
   ...foundationMusic,
+  "last-lamp": "灯尽山中 · 未竟长生",
+  "lost-tide": "潮深未归 · 遗憾",
+  "silent-thunder": "雷散人未归 · 天关",
   "foundation-rise": "道基初成 · 出关",
   "golden-rise": "丹成云开 · 出关",
   home: "听松入定 · 洞府与归家",
@@ -23,6 +27,7 @@ export function sceneMusic(name: string, shrineRelit = false): MusicCue {
   if (name === "再见那座山祠" && shrineRelit) return "home";
   const cues: Record<string, MusicCue> = {
     雨夜渡口: "mystery",
+    听松渡口: "mystery",
     一封求助信: "mystery",
     雾林旧道: "mystery",
     废弃山祠: "trial",

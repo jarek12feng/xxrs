@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { describe, it, expect } from "vitest";
-import { createGame } from "../src/core";
+
 import { storyChapter, storyChapters } from "../src/scene2d/story-routing";
 describe("read-only story scene selection", () => {
   it("shows one current realm and rejects stale preferences without changing state", () => {
@@ -12,6 +13,7 @@ describe("read-only story scene selection", () => {
       "road",
       "qi",
       "rewards",
+      "admission",
     ]);
     s.realm = 1;
     expect(storyChapter(s, "qi")).toBe("foundation");

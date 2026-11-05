@@ -1,9 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef, type App } from "vue";
 import { afterEach, expect, it } from "vitest";
 import OriginNotes from "../src/OriginNotes.vue";
 import SocialPanel from "../src/SocialPanel.vue";
-import { createGame, dispatch, type Intent } from "../src/core";
+import { dispatch, type Intent } from "../src/core";
 let app: App;
 afterEach(() => {
   app?.unmount();

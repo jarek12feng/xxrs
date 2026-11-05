@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { mortalWarning } from "../mortality";
+import {revisitView} from "../world-revisits/projection";
+import RevisitPanel from "../world-revisits/RevisitPanel.vue";
+import AssayPanel from "./AssayPanel.vue";
 import ArtifactScene from "../artifact-growth/ArtifactScene.vue";
 const artifactOpen=ref(false);
 import { computed, ref, watch } from "vue";
@@ -61,7 +65,7 @@ const points = computed(() => {
             ? { path: [53, 48], furnace: [67, 49], exit: [15, 65] }
             : { path: [58, 46], exit: [15, 70] };
   return [
-    { id: "friends", label: "药船修士与分药台", x: 46, y: 70 },
+    { id: "friends", kind: "person" as const, label: "药船修士与分药台", x: 46, y: 70 },
     { id: "supplies", label: "药囊与静养处", x: 26, y: 67 },
     { id: "path", label: "前方道路", x: 58, y: 46 },
     { id: "furnace", label: "分药槽与旧丹炉", x: 64, y: 55 },
@@ -85,10 +89,11 @@ const foeArt = computed(() =>
             : "idle",
       ),
 );
+const revisit = computed(()=>l.value.location==='harbor' ? revisitView(props.game,'lizhao') : null);
 const hotspots = computed(() =>
   l.value.duel
     ? []
-    : points.value.filter((p) => rows.value.some((r) => r.object === p.id)),
+    : [...points.value.filter((p) => (p.id === 'furnace' && l.value.location === 'chamber') || rows.value.some((r) => r.object === p.id)), ...(revisit.value?[{id:'revisit',label:revisit.value.title,x:55,y:66}]:[])],
 );
 const visible = computed(() =>
   rows.value.filter((r) => r.object === selected.value),
@@ -100,7 +105,7 @@ watch(
 watch(
   () => rows.value.map((r) => r.object).join(","),
   () => {
-    if (!rows.value.some((r) => r.object === selected.value))
+    if (selected.value!=='revisit' && !(selected.value === 'furnace' && l.value.location === 'chamber') && !rows.value.some((r) => r.object === selected.value))
       selected.value = "";
   },
 );
@@ -117,7 +122,7 @@ const combatOptions = computed(() =>
         move
       ],
       detail: p
-        ? `伤害 ${p.damage} / 承伤 ${p.incoming} / 回气 ${p.healing} / 灵草 ${p.herbs} / 积毒 ${p.toxin}`
+        ? `伤害 ${p.damage} / 承伤 ${p.incoming} / 回气 ${p.healing} / 灵草 ${p.herbs} / 积毒 ${p.toxin}${l.value.duel && l.value.duel.kind !== "outer" ? mortalWarning(l.value.duel, p, 18, p.toxin >= 100) : ""}`
         : "",
       disabled: !!lizhaoQuote(props.game, { kind: "move", move }).error,
     };
@@ -215,8 +220,8 @@ const hero = computed(() =>
           ><p>
             <span class="combat-receipt" role="status">{{ l.last }}</span>
             积毒 {{ l.duel.toxin }} / 100 ·
-            到100或十八合未破阵败退。辨影排毒开路、守势蓄力，趁开口反击。失败伤势
-            +2，材料与已开道路保留。
+            {{ l.duel.kind === "outer" ? "外层败退伤势 +2，材料与已开道路保留。" : "气势耗尽或积毒100会陨落，同归于尽亦然；可出招前主动撤离。" }}
+            辨影排毒开路、守势蓄力，趁开口反击。十八合仍能自持则伤退。
           </p></template
         >
       </CombatBar>
@@ -235,6 +240,8 @@ const hero = computed(() =>
     <p v-if="l.duel">{{ l.last }}</p>
     <template v-else
       ><p>{{ l.last }}</p>
+      <RevisitPanel v-if="l.location==='harbor' && selected==='revisit'" :game="game" site="lizhao" :busy="busy" @act="emit('act',$event)"/>
+      <AssayPanel v-if="l.location==='chamber' && selected==='furnace'" :assay="l.assay" :verified="l.recipeVerified" />
       <button v-if="l.location==='harbor' && (selected==='friends'||selected==='supplies')" @click="artifactOpen=true">旧器谱与器室侧路 · 法宝温养</button>
       <div v-for="row in visible" :key="row.id" class="lizhao-choice">
         <button :disabled="busy || !row.available" @click="send(row.action)">

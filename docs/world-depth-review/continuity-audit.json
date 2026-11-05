@@ -1,0 +1,72 @@
+[
+  {
+    "name": "筑基初成",
+    "realm": "筑基前期",
+    "month": 182,
+    "current": 0,
+    "target": 199,
+    "monthsToTarget": 995,
+    "regularBatch": 24,
+    "gain": 4,
+    "stopsForMeeting": false,
+    "knownPreparation": [],
+    "next": "与苏婉宁同往无名渡，在入井前交流各自来意。"
+  },
+  {
+    "name": "药庄取材后",
+    "realm": "筑基中期",
+    "month": 822,
+    "current": 312,
+    "target": 399,
+    "monthsToTarget": 218,
+    "regularBatch": 36,
+    "gain": 14,
+    "stopsForMeeting": false,
+    "knownPreparation": [],
+    "next": "主材已炼化，回行前居与苏婉宁修订路图，避开沿途人家的住处。"
+  },
+  {
+    "name": "外府得印后",
+    "realm": "金丹前期",
+    "month": 1479,
+    "current": 30,
+    "target": 299,
+    "monthsToTarget": 769,
+    "regularBatch": 60,
+    "gain": 21,
+    "stopsForMeeting": false,
+    "knownPreparation": [
+      {
+        "title": "温养镇潮印",
+        "error": ""
+      }
+    ],
+    "next": "修满 299，走通退潮内府、温养镇潮印并参悟澄息篇，再凝炼丹元突破中期。"
+  },
+  {
+    "name": "金丹中期",
+    "realm": "金丹中期",
+    "month": 2035,
+    "current": 300,
+    "target": 599,
+    "monthsToTarget": 665,
+    "regularBatch": 32,
+    "gain": 14,
+    "stopsForMeeting": true,
+    "knownPreparation": [],
+    "next": "丹元已凝，可继续闭关或筹备行装；等道友来信，再从古渡赴五十年之约。"
+  },
+  {
+    "name": "金丹后期",
+    "realm": "金丹后期",
+    "month": 2508,
+    "current": 600,
+    "target": 899,
+    "monthsToTarget": 544,
+    "regularBatch": 60,
+    "gain": 33,
+    "stopsForMeeting": false,
+    "knownPreparation": [],
+    "next": "宝物与凝婴法门已备；返回古渡，循潮路赴离照取药、验证丹方，再筹备圆满与凝婴。"
+  }
+]

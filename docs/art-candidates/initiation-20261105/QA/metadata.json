@@ -1,0 +1,38 @@
+[
+  {
+    "asset": "herb-ferry-arrival",
+    "tool": "built-in image_gen",
+    "tool_original": "/Users/admin/.codex/generated_images/01a1a92c-d1a1-7d31-9929-d7b27f75a4df/exec-d447d613-0fbc-440d-b1ab-b086bec70d14.png",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      1920,
+      1080
+    ],
+    "export_format": "WEBP",
+    "export_bytes": 777772,
+    "export_sha256": "261c6ed21afab8fae0a1668a97ad2b0743c4373d1787f37429bebe2bfc158245",
+    "processing": "Pillow ImageOps.fit LANCZOS to 1920x1080, negligible center crop for exact 16:9, WebP quality=93 method=6; original unchanged",
+    "status": "candidate-only, not integrated"
+  },
+  {
+    "asset": "tingsong-admission-court",
+    "tool": "built-in image_gen",
+    "tool_original": "/Users/admin/.codex/generated_images/01a1a92c-d1a1-7d31-9929-d7b27f75a4df/exec-d69ee705-7ff7-438f-9669-6aeda232a4f9.png",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      1920,
+      1080
+    ],
+    "export_format": "WEBP",
+    "export_bytes": 851830,
+    "export_sha256": "a752bc31f4e53959c6246e2cca7749b82907cf3c823f1ba462f25b065f87e370",
+    "processing": "Pillow ImageOps.fit LANCZOS to 1920x1080, negligible center crop for exact 16:9, WebP quality=93 method=6; original unchanged",
+    "status": "candidate-only, not integrated"
+  }
+]

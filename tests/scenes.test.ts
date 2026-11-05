@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
 import { createSSRApp, h, type Component } from "vue";
 import { renderToString } from "vue/server-renderer";
@@ -8,7 +9,7 @@ import MistPanel from "../src/MistPanel.vue";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
 import SocialPanel from "../src/SocialPanel.vue";
 import WorldPanel from "../src/WorldPanel.vue";
-import { createGame, dispatch, mistScenes, type MistStage } from "../src/core";
+import { dispatch, mistScenes, type MistStage } from "../src/core";
 
 it.each(Object.keys(mistScenes).filter((k) => k !== "dormant") as MistStage[])(
   "keeps %s chapter narration separate from touch controls",
@@ -125,7 +126,7 @@ it("opens the main route atlas with a current location and a separate exploratio
         }),
     }),
   );
-  expect(html).toContain("雨夜渡口");
+  expect(html).toContain("听松渡口");
   expect(html).toContain("你在此处");
   expect(html).toContain("主线地标详情");
   expect(html).toContain("道友寻亲");

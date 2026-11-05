@@ -1,4 +1,5 @@
-import { createGame, dispatch, type State, type Stance } from "../src/core";
+import { createCultivator as createGame } from "./cultivator-fixture";
+import { dispatch, type State, type Stance } from "../src/core";
 export function arenaMatrix() {
   const rows = [];
   for (const tier of ["low", "normal", "full", "no-grass"] as const)

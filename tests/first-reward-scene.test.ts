@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from "vue";
 import { it, expect } from "vitest";
-import { createGame, dispatch, type Intent } from "../src/core";
+import { dispatch, type Intent } from "../src/core";
 import Learning from "../src/LearningChoices.vue";
 import Practice from "../src/scene2d/FirstPractice.vue";
 function rescued() {

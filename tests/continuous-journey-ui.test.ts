@@ -1,9 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { afterEach, expect, it, vi } from "vitest";
 import { createApp, nextTick, type App as VueApp } from "vue";
 import { createPinia } from "pinia";
 import App from "../src/App.vue";
-import { createGame } from "../src/core";
+
 import { load, save } from "../src/save";
 import { writeSlot } from "../src/save-slots";
 vi.mock("../src/save", () => ({ load: vi.fn(), save: vi.fn() }));
@@ -96,7 +97,7 @@ it.each(["洞府修行", "人生卷宗"])(
     expect(document.querySelector('[aria-label="洞府场景与修行"]')).toBeNull();
     expect(
       document.querySelector('[aria-label="寻人主线"]')?.textContent,
-    ).toContain("雨夜渡口");
+    ).toContain("药乡启程");
     expect(document.querySelector('[aria-label="修行暂停原因"]')).toBeNull();
   },
 );

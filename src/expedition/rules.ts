@@ -1,5 +1,5 @@
 import { grantTechnique } from "../techniques";
-import { resolveTurn, startBattle } from "../combat";
+import { executeBattleAction, startBattle } from "../combat";
 import type { State } from "../world";
 import { expeditionIntermission } from "./progression";
 import { encounters, type Move } from "./content";
@@ -112,17 +112,13 @@ export function runExpedition(
   } else {
     const q = s.expedition,
       d = q.duel!;
-    const { correct, damage, incoming, healing, herbs, note } = exchangePreview(
-      s,
-      a as Move,
-    )!;
-    const turn = resolveTurn(
-      d,
-      { damage, incoming, healing, herbs },
+    const turn = executeBattleAction(d, s.herbs,
       { turnLimit: 12, resolution: "journey" },
-    );
+      () => exchangePreview(s, a as Move));
+    if (!turn) return input;
+    const { correct, damage, incoming, healing, herbs, note } = turn.exchange;
     Object.assign(d, turn.battle);
-    s.herbs -= turn.herbs;
+    s.herbs = turn.remainingHerbs;
     q.effect = q.cleared === 2 || correct ? (a as Move) : "hurt";
     q.last = `第 ${d.turn} 合：${correct ? "看破招式" : q.cleared === 2 ? "变招应对" : "未能化解来招"}，敌方气势 −${damage}。${note}`;
     if (turn.outcome === "win") complete(s);

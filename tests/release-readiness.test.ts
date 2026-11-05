@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { SAVE_VERSION } from "../src/save-version";
 import { afterEach, expect, it, vi } from "vitest";
@@ -7,7 +8,7 @@ import App from "../src/App.vue";
 import RoadPanel from "../src/RoadPanel.vue";
 import FoundationPanel from "../src/foundation-journey/FoundationPanel.vue";
 import FeedbackPanel from "../src/feedback/FeedbackPanel.vue";
-import { createGame, dispatch, type Intent } from "../src/core";
+import { dispatch, type Intent } from "../src/core";
 import { feedbackSummary } from "../src/feedback/feedback";
 import { journeyPreparation } from "../src/foundation-journey/preparation";
 import { load, save } from "../src/save";

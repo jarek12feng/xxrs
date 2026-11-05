@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp,h,nextTick,shallowRef } from 'vue';
 import { afterEach,expect,it,vi } from 'vitest';
-import { createGame } from '../src/core';
+
 import QiJourneyPanel from '../src/qi-journey/QiJourneyPanel.vue';
 import QiWorld from '../src/qi-journey/QiWorld.vue';
 import { qiActionBeats } from '../src/qi-journey/scene-performance';

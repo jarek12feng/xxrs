@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from 'vue';
 import { afterEach, expect, it, vi } from 'vitest';
-import { createGame, dispatch } from '../src/core';
+import { dispatch } from "../src/core";
 import { journeyCheckpoint } from '../tools/foundation-journey-checkpoint';
 import FoundationWorld from '../src/foundation-journey/FoundationWorld.vue';
 import { foundationCompanionPresent, foundationSceneSnapshot, foundationSceneTransition } from '../src/foundation-journey/scene-performance';

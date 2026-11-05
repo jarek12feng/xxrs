@@ -1,7 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import {createApp,h,nextTick,shallowRef} from 'vue';
 import {afterEach,expect,it} from 'vitest';
-import {createGame,dispatch,type State,type Intent} from '../src/core';
+import {dispatch,type State,type Intent} from "../src/core";
+import { teachingSolution } from '../src/golden-story/teaching';
+import { clickPractice } from './helpers/practice-scene';
 import StoryScene from '../src/golden-story/GoldenStoryScene.vue';
 import CovenantScene from '../src/nascent-soul/CovenantScene.vue';
 import {finishGoldenCompletion,goldenLateCheckpoint} from '../tools/golden-completion-checkpoint';
@@ -25,7 +28,7 @@ it('晚年会谷热点和实际问法同为当值传讲人，亲习照常完成'
  const game=mount(s,'conclave');expect(document.querySelector('[data-hotspot="teaching"]')?.textContent).toContain('当值传讲人');
  await click('当值传讲人');await click('演示旧法滞涩');
  expect(game.value.goldenStory.practice?.feedback).toContain('当值传讲人展开沈观微留下的论法实录');
- await click('缓下旧脉');await click('候新流回转');expect(game.value.goldenStory.teachings).toContain('method');
+ for (const move of teachingSolution('method')) await clickPractice('method', move);expect(game.value.goldenStory.teachings).toContain('method');
 });
 it('潮堤显示两位实际相识同道全身图',()=>{
  const s=createGame('潮堤','wood');s.realm=2;s.outerSea.met=true;s.outerSea.location='ferry';

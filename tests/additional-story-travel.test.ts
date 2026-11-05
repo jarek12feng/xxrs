@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch, type State, type Intent } from "../src/core";
+import { dispatch, type State, type Intent } from "../src/core";
 import { storyRoute, storyArrived } from "../src/wayfaring/story-routes";
 import { completedStoryRoute } from "../src/wayfaring/completed-routes";
 import { journeyCheckpoint } from "../tools/foundation-journey-checkpoint";

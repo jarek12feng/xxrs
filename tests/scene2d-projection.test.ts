@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch, type State } from "../src/core";
+import { dispatch, type State } from "../src/core";
 import { adventureOptions, type AdventureAction } from "../src/adventure";
 import { openingScene } from "../src/scene2d/opening";
 
@@ -61,7 +62,7 @@ it("places dialogue portraits on real speakers without using a painted backgroun
   });
   expect(healer.art).toBeUndefined();
   const companion = scene.objects.find((object) => object.id === "luchi")!;
-  expect(companion).toMatchObject({ kind: "person", speaker: "陆迟", y: 79 });
+  expect(companion).toMatchObject({ kind: "person", speaker: "陆迟", y: 55, foot: {x:67,y:72} });
   expect(scene.objects.find((object) => object.id === "exit")?.kind).toBe(
     "exit",
   );

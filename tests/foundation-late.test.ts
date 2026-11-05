@@ -1,10 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { finishPactTrial } from "../tools/foundation-pact-policy";
 import { expect, it } from "vitest";
 import {
   dispatch,
   migrateSave,
   validState,
-  createGame,
   type Intent,
 } from "../src/core";
 import {

@@ -68,7 +68,7 @@ export function luchiView(
         : "渡口有人倚剑而坐，似乎在等一封回信。"
       : s.story.luchi === "foundation"
         ? s.realm
-          ? "“如今你也筑基了。下次相见，再看看彼此走了多远。”"
+          ? "“你也筑基了。好。往后山外见。”"
           : "“这回，你安心闭关。我在门外。”"
         : s.story.luchi === "distant"
           ? "渡口旧约已经错过，他的去向只剩山下传来的消息。"
@@ -77,8 +77,8 @@ export function luchiView(
             : kind === "visit"
               ? "“上回是你帮我。这次，换我。”"
               : s.memories.confided
-                ? "“我想让那盏灯，等到一个归来的人。”"
-                : "“第三十六个月，我在渡口等你。”";
+                ? "“我想找到父亲。我娘还在等他。”"
+                : "“三年之期一到，我在渡口等你。”";
   return {
     portrait: "/characters/luchi-" + portrait + ".png",
     scene,
@@ -95,7 +95,7 @@ export function luchiView(
     quote: delivered
       ? "“她终于肯把窗边的灯放下了。谢谢你，把这封信带回来。”"
       : together
-        ? "“记录还没读完，我们一起查下去。”"
+        ? "“还没查完。我陪你。”"
         : s.journey?.maps.sea === 3
           ? "“她终于肯把窗边的灯放下了。谢谢你，把这封信带回来。”"
           : s.journey?.maps.peak === 3

@@ -1,0 +1,30 @@
+// @vitest-environment happy-dom
+import { afterEach, expect, it } from 'vitest';
+import { createApp,h,nextTick,shallowRef,type App } from 'vue';
+import {dispatch,type Intent} from '../src/core';
+import {conclaveCheckpoint} from '../tools/conclave-checkpoint';
+import CultivationOutlook from '../src/CultivationOutlook.vue';
+let app:App;
+afterEach(()=>{app?.unmount();document.body.innerHTML='';});
+it('候会明确用途、寿元与不加修为，来信后换为赴会而非继续填599',async()=>{
+ const state=conclaveCheckpoint();state.outerSea.notice=state.month-450;state.outerSea.reminded=false;
+ const game=shallowRef(state),busy=shallowRef(true);let serial=0;
+ app=createApp({render:()=>h(CultivationOutlook,{game:game.value,busy:busy.value,automatic:true,onAct:(i:Intent)=>{game.value=dispatch(game.value,{...i,id:`meeting-ui-${++serial}`});}})});
+ app.mount(document.body.appendChild(document.createElement('div')));
+ const button=(label:string)=>Array.from(document.querySelectorAll('button')).find(b=>b.textContent?.includes(label));
+ expect(document.body.textContent).toContain('无须先修满 599');
+ expect(document.body.textContent).toContain('候会不增加修为');
+ expect(document.body.textContent).toContain('若继续修炼至 599');
+ expect(document.body.textContent).not.toContain('本次结束后仍需继续积累');
+ expect(button('留居候会')!.disabled).toBe(true);
+ busy.value=false;await nextTick();
+ expect(button('开始闭关')!.disabled).toBe(false);
+ button('留居候会')!.click();await nextTick();
+ expect(game.value.month).toBe(state.month+150);
+ expect(game.value.outerSea.cultivation).toBe(state.outerSea.cultivation);
+ expect(button('留居候会')).toBeUndefined();
+ expect(button('循道友来信')!.disabled).toBe(false);
+ button('循道友来信')!.click();await nextTick();
+ expect(game.value.conclave.location).toBe('court');
+ expect(document.querySelector('[aria-label="赴会与修行安排"]')).toBeNull();
+});

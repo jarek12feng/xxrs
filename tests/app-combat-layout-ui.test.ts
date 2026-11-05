@@ -1,9 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import {createApp,nextTick,type App as VueApp} from 'vue';
 import {createPinia} from 'pinia';
 import {afterEach,expect,it,vi} from 'vitest';
 import App from '../src/App.vue';
-import {createGame,dispatch,validState} from '../src/core';
+import {dispatch,validState} from "../src/core";
 import {foundationStep} from '../tools/foundation-playthrough';
 import {moves} from '../src/expedition/content';
 import {qiEnemy,qiPreview} from '../src/qi-journey/rules';

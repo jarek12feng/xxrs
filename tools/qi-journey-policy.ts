@@ -1,3 +1,4 @@
+import { admissionStep } from './initiation-policy';
 import { qiNarrativeNext, qiNarrativeActive } from "../src/qi-journey/narrative";
 import {
   preparationReady,
@@ -61,12 +62,17 @@ export function qiJourneyStep(
     return funds(8) ?? { type: "prepare", kind: "retreat" };
   if (s.path === "sword" && s.mastery < 4)
     return { type: "advance", activity: "train", months: 4 };
-  if (!preparationReady(s)) {
+  if(preferred === 'sect' && s.journey.branch === 'none') {
+    const admission=admissionStep(s); if(admission)return admission;
+    // Earn the first recommendation outside the sect; membership cannot unlock itself.
+    preferred='wander';
+  }
+  if (!preparationReady(s) || (preferred === 'sect' && q.preparations[q.gates]!.sect < 3)) {
     const progress = q.preparations[q.gates]![preferred];
     if (preferred === "medicine" && !q.people.scout)
       return send("person:scout");
     if (preferred === "sect") {
-      if (s.journey.branch === "none") return { type: "join", branch: "jian" };
+
       if (progress === 0 && s.journey.contribution < 2)
         return { type: "duty", duty: "herbs" };
     }

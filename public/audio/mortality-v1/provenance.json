@@ -1,0 +1,26 @@
+{
+  "source": "Original procedural composition by tools/generate-mortality-audio.py; no third-party samples",
+  "files": [
+    {
+      "cue": "last-lamp",
+      "seconds": 36,
+      "sampleRate": 22050,
+      "peak": 0.1875,
+      "rms": 0.0464
+    },
+    {
+      "cue": "lost-tide",
+      "seconds": 36,
+      "sampleRate": 22050,
+      "peak": 0.1894,
+      "rms": 0.0464
+    },
+    {
+      "cue": "silent-thunder",
+      "seconds": 36,
+      "sampleRate": 22050,
+      "peak": 0.189,
+      "rms": 0.0469
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+import {tideQuote} from "./tide-survey";
+import {revisitQuote} from "./world-revisits/rules";
+import { correspondenceQuote } from "./correspondence/rules";
 import { artifactQuote } from "./artifact-growth/rules";
 import { itemGrowthQuote } from "./item-growth/rules";
 import { spiritQuote } from "./spirit/rules";
@@ -25,6 +28,7 @@ import { trainingError, medicineError } from "./growth";
 import { studyError } from "./wayfaring/rules";
 /** Explain a rejected command using existing domain quotes. Never execute or consume RNG. */
 export function rejectedActionReason(s: State, intent: Intent): string {
+  if (intent.type === "correspondence") return correspondenceQuote(s, intent.action) || "暂无新的来信";
   if (s.itemGrowth.golden.duel && intent.type !== "artifactGrowth") return "先结束器室交锋或撤回药船";
   if (s.itemGrowth.trial && intent.type !== "itemGrowth") return "先完成石匣解禁或收念撤回";
   if (s.spirit.trial && intent.type !== "spirit") return "先完成识海探阵或收念撤回";
@@ -32,6 +36,8 @@ export function rejectedActionReason(s: State, intent: Intent): string {
   if (intent.type === "ascension") return intent.action === "start" ? ascensionError(s) : s.pending ? "先处理眼前事件，再接续行功" : ascensionOptions(s).find(x=>x.id===intent.action)?.error || "当前行功阶段不能执行此动作";
   let error = "";
   switch (intent.type) {
+    case "tideSurvey": error=tideQuote(s,intent.action).error; break;
+    case "revisit": error=revisitQuote(s,intent.action).error; break;
     case "artifactGrowth": error=artifactQuote(s,intent.action).error; break;
     case "itemGrowth": error=itemGrowthQuote(s,intent.action).error; break;
     case "spirit": error=spiritQuote(s,intent.action).error; break;

@@ -1,0 +1,16 @@
+
+> cultivation-life@0.15.0 test
+> vitest run --maxWorkers=2
+
+fatal: not a git repository (or any of the parent directories): .git
+
+ RUN  v5.0.5 /private/tmp/xxrs-dialogue-snapshot-20261105
+
+
+ Test Files  182 passed (182)
+      Tests  1274 passed (1274)
+   Start at  08:51:35
+   Duration  99.67s (tests 85%, import 8%, environment 5%, transform 2%)
+
+    Isolate  182 workers spawned · ~108ms startup each (spawn + environment, per file)
+             at least ~9.68s faster with isolate: false — reuses workers across files instead of one per file

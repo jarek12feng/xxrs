@@ -1,7 +1,23 @@
+import { freshLegacyMaterialPractice, validLegacyMaterialPractice } from './golden-story/legacy-material-practice';
+import { validDeath, type DeathRecord } from './mortality';
+import { upgradeMaterialPractice, validMaterialPractice } from './golden-story/material-practice';
+import { freshSpiritPractice, validSpiritPractice } from "./golden-story/spirit-practice";
+import { upgradeCrossing, validCrossing } from "./nascent-soul/crossing";
+import { freshFriendJourney, validFriendJourney, settleFriendJourney, type FriendJourney } from "./friend-journey";
+import { freshTideSurvey,validTideSurvey,runTideSurvey,type TideSurvey,type TideSurveyAction } from "./tide-survey";
+import { deliverWorldCalendar } from "./correspondence/calendar";
+import {runRevisit,type RevisitAction} from "./world-revisits/rules";
+import {freshReunion, validReunion} from './golden-reunion/state';
+import { freshAssay, upgradeAssay, validAssay } from "./lizhao/assay";
+import { freshCorrespondence, validCorrespondence, type Correspondence } from "./correspondence/state";
+import { deliverMessages, runCorrespondence, type CorrespondenceAction } from "./correspondence/rules";
+import { validAuctions, upgradeAuctions } from "./auction/state";
 import { freshArtifactGrowth, validArtifactGrowth } from "./artifact-growth/state";
 import { runArtifactGrowth, validArtifactState, type ArtifactAction } from "./artifact-growth/rules";
 import { freshItemGrowth, type ItemGrowth } from "./item-growth/state";
 import { runItemGrowth, validItemGrowth, type ItemGrowthAction } from "./item-growth/rules";
+import { joinError, hasCultivationKit, grantKit, isInitiationAction } from './initiation/rules';
+import { freshInitiation, validInitiation } from './initiation/state';
 import { freshCovenant } from './nascent-soul/covenant';
 import { freshSpirit, senseLimit, type SpiritState } from "./spirit";
 import { runSpirit, validSpirit, type SpiritAction } from "./spirit/rules";
@@ -217,6 +233,10 @@ import {
 export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
   version: typeof SAVE_VERSION;
+  death: DeathRecord | null;
+  friendJourney: FriendJourney;
+  tideSurvey: TideSurvey;
+  correspondence: Correspondence;
   spirit: SpiritState;
   itemGrowth: ItemGrowth;
   goldenStory: GoldenStory;
@@ -243,6 +263,9 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | {id:string;type:"tideSurvey";action:TideSurveyAction}
+  | {id:string;type:"revisit";action:RevisitAction}
+  | { id: string; type: "correspondence"; action: CorrespondenceAction }
   | {id:string;type:"artifactGrowth";action:ArtifactAction}
   | {id:string;type:"itemGrowth";action:ItemGrowthAction}
   | {id:string;type:"spirit";action:SpiritAction}
@@ -314,6 +337,9 @@ const fresh = (): Journey => ({
 });
 function base(s: State): chapter.State {
   const {
+    friendJourney: _friendJourney,
+    tideSurvey: _tideSurvey,
+    correspondence: _correspondence,
     itemGrowth: _itemGrowth,
     wayfaring: _wayfaring,
     journey: _,
@@ -346,6 +372,10 @@ function lift(
   return {
     ...s,
     version: SAVE_VERSION,
+    death: null,
+    friendJourney: freshFriendJourney(),
+    tideSurvey: freshTideSurvey(),
+    correspondence: freshCorrespondence(),
     itemGrowth: freshItemGrowth(),
     spirit: s.spirit ? structuredClone(s.spirit) : freshSpirit(),
     goldenStory: freshGoldenStory(),
@@ -380,7 +410,7 @@ export function createGame(
   gender: Gender | null = null,
 ): State {
   return lift(
-    chapter.createGame(name, path, seed, aptitude),
+    {...chapter.createGame(name, path, seed, aptitude),stones:0},
     fresh(),
     freshSocial(gender),
     freshAdventure(),
@@ -549,8 +579,12 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.death = n.life === old.life ? structuredClone(old.death) : null;
+  n.friendJourney = n.life === old.life ? structuredClone(old.friendJourney) : freshFriendJourney();
+  n.tideSurvey = n.life === old.life ? structuredClone(old.tideSurvey) : freshTideSurvey();
+  n.correspondence = n.life === old.life ? structuredClone(old.correspondence) : freshCorrespondence();
   n.itemGrowth = n.life === old.life ? structuredClone(old.itemGrowth) : freshItemGrowth();
-  if (n.status !== "alive") { n.itemGrowth.trial=null; n.itemGrowth.golden.duel=null; }
+  if (n.status !== "alive") { n.itemGrowth.trial = null; n.itemGrowth.golden.duel = null; }
   if (n.status !== "alive") n.spirit.trial = null;
   n.goldenStory = structuredClone(old.goldenStory);
   n.lizhao = structuredClone(old.lizhao);
@@ -623,6 +657,8 @@ function normalize(n: State, old: State) {
     n.legacy = old.legacy;
     n.earned = old.earned;
   }
+  settleFriendJourney(old,n);
+  deliverWorldCalendar(old,n);
   return n;
 }
 function wayfaringMonth(s: State): State {
@@ -634,10 +670,14 @@ function workshopMonth(s: State, label = "开炉筹备"): State {
 export function dispatch(input: State, c: Command): State {
   const next = dispatchCommand(input, c);
   if (next !== input) {
+    if (next.status === "dead" && !next.death && next.age >= next.limit) next.death = { cause: "lifespan", month: next.month, age: next.age, realm: next.realm };
     if (next.realm !== input.realm || next.status !== "alive" || next.pills < input.pills || next.goldenCore.pills < input.goldenCore.pills) next.ascension = null;
     updateSeaCalendar(next);
     updateContestCalendar(next);
     discoverContest(next,c);
+    settleFriendJourney(input,next);
+    deliverWorldCalendar(input,next);
+    deliverMessages(next);
     if (!next.realm) next.qi = Math.min(next.qi, qiCap(next));
     if ((!next.realm && next.qi === qiCap(next)) || (next.realm === 1 && next.foundationJourney.cultivation === foundationCap(next)) || (next.realm === 2 && next.outerSea.cultivation === goldenCap(next))) next.cultivationRemainder = 0;
   }
@@ -645,6 +685,10 @@ export function dispatch(input: State, c: Command): State {
 }
 function dispatchCommand(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (input.status === "dead" && !["next", "beginChapter"].includes(c.type)) return input;
+  if (c.type === "correspondence") return runCorrespondence(input, c.action, c.id);
+  if(!hasCultivationKit(input) && !['adventure','choose','join','next','beginChapter'].includes(c.type)
+    && !(c.type === 'qiJourney' && (isInitiationAction(c.action) || c.action.startsWith('origin:')))) return input;
   if (input.itemGrowth.golden.duel && c.type !== "artifactGrowth" && c.type !== "choose") return input;
   if (c.type === "artifactGrowth") return runArtifactGrowth(input,c.action,c.id,s=>workshopMonth(s,"法宝温养"));
   if (input.itemGrowth.trial && c.type !== "itemGrowth" && c.type !== "choose") return input;
@@ -662,17 +706,20 @@ function dispatchCommand(input: State, c: Command): State {
   if (input.lizhao.duel && c.type !== "lizhao" && c.type !== "choose") return input;
   if (c.type === "goldenStory" && lizhaoActivity(input)) return input;
   if (c.type === "goldenStory") return runGoldenStory(input,c.action,c.id,workshopMonth);
+  if (c.type === "tideSurvey") return runTideSurvey(input,c.action,c.id,workshopMonth);
+  if (c.type === "revisit") return runRevisit(input,c.action,c.id);
   if (c.type === "lizhao") return runLizhao(input,c.action,c.id,workshopMonth);
   if (c.type === "nascentSoul") return runNascent(input,c.action,c.id,workshopMonth);
   if (lizhaoActivity(input) && !["choose","advance","queue","queueTick","equipRelic","treasure","learning","supplies"].includes(c.type) && !(c.type === "wayfaring" && c.action.kind === "cancel")) return input;
   if (c.type === "wayfaring") return runWayfaring(input,c.action,c.id,wayfaringMonth);
-  if(c.type === "conclave") return runConclave(input,c.action,c.id,workshopMonth);
+  if(c.type === "conclave") return runConclave(input,c.action,c.id,s => workshopMonth(s,c.action.kind === "wait" ? "留居候约" : "开炉筹备"));
   if(input.conclave.duel || input.conclave.location === "vault") return input;
   const localEquipment = c.type === "treasure" && isEquipmentAction(c.action);
+  const guildAuction = c.type === "treasure" && input.outerSea.location === "guild" && ["catalog","enter","bid","pass","leave","wait","budget"].includes(c.action.kind);
   if(!localEquipment && conclaveActive(input) && ["outerSea","goldenCore","foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest","beginChapter","next"].includes(c.type)) return input;
   if(c.type === "outerSea") return runSea(input,c.action,c.id,workshopMonth);
   if(input.outerSea.location === "ruins") return input;
-  if(!localEquipment && input.outerSea.location !== "home" && ["foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest"].includes(c.type)) return input;
+  if(!localEquipment && !guildAuction && input.outerSea.location !== "home" && ["foundationJourney","road","mist","explore","expedition","recognition","secretPact","treasure","sectContest"].includes(c.type)) return input;
   if (c.type === "goldenCore") return runGolden(input,c.action,c.id,s=>workshopMonth(s,c.action.kind === "break" ? "闭关行功" : "凝丹筹备"));
   if (input.goldenCore.expedition !== "idle") return input;
   if (c.type === "sectContest") return runContest(input,c.action,c.id,workshopMonth);
@@ -753,7 +800,7 @@ function dispatchCommand(input: State, c: Command): State {
       n.adventure.step === "done" &&
       n.status === "alive"
     ) {
-      n.adventure.result += "药工请你挑选一册功法作为谢礼。想养气、练剑还是调息，由你自己决定。";
+      n.adventure.result += "温蘅请你回药坪谈求学：营救只是相识，愿入宗者还须引荐与拜师；愿作散修者可另议传法与报酬。";
     }
     return n;
   }
@@ -892,8 +939,8 @@ function dispatchCommand(input: State, c: Command): State {
     const b = base(input),
       result = chapter.dispatch(b, command);
     if (result === b) return input;
-    if (c.type === "next")
-      return lift(result, fresh(), freshSocial(), freshAdventure());
+    if (c.type === "next" || c.type === "beginChapter")
+      return lift({...result,stones:0}, fresh(), freshSocial(), freshAdventure());
     return normalize(
       lift(
         result,
@@ -1098,7 +1145,7 @@ function dispatchCommand(input: State, c: Command): State {
         s.study = Math.min(4, s.study + 1);
         log(
           s,
-          "你说想亲眼看看山外的世界。执事翻开旧卷：“想走远，先学会为自己的选择负责。”心得 +1。",
+          "你说想亲眼看看山外的世界。执事翻开旧卷：“山外路远，光有心气不够。先把行气的根基练稳。”心得 +1。",
         );
       }
       return accept();
@@ -1106,9 +1153,10 @@ function dispatchCommand(input: State, c: Command): State {
       if (
         s.journey.branch !== "none" ||
         !["dan", "jian"].includes(c.branch) ||
-        s.story.stage === "unmet"
+        !!joinError(s)
       )
         return input;
+      grantKit(s,'sect');
       s.journey.branch = c.branch;
       learn(s, c.branch === "dan" ? "herb" : "guard");
       log(
@@ -1117,6 +1165,8 @@ function dispatchCommand(input: State, c: Command): State {
           ? "丹堂执事温蘅收你为记名弟子：“学会救人，才算读懂丹方。”"
           : "剑院执事季衡收你为记名弟子：“握剑的手抬稳。门中弟子出山要护送药队，明日卯时来演武场。”",
       );
+      s.qiJourney.narrative.initiation.last = '你在门册上落名行礼。执事发下一只粗制储物袋、下品灵石十二枚，药队另付营救与试阵酬谢十二枚；基础功法可自选一册。已领过散修入道物资者不重复领取。袋中只能收纳随身物资，不能容纳活物。';
+      log(s,s.qiJourney.narrative.initiation.last);
       if (s.story.luchi !== "distant")
         log(
           s,
@@ -1303,19 +1353,28 @@ export function validState(x: unknown): x is State {
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45,
+  version: 58 | 57 | 56 | 55 | 54 | 53 | 52 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
     (x as { version: unknown }).version !== version ||
+    (version >= 57 && !validDeath(s)) ||
+    (version >= 56 && s.goldenStory?.practice && s.goldenStory.practice.topic !== "spirit" && !(version >= 58 ? validMaterialPractice(s.goldenStory.practice.material) : validLegacyMaterialPractice(s.goldenStory.practice.material))) ||
+    (version >= 55 && s.goldenStory?.practice?.topic === "spirit" && !validSpiritPractice(s.goldenStory.practice.spirit)) ||
+    (version >= 54 && !validCrossing(s.nascentSoul?.crossing, s.nascentSoul?.ability)) ||
+    (version >= 52 && !validFriendJourney(s, version < 53)) ||
+    (version >= 50 && !validTideSurvey(s)) ||
+    (version >= 49 && !validReunion(s)) ||
+    (version >= 48 && !validAssay(s.lizhao?.assay, !!s.lizhao?.cleared, !!s.lizhao?.recipeVerified, version < 51)) ||
+    (version >= 47 && !validCorrespondence(s.correspondence, s.month)) ||
     (version >= 44 && !validItemGrowth(s)) ||
     (version >= 45 && !validArtifactGrowth(s.itemGrowth?.golden)) ||
     (version >= 41 && !validSpirit(s)) ||
     (version < 41 && s.sense > senseLimit(s.realm)) ||
     (version < 39 && (s.realm > 2 || s.conclave?.stage > 2)) ||
-    (version >= 39 && (!validGoldenStory(s,version<42) || !validLizhao(s) || !validNascentSoul(s,version<40,version<42))) ||
+    (version >= 39 && (!validGoldenStory(s,version<42,version<58) || !validLizhao(s) || !validNascentSoul(s,version<40,version<42))) ||
     (version >= 39 && s.conclave.stage === 3 && (!s.nascentSoul.trialWon || !s.lizhao.cleared || !s.lizhao.recipeVerified)) ||
     (version >= 39 && s.lizhao.location !== "away" && (s.realm !== 2 || s.outerSea.location !== "ferry" || s.conclave.location !== "away" || nascentActive(s))) ||
     (version >= 39 && (s.lizhao.duel || nascentActive(s)) && (s.status !== "alive" || s.pending || s.social.scene || s.social.arena.duel || s.expedition.duel || s.foundationJourney.duel || s.sectContest.duel || s.conclave.duel || s.outerSea.duel || s.qiJourney.node || s.ascension || s.wayfaring.trip || s.wayfaring.passage || (s.treasures.auction?.entered && !s.treasures.auction.closed))) ||
@@ -1334,6 +1393,7 @@ function validWorldState(
     (version >= 25 && !validSecretPact(s.secretPact,s.month,s.realm,s.foundationJourney?.won ?? [],s.foundationJourney?.duel?.id,version < 38)) ||
     (version >= 24 && !validRecognition(s.recognition, s.month, s.realm, s.journey?.branch)) ||
     !j ||
+    (version >= 43 && !validInitiation(s.qiJourney?.narrative?.initiation)) ||
     (version >= 26 && !validLearning(j.learning)) ||
     !chapter.validState(version >= 41 ? base(s) : {...base(s),spirit:undefined}) ||
     !validSocial(s) ||
@@ -1350,6 +1410,8 @@ function validWorldState(
     (version >= 13 && !validGrowth(s,version < 35))
   )
     return false;
+  if(version < 49 && (s.outerSea?.location === "guild" || s.treasures?.auction?.venue === "golden"))return false;
+  if (version >= 46 && !validAuctions(s, version < 49)) return false;
   if (version >= 45 && !validArtifactState(s)) return false;
   if (version >= 35 && (equipmentControl(s).error || s.treasures.artifacts.some(id => !artifactReady(s, id)))) return false;
   const integer = (v: unknown, max = 1e9) =>
@@ -1416,26 +1478,199 @@ function validWorldState(
   );
 }
 export function migrateSave(x:unknown):State {
-  if(validState(x)) return structuredClone(x);
-  if(x && typeof x === "object" && "version" in x && (x.version===44 || x.version===43 || x.version===42)) {
-    if(!validWorldState(x,x.version))throw new Error("旧存档损坏，原档未修改。");
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=58)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===57){
+    if(!validWorldState(x,57))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  }else next=migrateBeforePracticeAgency(x);
+  const p=next.goldenStory.practice;
+  if(p && p.topic!=='spirit')p.material=upgradeMaterialPractice(p.topic,p.material,p.step);
+  next.version=SAVE_VERSION;
+  if(!validState(next))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforePracticeAgency(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=57)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===56){
+    if(!validWorldState(x,56))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  }else next=migrateBeforeMortality(x);
+  next.death=null;
+  next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:57},57))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeMortality(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=56)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===55){
+    if(!validWorldState(x,55))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  }else next=migrateBeforeMaterialPractice(x);
+  const p=next.goldenStory.practice;
+  if(p && p.topic!=='spirit')p.material=freshLegacyMaterialPractice(p.topic,p.step) as unknown as NonNullable<typeof p.material>;
+  next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:56},56))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeMaterialPractice(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=55)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===54){
+    if(!validWorldState(x,54))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  }else next=migrateBeforeSpiritPractice(x);
+  const p=next.goldenStory.practice;
+  if(p?.topic==='spirit')p.spirit=freshSpiritPractice(p.step);
+  next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:55},55))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeSpiritPractice(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=54)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===53){
+    if(!validWorldState(x,53))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  }else next=migrateBeforeCrossing(x);
+  next.nascentSoul.crossing=upgradeCrossing(next.nascentSoul.ability);next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:54},54))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeCrossing(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=53)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===52){
+    if(!validWorldState(x,52))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  }else next=migrateBeforeFriendVisit(x);
+  next.friendJourney.visitedAt=null;next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:53},53))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeFriendVisit(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=52)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===51){
+    if(!validWorldState(x,51))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  } else next=migrateBeforeFriendJourney(x);
+  next.friendJourney=freshFriendJourney();next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:52},52))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeFriendJourney(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=51)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===50){
+    if(!validWorldState(x,50))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  } else next=migrateBeforeAssayAgency(x);
+  next.lizhao.assay=upgradeAssay(next.lizhao.assay);next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:51},51))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeAssayAgency(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=50)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===49){
+    if(!validWorldState(x,49))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  }else next=migrateBeforeTideSurvey(x);
+  next.tideSurvey=freshTideSurvey();next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:50},50))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeTideSurvey(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=49)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===48){
+    if(!validWorldState(x,48))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  } else next=migrateBeforeReunion(x);
+  next.goldenStory.reunion=freshReunion();
+  next.treasures.goldenKnown=false;
+  next.treasures.auctionArchive.golden=null;
+  next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:49},49))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeReunion(x:unknown):State {
+  return migrateBeforeGoldenAuction(x);
+}
+function migrateBeforeGoldenAuction(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=48)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===47){
+    if(!validWorldState(x,47))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  } else next=migrateBeforeAssay(x);
+  next.lizhao.assay=freshAssay();
+  next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:48},48))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeAssay(x:unknown):State {
+  if(validState(x))return structuredClone(x);
+  if(x && typeof x === 'object' && 'version' in x && typeof x.version === 'number' && x.version>=47)throw new Error('未知或损坏的存档，原档未修改。');
+  let next: State;
+  if(x && typeof x === 'object' && 'version' in x && x.version === 46) {
+    if(!validWorldState(x,46))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  } else next=upgradeAuctions(migrateBeforeAuction(x));
+  // Initialize only at the final migration boundary. Never fabricate historical mail.
+  next.correspondence=freshCorrespondence();
+  next.version=SAVE_VERSION;
+  if(!validWorldState({...next,version:47},47))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeAuction(x:unknown):State {
+  if(x && typeof x === "object" && "version" in x && x.version === 45 && validWorldState(x,45)) return structuredClone(x) as State;
+  if(x && typeof x === "object" && "version" in x && x.version === 44) {
+    if(!validWorldState(x,44)) throw new Error("旧存档损坏，原档未修改。");
     const n=structuredClone(x) as State;
     n.version=SAVE_VERSION;
-    if(x.version===44)n.itemGrowth.golden=freshArtifactGrowth();else n.itemGrowth=freshItemGrowth();
-    if(!validState(n))throw new Error("旧存档无法安全迁移，原档未修改。");
+    n.itemGrowth.golden=freshArtifactGrowth();
+    if(!validWorldState({...n,version:45},45)) throw new Error("旧存档无法安全迁移，原档未修改。");
+    return n;
+  }
+  if(x && typeof x === "object" && "version" in x && x.version === 43) {
+    if(!validWorldState(x,43)) throw new Error("旧存档损坏，原档未修改。");
+    const n={...structuredClone(x) as State, version:SAVE_VERSION, itemGrowth:freshItemGrowth()};
+    if(!validWorldState({...n,version:45},45)) throw new Error("旧存档无法安全迁移，原档未修改。");
+    return n;
+  }
+  if(x && typeof x === 'object' && 'version' in x && x.version === 42) {
+    if(!validWorldState(x,42)) throw new Error('旧存档损坏，原档未修改。');
+    const n=upgradeImportantScenes(structuredClone(x) as State);
+    n.version=SAVE_VERSION;
+    if(!validWorldState({...n,version:45},45)) throw new Error('旧存档无法安全迁移，原档未修改。');
     return n;
   }
   if(x && typeof x==='object' && 'version' in x && x.version===41) {
     if(!validWorldState(x,41)) throw new Error('旧存档损坏，原档未修改。');
     const n=upgradeImportantScenes(structuredClone(x) as State);
     n.version=SAVE_VERSION;
-    if(!validState(n)) throw new Error('旧存档无法安全迁移，原档未修改。');
+    if(!validWorldState({...n,version:45},45)) throw new Error('旧存档无法安全迁移，原档未修改。');
     return n;
   }
   if(x && typeof x === "object" && "version" in x && x.version === 40) {
     if(!validWorldState(x,40)) throw new Error("旧存档损坏，原档未修改。");
     const n = upgradeImportantScenes({...structuredClone(x) as State, version:SAVE_VERSION, spirit:freshSpirit()});
-    if(!validState(n)) throw new Error("旧存档无法安全迁移，原档未修改。");
+    if(!validWorldState({...n,version:45},45)) throw new Error("旧存档无法安全迁移，原档未修改。");
     return n;
   }
   if(x && typeof x==='object' && 'version' in x && x.version===39){
@@ -1452,7 +1687,7 @@ export function migrateSave(x:unknown):State {
     }
     upgradeImportantScenes(n);
     n.version=SAVE_VERSION;
-    if(!validState(n))throw new Error('旧存档无法安全迁移，原档未修改。');
+    if(!validWorldState({...n,version:45},45))throw new Error('旧存档无法安全迁移，原档未修改。');
     return n;
   }
   if (x && typeof x === "object" && "version" in x && x.version === 38) {
@@ -1825,12 +2060,15 @@ function upgradeNarrative(s: State): State {
   s.version = SAVE_VERSION;
   s.qiJourney.narrative ??= freshQiNarrative();
   s.secretPact = upgradeSecretPact(s.secretPact);
-  if (!validState(s)) throw new Error("旧存档损坏，原档未修改。");
+  if (!validWorldState({...s,version:45},45)) throw new Error("旧存档损坏，原档未修改。");
   return s;
 }
 
 function upgradeImportantScenes(s:State):State {
- s.itemGrowth=freshItemGrowth();
+ s.itemGrowth = freshItemGrowth();
+ s.qiJourney.narrative ??= freshQiNarrative();
+ // Migration preserves existing membership; it never invents an admission or repeats childhood.
+ s.qiJourney.narrative.initiation = {...freshInitiation(),arrival:'legacy',kit:'legacy'};
  s.goldenStory.practice ??= null;
  s.goldenStory.teachingPracticeResults ??= [];
  s.nascentSoul.covenant ??= freshCovenant();

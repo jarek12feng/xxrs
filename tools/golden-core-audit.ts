@@ -1,3 +1,4 @@
+import { admissionStep } from './initiation-policy';
 import { writeFileSync } from "node:fs";
 import { condensationCheckpoint } from "./golden-core-checkpoint";
 import {
@@ -44,7 +45,10 @@ for (const main of ["spring", "blade", "breath"] as const)
       }
     };
     if (route === "contest") {
-      send({ type: "join", branch: "dan" });
+      for(let i=0;i<4 && s.journey.branch==='none';i++) {
+        const step=admissionStep(s,'dan'); if(!step)throw Error('Missing admission witness');
+        send(step);
+      }
       send({ type: "duty", duty: "watch" });
       send({ type: "sectContest", action: { kind: "prepare" } });
       while (s.month < s.sectContest.starts)

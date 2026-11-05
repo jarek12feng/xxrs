@@ -1,10 +1,11 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { afterEach, expect, it, vi } from "vitest";
 import { createApp, nextTick, type App } from "vue";
 import RoadPanel from "../src/RoadPanel.vue";
 import MistPanel from "../src/MistPanel.vue";
 import QiJourneyPanel from "../src/qi-journey/QiJourneyPanel.vue";
-import { createGame } from "../src/core";
+
 import { mistCheckpoint } from "../tools/mist-checkpoint";
 let app: App;
 afterEach(() => { app?.unmount(); document.body.innerHTML = ""; });

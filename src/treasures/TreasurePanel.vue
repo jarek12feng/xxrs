@@ -9,22 +9,17 @@ import {
   loadoutPreview,
   type EquipmentId,
 } from "../equipment";
-import { computed, ref } from "vue";
-import { techniques, type State, type Intent, type Technique } from "../world";
+import AuctionNotices from "../auction/AuctionNotices.vue";
+import { computed } from "vue";
+import { type State, type Intent } from "../world";
 import ItemArt from "../presentation/ItemArt.vue";
 import {
   treasures,
   treasureIds,
-  lotInfo,
-  venues,
-  venueError,
-  type Venue,
 } from "./catalog";
 import { treasureQuote, type TreasureAction } from "./rules";
 const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent] }>();
-const budget = ref(0);
-const sceneFailed = ref(false);
 const control = computed(() => equipmentControl(props.game));
 const loadoutPreviews = computed(() => Object.fromEntries(
   [...treasureIds, "tideSeal", "spiritPearl", "tideBlade"].map((item) => {
@@ -32,22 +27,16 @@ const loadoutPreviews = computed(() => Object.fromEntries(
   }),
 ));
 const artifacts = ["tideSeal", "spiritPearl", "tideBlade"] as const;
-const auction = computed(() => props.game.treasures.auction);
-const lot = computed(() =>
-  auction.value && !auction.value.closed
-    ? auction.value.lots[auction.value.index]
-    : null,
-);
 const reason = (action: TreasureAction) =>
   treasureQuote(props.game, action).error;
 function act(action: TreasureAction) {
   emit("act", { type: "treasure", action });
 }
-const venueIds: Venue[] = ["market", "foundation"];
 </script>
 <template>
-  <section class="treasure-panel" aria-label="宝物与拍卖会">
-    <h3>宝物与拍卖会</h3>
+  <section class="treasure-panel" aria-label="随身宝物">
+    <h3>随身宝物</h3>
+    <AuctionNotices :game="game" />
     <p>
       灵石 {{ game.stones }} ·
       {{ controlDescription(game) }}。容量随神识提升，每 3 点增加
@@ -167,129 +156,6 @@ const venueIds: Venue[] = ["market", "foundation"];
         </button>
       </article>
     </div>
-    <h4>赴会争宝</h4>
-    <p>
-      免费查看目录，先筹资再赴会。逐口竞价，成交才扣款；可以随时放弃。本场结束后至少十二个月才有下场目录。
-    </p>
-    <template v-for="venue in venueIds" :key="venue">
-      <button
-        :disabled="busy || !!reason({ kind: 'catalog', venue })"
-        @click="act({ kind: 'catalog', venue })"
-      >
-        查看{{ venues[venue] }}目录
-      </button>
-      <small>{{
-        venueError(game, venue) || reason({ kind: "catalog", venue })
-      }}</small>
-    </template>
-    <div v-if="auction" class="auction">
-      <img
-        v-if="!sceneFailed"
-        class="auction-scene"
-        :src="'/art/treasures/auction-hall.webp'"
-        alt="坊市拍卖会场"
-        loading="lazy"
-        decoding="async"
-        @error="sceneFailed = true"
-      />
-      <h4>
-        {{ venues[auction.venue] }} ·
-        {{
-          auction.closed
-            ? "已散场"
-            : auction.entered
-              ? "正在竞拍"
-              : "目录已公布"
-        }}
-      </h4>
-      <ol>
-        <li v-for="(entry, i) in auction.lots" :key="i">
-          <ItemArt :id="entry.item" :size="48" />
-          <strong>{{ lotInfo(entry.item).name }}</strong> ·
-          {{ lotInfo(entry.item).category }}
-          <p>{{ lotInfo(entry.item).hint }}</p>
-          <p v-if="lotInfo(entry.item).category === '功法'">
-            {{ techniques[entry.item as Technique].hint }}
-          </p>
-          <small
-            >起价 {{ entry.opening }} · 每口加 {{ entry.step }} 灵石。{{
-              lotInfo(entry.item).source
-            }}参考价 {{ lotInfo(entry.item).price }} 灵石。</small
-          >
-          <p>
-            {{
-              entry.result === "won"
-                ? `已竞得 · 支付 ${entry.paid} 灵石`
-                : entry.result === "passed"
-                  ? "已放弃"
-                  : i === auction.index
-                    ? "本拍"
-                    : "候拍"
-            }}
-          </p>
-        </li>
-      </ol>
-      <template v-if="!auction.closed">
-        <label
-          >每口出价上限（灵石）<input
-            v-model.number="budget"
-            type="number"
-            min="0"
-            max="1000000000"
-            step="1"
-        /></label>
-        <button
-          :disabled="busy || !!reason({ kind: 'budget', value: budget })"
-          @click="act({ kind: 'budget', value: budget })"
-        >
-          设定预算
-        </button>
-        <p>已设上限 {{ auction.budget }} 灵石；每次出价仍须确认。</p>
-        <button
-          v-if="!auction.entered"
-          :disabled="busy || !!reason({ kind: 'enter' })"
-          @click="act({ kind: 'enter' })"
-        >
-          赴会 · 耗时一月
-        </button>
-        <template v-if="auction.entered && lot">
-          <p>
-            本拍：{{ lotInfo(lot.item).name }} ·
-            {{
-              lot.price < lot.opening
-                ? "尚未有人出价"
-                : `对手现价 ${lot.price} 灵石`
-            }}
-          </p>
-          <button
-            :disabled="busy || !!reason({ kind: 'bid' })"
-            @click="act({ kind: 'bid' })"
-          >
-            出价 {{ lot.price + lot.step }} 灵石
-          </button>
-          <small>{{ reason({ kind: "bid" }) }}</small>
-          <button
-            :disabled="busy || !!reason({ kind: 'pass' })"
-            @click="act({ kind: 'pass' })"
-          >
-            放弃本拍
-          </button>
-        </template>
-        <button
-          :disabled="busy || !!reason({ kind: 'leave' })"
-          @click="act({ kind: 'leave' })"
-        >
-          离场 · 保留已得拍品
-        </button>
-      </template>
-    </div>
-    <aside v-if="game.realm === 1 && game.foundationJourney.cultivation >= 200">
-      <ItemArt id="seal" :size="72" />
-      <h4>法宝见闻 · 镇潮印</h4>
-      <p>
-        会场展示了一方镇潮印。执事说，金丹修士以丹元祭炼，可镇住汹涌灵潮；筑基灵力尚不足以长久驱使。此印只供观摩，并非本场拍品。
-      </p>
-    </aside>
   </section>
 </template>
 <style scoped>

@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from "vue";
 import { afterEach, expect, it, vi } from "vitest";
+import { travelPlaybackDuration } from "../src/wayfaring/playback";
 import TravelMap from "../src/wayfaring/TravelMap.vue";
 import PathTraveler from "../src/presentation/movement/PathTraveler.vue";
 import { journeyCheckpoint } from "../tools/foundation-journey-checkpoint";
@@ -75,6 +76,8 @@ it("preview and failed save leave state and actor unchanged; only settled arriva
   expect(raf.queue.size).toBe(1);
   raf.tick(1);
   raf.tick(3000);
+  expect(actor()).not.toContain("320 355");
+  raf.tick(1 + travelPlaybackDuration(3600, "land", game.value.realm));
   await nextTick();
   await nextTick();
   expect(actor()).toContain("320 355");
@@ -263,7 +266,7 @@ it.each([0, 1])('saved chapter trip with %i months closes automatically only for
   const host=document.body.appendChild(document.createElement('div'));
   const app=createApp(StoryTravelMap,{game,route,busy:false,arrived:true,onClose:closed,onDepart:depart});
   app.mount(host);cleanup=()=>{app.unmount();host.remove()};
-  await nextTick();raf.tick(1);raf.tick(3001);await nextTick();await nextTick();
+  await nextTick();raf.tick(1);raf.tick(1+travelPlaybackDuration(route.distance,route.mode,game.realm));await nextTick();await nextTick();
   expect(closed).toHaveBeenCalledTimes(months===0?1:0);
   expect(depart).not.toHaveBeenCalled();
 });

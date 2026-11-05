@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { describe, it, expect } from "vitest";
-import { createGame, dispatch, validState, migrateSave } from "../src/core";
+import { dispatch, validState, migrateSave } from "../src/core";
 import {
   companionChronology,
   companionNews,
@@ -40,8 +41,9 @@ describe("伙伴独立凝丹来信", () => {
     const before = JSON.stringify(s);
     const news = companionNews(s)!;
     expect(news.id).toBe(4);
-    expect(news.text).toContain("最初那一炉没成");
-    expect(news.text).toContain("凝丹第1100月");
+    expect(news.text).toContain("第一炉没成");
+    expect(news.text).toContain("第1100月");
+    expect(news.text).not.toMatch(/核验|近况回执/);
     expect(JSON.stringify(s)).toBe(before);
     expect(companionContact(s).confirmedGolden).toBe(false);
     expect(companionContact(s).reliable).toBe(false);

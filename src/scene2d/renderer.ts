@@ -158,8 +158,8 @@ export function mountStage(
         .setDepth(-9);
       for (const o of config.objects) {
         if (!o.art || !this.textures.exists(o.id)) continue;
-        const x = (o.x * width) / 100,
-          y = (o.y * height) / 100;
+        const x = ((o.foot?.x ?? o.x) * width) / 100,
+          y = ((o.foot?.y ?? o.y) * height) / 100;
         const scale = groundScale(y, height);
         const person = o.id === "luchi" || o.id === "exit";
         this.add

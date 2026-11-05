@@ -1,3 +1,4 @@
+import { freshAssay, type AssayState } from "./assay";
 import type { State } from "../world";
 import type { Move } from "../combat";
 export type Pursuit =
@@ -18,6 +19,7 @@ export interface Lizhao {
   outerCleared: boolean;
   cleared: boolean;
   recipeVerified: boolean;
+  assay: AssayState;
   reagent: number;
   allocation: "none" | "share" | "private" | "seize";
   pursuit: Pursuit;
@@ -40,6 +42,7 @@ export const freshLizhao = (): Lizhao => ({
   outerCleared: false,
   cleared: false,
   recipeVerified: false,
+  assay: freshAssay(),
   reagent: 0,
   allocation: "none",
   pursuit: "none",
@@ -82,7 +85,7 @@ export function validLizhao(s: State) {
     )
   )
     return false;
-  if (s.realm < 2) return JSON.stringify(l) === JSON.stringify(freshLizhao());
+  if (s.realm < 2) { const {assay: _a, ...saved}=l; const {assay: _b, ...fresh}=freshLizhao(); return JSON.stringify(saved) === JSON.stringify(fresh); }
   if ((l.location !== "away" || l.route !== "none") && s.conclave.stage < 2)
     return false;
   if (["outer", "inner"].includes(l.location) && l.preparation === "none")

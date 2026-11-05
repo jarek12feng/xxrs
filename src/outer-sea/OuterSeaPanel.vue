@@ -1,4 +1,18 @@
 <script setup lang="ts">
+import { mortalWarning } from "../mortality";
+import FriendJourneyScene from "../friend-journey/FriendJourneyScene.vue";
+import { friendPresence } from "../friend-journey/presence";
+import {tideKnown} from "../tide-survey";
+import TideSurveyPanel from "../tide-survey/TideSurveyPanel.vue";
+import {revisitView} from "../world-revisits/projection";
+import RevisitPanel from "../world-revisits/RevisitPanel.vue";
+import ReunionScene from "../golden-reunion/ReunionScene.vue";
+import {reunionKnown} from "../golden-reunion";
+const reunionOpen=ref(false);
+import AuctionScene from '../auction/AuctionScene.vue';
+import AuctionDestination from '../auction/AuctionDestination.vue';
+const auctionOpen=ref(false);
+
 import ArtifactScene from "../artifact-growth/ArtifactScene.vue";
 const artifactOpen=ref(false);
 import SpiritScene from "../spirit/SpiritScene.vue";
@@ -29,7 +43,9 @@ import CultivationOutlook from "../CultivationOutlook.vue";
 const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent]; shore: []; meeting: [] }>();
 watch(() => props.game.spirit.trial, trial => { if(trial?.source === "tide") spiritOpen.value = true; }, {immediate:true});
+const revisit = computed(()=>revisitView(props.game,'ferry'));
 const o = computed(() => props.game.outerSea);
+watch(()=>props.game.treasures.auction,a=>{if(a?.venue==='golden' && a.entered && !a.closed)auctionOpen.value=true;},{immediate:true});
 const options = computed(() => {
   const s = props.game,
     t = o.value;
@@ -43,7 +59,7 @@ const options = computed(() => {
     ] as const) {
       const p = seaExchange(s, move)!;
       add(
-        `${name} · 伤害 ${p.damage} / 承伤 ${p.incoming}${p.herbs ? ` / 灵草 ${p.herbs}` : ""}`,
+        `${name} · 伤害 ${p.damage} / 承伤 ${p.incoming}${p.herbs ? ` / 灵草 ${p.herbs}` : ""}${t.duel.depth === 2 ? mortalWarning(t.duel, p, 16) : ""}`,
         { kind: "move", move },
       );
     }
@@ -51,7 +67,10 @@ const options = computed(() => {
     return projectInteractions(s, a, seaQuote);
   }
   if (t.location === "home") add("循海路前往外海古渡", { kind: "sail" });
+  if(t.location === 'guild')add('循商盟航路返回古渡',{kind:'guildReturn'});
   if (t.location === "ferry") {
+    if(t.met && !s.treasures.goldenKnown)add('向商旅打听沧澜会讯',{kind:'auctionNews'});
+    if(s.treasures.goldenKnown)add('赴沧澜会馆 · 金丹拍卖',{kind:'guild'});
     if (!t.met) add("与修堤者和观潮阵修交谈", { kind: "meet" });
     else if (t.pact === "none") {
       add("共享潮图 · 接应气势 +12，行装较省", { kind: "pact", pact: "share" });
@@ -60,7 +79,7 @@ const options = computed(() => {
     if (t.pact !== "none" && t.cleared < 2) {
       if (!t.prepared) add("筹备避潮行装", { kind: "prepare" });
       else
-        add(t.cleared ? "重返遗迹，探入内府" : "踏上退潮石道", {
+        add(t.cleared ? "探入内府 · 气势耗尽会陨落，可主动撤离" : "踏上退潮石道", {
           kind: "enter",
         });
     }
@@ -134,7 +153,7 @@ const hotspots = computed(() => {
       y: 70,
     },
     {
-      id: "friends",
+      id: "friends", kind: "person" as const,
       label: o.value.met ? "顾沧遥与叶问苓" : "堤边修士",
       x: 49,
       y: 83,
@@ -150,6 +169,7 @@ const hotspots = computed(() => {
       x: 59,
       y: 43,
     },
+    {id:"merchant",label:"商盟泊船 · 沧澜会讯",x:34,y:58},
     { id: "treasure", label: "随身法宝与功法", x: 51, y: 76 },
     { id: "chamber", label: "临海静修处", x: 22, y: 47 },
     {
@@ -210,11 +230,20 @@ watch(hotspots, (objects) => {
 });
 </script>
 <template>
-  <ArtifactScene v-if="artifactOpen || (game.itemGrowth.golden.duel && game.lizhao.location==='away')" :game="game" :busy="busy" @act="emit('act',$event)" @close="artifactOpen=false"/>
+  <template v-if="o.location==='guild'">
+    <AuctionScene v-if="auctionOpen" venue="golden" :game="game" :busy="busy" @act="emit('act',$event)" @close="auctionOpen=false"/>
+    <NarrativeStage v-else image="/art/auction/golden-hall.webp" title="沧澜会馆 · 商盟泊岸" :goal="seaGoal(game)" stage-key="sea-guild" :hotspots="[{id:'auction',label:'金丹拍卖厅',x:60,y:48},{id:'exit',label:'返渡航路',x:18,y:76}]" :active="selected" @select="selected=$event" @close="selected=''">
+      <template v-if="selected==='auction'"><AuctionDestination :game="game" place="guild"/><button :disabled="busy" @click="auctionOpen=true">进入金丹拍卖厅</button></template>
+      <template v-if="selected==='exit'"><p>沿商盟航路返回外海古渡，单程两个月。</p><button :disabled="busy || !!seaQuote(game,{kind:'guildReturn'}).error" @click="send({kind:'guildReturn'})">循航路返回古渡</button><p>{{seaQuote(game,{kind:'guildReturn'}).error}}</p></template>
+    </NarrativeStage>
+  </template>
+  <ArtifactScene v-else-if="artifactOpen || (game.itemGrowth.golden.duel && game.lizhao.location==='away')" :game="game" :busy="busy" @act="emit('act',$event)" @close="artifactOpen=false"/>
   <SpiritScene v-else-if="spiritOpen || game.spirit.trial?.source==='tide'" :game="game" :busy="busy" @act="emit('act',$event)" @close="spiritOpen=false" />
   <template v-else>
+  <FriendJourneyScene v-if="reunionOpen && game.friendJourney.startedAt!==null" :game="game" :busy="busy" @act="emit('act',$event)" @close="reunionOpen=false"/>
+  <ReunionScene v-else-if="reunionOpen" :game="game" :busy="busy" @act="emit('act',$event)" @close="reunionOpen=false"/>
   <GoldenStoryScene
-    v-if="storyOpen"
+    v-if="storyOpen && !reunionOpen"
     :game="game"
     :busy="busy"
     place="sea"
@@ -223,7 +252,7 @@ watch(hotspots, (objects) => {
   />
   <NarrativeStage
     v-if="
-      !storyOpen &&
+      !storyOpen && !reunionOpen &&
       game.realm === 2 &&
       game.goldenCore.farShore &&
       game.conclave.location === 'away'
@@ -246,6 +275,9 @@ watch(hotspots, (objects) => {
       game.realm === 2 && !o.duel && o.location === 'ferry'
         ? [
             ...hotspots,
+            ...(tideKnown(game)?[{id:'tide-survey',label:'潮隙侧廊 · 周期退潮',x:81,y:76}]:[]),
+            ...(revisit?[{id:'revisit',label:revisit.title,x:63,y:69}]:[]),
+            ...(reunionKnown(game)?[{id:'reunion',label:game.friendJourney.startedAt!==null?(friendPresence(game)==='resting'?'侧堤 · 苏婉宁返渡':'侧堤 · 勘潮信路'):game.goldenStory.reunion.stage==='departed'?'侧堤 · 同行旧记':'侧堤 · 故人之约',x:49,y:44}]:[]),
             ...(spiritSite(game)==='tide'?[{id:'spirit',label:game.spirit.jade==='refined'?'潮隙 · 玉髓已炼化':'归潮拓本 · 潮隙取髓',x:71,y:36}]:[]),
             { id: 'golden-story', label: '潮堤与公开问法', x: 82, y: 58 },
           ]
@@ -254,7 +286,7 @@ watch(hotspots, (objects) => {
     :active="selected"
     :battle="!!o.duel"
     @select="
-      $event === 'spirit' ? (spiritOpen=true) : $event === 'golden-story'
+      $event === 'reunion' ? (reunionOpen=true) : $event === 'spirit' ? (spiritOpen=true) : $event === 'golden-story'
         ? (storyOpen = true)
         : $event === 'letter'
           ? emit('meeting')
@@ -262,6 +294,7 @@ watch(hotspots, (objects) => {
     "
     @close="selected = ''"
   >
+    <AuctionDestination v-if="selected==='merchant' && game.treasures.goldenKnown" :game="game" place="guild" :months="seaQuote(game,{kind:'guild'}).months"/>
     <template #status
       ><span
         >{{ realmStageLabel(game) }} · 修为 {{ o.cultivation }}/{{
@@ -289,7 +322,7 @@ watch(hotspots, (objects) => {
         :enemy="combat.enemy"
         :enemy-max="combat.enemyMax"
         :enemy-name="combat.enemyName"
-        :tell="seaTell"
+        :tell="seaTell + (o.duel.depth === 2 ? ' 内府气势耗尽会陨落，同归于尽亦然；可出招前撤离。' : ' 外府败退受伤，可整备重试。')"
         :options="combatOptions"
         :busy="busy"
         retreat-label="收势撤回 · 保留此前进度"
@@ -300,7 +333,9 @@ watch(hotspots, (objects) => {
       />
     </template>
 
-    <button v-if="selected === 'friends' && o.met && o.location==='ferry'" @click="artifactOpen=true">旧器谱与法宝温养 · 潮纹剑的线索</button>
+    <TideSurveyPanel v-if="selected==='tide-survey' && o.location==='ferry'" :game="game" :busy="busy" @act="emit('act',$event)"/>
+    <RevisitPanel v-if="selected==='revisit' && o.location==='ferry'" :game="game" site="ferry" :busy="busy" @act="emit('act',$event)"/>
+    <button v-if="selected === 'friends'  && o.met && o.location==='ferry'" @click="artifactOpen=true">旧器谱与法宝温养 · 潮纹剑的线索</button>
     <p v-if="selected === 'friends'">
       {{
         o.met

@@ -1,3 +1,4 @@
+import { hasCultivationKit } from './initiation/rules';
 import { claimResources } from "./economy";
 import { grantTechnique, applyTechnique } from "./techniques";
 import { applyEquipmentChange } from "./equipment";
@@ -11,6 +12,7 @@ export function validLearning(x: unknown): boolean {
 }
 export function learningBlocked(s: State) {
   return (
+    !hasCultivationKit(s) ||
     s.status !== "alive" ||
     !!(
       s.pending ||

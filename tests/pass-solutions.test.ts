@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { expect, it } from "vitest";
 import { createApp, nextTick } from "vue";
@@ -8,7 +9,6 @@ import {
   dispatch,
   validState,
   migrateSave,
-  createGame,
   freshRoad,
   passSolutions,
   passEcho,

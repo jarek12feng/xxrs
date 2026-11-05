@@ -1,8 +1,9 @@
+import { isInitiationAction, initiationError, runInitiation } from '../initiation/rules';
 import { isQiNarrativeAction, runQiNarrative, qiNarrativeQuote, qiNarrativeActive, qiCaveComplete, qiNarrativeGoal, qiNotesPower } from "./narrative";
 import { quoteSettlement, settleResources, type ResourceSettlement } from "../economy";
 import { inspectInteraction } from "../story-interactions";
 import type { CombatAdjustment } from "../combat";
-import { resolveTurn, startBattle } from "../combat";
+import { executeBattleAction, startBattle } from "../combat";
 import {
   passageIds,
   passagePlan,
@@ -133,6 +134,7 @@ function qiRequirementError(s: State, a: QiAction): string {
   return "未知行动";
 }
 export function qiQuote(s: State, a: QiAction) {
+  if(isInitiationAction(a))return {error:initiationError(s,a),months:0,settlement:{cost:{},reward:{}}};
   if(isQiNarrativeAction(a))return qiNarrativeQuote(s,a);
   const error = qiRequirementError(s, a);
   const settlement: ResourceSettlement = { cost: {}, reward: {} };
@@ -251,6 +253,7 @@ export function runQiJourney(
   id: string,
   tick: (s: State) => State,
 ): State {
+  if(isInitiationAction(a))return runInitiation(input,a,id);
   if(isQiNarrativeAction(a))return runQiNarrative(input,a,id,tick);
   const { quote } = inspectInteraction(input, a, qiQuote);
   if (quote.error) return input;
@@ -303,12 +306,13 @@ export function runQiJourney(
     };
     q.last = qiSites[q.gates]!.intro;
   } else if (q.duel) {
-    const d = q.duel,
-      p = qiPreview(s, a as Move)!;
-    const turn = resolveTurn(d, p, { turnLimit: 16, resolution: "journey" });
+    const d = q.duel;
+    const turn = executeBattleAction(d, s.herbs, { turnLimit: 16, resolution: "journey" }, () => qiPreview(s, a as Move));
+    if (!turn) return input;
+    const p = turn.exchange;
     const damage = turn.damage;
     Object.assign(d, turn.battle);
-    s.herbs -= turn.herbs;
+    s.herbs = turn.remainingHerbs;
     q.last = `${qiEnemy(s)!.name}气势 −${damage}。`;
     if (turn.outcome === "win") {
       if (q.trial) {

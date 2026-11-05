@@ -1,6 +1,9 @@
+import { endLife } from '../mortality';
+import {reagentTerms} from "../world-revisits/projection";
+import { startAssay, assayMethod, assayMoves, type AssayMove } from "./assay";
 import type { State } from "../world";
 import type { Move } from "../combat";
-import { resolveTurn, startBattle } from "../combat";
+import { executeBattleAction, startBattle } from "../combat";
 import { foundationPower } from "../foundation-journey/combat";
 import { advanceMonths } from "../timeline";
 import { settleResources } from "../economy";
@@ -34,6 +37,7 @@ export type LizhaoAction =
         | "spare"
         | "kill";
     }
+  | { kind: "assay"; move: AssayMove }
   | { kind: "route"; route: "cooperate" | "independent" }
   | { kind: "prepare"; preparation: "ward" | "purify" }
   | { kind: "allocate"; allocation: "share" | "private" | "seize" }
@@ -150,11 +154,19 @@ export function lizhaoQuote(s: State, a: LizhaoAction) {
       if (s.injury > 1 || l.recovery) error ||= "先回港恢复，再应对挑战";
       break;
     case "verify":
-      months = 3;
+      months = 1;
       herbs = 2;
-      if (!at("chamber") || !l.cleared || l.recipeVerified)
+      if (!at("chamber") || !l.cleared || l.recipeVerified || l.assay.phase!=="idle")
         error ||= "取药后在旧丹室验证一次药理";
       break;
+    case "assay": {
+      const method = assayMethod(s, a.move);
+      months = method.months;
+      herbs = method.herbs;
+      if(!at("chamber") || !l.cleared || l.recipeVerified || !["cloudy","clear"].includes(l.assay.phase) || !assayMoves.includes(a.move)) error ||= "先在旧丹室备好试料，再根据药液决定排潮或定性";
+      error ||= method.error;
+      break;
+    }
     case "allocate":
       if (a.allocation === "seize" && l.reagent >= 20)
         error ||= "药匣已满，不能再扣下余药";
@@ -167,12 +179,7 @@ export function lizhaoQuote(s: State, a: LizhaoAction) {
         error ||= "先验证药理，再商定剩余药株和排潮记录的归属";
       break;
     case "resupply":
-      months = 6;
-      stones =
-        l.allocation === "seize" && !["settled", "exposed"].includes(l.pursuit)
-          ? 32
-          : 24;
-      herbs = 4;
+      ({months,stones,herbs}=reagentTerms(s));
       if (!at("harbor") || !l.cleared || !l.recipeVerified || l.reagent >= 20)
         error ||= "先完成离照取药与药理验证，药匣至多存20份";
       break;
@@ -235,8 +242,8 @@ export function lizhaoGoal(s: State) {
   const l = s.lizhao;
   if (l.duel)
     return l.duel.kind === "han"
-      ? "韩砺舟是受雇夺药的人族修士。败退只增伤势，不夺走主药与辅药。"
-      : "辨影排毒并为下一合开路；守势蓄力，潮压退后可反击。趁开口破枢才能有效取药；积毒到100或十八合未破阵会败退。";
+      ? "韩砺舟是受雇夺药的人族修士。气势耗尽或积毒100会陨落；主动撤回保命，超时仍有气势可伤退。"
+      : "辨影排毒并为下一合开路；守势蓄力，潮压退后可反击。趁开口破枢才能有效取药；外层可伤退；内层气势耗尽或积毒100会陨落，十八合未破阵但仍能自持则伤退。";
   if (l.location === "away")
     return "前往离照洞天，寻找使凝婴灵髓稳定成丹的辅药。";
   if (l.recovery) return "回港治疗残毒；已开通路与取得的药材都保留。";
@@ -336,7 +343,7 @@ export function runLizhao(
     case "chamber":
       l.location = "chamber";
       record(
-        "旧丹室残留分药槽与试药炉。单有灵髓会聚而不凝，先用少量普通灵草试验分潮与定性顺序。",
+        "旧丹室残留分药槽与试药炉。单有灵髓会聚而不凝，可用普通灵草试炉，选择分槽缓炼或分念辨性，按炉况调整后收药。",
       );
       break;
     case "return":
@@ -360,27 +367,31 @@ export function runLizhao(
         toxin: 0,
       };
       record(
-        `${lizhaoFoe(kind).name}已起势。最多十八合；败退伤势 +2、需三月排毒，材料不丢。主动撤离不加伤。`,
+        `${lizhaoFoe(kind).name}已起势。最多十八合；${kind === "outer" ? "外层败退伤势 +2、需三月排毒" : "气势耗尽或积毒100会陨落；超时仍能自持则伤退"}。主动撤离不加伤、不丢药材。`,
       );
       break;
     }
     case "move": {
-      const d = l.duel!,
-        p = lizhaoExchange(s, a.move)!;
-      const r = resolveTurn(d, p, {
-        turnLimit: 18,
-        resolution: "simultaneous",
-      });
+      const d = l.duel!;
+      const r = executeBattleAction(d, s.herbs, {
+        turnLimit: 18, resolution: "simultaneous",
+      }, () => lizhaoExchange(s, a.move))!;
+      const p = r.exchange;
       Object.assign(d, r.battle);
       d.effect = a.move;
       d.toxin = p.toxin;
-      s.herbs -= r.herbs;
+      s.herbs = r.remainingHerbs;
       record(
         `削去气势 ${p.damage}，承伤 ${p.incoming}，回气 ${p.healing}；积毒 ${p.toxin}/100。${p.note}`,
       );
-      const loss = p.toxin >= 100 || r.outcome === "loss";
+      const loss = p.toxin >= 100 || r.outcome === "loss" || (d.kind !== "outer" && r.battle.hp <= 0);
       if (loss) {
         l.duel = null;
+        if (d.kind !== 'outer' && (r.battle.hp <= 0 || p.toxin >= 100)) {
+          endLife(s, d.kind === 'han' ? 'duel' : 'lizhao');
+          l.last = s.result;
+          return s;
+        }
         l.location = "harbor";
         l.recovery = true;
         s.injury = Math.min(6, s.injury + 2);
@@ -412,11 +423,14 @@ export function runLizhao(
       break;
     }
     case "verify":
-      l.recipeVerified = true;
-      record(
-        "分潮在前、定性在后，试炉中的灵草终于凝成稳定药液。你将今世潮息与残方逐项校准：每炉化婴丹须一份凝婴主药与一份定性辅药，缺一不可；此番验证未消耗封存辅药。",
-      );
+      l.assay = startAssay();
+      record("你将两份普通灵草投入试炉，黑沫沿槽翻涌，炉底尚有清液。先看槽边旧刻和眼前药液，再决定如何行炉；封存辅药留在药匣里。");
       break;
+    case "assay": {
+      const result=assayMethod(s,a.move);l.assay=result.next;
+      if(l.assay.phase==="stable")l.recipeVerified=true;
+      record(result.note);break;
+    }
     case "allocate":
       l.allocation = a.allocation;
       if (a.allocation === "seize") {
@@ -446,7 +460,7 @@ export function runLizhao(
     case "rumor":
       l.pursuit = "warned";
       record(
-        "药船管事带来确切消息：邵荃雇韩砺舟在伏潮湾夺药。结伴需灵石12、两月；设伏需两月；绕行需灵石8、半年。交锋败退仅伤势 +2、三月排毒，不丢主药和辅药，也没有暗中限期。",
+        "药船管事带来确切消息：邵荃雇韩砺舟在伏潮湾夺药。结伴需灵石12、两月；设伏需两月；绕行需灵石8、半年。应战气势耗尽或积毒100会陨落；可主动撤回、谈赔偿或绕行。超时伤退需三月排毒，不丢主药和辅药，没有暗中限期。",
       );
       break;
     case "respond":

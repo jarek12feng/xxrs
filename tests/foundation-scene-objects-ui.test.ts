@@ -1,9 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from "vue";
 import { expect, it } from "vitest";
 import FoundationPanel from "../src/foundation-journey/FoundationPanel.vue";
 import CompanionshipPanel from "../src/companionship/CompanionshipPanel.vue";
-import { createGame, type Intent } from "../src/core";
+import { type Intent } from "../src/core";
 import { journeyCheckpoint } from "../tools/foundation-journey-checkpoint";
 
 it("world objects reveal only their actions, observing is free, and moving to another place closes the inspector", async () => {

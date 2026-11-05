@@ -1,0 +1,38 @@
+/* Scene-local speech, with a tail aimed at the selected speaker. */
+.speech-bubble.speech-bubble.speech-bubble.speech-bubble {
+  position: absolute;
+  left: var(--bubble-left);
+  right: auto;
+  top: auto;
+  bottom: var(--bubble-bottom);
+  transform: none;
+  width: min(420px, calc(100% - 32px));
+  max-height: none;
+  box-sizing: border-box;
+  padding: 14px 18px;
+  border: 1px solid #c4b083;
+  border-radius: 16px;
+  background: #102720f5;
+  box-shadow: 0 8px 28px #0007;
+  overflow: visible;
+  z-index: 8;
+}
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: var(--bubble-tail);
+  width: 16px;
+  height: 16px;
+  background: #102720;
+  border-right: 1px solid #c4b083;
+  border-bottom: 1px solid #c4b083;
+  transform: rotate(45deg);
+}
+.speech-bubble .speech-content {
+  max-height: var(--bubble-content-height);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.speech-bubble .speaker-portrait { display: none; }

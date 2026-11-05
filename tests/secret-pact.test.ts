@@ -1,9 +1,9 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
 import {
   dispatch,
   validState,
   migrateSave,
-  createGame,
   type State,
 } from "../src/core";
 import {

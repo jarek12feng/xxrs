@@ -1,4 +1,7 @@
-import { teachingExercises, teachingIntroduction, type TeachingMove } from "./teaching";
+import { freshMaterialPractice, materialPracticeQuote } from './material-practice';
+import {reunionQuote, reunionTeaching, applyReunion, reunionAvailable, type ReunionAction} from '../golden-reunion';
+import { freshSpiritPractice, spiritPracticeQuote } from "./spirit-practice";
+import { teachingIntroduction, type TeachingMove } from "./teaching";
 export { teachingSolution } from "./teaching";
 import { companionNews } from "./companion";
 export { companionNews } from "./companion";
@@ -8,6 +11,7 @@ import { activityInterruption } from "../scene-activity";
 import { settleResources } from "../economy";
 import type { TeachingTopic, RubbingRecipient } from "./state";
 export type GoldenStoryAction =
+  | {kind:"reunion"; action:ReunionAction}
   | { kind: "direction"; choice: "sect" | "independent" }
   | { kind: "observe"; point: "gauge" | "flow" }
   | { kind: "duty"; duty: "ward" | "survey" }
@@ -38,6 +42,10 @@ export function goldenStoryQuote(s: State, a: GoldenStoryAction) {
   if (s.realm !== 2) error ||= "金丹行旅期间方可办理此事";
   if (!g) return { months, stones, herbs, error: "金丹见闻尚未初始化" };
   switch (a.kind) {
+    case "reunion": {
+      const q=reunionQuote(s,a.action);
+      return {...q,error:error || q.error || (q.months && s.limit-s.age<=q.months ? "余寿不足以完成此事" : "")};
+    }
     case "direction":
       if (!["sect", "independent"].includes(a.choice)) error ||= "未知引荐方式";
       if (g.direction !== "none") error ||= "问路之约已记下";
@@ -77,11 +85,12 @@ export function goldenStoryQuote(s: State, a: GoldenStoryAction) {
         error ||= "先温养镇潮印并研修澄息篇，用实际所得核对旧录";
       if (g.oldRecord) error ||= "旧录已经核对";
       break;
-    case "ask":
+    case "ask": {
+      const fieldTopic = reunionTeaching(s);
       months =
-        (a.topic === "ground" && goldenCooperation(s).harbor) ||
-        (a.topic === "spirit" && goldenCooperation(s).charts) ||
-        (a.topic === "method" && goldenCooperation(s).frost) ||
+        (a.topic === "ground" && (goldenCooperation(s).harbor || fieldTopic === "ground")) ||
+        (a.topic === "spirit" && (goldenCooperation(s).charts || fieldTopic === "spirit")) ||
+        (a.topic === "method" && (goldenCooperation(s).frost || fieldTopic === "method")) ||
         (a.topic === "pill" && g.rubbings.includes("retain"))
           ? 0
           : 1;
@@ -100,11 +109,13 @@ export function goldenStoryQuote(s: State, a: GoldenStoryAction) {
       if (g.teachings.includes(a.topic)) error ||= "这项问法已有实测批注";
       if (g.practice) error ||= "石案上的试法尚未收束，先辨清这一处";
       break;
+    }
     case "practice": {
       const p = g.practice;
       if (!p) { error ||= "石案尚未点亮，先将疑处说与传讲者听"; break; }
       if (p.source === "seat" ? s.conclave.location !== "court" || !s.conclave.introduced : !atSea(s) || !s.outerSea.met) error ||= "回原来的石案前，再续试法";
-      if (!teachingExercises[p.topic][p.step].choices.some(c => c.move === a.move)) error ||= "这一试须从眼前灵流着手";
+      if(p.topic === 'spirit') { const offer=spiritPracticeQuote(s,a.move); herbs=offer.herbs; error ||= offer.error; break; }
+      const offer=materialPracticeQuote(s,a.move); herbs=offer.herbs; error ||= offer.error;
       break;
     }
     case "rubbing":
@@ -137,10 +148,10 @@ export function goldenStoryQuote(s: State, a: GoldenStoryAction) {
   return { months, stones, herbs, error };
 }
 export const teachingText: Record<TeachingTopic, string> = {
- method: "旧脉缓下来，新法才接得住。抱元录的要义，在于令神魂与丹元同息；往后转修，也须先理清旧法行气的来路。",
+ method: "旧流与新流须能相承，不能迎面相争。抱元录的要义，在于令神魂与丹元同息；往后转修，也须辨清旧法行气的来路。",
  spirit: "定神珠能替你挡住一阵潮压，却不能替你守住本念。护神而不闭神，一念在内，仍须听得见身外风潮。",
  pill: "潮毒浮而药息沉，先辨性，再分离。离照泊岸的候潮记号已添在路图上，须亲往寻得定性辅药，验过药性，方可开炉。",
- ground: "供灵须有来去，护持须分内外。依今日阵图准备闭关处，再与可信之人商议守关，莫将两阵挤在一处。",
+ ground: "守在原处与移往稳地，各有可行之法。护阵要照应所守之物，也要顾及人在风潮中的退路；闭关处与守关之人，同样须彼此照应。",
 };
 export function runGoldenStory(
   input: State,
@@ -156,19 +167,21 @@ export function runGoldenStory(
     tick,
     interrupt: (n) =>
       activityInterruption(n) ||
+      (a.kind === "reunion" && !reunionAvailable(n) ? "旧友近况已需重新核实" : "") ||
       (n.outerSea.reminded && !input.outerSea.reminded
         ? "会谷来信已到，先查看来信"
         : ""),
   });
   s = elapsed.state;
   if (elapsed.stopped) {
-    record("事务因眼前消息暂止，未扣物资、未结算观潮或问法成果。");
+    record("事务因眼前消息暂止，未扣物资、未结算观潮、问法或同行成果。");
     return finish();
   }
-  if (settleResources(s, { stones: q.stones, herbs: q.herbs }).error)
+  if (settleResources(s, { stones: q.stones, herbs: q.herbs }, a.kind === "reunion" ? reunionQuote(s,a.action).reward : {}).error)
     return input;
   const g = s.goldenStory;
   switch (a.kind) {
+    case "reunion": record(applyReunion(s,a.action)); break;
     case "direction":
       g.direction = a.choice;
       record(
@@ -208,28 +221,42 @@ export function runGoldenStory(
         "镇潮印已回应今日灵流，澄息篇也已实际运转。你据此核对旧主人残录：此地原用来研究潮息与护体，旧年修行所需的灵潮已经变弱。残页只留下几处星位。你将它另行收好；仅凭这些，还辨不出旧主人所记的远方在何处。",
       );
       break;
-    case "ask":
-      g.practice = { topic: a.topic, source: a.source, step: 0, errors: 0, feedback: teachingIntroduction(s, a.topic, a.source) };
+    case "ask": {
+      const fieldProof = reunionTeaching(s) === a.topic;
+      g.practice = {
+        topic: a.topic, source: a.source, step: fieldProof ? 1 : 0, errors: 0,
+        feedback: fieldProof
+          ? "你摊开与苏婉宁在侧堤留下的实测批注。传讲人照着尺数运了一回灵流，点头道：“这一层你已亲手做过，不必再从头试。接下来，看看换势时该如何接住。”"
+          : teachingIntroduction(s, a.topic, a.source),
+      };
+      if(a.topic==='spirit') g.practice.spirit=freshSpiritPractice(g.practice.step);
+      else g.practice.material=freshMaterialPractice(a.topic,g.practice.step);
       record(g.practice.feedback);
       break;
+    }
     case "practice": {
       const p = g.practice!;
-      const exercise = teachingExercises[p.topic][p.step];
-      if (a.move !== exercise.answer) {
-        p.errors = Math.min(999, p.errors + 1);
-        p.feedback = exercise.failure;
-        record(p.feedback);
-      } else if (p.step === 0) {
-        p.step = 1;
-        p.feedback = exercise.success;
-        record(p.feedback);
-      } else {
-        g.teachings.push(p.topic);
-        g.teachingSources.push(p.source);
-        g.teachingPracticeResults.push({ topic: p.topic, errors: p.errors });
-        record(exercise.success + teachingText[p.topic]);
-        g.practice = null;
+      if(p.topic==='spirit') {
+        const offer=spiritPracticeQuote(input,a.move);
+        p.spirit=offer.next;
+        p.errors=Math.min(999,p.errors+(offer.failed?1:0));
+        p.feedback=offer.note;
+        if(offer.passed && p.step===0){p.step=1;p.spirit=freshSpiritPractice(1);}
+        else if(offer.passed){
+          g.teachings.push(p.topic);g.teachingSources.push(p.source);
+          g.teachingPracticeResults.push({topic:p.topic,errors:p.errors});g.practice=null;
+        }
+        record(offer.note+(offer.passed && !g.practice ? teachingText.spirit : ''));
+        break;
       }
+      const offer=materialPracticeQuote(input,a.move);
+      p.material=offer.next;p.errors=Math.min(999,p.errors+(offer.failed?1:0));p.feedback=offer.note;
+      if(offer.passed && p.step===0){p.step=1;p.material=freshMaterialPractice(p.topic,1);}
+      else if(offer.passed){
+        g.teachings.push(p.topic);g.teachingSources.push(p.source);
+        g.teachingPracticeResults.push({topic:p.topic,errors:p.errors});g.practice=null;
+      }
+      record(offer.note+(offer.passed && !g.practice ? teachingText[p.topic] : ''));
       break;
     }
     case "rubbing":

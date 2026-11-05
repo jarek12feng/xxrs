@@ -1,8 +1,11 @@
+import { goldenAuctionRoute } from "./geography";
 import { advanceJourney } from './engine';
 import type { State, Intent } from "../world";
 /** Long sea journeys retain their own command and remaining time across events/reloads.
  * No second position is stored: the chapter remains at its last safe origin. */
 export const passageRoutes = {
+  "sea:guild": {from:"ferry",to:"guild",months:goldenAuctionRoute.months},
+  "sea:guildReturn": {from:"guild",to:"ferry",months:goldenAuctionRoute.months},
   "lizhao:visit": {from:"away",to:"harbor",months:6},
   "lizhao:leave": {from:"harbor",to:"away",months:6},
   "sea:sail": { from: "home", to: "ferry", months: 6 },

@@ -1,0 +1,35 @@
+// @vitest-environment happy-dom
+import { afterEach, expect, it } from 'vitest';
+import { createApp, h, nextTick, shallowRef, type App } from 'vue';
+import CultivationOutlook from '../src/CultivationOutlook.vue';
+import { dispatch, type Intent } from '../src/core';
+import { journeyCheckpoint } from '../tools/foundation-journey-checkpoint';
+let app: App;
+afterEach(() => {app?.unmount();document.body.innerHTML='';});
+it('到达用途节点优先给行功与实战入口，玩家仍能自主选择继续闭关', async () => {
+  const initial = journeyCheckpoint('male',true);
+  initial.foundationJourney.condensation = false;
+  initial.foundationJourney.cultivation = 500;
+  const game = shallowRef(initial);
+  let serial = 0;
+  app = createApp({render:()=>h(CultivationOutlook,{game:game.value,automatic:true,compact:true,onAct:(intent:Intent)=>{game.value=dispatch(game.value,{...intent,id:`objective-ui-${++serial}`});}})});
+  app.mount(document.body.appendChild(document.createElement('div')));
+  const button = (text:string) => Array.from(document.querySelectorAll('button')).find(b=>b.textContent?.includes(text));
+  expect(button('开始闭关')).toBeUndefined();
+  expect(button('贯通周天')?.disabled).toBe(false);
+  const choice = document.querySelector('input[type=checkbox]') as HTMLInputElement;
+  choice.click();
+  await nextTick();
+  expect(button('开始闭关')?.disabled).toBe(false);
+  choice.click();
+  await nextTick();
+  button('贯通周天')!.click();
+  await nextTick();
+  expect(game.value.foundationJourney.condensation).toBe(true);
+  expect(button('试运长风归流')?.disabled).toBe(false);
+  expect(button('开始闭关')).toBeUndefined();
+  button('试运长风归流')!.click();
+  await nextTick();
+  expect(game.value.foundationJourney.duel?.id).toBe('culmination');
+  expect(document.querySelector('[aria-label="此番修行的用途"]')).toBeNull();
+});

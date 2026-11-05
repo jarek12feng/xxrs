@@ -6,6 +6,7 @@ import ThunderWorld from "./ThunderWorld.vue";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
 import NascentPracticeWorld from "./NascentPracticeWorld.vue";
 import NascentAfterWorld from "./NascentAfterWorld.vue";
+import { crossingView } from "./crossing";
 import { channelingSituation } from "./channeling";
 import { nascentGoal, nascentActive, nascentPromises } from "./rules";
 import {
@@ -27,13 +28,42 @@ const rows = computed(() =>
     (row) => nascentActive(props.game) || row.object === selected.value,
   ),
 );
-const hotspots = computed(() =>
-  (props.game.realm === 3
-    ? nascentHotspots.filter(
-        (p) =>
-          p.id === "gate" || (p.id === "companion" && props.game.social.met),
-      )
-    : nascentHotspots
+const crossing = computed(() => crossingView(props.game));
+const hotspots = computed(() => {
+  if (props.game.realm === 3 && n.value.ability !== "none")
+    return [
+      { id: "current", label: "主潮 · 横截航道", x: 34, y: 53 },
+      {
+        id: "landing",
+        label:
+          n.value.ability === "done" ? "彼岸路标与测绘地" : "侧岸 · 回流落脚处",
+        x: 53,
+        y: 27,
+      },
+      {
+        id: "gate",
+        label: crossing.value.boat,
+        x:
+          crossing.value.position === "near"
+            ? 33
+            : crossing.value.position === "eddy"
+              ? 44
+              : 53,
+        y:
+          crossing.value.position === "near"
+            ? 76
+            : crossing.value.position === "eddy"
+              ? 58
+              : 38,
+      },
+    ];
+  return (
+    props.game.realm === 3
+      ? nascentHotspots.filter(
+          (p) =>
+            p.id === "gate" || (p.id === "companion" && props.game.social.met),
+        )
+      : nascentHotspots
   ).map((p) => {
     if (props.game.realm === 3 && p.id === "gate")
       return {
@@ -45,8 +75,8 @@ const hotspots = computed(() =>
     if (p.id === "furnace") return { ...p, x: 15, y: 65 };
     if (p.id === "trial") return { ...p, x: 39, y: 51 };
     return p;
-  }),
-);
+  });
+});
 const promises = computed(() => nascentPromises(props.game));
 const promiseLabels = {
   duty: "受托职责",
@@ -113,7 +143,10 @@ const sceneImage = computed(() =>
     @close="selected = ''"
   >
     <template #status
-      ><span
+      ><span v-if="game.realm === 3 && n.ability !== 'none'"
+        >{{ crossing.boat }} ·
+        {{ n.ability === "done" ? "通行记录已留存" : "调整护持不耗月" }}</span
+      ><span v-else
         >主药 {{ n.marrow }} · 辅药 {{ game.lizhao.reagent }} · 化婴丹
         {{ n.pills }} · 伤势 {{ game.injury }}</span
       ></template
@@ -127,6 +160,26 @@ const sceneImage = computed(() =>
       <NascentAfterWorld v-else-if="afterScene" :game="game" />
       <NascentPracticeWorld v-else :game="game" />
     </template>
+    <p
+      v-if="
+        game.realm === 3 &&
+        n.ability !== 'none' &&
+        ['gate', 'current', 'landing'].includes(selected)
+      "
+    >
+      {{
+        n.ability === "done"
+          ? "测绘队已在彼岸展开航图，路标与通行记录保留，无须再次护渡。"
+          : selected === "current"
+            ? "集中护持可压低浪墙；镇潮印能代你固定此处。"
+            : selected === "landing"
+              ? "侧岸回流须由你护住；舟队到达后便能卸下测杆。"
+              : "可在安全处停舟等候。引航所需年月见操作，观察与调整不耗月。"
+      }}
+      <span v-if="crossing.seal && !crossing.fixed"
+        >镇潮印已离开装配，原镇流失效；可重新装配或改用自身护持。</span
+      >
+    </p>
     <div v-if="selected === 'letters'">
       <p v-if="!actualPromises.length">长关前已无待交接之事。</p>
       <p v-for="key in actualPromises" :key="key">

@@ -1,6 +1,6 @@
 import { advanceMonths } from "../timeline";
 import { completeChallenge } from "./outcome";
-import { resolveTurn, startBattle } from "../combat";
+import { executeBattleAction, startBattle } from "../combat";
 import { runTravel } from "../wayfaring/rules";
 import { resolvePactBattle } from "../secret-pact/rules";
 import { foundationCap, resourceRoutes } from "./growth-state";
@@ -84,12 +84,12 @@ export function runFoundationJourney(
     if (pactDuel) resolvePactBattle(s, false);
     if (ranked) q.board.last = q.last + "既有名次与首胜奖励保留。";
   } else if (action.kind === "move") {
-    const d = q.duel!,
-      p = foundationExchange(s, action.move);
-    if (!p) return input;
-    const turn = resolveTurn(d, p, { turnLimit: 12, resolution: "journey" });
+    const d = q.duel!;
+    const turn = executeBattleAction(d, s.herbs, { turnLimit: 12, resolution: "journey" }, () => foundationExchange(s, action.move));
+    if (!turn) return input;
+    const p = turn.exchange;
     Object.assign(d, turn.battle);
-    s.herbs -= turn.herbs;
+    s.herbs = turn.remainingHerbs;
     q.last = `第 ${d.turn} 合：伤敌 ${p.damage}，承伤 ${p.incoming}${p.healing ? `，耗草 ${p.herbs} 回复 ${p.healing}` : ""}。${p.note}`;
     d.effect = action.move;
     if (turn.outcome === "win") completeChallenge(s);

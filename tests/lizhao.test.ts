@@ -61,6 +61,8 @@ function clear(
   );
   p.act({ kind: "chamber" });
   p.act({ kind: "verify" });
+  p.act({kind:"assay",move:"drain"});
+  p.act({kind:"assay",move:"bind"});
   return p;
 }
 describe("离照实战、取药与有限追索", () => {
@@ -96,7 +98,7 @@ describe("离照实战、取药与有限追索", () => {
     expect(p.state.lizhao.location).toBe("inner");
     expect(p.state.lizhao.reagent).toBe(0);
   });
-  it("取药失败保留道路，治伤后重试且首通只结算一次", () => {
+  it("取药超时且气势尚存可伤退，治伤后重试且首通只结算一次", () => {
     const p = player();
     p.act({ kind: "visit" });
     p.act({ kind: "route", route: "independent" });
@@ -106,8 +108,9 @@ describe("离照实战、取药与有限追索", () => {
     p.act({ kind: "deeper" });
     p.act({ kind: "fight" });
     const weak = structuredClone(p.state);
-    weak.lizhao.duel!.hp = 1;
-    weak.lizhao.duel!.toxin = 90;
+    weak.lizhao.duel!.hp = 200;
+    weak.lizhao.duel!.turn = 17;
+    weak.lizhao.duel!.toxin = 0;
     const loss = runLizhao(
       weak,
       { kind: "move", move: "strike" },
@@ -176,7 +179,7 @@ describe("离照实战、取药与有限追索", () => {
       p.act({ kind: "resupply" });
       expect(p.state.lizhao.reagent).toBe(4);
     });
-  it("伏潮湾败退不夺唯一物品，能够重新选择绕行", () => {
+  it("伏潮湾超时伤退不夺唯一物品，能够重新选择绕行", () => {
     const p = clear();
     p.act({ kind: "allocate", allocation: "seize" });
     p.act({ kind: "return" });
@@ -184,7 +187,7 @@ describe("离照实战、取药与有限追索", () => {
     p.act({ kind: "respond", response: "ambush" });
     p.act({ kind: "fight" });
     const weak = structuredClone(p.state);
-    weak.lizhao.duel!.hp = 1;
+    weak.lizhao.duel!.hp = 200;
     weak.lizhao.duel!.turn = 17;
     const loss = runLizhao(
       weak,

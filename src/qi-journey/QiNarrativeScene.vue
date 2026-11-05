@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdmissionChoices from "../initiation/AdmissionChoices.vue";
 import { computed, ref, watch } from "vue";
 import type { State, Intent } from "../core";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
@@ -21,8 +22,8 @@ import QiOrigin from "./QiOrigin.vue";
 const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent]; close: [] }>();
 const n = computed(() => props.game.qiJourney.narrative);
-const place = computed(() => qiNarrativeDestinations[n.value.location]);
-const active = ref("");
+const place = computed(() => n.value.location === 'home' ? {...qiNarrativeDestinations.home,image:'/art/initiation/tingsong-admission-court.webp'} : qiNarrativeDestinations[n.value.location]);
+const active = ref(n.value.location === 'home' && props.game.journey.branch === 'none' ? 'teacher' : '');
 const walkReady = ref(false);
 const walk = useSceneApproach({
   animated: () =>
@@ -37,13 +38,13 @@ const points = computed(() =>
     ? []
     : n.value.location === "home"
       ? [
-          { id: "teacher", label: "药队与温蘅", x: 27, y: 55 },
+          { id: "teacher", kind: "person" as const, label: "药队与温蘅", x: 27, y: 55 },
           { id: "home", label: "家中药囊与家书", x: 43, y: 75 },
           { id: "road", label: "石涧与青嶂支路", x: 75, y: 65 },
         ]
       : n.value.location === "cave"
         ? [
-            { id: "companion", label: "卢雁回的约定", x: 26, y: 69 },
+            { id: "companion", kind: "person" as const, label: "卢雁回的约定", x: 26, y: 69 },
             { id: "bed", label: "废药床与旧阵", x: 43, y: 51 },
             { id: "table", label: "药性处置台", x: 56, y: 54 },
             { id: "notes", label: "额外札记", x: 69, y: 48 },
@@ -282,7 +283,8 @@ watch(
       :busy="busy"
       @act="emit('act', $event)"
     />
-    <p v-if="active === 'teacher'">
+    <AdmissionChoices v-if="active === 'teacher'" :game="game" :busy="busy" @act="emit('act',$event)" />
+    <p v-if="active === 'teacher' && game.journey.branch !== 'none'">
       药棚下正按运送去向分药。丹堂与剑院同属听松宗；你可以入门，也可以作为散修求教与合作。
     </p>
     <p v-if="active === 'notes'">
@@ -290,6 +292,9 @@ watch(
     </p>
     <p v-if="active === 'bed'">
       药理诱引利于守势护脉、趁药气回落切流；护体直接承压；辨阵在真假流间解除节点。失败伤势+1，保留准备，可回山疗伤重试。
+    </p>
+    <p v-if="active === 'road' || active === 'bed'">
+      入窟前另留两株灵草：过阵并处理药性后，还须用它们调息一月，才算完成这次历练。若选配药诱引，连同行前两株共需四株；长春诀战中回气的用草另计。缺草可先回山采药，已做的准备与实测成果保留。
     </p>
     <p v-if="active === 'table'">
       先取得亲身实测，再处理药性。调息用两株灵草、一月检验，恢复至多一层伤势，并让后续凝元内府交锋护甲+1。

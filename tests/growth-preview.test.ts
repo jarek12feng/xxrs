@@ -1,6 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
 import {
-  createGame,
   dispatch,
   breakthroughDetails,
   breakthroughSuccess,

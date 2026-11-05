@@ -1,4 +1,4 @@
-import { resolveTurn, startBattle } from "../combat";
+import { executeBattleAction, startBattle } from "../combat";
 import { awardContestMilestones } from "../golden-core/rules";
 import type { State, Command } from "../world";
 import type { Move } from "../expedition/content";
@@ -204,14 +204,13 @@ export function runContest(
     );
   }
   if (a.kind === "move") {
-    const p = contestExchange(s, a.move)!,
-      d = t.duel!;
-    const turn = resolveTurn(d, p, {
-      turnLimit: 12,
-      resolution: "simultaneous",
-    });
+    const d = t.duel!;
+    const turn = executeBattleAction(d, s.herbs, {
+      turnLimit: 12, resolution: "simultaneous",
+    }, () => contestExchange(s, a.move))!;
+    const p = turn.exchange;
     Object.assign(d, turn.battle);
-    s.herbs -= turn.herbs;
+    s.herbs = turn.remainingHerbs;
     d.effect = a.move;
     record(
       s,

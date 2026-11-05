@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AuctionDestination from "./auction/AuctionDestination.vue";
 import SpiritSummary from "./spirit/SpiritSummary.vue";
 import type { PreparationSelection } from "./workshop/preparation";
 const preparationSelection = defineModel<PreparationSelection | null>("preparationSelection", {default: null});
@@ -189,7 +190,7 @@ const mapImages = {
       <button :class="{ active: tab === 'arena' }" @click="tab = 'arena'">
         听松擂台
       </button>
-      <button :class="{ active: tab === 'sect' }" @click="tab = 'sect'">
+      <button v-if="game.journey.branch !== 'none'" :class="{ active: tab === 'sect' }" @click="tab = 'sect'">
         宗门师承
       </button>
       <button :class="{ active: tab === 'skills' }" @click="tab = 'skills'">
@@ -282,6 +283,7 @@ const mapImages = {
             route.current ? "你在此处" : "地图上的远景"
           }}</span>
           <h3>{{ route.label || landmarkLabel(route.title) }}</h3>
+          <AuctionDestination :game="game" :place="route.key" />
           <p>
             {{
               route.current
@@ -424,17 +426,16 @@ const mapImages = {
       <TreasurePanel :game="game" :busy="busy || running" @act="storyTravel.act($event)" />
       <WorkshopPanel v-model:selection="preparationSelection" :game="game" :busy="busy || running" @act="storyTravel.act($event)" />
     </div>
-    <div v-else-if="tab === 'sect'" style="display: contents">
+    <div v-else-if="tab === 'sect' && game.journey.branch !== 'none'" style="display: contents">
       <RecognitionPanel :game="game" :busy="locked" @act="storyTravel.act($event)" />
       <p class="muted">
-        宗门提供师承与通行资格，不是唯一道路。散修也可在坊市学同样的功法，以神识
-        8、心得 2 识路入山。可选择一个堂口拜师。
+        丹堂与剑院同属听松宗。师门传授与护路职责相伴，功法仍可兼修。
       </p>
       <article
         v-for="(mentor, branch) in mentors"
         :key="branch"
         v-show="
-          game.journey.branch === 'none' || game.journey.branch === branch
+          game.journey.branch === branch
         "
         class="map-card scene-map desktop-scene"
       >
@@ -455,17 +456,10 @@ const mapImages = {
         <div class="scene-controls" :aria-label="mentor.hall + '拜师操作区'">
           <h3 class="controls-heading">师门机缘</h3>
           <small>师承功法：{{ mentor.gift }}</small>
-          <button
-            v-if="game.journey.branch === 'none'"
-            :disabled="locked || game.story.stage === 'unmet'"
-            @click="storyTravel.act({ type: 'join', branch })"
-          >
-            拜入{{ mentor.hall }} · 渡口初逢后开放
-          </button>
+
         </div>
       </article>
       <section
-        v-if="game.journey.branch !== 'none'"
         class="scene-controls"
         aria-label="宗门事务操作区"
       >

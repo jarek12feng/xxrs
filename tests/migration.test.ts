@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 import { legacyEquipment } from "./legacy-equipment";
 import "fake-indexeddb/auto";
@@ -6,7 +7,7 @@ import { createGame as legacyGame } from "../src/legacy-v1";
 import { createGame as v2Game } from "../src/legacy-v2";
 import { createGame as v3Game } from "../src/chapter";
 import { createGame as v4Game } from "../src/legacy-v4";
-import { createGame, dispatch, migrateSave } from "../src/core";
+import { dispatch, migrateSave } from "../src/core";
 import { save, load } from "../src/save";
 beforeEach(async () => {
   await new Promise<void>((resolve) => {

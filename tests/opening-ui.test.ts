@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
@@ -5,7 +6,6 @@ import { createApp, nextTick, type App as VueApp } from "vue";
 import { createPinia } from "pinia";
 import App from "../src/App.vue";
 import {
-  createGame,
   dispatch,
   type AdventureAction,
   type State,
@@ -92,7 +92,7 @@ it("shows both irreversible consequences before committing, and waits for persis
   expect(audio.cue).toHaveBeenCalledWith("choice");
   expect(document.querySelector(".feedback-layer")).toBeNull();
   expect(document.querySelector('[aria-label="挑选谢礼"]')?.textContent).toContain("药工");
-  expect(document.body.textContent).toContain("药工留下的功法木匣");
+  expect(document.body.textContent).toContain("入道功法木匣");
 });
 it("keeps the decision available with no success audio when saving fails", async () => {
   vi.mocked(save).mockRejectedValue(new Error("磁盘不可写"));
@@ -148,7 +148,7 @@ it("first guidance equips earned power before returning to the promised revisit"
   });
   await mount(s);
   expect(save).not.toHaveBeenCalled();
-  button("药工留下的功法木匣").click();
+  button("入道功法木匣").click();
   await flush();
   button("学会并主修 · 长春诀").click();
   await flush();
@@ -200,7 +200,7 @@ it("travels from the map only after a successful save and exposes local scenery"
   await flush();
   expect(document.querySelector('[aria-label="主线地标详情"]')).not.toBeNull();
   expect(document.querySelector(".atlas-objective")?.textContent).toContain(
-    "雨夜渡口",
+    "听松渡口",
   );
   vi.mocked(save).mockResolvedValueOnce(undefined);
   button("沿路前往").click();

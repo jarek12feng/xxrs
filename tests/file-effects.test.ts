@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it, vi } from "vitest";
 import { createFileEffects } from "../src/file-effects";
 import { actionSound } from "../src/action-sound";
-import { createGame } from "../src/core";
+
 import { readFileSync, existsSync } from "node:fs";
 import { audioUrl } from "../src/foundation-audio";
 import { soundCues } from "../src/sound-cues";

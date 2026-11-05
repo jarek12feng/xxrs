@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import {expect,it} from 'vitest';
-import {createGame,dispatch} from '../src/core';
+import {dispatch} from "../src/core";
 import {routeNodes} from '../src/landmarks';
 import {knowsInland,knowsLandmark} from '../src/wayfaring/discovery';
 import {journeyCheckpoint} from '../tools/foundation-journey-checkpoint';

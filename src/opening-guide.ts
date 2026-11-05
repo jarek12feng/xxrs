@@ -1,3 +1,4 @@
+import { hasCultivationKit } from './initiation/rules';
 import { rescueEcho, type State } from "./core";
 import { expeditionGoal } from "./expedition/progression";
 // Read-only coaching. No timers, rewards, randomness or extra save fields.
@@ -15,10 +16,11 @@ export function openingGuide(s: State) {
       label: "回到行路，重返旧阵",
     };
   }
+  if(!hasCultivationKit(s))return {title:'回药坪求学',body:'你尚无正式传承与修行行装。请温蘅指点，试稳护路绳阵，再决定拜入听松宗或以散修身份立约。',action:'initiation' as const,label:'到药坪求教'};
   const echo = rescueEcho(s.adventure);
   if (!s.journey.learning.book) return {
     title: "挑选入门功法",
-    body: `${!s.adventure.road.thanked ? echo : ""} 药工请你挑选一册功法。养气、练剑或调息，学过之后仍可兼修。`,
+    body: `${!s.adventure.road.thanked ? echo : ""} 你已取得基础功法的选学资格，可以挑选一册功法。养气、练剑或调息，学过之后仍可兼修。`,
     action: "skills" as const,
     label: "挑选第一册功法",
   };
@@ -51,6 +53,9 @@ export function openingGuide(s: State) {
       action: "gear" as const,
       label: "查看并装配首件灵器",
     };
+  if(s.journey.branch === 'none' && s.qiJourney.narrative.initiation.admission === 'none') return {
+    title:'在听松求学', body:'你已选好功法。到山下药坪拿出引荐纸，听听温蘅愿教你什么；可以争取拜师，也可以选择以散修身份继续。', action:'initiation' as const, label:'到药坪求教',
+  };
   const r = s.adventure.road,
     q = s.expedition;
   if (!r.map)
@@ -101,9 +106,9 @@ export function openingGuide(s: State) {
   if (s.journey.branch === "none" && s.journey.known.length === 0)
     return {
       title: "择师求道",
-      body: "丹堂擅长药理，剑院擅长护送。先看看师门和功法；也可以保持散修，在坊市求教。三十六月的渡口之约记在见闻里。",
-      action: "sect" as const,
-      label: "看看师门能教什么",
+      body: "到听松山下药坪，向温蘅说明求学之意。丹堂与剑院同属听松宗，须有历练引荐才可拜师；也可以保持散修，在坊市求教。",
+      action: "road" as const,
+      label: "回到山下求学",
     };
   if (s.qi < 360)
     return {

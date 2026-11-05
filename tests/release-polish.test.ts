@@ -1,6 +1,7 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { luchiView } from "../src/characters";
 import { describe, expect, it } from "vitest";
-import { createGame, dispatch, validState, arenaError } from "../src/core";
+import { dispatch, validState, arenaError } from "../src/core";
 import { rejectedActionReason } from "../src/action-diagnostics";
 import { sceneOwner, combatOwner } from "../src/scene-activity";
 import { storyChapter } from "../src/scene2d/story-routing";

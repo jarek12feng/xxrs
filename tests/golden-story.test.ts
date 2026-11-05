@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { describe, it, expect } from "vitest";
-import { createGame, type State } from "../src/core";
+import { type State } from "../src/core";
 import { freshGoldenStory, validGoldenStory } from "../src/golden-story/state";
 import {
   teachingSolution,
@@ -177,21 +178,21 @@ it("试法错误有线索可改，不扣年月；保存续试、原地授法与�
   let s=run(fixture(),{kind:"ask",topic:"pill",source:"public"});
   expect(s.goldenStory.teachings).toEqual([]);
   const month=s.month, stones=s.stones;
-  const bad=runGoldenStory(s,{kind:"practice",move:"mix"},"wrong",tick);
-  expect(bad).toEqual(runGoldenStory(s,{kind:"practice",move:"mix"},"wrong",tick));
+  const bad=runGoldenStory(s,{kind:"practice",move:"pillVent"},"wrong",tick);
+  expect(bad).toEqual(runGoldenStory(s,{kind:"practice",move:"pillVent"},"wrong",tick));
   expect(bad.goldenStory.practice?.errors).toBe(1);
-  expect(bad.goldenStory.practice?.feedback).toContain("各现本性");
-  s=run(bad,{kind:"practice",move:"settle"});
+  expect(bad.goldenStory.practice?.feedback).toContain("混流");
+  s=run(bad,{kind:"practice",move:"pillReset"});
   s=JSON.parse(JSON.stringify(s));
   expect(validGoldenStory(s)).toBe(true);
   s.conclave.location="court";
-  expect(run(s,{kind:"practice",move:"separate"})).toBe(s);
+  expect(run(s,{kind:"practice",move:"pillVent"})).toBe(s);
   s.conclave.location="away";
-  s=run(s,{kind:"practice",move:"separate"});
+  for(const move of teachingSolution("pill")) s=run(s,{kind:"practice",move});
   expect(s.goldenStory.teachings).toEqual(["pill"]);
   expect(s.goldenStory.teachingPracticeResults).toEqual([{topic:"pill",errors:1}]);
   expect(s.month).toBe(month); expect(s.stones).toBe(stones);
-  expect(run(s,{kind:"practice",move:"separate"})).toBe(s);
+  expect(run(s,{kind:"practice",move:"pillVent"})).toBe(s);
 });
 it("旧版问法记录保留，缺失练习字段只允许在旧版校验",()=>{
   const s=fixture(); s.goldenStory.teachings=["method"];s.goldenStory.teachingSources=["public"];

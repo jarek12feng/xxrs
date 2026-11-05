@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { afterEach, expect, it } from "vitest";
 import { createApp, h, nextTick, reactive, type App } from "vue";
-import { createGame } from "../src/core";
+
 import CultivationStatus from "../src/CultivationStatus.vue";
 let app: App;
 afterEach(() => {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import MeetingObjective from "../growth-continuity/MeetingObjective.vue";
 import GoldenStoryScene from "../golden-story/GoldenStoryScene.vue";
 const storyOpen = ref(false);
 import { projectInteractions } from "../story-interactions";
@@ -143,16 +144,6 @@ const safe = computed(
     c.value.location !== "vault" &&
     props.game.outerSea.location !== "ruins",
 );
-const waitMonths = computed(() =>
-  Math.min(
-    120,
-    Math.max(
-      0,
-      (props.game.outerSea.notice ?? props.game.month) + 600 - props.game.month,
-    ),
-  ),
-);
-
 // The selected object is presentation state; opening it never dispatches a command.
 const selected = ref(props.entryObject ?? "");
 const stageKey = computed(
@@ -183,7 +174,7 @@ const hotspots = computed(() => {
     { id: "ye", label: "叶问苓", x: 56, y: 77 },
     { id: "shore", label: "古渡石道", x: 78, y: 77 },
     {
-      id: "friends",
+      id: "friends", kind: "person" as const,
       label: c.value.introduced ? "商议入境路线" : "与会谷来客相识",
       x: c.value.location === "court" ? 50 : 43,
       y: c.value.location === "court" ? 88 : 63,
@@ -471,12 +462,14 @@ watch(stageKey, () => {
       @act="emit('act', $event)"
     />
     <template v-if="safe && selected === 'chamber'">
+      <MeetingObjective :game="game" :busy="busy" @act="emit('act', $event)" />
       <details class="retreat-plan">
         <summary>安排闭关</summary>
         <CultivationOutlook
           :game="game"
           :busy="busy"
           automatic
+          :meeting-plan="false"
           @act="emit('act', $event)"
         />
       </details>
@@ -502,12 +495,12 @@ watch(stageKey, () => {
         购置灵草 · 灵石 8
       </button>
       <button
-        v-if="!due && game.outerSea.notice !== null"
+        v-if="!due && game.outerSea.notice !== null && c.stage !== 1"
         :disabled="busy || !!conclaveQuote(game, { kind: 'wait' }).error"
         @click="emit('act', { type: 'conclave', action: { kind: 'wait' } })"
       >
-        留居候会 · 最多 {{ Math.floor(waitMonths / 12) }} 年
-        {{ waitMonths % 12 }} 月，消耗同等寿元
+        留居候会 · 最多 {{ Math.floor(conclaveQuote(game, { kind: 'wait' }).months / 12) }} 年
+        {{ conclaveQuote(game, { kind: 'wait' }).months % 12 }} 月，消耗同等寿元
       </button>
       <button
         v-if="active && game.month < c.retryAt"

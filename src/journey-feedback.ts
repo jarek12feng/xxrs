@@ -1,3 +1,4 @@
+import { enrichEquipmentMilestone } from "./growth-continuity/milestones";
 import { originNotes } from "./companion-origins";
 import { foundationPassageScene, foundationReunion } from "./foundation-scenes";
 import { trialBoard } from "./world-ambition";
@@ -417,5 +418,5 @@ export function enrichReceipt(
     r.title = "听过来处，各有远方";
     r.spotlight = false;
   }
-  return r;
+  return enrichEquipmentMilestone(before, after, r);
 }

@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch, type Intent, type State } from "../src/core";
+import { dispatch, type Intent, type State } from "../src/core";
 import { actionReceipt } from "../src/action-feedback";
 const send = (s: State, c: Intent) =>
   dispatch(s, { ...c, id: `feedback-${s.seen.length}` });

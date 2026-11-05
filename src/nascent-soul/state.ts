@@ -1,3 +1,4 @@
+import { freshCrossing, type Crossing } from "./crossing";
 import { unsettledNascentPromises } from './promises';
 import { freshCovenant, validCovenant, covenantReady, type Covenant } from './covenant';
 import {
@@ -7,6 +8,7 @@ import {
 } from "./thunder-state";
 import type { State } from "../world";
 export interface NascentSoul {
+  crossing: Crossing;
   covenant: Covenant;
   thunder: ThunderPath;
   trialWon: boolean;
@@ -56,6 +58,7 @@ export interface NascentSoul {
   last: string;
 }
 export const freshNascentSoul = (): NascentSoul => ({
+  crossing: freshCrossing(),
   covenant: freshCovenant(),
   thunder: freshThunderPath(),
   trialWon: false,

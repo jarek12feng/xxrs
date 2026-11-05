@@ -1,7 +1,7 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { actionSound } from "../src/action-sound";
 import { describe, expect, it } from "vitest";
 import {
-  createGame,
   dispatch,
   migrateSave,
   validState,

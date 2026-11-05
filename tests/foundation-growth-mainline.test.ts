@@ -1,6 +1,7 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { finishPactTrial } from './foundation-pact-policy';
 import { expect, it } from 'vitest';
-import { dispatch, validState, migrateSave, createGame } from '../src/core';
+import { dispatch, validState, migrateSave, } from "../src/core";
 import { freshSocial } from '../src/social';
 import { applyHeroine, freshHeroine } from '../src/foundation-journey/heroine';
 import { foundationCap } from '../src/foundation-journey/growth-state';

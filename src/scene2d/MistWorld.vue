@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {mistSpeakerFoot} from "./actor-anchors";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { State } from '../world';
 import CharacterSprite from '../presentation/CharacterSprite.vue';
@@ -47,7 +48,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="mist-world" :class="[cue ? `cue-${cue}` : '', { quiet: hidden || reduced }]" :data-mist-state="world.stage">
     <WalkingActor :character="heroArt(game.social.gender,game.realm)" :label="game.name" :position="walk.position.value" :moving="walk.moving.value" :frame="walk.frame.value" :facing="walk.facing.value" :pose="cue === 'station' || cue === 'ward' ? 'guard' : cue === 'garden' ? 'meditate' : 'idle'" @ready="walkReady=$event" />
-    <CharacterSprite v-if="world.luchi" class="mist-luchi" character="luchi" label="陆迟" />
+    <CharacterSprite v-if="world.luchi" class="mist-luchi" :style="{left:mistSpeakerFoot.x+'%',bottom:(100-mistSpeakerFoot.y)+'%'}" character="luchi" label="陆迟" />
     <svg v-if="world.stage === 'garden'" class="mist-garden" viewBox="0 0 360 80" role="img" :aria-label="world.garden ? '石渠通水，引灯草恢复生机' : '石渠断水，引灯草枯萎'" :class="{ restored: world.garden }">
       <path v-if="world.garden" class="channel-water" d="M12 62 Q68 43 130 49 T274 40 L345 33" />
       <g v-for="x in [104, 173, 232]" :key="x" :transform="`translate(${x},43)`" class="plant">
@@ -71,7 +72,7 @@ onBeforeUnmount(() => {
 </template>
 <style scoped>
 .mist-world { position:absolute; inset:0; pointer-events:none; }
-.mist-luchi { position:absolute; bottom:10%; width:190px; height:250px; filter:drop-shadow(0 10px 8px #0009); }
+.mist-luchi { position:absolute;transform:translateX(-50%); bottom:10%; width:190px; height:250px; filter:drop-shadow(0 10px 8px #0009); }
 .mist-luchi { left:17%; height:220px; }
 /* Integrate a few highlights into the existing painted terrace, not a new oversized garden. */
 .mist-garden { position:absolute; left:46%; bottom:29%; width:18%; max-width:250px; overflow:visible; opacity:.55; }

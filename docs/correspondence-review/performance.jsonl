@@ -1,0 +1,3 @@
+{"letters":0,"iterations":300,"meanDraftAndDeliveryMs":0.042,"archiveBytes":14}
+{"letters":100,"iterations":300,"meanDraftAndDeliveryMs":0.128,"archiveBytes":62703}
+{"letters":1000,"iterations":300,"meanDraftAndDeliveryMs":0.902,"archiveBytes":627903}

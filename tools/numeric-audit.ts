@@ -1,3 +1,4 @@
+import { seekerStep } from "./initiation-policy";
 import {
   dispersedSeeds,
   recoveryRun,
@@ -41,6 +42,7 @@ function opening(seed: number, path: Path, aptitude: Aptitude) {
     "return",
   ] as const)
     send({ type: "adventure", action });
+  for(let i=0;i<6;i++){const step=seekerStep(s);if(!step)break;send(step);}
   send({ type: "learning", choice: path === "wood" ? "spring" : "blade" });
   send({ type: "equip", technique: path === "wood" ? "spring" : "blade" });
   return {

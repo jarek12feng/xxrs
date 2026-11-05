@@ -1,0 +1,83 @@
+import { expect, it } from 'vitest';
+import { dispatch, migrateSave, validState } from '../src/core';
+import { conclaveCheckpoint } from '../tools/conclave-checkpoint';
+import { conclaveQuote, runConclave } from '../src/conclave/rules';
+import { meetingObjective } from '../src/growth-continuity/meeting-objective';
+import { updateSeaCalendar } from '../src/outer-sea/rules';
+
+it('已知长会期一次候至来信，与逐段候会结算一致，不填修为也不代报名',()=>{
+  let s = conclaveCheckpoint();
+  s.injury = 2;
+  s.outerSea.notice = s.month;
+  s.outerSea.reminded = false;
+  s = dispatch(s,{type:"correspondence",action:{kind:"collect"},id:"collect-known-meeting"});
+  const before = structuredClone(s);
+  const plan = meetingObjective(s)!;
+  expect(plan.remaining).toBe(600);
+  expect(plan.quote.months).toBe(600);
+  expect(plan.quote.error).toBe('');
+  expect(s).toEqual(before);
+  const n = dispatch(s,{...plan.intent,id:'meeting-long'});
+  let short = s;
+  for(let i=0;i<5;i++) short=dispatch(short,{type:'conclave',action:{kind:'wait'},id:`meeting-short-${i}`});
+  expect(n.month).toBe(s.month+600);
+  expect(n.age).toBe(plan.ageAfter);
+  expect(n.limit-n.age).toBe(plan.lifeAfter);
+  expect(n.outerSea.cultivation).toBe(s.outerSea.cultivation);
+  expect(n.stones).toBe(s.stones);
+  expect(n.herbs).toBe(s.herbs);
+  expect(n.injury).toBe(s.injury);
+  expect(n.seed).toBe(short.seed);
+  expect(n.correspondence).toEqual(short.correspondence);
+  expect(n.friendJourney).toEqual(short.friendJourney);
+  expect(n.outerSea.reminded).toBe(true);
+  expect(n.conclave.location).toBe('away');
+  expect(n.conclave.wins).toBe(0);
+  expect(validState(n)).toBe(true);
+  const restored = migrateSave(JSON.parse(JSON.stringify(n)));
+  expect(meetingObjective(restored)!.intent).toEqual({type:'conclave',action:{kind:'visit'}});
+  expect(dispatch(n,{...plan.intent,id:'meeting-again'})).toBe(n);
+});
+
+it('来信后居所与会馆先回古渡，再报价两月赴会，不跳路程',()=>{
+  let s=conclaveCheckpoint();
+  s.month=s.outerSea.notice!+600;s.outerSea.reminded=true;
+  s=dispatch(s,{type:'outerSea',action:{kind:'home'},id:'meeting-home'});
+  const plan=meetingObjective(s)!;
+  expect(plan.intent).toEqual({type:'outerSea',action:{kind:'sail'}});
+  expect(plan.quote.months).toBe(6);
+  s=dispatch(s,{...plan.intent,id:'meeting-sail'});
+  s=dispatch(s,{type:'outerSea',action:{kind:'auctionNews'},id:'meeting-auction-news'});
+  s=dispatch(s,{type:'outerSea',action:{kind:'guild'},id:'meeting-guild'});
+  const back=meetingObjective(s)!;
+  expect(back.intent).toEqual({type:'outerSea',action:{kind:'guildReturn'}});
+  expect(back.quote.months).toBe(2);
+  s=dispatch(s,{...back.intent,id:'meeting-guild-return'});
+  const visit=meetingObjective(s)!;
+  expect(visit.quote.months).toBe(2);
+  s=dispatch(s,{...visit.intent,id:'meeting-visit'});
+  expect(s.conclave.location).toBe('court');
+  expect(s.conclave.introduced).toBe(false);
+  expect(meetingObjective(s)).toBeNull();
+});
+
+it('未知/已到会期、余寿与事件互斥受原规则保护，途中事件保留实际年月',()=>{
+  const s=conclaveCheckpoint();
+  s.outerSea.notice=s.month;s.outerSea.reminded=false;
+  const action={kind:'wait',until:'meeting'} as const;
+  const poor=structuredClone(s);poor.age=poor.limit-600;
+  expect(conclaveQuote(poor,action).error).toContain('余寿');
+  expect(dispatch(poor,{type:'conclave',action,id:'life'})).toBe(poor);
+  const unknown=structuredClone(s);unknown.outerSea.notice=null;
+  expect(conclaveQuote(unknown,action).error).toContain('得知');
+  expect(meetingObjective(unknown)).toBeNull();
+  const interrupted=runConclave(s,action,'interrupted',state=>{
+    state.month++;state.age++;
+    if(state.month===s.month+3) state.status='dead';
+    updateSeaCalendar(state);return state;
+  });
+  expect(interrupted.month).toBe(s.month+3);
+  expect(interrupted.outerSea.reminded).toBe(false);
+  expect(interrupted.conclave.location).toBe('away');
+  expect(meetingObjective(interrupted)).toBeNull();
+});

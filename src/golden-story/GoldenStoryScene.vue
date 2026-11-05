@@ -11,7 +11,12 @@ import {
   type GoldenStoryAction,
 } from "./rules";
 import { companionLetterArchive } from "./companion";
-import { teachingSpeaker, teachingExercises } from "./teaching";
+import { materialPracticeView } from "./material-practice";
+import { spiritChoices, spiritPracticeView } from "./spirit-practice";
+import MethodPracticeScene from './practices/method/PracticeScene.vue';
+import PillPracticeScene from './practices/pill/PracticeScene.vue';
+import GroundPracticeScene from './practices/ground/PracticeScene.vue';
+import { teachingSpeaker, type TeachingMove } from "./teaching";
 const props = defineProps<{
   game: State;
   busy: boolean;
@@ -20,10 +25,19 @@ const props = defineProps<{
 const emit = defineEmits<{ act: [intent: Intent]; close: [] }>();
 const selected = ref(props.game.goldenStory.practice ? "teaching" : "");
 const g = computed(() => props.game.goldenStory);
+const materialActive = computed(() => !!g.value.practice && g.value.practice.topic !== 'spirit');
+const materialScene = computed(() => ({ method: MethodPracticeScene, pill: PillPracticeScene, ground: GroundPracticeScene })[g.value.practice?.topic === 'spirit' ? 'method' : g.value.practice?.topic ?? 'method']);
+function practiceMove(move: string) {
+  const action = { kind: 'practice', move: move as TeachingMove } as const;
+  if (!props.busy && !goldenStoryQuote(props.game, action).error) emit('act', { type: 'goldenStory', action });
+}
 const tide = computed(() => props.place === "sea" && !g.value.tideComplete && !g.value.practice);
 const teacherPresent = computed(() => props.place === "conclave" && props.game.realm === 2 && props.game.conclave.location === "court" && props.game.conclave.introduced && teachingSpeaker(props.game, "seat").present);
 const hotspots = computed(() =>
-  props.place === "home"
+  materialActive.value ? [
+    {id:'teaching',label:'问法石案',x:79,y:45},
+    {id:'exit',label:props.place === 'conclave' ? '回会谷石台' : '回古渡',x:92,y:88},
+  ] : props.place === "home"
     ? [
         { id: "direction", label: "远行引荐与传承目录", x: 40, y: 53 },
         { id: "letters", label: "旧友来信", x: 68, y: 65 },
@@ -39,9 +53,10 @@ const hotspots = computed(() =>
           : []),
         {
           id: "teaching",
+          kind: teacherPresent.value ? "person" as const : undefined,
           label: teachingSpeaker(props.game, props.place === "conclave" ? "seat" : "public").hotspot,
           x: teacherPresent.value ? 29 : tide.value ? 48 : 40,
-          y: tide.value ? 77 : 48,
+          y: g.value.practice ? 82 : tide.value ? 77 : 48,
         },
         ...(props.game.outerSea.cleared === 2
           ? [{ id: "record", label: "退潮旧录", x: 26, y: 72 }]
@@ -96,8 +111,8 @@ const rows = computed(() => {
       label: "用温养与研修所得核对旧录",
       action: { kind: "oldRecord" },
     });
-  if (selected.value === "teaching" && g.value.practice)
-    for (const choice of teachingExercises[g.value.practice.topic][g.value.practice.step].choices)
+  if (selected.value === "teaching" && g.value.practice?.topic === 'spirit')
+    for (const choice of spiritChoices)
       list.push({label: choice.label, action:{kind:"practice",move:choice.move}});
   if (selected.value === "teaching" && !g.value.practice)
     for (const [topic, label] of [
@@ -131,13 +146,13 @@ const rows = computed(() => {
     quote: goldenStoryQuote(props.game, row.action),
   }));
 });
-const exercise = computed(() => g.value.practice ? teachingExercises[g.value.practice.topic][g.value.practice.step] : null);
+const exercise = computed(() => g.value.practice ? g.value.practice.topic === 'spirit' ? spiritPracticeView(g.value.practice) : materialPracticeView(g.value.practice) : null);
 const cooperation = computed(() => goldenCooperation(props.game));
 </script>
 <template>
   <NarrativeStage
     class="golden-story"
-    :class="{'teacher-present':teacherPresent}"
+    :class="{'teacher-present':teacherPresent,'material-active':materialActive}"
     :image="
       tide
         ? '/art/world-story/golden/tide-dike-council.webp'
@@ -164,10 +179,17 @@ const cooperation = computed(() => goldenCooperation(props.game));
     @close="selected = ''"
   >
     <template #world
-      ><img v-if="teacherPresent" class="teaching-elder" :class="{'demonstrating':!!g.practice,'responding':g.practice?.step===1}" src="/art/review-fixes/shen-guanwei-teaching-v1.webp" alt="沈观微站在问法席旁，持卷向你示意" /><img v-if="g.practice && !tide" class="teaching-hero" :src="characterArt(heroArt(game.social.gender,game.realm),'guard')" alt="你在石案旁演法" /><div v-if="g.practice && !tide" class="practice-table" :class="[`practice-${g.practice.topic}`, `step-${g.practice.step}`]" aria-live="polite">
+      ><img v-if="teacherPresent" class="teaching-elder" :class="{'demonstrating':!!g.practice,'responding':g.practice?.step===1}" src="/art/review-fixes/shen-guanwei-teaching-v1.webp" alt="沈观微站在问法席旁，持卷向你示意" /><img v-if="g.practice && !tide" class="teaching-hero" :src="characterArt(heroArt(game.social.gender,game.realm),'guard')" alt="你在石案旁演法" /><div v-if="g.practice?.topic === 'spirit' && !tide" class="practice-table" :class="[`practice-${g.practice.topic}`, `step-${g.practice.step}`]" aria-live="polite">
         <span class="practice-title">{{ exercise?.title }}</span>
-        <div class="practice-diagram" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div v-if="g.practice.spirit" class="spirit-state" :class="{'anchored':g.practice.spirit.anchored,'overloaded':g.practice.spirit.pressure===2}" aria-label="听潮试阵状态">
+          <b>{{ g.practice.spirit.anchored ? '本念已稳' : '本念未稳' }}</b>
+          <div class="echoes"><i v-for="n in 2" :key="n" :class="{'traced':g.practice.spirit.echoes>=n}">{{ g.practice.spirit.echoes>=n ? '回声已辨' : '回声未明' }}</i></div>
+          <span>识压 {{ g.practice.spirit.pressure }}/2 · 已辨 {{ g.practice.spirit.echoes }}/2</span>
+        </div>
         <span>{{ exercise?.visual }} · {{ g.practice.step === 0 ? '初试' : '续试' }}</span>
+      </div>
+      <div v-if="materialActive" class="material-apparatus" aria-label="石案试法状态">
+        <component :is="materialScene" :game="game" :busy="busy" @move="practiceMove" />
       </div><img v-if="tide" class="tide-person gu-figure" src="/art/conclave/gu-cangyao-v1.webp" alt="顾沧遥守在潮堤旁" /><img v-if="tide" class="tide-person ye-figure" src="/art/conclave/ye-wenling-v1.webp" alt="叶问苓在图台旁校图" /><span v-if="tide" class="named-person gu">顾沧遥 · 守堤</span
       ><span v-if="tide" class="named-person ye">叶问苓 · 校图</span></template
     >
@@ -194,8 +216,12 @@ const cooperation = computed(() => goldenCooperation(props.game));
     <p v-if="selected === 'teaching'">
       {{ g.practice ? exercise?.clue : "石案旁留着四件试法之物：双流玉盘、听潮石、分药盏与护关阵盘。先说清自己的疑处，再择一件亲试。" }}
     </p>
+    <template v-if="selected === 'teaching' && g.practice">
+      <p role="status">{{ g.practice.feedback }}</p>
+      <small>石案操作不推进年月。{{ g.practice.topic === 'spirit' || g.practice.topic === 'pill' ? '灵草操作按实际需要消耗2株，其余操作不耗物资。' : '各项操作不耗物资。' }}案上显示当前状态，失手后可继续调整。</small>
+    </template>
     <p v-if="selected === 'rubbings'">
-      原页灵纹每拓一次便消退一层，只能留下两份完整印痕；抄字留不住其中药息与潮势。每方至多一份，分出后不追回。自留药息拓本可在问成丹缺口时省一月核验，仍须完成两步亲习。原有宝物、法门与灵髓由你收好。
+      原页灵纹每拓一次便消退一层，只能留下两份完整印痕；抄字留不住其中药息与潮势。每方至多一份，分出后不追回。自留药息拓本可在问成丹缺口时省一月核验，仍须亲手试过药性。原有宝物、法门与灵髓由你收好。
     </p>
     <p v-if="selected === 'letters' && !companionNews(game)">
       尚无相识旧友的来信。
@@ -214,7 +240,7 @@ const cooperation = computed(() => goldenCooperation(props.game));
         @click="emit('act', { type: 'goldenStory', action: row.action })"
       >
         {{ row.label }}</button
-      ><small
+      ><small v-if="!g.practice || row.quote.herbs || row.quote.error"
         >{{ row.quote.months }} 月 · 灵石 {{ row.quote.stones }} · 灵草
         {{ row.quote.herbs
         }}<template v-if="row.quote.error">
@@ -234,7 +260,7 @@ const cooperation = computed(() => goldenCooperation(props.game));
       <summary>已问过的批注</summary>
       <p v-for="topic in g.teachings" :key="topic">{{ teachingText[topic] }}</p>
     </details>
-    <p v-if="g.last" role="status">{{ g.last }}</p>
+    <p v-if="g.last && !g.practice" role="status">{{ g.last }}</p>
     <template #notes
       ><p>
         潮堤：{{ g.tideComplete ? "已完成实测" : "未完成实测" }}；旧录：{{
@@ -318,4 +344,25 @@ const cooperation = computed(() => goldenCooperation(props.game));
 .teaching-elder.responding{filter:drop-shadow(0 10px 8px #0007) drop-shadow(0 0 12px #e2ca8766)}
 .teacher-present .practice-table{left:36%;top:40%;width:23%;height:31%}
 @media(prefers-reduced-motion:reduce){.teaching-elder{transition:none}}
+</style>
+
+<style scoped>
+.spirit-state{width:95%;display:flex;align-items:center;flex-direction:column;gap:12px;padding:8px;font-size:13px}
+.spirit-state b{border:2px dashed #d9bd79;border-radius:50%;padding:10px;box-shadow:0 0 12px #d9bd7960}
+.spirit-state.anchored b{border-style:solid;background:#315e55}.spirit-state.overloaded b{box-shadow:0 0 22px #ee8866}
+.echoes{display:flex;gap:10px}.echoes i{font-style:normal;padding:8px 5px;border:1px dashed #b8c6bf;border-radius:12px;color:#c5ccc8}
+.echoes i.traced{border-style:solid;color:#fff2bc;background:#2e6c65;box-shadow:0 0 10px #8bdfce55}
+</style>
+
+<style scoped>
+.material-state{display:flex;flex-direction:column;gap:12px;padding:14px;font-size:13px}.material-state b{padding:10px;border:2px solid #81c9b1;background:#183b40bb;border-radius:50%}.material-state.pill b{border-radius:5px 5px 20px 20px}.material-state.ground b{border-radius:4px;border-style:dashed}
+</style>
+
+<style scoped>
+.material-apparatus{position:absolute;left:3%;top:20%;width:64%;max-height:70%;overflow:auto;pointer-events:auto;z-index:2;scrollbar-width:thin}
+.material-apparatus :deep(section){width:100%;max-width:none;box-sizing:border-box}
+.material-active .teaching-hero{left:81%;bottom:43%;height:36%;width:16%;pointer-events:none}
+.material-active .teaching-elder{left:68%;bottom:43%;height:38%;width:17%}
+.material-active :deep(.narrative-inspector:not(.narrative-notes)){width:28%;max-height:35%;bottom:12%;font-size:13px}
+@media(max-width:760px){.material-apparatus{left:2%;width:73%;top:20%;max-height:68%}.material-active :deep(.narrative-inspector:not(.narrative-notes)){width:24%;font-size:11px}}
 </style>

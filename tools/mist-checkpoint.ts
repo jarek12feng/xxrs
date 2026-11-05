@@ -1,3 +1,4 @@
+import { seekerStep } from "./initiation-policy";
 import { foundationStep } from "./foundation-playthrough";
 // Pure public-command checkpoint shared by tests and the local browser preview.
 import {
@@ -36,6 +37,7 @@ export function mistCheckpoint(
     rescueChoice === "roots" ? "return" : "takeHerbs",
   ] as AdventureAction[])
     send({ type: "adventure", action });
+  for(let i=0;i<6;i++){const step=seekerStep(s);if(!step)break;send(step);}
   for (const action of ["thanks", "market", "talk", "accept"] as RoadAction[])
     send({ type: "road", action });
   send({ type: "supplies" });

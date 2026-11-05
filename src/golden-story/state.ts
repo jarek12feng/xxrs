@@ -1,3 +1,7 @@
+import { validLegacyMaterialPractice } from './legacy-material-practice';
+import { validMaterialPractice } from './material-practice';
+import { validSpiritPractice } from "./spirit-practice";
+import { freshReunion, type Reunion } from "../golden-reunion/state";
 import { companionChronology } from "./companion";
 import type { State } from "../world";
 export type TeachingTopic = "method" | "spirit" | "pill" | "ground";
@@ -5,6 +9,7 @@ export type RubbingRecipient =
   "chengyuan" | "hengxuan" | "zhaoshuang" | "retain";
 import type { TeachingPractice, TeachingResult } from "./teaching";
 export interface GoldenStory {
+  reunion: Reunion;
   practice: TeachingPractice | null;
   teachingPracticeResults: TeachingResult[];
   direction: "none" | "sect" | "independent";
@@ -21,6 +26,7 @@ export interface GoldenStory {
   last: string;
 }
 export const freshGoldenStory = (): GoldenStory => ({
+  reunion: freshReunion(),
   practice: null,
   teachingPracticeResults: [],
   direction: "none",
@@ -41,7 +47,7 @@ const unique = (v: unknown, allowed: readonly unknown[], max: number) =>
   v.length <= max &&
   new Set(v).size === v.length &&
   v.every((x) => allowed.includes(x));
-export function validGoldenStory(s: State, legacy = false): boolean {
+export function validGoldenStory(s: State, legacy = false, legacyMaterial = false): boolean {
   const g = s.goldenStory;
   if (
     !g ||
@@ -60,10 +66,44 @@ export function validGoldenStory(s: State, legacy = false): boolean {
     g.last.length > 2000
   )
     return false;
-  if (!(legacy && g.practice === undefined && g.teachingPracticeResults === undefined)) {
+  if (!(
+    legacy &&
+    g.practice === undefined &&
+    g.teachingPracticeResults === undefined
+  )) {
     const p = g.practice;
-    if (!Array.isArray(g.teachingPracticeResults) || g.teachingPracticeResults.length > 4 || new Set(g.teachingPracticeResults.map(r => r?.topic)).size !== g.teachingPracticeResults.length || g.teachingPracticeResults.some(r => !r || !g.teachings.includes(r.topic) || !Number.isSafeInteger(r.errors) || r.errors < 0 || r.errors > 999)) return false;
-    if (p !== null && (!p || !['method','spirit','pill','ground'].includes(p.topic) || g.teachings.includes(p.topic) || !['seat','public'].includes(p.source) || ![0,1].includes(p.step) || !Number.isSafeInteger(p.errors) || p.errors < 0 || p.errors > 999 || typeof p.feedback !== 'string' || p.feedback.length > 2000 || !s.outerSea.met)) return false;
+    if (
+      !Array.isArray(g.teachingPracticeResults) ||
+      g.teachingPracticeResults.length > 4 ||
+      new Set(g.teachingPracticeResults.map((r) => r?.topic)).size !==
+        g.teachingPracticeResults.length ||
+      g.teachingPracticeResults.some(
+        (r) =>
+          !r ||
+          !g.teachings.includes(r.topic) ||
+          !Number.isSafeInteger(r.errors) ||
+          r.errors < 0 ||
+          r.errors > 999,
+      )
+    )
+      return false;
+    if (
+      p !== null &&
+      (!p ||
+        !["method", "spirit", "pill", "ground"].includes(p.topic) ||
+        g.teachings.includes(p.topic) ||
+        !["seat", "public"].includes(p.source) ||
+        ![0, 1].includes(p.step) ||
+        !Number.isSafeInteger(p.errors) ||
+        p.errors < 0 ||
+        p.errors > 999 ||
+        typeof p.feedback !== "string" ||
+        p.feedback.length > 2000 ||
+        !s.outerSea.met ||
+        (p.material !== undefined && (!(legacyMaterial ? validLegacyMaterialPractice(p.material) : validMaterialPractice(p.material)) || p.material.topic !== p.topic)) ||
+        (p.spirit !== undefined && (p.topic !== "spirit" || !validSpiritPractice(p.spirit))))
+    )
+      return false;
   }
   if (s.realm < 2) {
     const normalized = { ...freshGoldenStory(), ...g };

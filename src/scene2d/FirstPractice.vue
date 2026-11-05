@@ -276,8 +276,8 @@ const basic = computed(() =>
 .practice-actors > img {
   position: absolute;
   left: 25%;
-  bottom: 30%;
-  height: 45%;
+  bottom: 43%;
+  height: 32%;
   width: 19%;
   object-fit: contain;
   filter: drop-shadow(0 12px 8px #06130daa);
@@ -285,9 +285,9 @@ const basic = computed(() =>
 .practice-target {
   position: absolute;
   left: 57%;
-  bottom: 34%;
+  bottom: 43%;
   width: 19%;
-  height: 34%;
+  height: 28%;
 }
 .practice-target .practice-ring {
   top: 0;
@@ -330,10 +330,10 @@ const basic = computed(() =>
 .practice-stage :deep(.narrative-inspector) {
   left: 5%;
   right: 5%;
-  bottom: 20px;
+  bottom: 88px;
   top: auto;
   width: auto;
-  max-height: 35%;
+  max-height: 28%;
   padding: 20px 26px;
 }
 .practice-stage :deep(.narrative-inspector-heading) {

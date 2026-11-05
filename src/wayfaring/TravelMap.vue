@@ -1,4 +1,10 @@
 <script setup lang="ts">
+import AuctionDestination from "../auction/AuctionDestination.vue";
+import {auctionVenueAt} from "../auction/map";
+import {auctionVenues} from "../auction";
+import AuctionTiming from "../auction/AuctionTiming.vue";
+import "./travel-stage.css";
+import { travelPlaybackDuration } from "./playback";
 import { knowsInland } from "./discovery";
 import { computed, nextTick, ref, watch } from "vue";
 import type { State, Intent } from "../world";
@@ -21,7 +27,7 @@ const { root, keyboard } = useMapFocus(() => {
   if (!props.busy) emit("close");
 });
 const visibleSites = computed(() => Object.fromEntries(Object.entries(sites).filter(([id]) => knowsInland(props.game,id as TravelDestination))) as Partial<typeof sites>);
-const mapSites = computed(() => Object.entries(visibleSites.value).map(([id, site]) => ({ id, ...site! })));
+const mapSites = computed(() => Object.entries(visibleSites.value).map(([id, site]) => ({ id, ...site!, subtitle: auctionVenueAt(id) ? auctionVenues[auctionVenueAt(id)!].name : undefined })));
 const mapEdges = computed(() => roads.filter(([a,b]) => visibleSites.value[a] && visibleSites.value[b]).map(([a, b]) => [a, b] as const));
 const selected = ref<TravelDestination>(
   props.game.wayfaring.trip?.to ?? props.destination ?? "ferry",
@@ -133,6 +139,7 @@ function pause() {
           :image="characterArt(heroArt(game.social.gender, game.realm))"
           :walk-sheet="travelWalkSheet(game)"
           :mode="shown.mode === 'flight' ? 'flight' : 'walk'"
+          :duration="travelPlaybackDuration(shown.distance, shown.mode, game.realm)"
           :playing="playing"
           :progress="progress"
           @finished="playing = false"
@@ -196,7 +203,9 @@ function pause() {
               )
             }}
           </p>
+          <AuctionDestination :game="game" :place="selected" :months="arrived ? 0 : quote.error ? undefined : quote.remaining" />
           <p v-if="deadline" role="status">{{ deadline }}</p>
+          <AuctionTiming v-if="!arrived" :game="game" :months="quote.remaining" />
           <p v-if="quote.error">{{ quote.error }}</p>
 
           <button

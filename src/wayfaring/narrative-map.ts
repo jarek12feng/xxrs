@@ -147,6 +147,7 @@ export function narrativeMapNodes(s: State): RouteNode[] {
 }
 
 export const narrativeAtlasPaths: readonly (readonly [string, string])[] = [
+  ["outer-ferry", "outer-guild"],
   ["outer-ferry", "lizhao-harbor"],
   ["lizhao-harbor", "fuchao-bay"],
   ["outer-ferry", "conclave-court"],

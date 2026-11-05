@@ -1,9 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import {createApp,nextTick,type App as VueApp} from 'vue';
 import {createPinia} from 'pinia';
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import App from '../src/App.vue';
-import {createGame,dispatch,validState} from '../src/core';
+import {dispatch,validState} from "../src/core";
 import {load,save} from '../src/save';
 import {outerSeaCheckpoint} from '../tools/outer-sea-checkpoint';
 vi.mock('../src/save',()=>({load:vi.fn(),save:vi.fn()}));

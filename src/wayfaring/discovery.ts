@@ -20,6 +20,7 @@ export function knowsLandmark(s: State, key: string): boolean {
     case 'qi-pass-branch': return n.pursuit!=='none';
     case 'lizhao-harbor': return s.goldenStory.teachings.includes('pill')||s.lizhao.location!=='away'||s.lizhao.cleared;
     case 'fuchao-bay': return !['none','rumor'].includes(s.lizhao.pursuit);
+    case 'outer-guild': return s.treasures.goldenKnown || s.outerSea.location === 'guild';
     case 'outer-ferry': return s.goldenStory.direction!=='none'||s.outerSea.met;
     case 'outer-ruins': return s.outerSea.met;
     case 'conclave-court': return s.outerSea.notice!==null;

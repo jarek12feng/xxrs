@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from "vue";
 import { expect, it } from "vitest";
-import { createGame } from "../src/core";
+
 import CultivationOutlook from "../src/CultivationOutlook.vue";
 import FoundationPanel from "../src/foundation-journey/FoundationPanel.vue";
 import {

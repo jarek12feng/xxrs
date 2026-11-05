@@ -1,0 +1,11 @@
+
+> cultivation-life@0.15.0 build
+> vue-tsc --noEmit && vite build
+
+src/golden-reunion/index.ts(17,37): error TS2339: Property 'division' does not exist on type 'SpiritState'.
+src/golden-reunion/index.ts(22,24): error TS2339: Property 'reunion' does not exist on type 'GoldenStory'.
+src/golden-reunion/index.ts(43,24): error TS2339: Property 'reunion' does not exist on type 'GoldenStory'.
+src/golden-reunion/index.ts(49,194): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ ward: string; survey: string; edge: string; }'.
+src/golden-reunion/index.ts(56,24): error TS2339: Property 'reunion' does not exist on type 'GoldenStory'.
+src/golden-reunion/state.ts(16,28): error TS2339: Property 'reunion' does not exist on type 'GoldenStory'.
+src/scene2d/golden-objects.ts(19,7): error TS2739: Type '{ meet: string; pact: string; report: string; reward: string; attune: string; method: string; prepare: string; enter: string; fight: string; sail: string; move: string; home: string; return: string; withdraw: string; }' is missing the following properties from type 'Record<"move" | "withdraw" | "home" | "return" | "method" | "meet" | "pact" | "guild" | "prepare" | "sail" | "report" | "attune" | "enter" | "fight" | "auctionNews" | "guildReturn" | "reward", string>': guild, auctionNews, guildReturn

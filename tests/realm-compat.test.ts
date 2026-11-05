@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame } from "../src/core";
+
 import { cultivationMonth, cultivationMonthlyGain, cultivationProjection, realmStageLabel } from "../src/progression";
 import { retreatDurations, retreatPlan } from "../src/retreat";
 import { readiness } from "../src/combat/game";

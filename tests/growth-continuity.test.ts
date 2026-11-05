@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 import { expect, it } from "vitest";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
@@ -28,7 +29,6 @@ it("delivered father letter takes precedence over old travelling dialogue", () =
 });
 
 import {
-  createGame,
   dispatch,
   migrateSave,
   validState,

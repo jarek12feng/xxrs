@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch, type State, type Intent } from "../src/core";
+import { dispatch, type State, type Intent } from "../src/core";
 import { actionReceipt } from "../src/action-feedback";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
 const send = (s: State, c: Intent) =>
@@ -18,7 +19,7 @@ it("names the origin and destination when travelling", () => {
   });
   const c = { type: "adventure", action: "depart" } as const;
   expect(actionReceipt(s, send(s, c), c)?.scene).toMatchObject({
-    from: "雨夜渡口",
+    from: "听松渡口",
     to: "山门药庐",
   });
 });

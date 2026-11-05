@@ -1,0 +1,48 @@
+
+> cultivation-life@0.15.0 test
+> vitest run
+
+
+ RUN  v5.0.5 /Users/admin/Documents/ChatGPT/xxrs
+
+ ❯ tests/expedition.test.ts (7 tests | 1 failed) 5746ms
+   × replays 60 public-command routes with finite costs and single rewards 5505ms
+ ❯ tests/world.test.ts (23 tests | 1 failed) 6267ms
+   × replays 60 journeys through exploration and independent fresh starts 6110ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/expedition.test.ts > replays 60 public-command routes with finite costs and single rewards
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/expedition.test.ts:10:1
+      8| } from "../tools/expedition-simulation";
+      9|
+     10| it("replays 60 public-command routes with finite costs and single rewa…
+       | ^
+     11|   const first = balanceSample();
+     12|   expect(first).toEqual(balanceSample());
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/world.test.ts > replays 60 journeys through exploration and independent fresh starts
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/world.test.ts:449:1
+    447| });
+    448|
+    449| it("replays 60 journeys through exploration and independent fresh star…
+       | ^
+    450|   function play(
+    451|     seed: number,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 191 passed (193)
+      Tests  2 failed | 1323 passed (1325)
+   Start at  11:38:49
+   Duration  26.75s (tests 73%, environment 15%, import 9%, transform 3%)
+
+    Isolate  193 workers spawned · ~367ms startup each (spawn + environment, per file)
+             at least ~5.08s faster with isolate: false — reuses workers across files instead of one per file

@@ -1,8 +1,9 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { afterEach, expect, it } from "vitest";
 import { createApp, nextTick, type App } from "vue";
 import InventoryPanel from "../src/InventoryPanel.vue";
-import { createGame } from "../src/core";
+
 import {
   equipmentCategories,
   listEquipment,

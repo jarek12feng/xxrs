@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import {expect,it} from 'vitest';
-import {createGame,type State} from '../src/core';
+import {type State} from "../src/core";
 import {companionChronology,companionNews,companionLetterArchive} from '../src/golden-story/companion';
 import {goldenStoryQuote,runGoldenStory,teachingSolution} from '../src/golden-story/rules';
 import {teachingSpeaker,teachingIntroduction} from '../src/golden-story/teaching';
@@ -31,7 +32,7 @@ it('自留拓本用于药理问法，省去核验月但不跳过两步亲习',()
  expect(goldenStoryQuote(held,action).months).toBe(0);
  let n=runGoldenStory(held,action,'ask',tick);
  expect(n.goldenStory.teachings).toEqual([]);expect(n.goldenStory.practice?.step).toBe(0);
- for(const move of teachingSolution('pill'))n=runGoldenStory(n,{kind:'practice',move},move,tick);
+ for(const [index,move] of teachingSolution('pill').entries())n=runGoldenStory(n,{kind:'practice',move},`practice-${index}`,tick);
  expect(n.goldenStory.teachings).toEqual(['pill']);expect(n.month).toBe(s.month);
  expect(n.conclave).toEqual(s.conclave);expect(validGoldenStory(n)).toBe(true);
 });

@@ -1,3 +1,4 @@
+import { seekerStep } from './initiation-policy';
 import { qiNarrativeActive } from "../src/qi-journey/narrative";
 import type { PreparationRoute } from "../src/qi-journey/preparation";
 import { qiJourneyStep } from "./qi-journey-policy";
@@ -33,6 +34,8 @@ export function foundationStep(
       option = "self";
     return { type: "choose", instanceId: s.pending.id, option };
   }
+  const initiation=seekerStep(s,route === "sect" ? "jian" : "none");
+  if(initiation)return initiation;
   if (s.adventure.step !== "done") {
     const a = s.adventure;
     const action =

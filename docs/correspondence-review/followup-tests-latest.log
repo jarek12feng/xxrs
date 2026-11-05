@@ -1,0 +1,54 @@
+
+> cultivation-life@0.15.0 test
+> vitest run --maxWorkers=4
+
+
+ RUN  v5.0.5 /Users/admin/Documents/ChatGPT/xxrs
+
+ ❯ tests/narrative-travel.test.ts (5 tests | 1 failed) 1234ms
+   × 地图所有新地点资源存在、连线端点有效；查看不会制造探访或行程 560ms
+ ❯ tests/golden-auction.test.ts (3 tests | 1 failed) 16ms
+   × v48只增加未知会馆与空记录，不发会讯奖励或修改原目录，未知未来档拒绝 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/golden-auction.test.ts > v48只增加未知会馆与空记录，不发会讯奖励或修改原目录，未知未来档拒绝
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateSave src/world.ts:1454:30
+    1452|   next.goldenStory.reunion=freshReunion();
+    1453|   next.treasures.goldenKnown=false;
+    1454|   next.treasures.auctionArchive.golden=null;
+       |                              ^
+    1455|   next.version=SAVE_VERSION;
+    1456|   if(!validState(next))throw new Error('旧存档无法安全迁移，原档未修改。');
+ ❯ tests/golden-auction.test.ts:45:46
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/narrative-travel.test.ts > 地图所有新地点资源存在、连线端点有效；查看不会制造探访或行程
+AssertionError: outer-guild: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/narrative-travel.test.ts:114:50
+    112|   for (const [a, b] of narrativeAtlasPaths) {
+    113|     expect(allNodes.some((n) => n.key === a), a).toBe(true);
+    114|     expect(allNodes.some((n) => n.key === b), b).toBe(true);
+       |                                                  ^
+    115|   }
+    116|   expect(golden).toEqual(goldenCopy);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 197 passed (199)
+      Tests  2 failed | 1352 passed (1354)
+   Start at  12:27:33
+   Duration  56.83s (tests 84%, import 9%, environment 7%, transform 1%)
+
+    Isolate  199 workers spawned · ~134ms startup each (spawn + environment, per file)
+             at least ~6.53s faster with isolate: false — reuses workers across files instead of one per file

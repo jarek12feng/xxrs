@@ -1,8 +1,9 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { afterEach, expect, it } from "vitest";
 import { createApp, h, nextTick, shallowRef, type App } from "vue";
 import WorkshopPanel from "../src/workshop/WorkshopPanel.vue";
-import { createGame, dispatch, type Intent } from "../src/core";
+import { dispatch, type Intent } from "../src/core";
 import { workshopQuote } from "../src/workshop/rules";
 let app: App | undefined;
 afterEach(() => {

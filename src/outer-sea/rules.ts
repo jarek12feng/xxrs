@@ -1,10 +1,12 @@
+import { endLife } from '../mortality';
+import {goldenAuctionRoute} from "../wayfaring/geography";
 import { methodQuote } from "../techniques";
 import { inspectInteraction } from "../story-interactions";
 import { settleResources } from "../economy";
 import { advanceMonths } from "../timeline";
 import { dueDeadlines } from "../timeline";
 import { seaSchedule } from "./calendar";
-import { resolveTurn, startBattle } from "../combat";
+import { executeBattleAction, startBattle } from "../combat";
 import {
   passageKey,
   passageError,
@@ -20,6 +22,7 @@ import { foundationPower } from "../foundation-journey/combat";
 export type SeaAction =
   | {
       kind:
+        | "auctionNews" | "guild" | "guildReturn"
         | "sail"
         | "meet"
         | "prepare"
@@ -90,7 +93,12 @@ export function seaQuote(s: State, a: SeaAction) {
           ? ""
           : "先结束石卫交锋或撤出遗迹"),
     };
-  if (a.kind === "sail") {
+  if (a.kind === "auctionNews") {
+    if(o.location!=="ferry" || !o.met || s.treasures.goldenKnown)error ||= "在古渡向商旅初次打听沧澜会讯";
+  } else if(a.kind === "guild" || a.kind === "guildReturn") {
+    months=goldenAuctionRoute.months;
+    if(!s.treasures.goldenKnown || o.location !== (a.kind === "guild" ? "ferry" : "guild"))error ||= "须从已知的古渡与会馆泊岸沿航路往返";
+  } else if (a.kind === "sail") {
     months = 6;
     stones = o.met ? 0 : 12;
     if (o.location !== "home") error ||= "已经抵达外海";
@@ -187,6 +195,7 @@ export function seaGoal(s: State) {
   const o = s.outerSea;
   if (s.conclave.location !== "away") return conclaveGoal(s);
   if (o.duel) return "看清石卫来势再出手；也可撤回古渡，已通进度保留。";
+  if(o.location === "guild")return "在沧澜会馆问询十年会期，筹备后参拍；也可沿航路返回古渡。";
   if (o.location === "ruins")
     return "应对眼前石卫，取得封存机缘；退路仍然畅通。";
   return !s.goldenCore.farShore
@@ -257,6 +266,9 @@ export function runSea(
   }
   if (settleResources(s, { stones: quote.stones, herbs: quote.herbs }).error) return input;
   const o = s.outerSea;
+  if(a.kind === 'auctionNews') {s.treasures.goldenKnown=true;record('古渡商旅指向沧澜会馆：金丹拍卖每十年一届，提前两年传讯，开场后半年截止入场。往返各需两个月，物资与研修札可先备灵石再来。');}
+  if(a.kind === 'guild') {o.location='guild';record('商盟引航灯越过潮脊，沧澜会馆到了。可在厅内询问会期，或沿原航路返回古渡。');}
+  if(a.kind === 'guildReturn') {o.location='ferry';record('你沿商盟航路回到外海古渡，已知目录与竞得宝物随身保留。');}
   if (a.kind === "sail") {
     o.location = "ferry";
     record(
@@ -304,22 +316,26 @@ export function runSea(
       effect: "",
     };
     record(
-      `${seaFoe(depth).name} · 金丹前期。最多十六合；败退伤势 +2，主动撤回不加伤。`,
+      `${seaFoe(depth).name} · 金丹前期。最多十六合；${depth === 2 ? "内府气势耗尽会陨落；超时尚有气势则伤退" : "外府败退伤势 +2"}，主动撤回不加伤。`,
     );
   }
   if (a.kind === "move") {
-    const p = seaExchange(s, a.move)!,
-      d = o.duel!;
-    const turn = resolveTurn(d, p, {
-      turnLimit: 16,
-      resolution: "simultaneous",
-    });
+    const d = o.duel!;
+    const turn = executeBattleAction(d, s.herbs, { turnLimit: 16, resolution: "simultaneous" }, () => seaExchange(s, a.move));
+    if (!turn) return input;
+    const p = turn.exchange;
     Object.assign(d, turn.battle);
-    s.herbs -= turn.herbs;
+    s.herbs = turn.remainingHerbs;
     d.effect = a.move;
     record(
       `削去气势 ${p.damage}，承受 ${p.incoming}${p.healing ? `，耗灵草 ${p.herbs} 回气 ${p.healing}` : ""}。${p.note}`,
     );
+    if (d.depth === 2 && turn.battle.hp <= 0) {
+      o.duel = null;
+      endLife(s, 'sea');
+      o.last = s.result;
+      return s;
+    }
     if (turn.outcome === "win") {
       o.cleared = d.depth;
       o.duel = null;

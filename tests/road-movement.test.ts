@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import {createApp,h,nextTick,shallowRef} from 'vue';
 import {afterEach,expect,it,vi} from 'vitest';
-import {createGame} from '../src/core';
+
 import RoadPanel from '../src/RoadPanel.vue';
 import RoadWorld from '../src/scene2d/RoadWorld.vue';
 let app:ReturnType<typeof createApp>;

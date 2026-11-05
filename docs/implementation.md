@@ -1,5 +1,13 @@
 # 实施记录
 
+2026-11-05 传讯第二批以只读 view 接入事件归并、约定与关注会期、真实旅行报价及闭关风险提示，无新增持久字段。见 [设计](correspondence-design.md#2026-11-05-第二批往来归并与约定提醒) 与 [证据](correspondence-review/README.md)。
+
+2026-11-05 传讯由独立 correspondence 域保存来信、已读、关注和回应，源适配器只读取既有领域事实，照玄约定/人物核验复用原命令；存档v47。设计与扩展接口见 [传讯设计](correspondence-design.md)，测试、浏览器证据及未实现边界见 [实施记录](correspondence-review/README.md)。
+
+2026-11-05 拍卖领域收拢到 `src/auction`，地点/会期校验、两地场景、v46迁移与验证见 [拍卖设计](auction-design.md) 和 [接入记录](auction-review/README.md)。
+
+2026-11-05 道具成长由独立 item-growth 域负责机缘、容器、器髓和重铸状态；equipment 共用招式效果，workshop 共用戒内隔存减料报价，存档v44。见 [设计](item-growth-design.md) 与 [实施记录](item-growth-review/README.md)。
+
 2026-11-04 神识与御器重构：炼气／筑基／金丹神识上限 12／24／48，多辅器与主动出战法宝共用容量；清心丹递减、金丹养神丹、专御与存档 v35 已接入。此规则覆盖下文旧的统一神识上限、单辅器和温养自动加成说明。见 [神识与御器设计](spirit-control-design.md) 和 [验证记录](spirit-control-review/README.md)。
 
 2026-11-04 现有内容四项优化：统一行动拒绝说明与现场归属，炉房提供按配方缺口分别确认的筹备/购买入口，静养可到痊愈即停；分离会话持久化与自动计时，补齐坊市/擂台收支，并测量和减少当前档重复克隆。数值与存档格式保持，具体边界、性能数据和验收见 [实施记录](release-polish-20261104/README.md)。
@@ -266,3 +274,23 @@ Esc 只收起本面板的手记和旧路选项，不撤销已经实施的路线�
 ## 分阶段行动呈现（0.11.0）
 
 `action-process.ts` 是只读意图到演出脚本的映射，`ActionReceipt.process` 不进入存档。规则结算与持久化成功后才播放，`ActionFeedback` 管理阶段计时，跳过和卸载清理全部计时器；演出不发出领域命令。扩展回执期间保持原有操作锁和焦点管理。普通反复修炼不强制增加长演出；关键解法和人物回应显示过程，遵从减少动态效果设置。
+
+### 战斗模块与剧情接入（2026-11-05）
+
+十处回合剧情通过 `combat.executeBattleAction` 统一执行当前报价、检查草药、结算回合并返回实际战报；UI与命令复用各场景的纯Exchange适配器。阵核实现封装于combat内部机制目录；equipment继续独立拥有装备规则。场景只提交返回值并处理地方性机制与剧情后果。接口约束、迁移清单及验证边界见 [战斗模块深化](combat-system-review/20261105/README.md)。旧概率擂台/单次遭遇保留各自独立引擎，不能声称全部玩法统一为同一种战斗。
+
+传讯主动联络（2026-11-05）：写信通过 correspondence/write，personal.ts 负责联系人、同阶段去重、候信与一游戏月后的回执，history.ts 提供只读古渡见面回响。继续使用当前 Letter 存档，不增版本；不授予好感、资源或人物境界。具体接手入口和未完成范围见 docs/correspondence-design.md 与 docs/correspondence-review/README.md。
+
+2026-11-05 世界事实与传讯：world-events 提供拍卖实际结果、外海遗迹里程碑和筑基榜战绩的纯投影，correspondence/events 生成报告，leads 复用规则显示后续去路。无新增存档字段。世界引擎的职责与分批提炼见 docs/world-evolution-design.md；当前不具备通用 NPC 或势力自动模拟。
+
+2026-11-05 世界日程首批：world-evolution 统一只读区间事件与下一边界，月回调/命令尾部通过 correspondence/calendar 投递途中会讯和人物里程碑。阶段判定复用 companionMilestone；不自动确认人物境界，不改变原月推进与中断规则。无新持久字段，接口与未实施模拟范围见 docs/world-evolution-design.md。
+
+2026-11-05 世界周期首批潮隙侧廊：tide-survey 独立领域提供周期、报价、耗月探查、一次性结算与存档校验，world-evolution/calendar 负责日程与传播。古渡现场对象进入，风险按有效神识（含识海创伤）判断。v50仅补空探查记录，不刷新旧府。完整范围与验收见 docs/tide-survey-review/README.md。
+
+2026-11-05 持久人物行程：friend-journey以窄接口拥有独立勘潮阶段、结构化事实及传播/核验时刻；normalize与dispatch统一结算，correspondence只调用供药/核验规则。v52在v51之上保守初始化，详见docs/friend-journey-review/README.md。没有新增地图NPC演出。
+
+2026-11-05 独立行程现场接入：friend-journey/presence统一人物是否仍在途中，visit拥有现场访问与亲眼核验，OuterSeaPanel复用侧堤入口。nascent-soul/contact统一庭院约见有效性，行程中的人物不能被旧约召到场。v53保守补visitedAt，详见docs/friend-journey-review/README.md第二批。
+
+2026-11-05 探望短演出：friend-journey/use-visit-performance仅监听已保存visitedAt变化；靠近复用useSceneApproach。略过、重看、动画结束都不得发游戏命令。日期与资源不受演出影响，无存档字段变更。素材与浏览器证据边界见docs/friend-journey-review/README.md第三批。
+
+2026-11-05 探望关键姿态：visit-poses.ts拥有五姿态图集窗口与只读选择；FriendJourneyScene加载单张透明图并按唯一clipPath裁切，失败回退旧素材。替换第三批浮动卷轴与女主立绘旋转，不改变结算/播放时序。来源、提示词、实测与仍未逐帧动画的边界见docs/friend-journey-review/README.md第四批。

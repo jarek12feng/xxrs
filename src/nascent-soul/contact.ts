@@ -1,3 +1,4 @@
+import { friendOnJourney, friendPresence } from "../friend-journey/presence";
 import type { State } from "../world";
 /** Shared reliable-news boundary. No calendar event implies death or a breakthrough. */
 export function companionContact(s: State) {
@@ -27,8 +28,10 @@ export function companionContact(s: State) {
     lifespan,
     confirmedGolden,
     reliable,
+    invitationCurrent: s.nascentSoul.contactedAt !== null && s.month-s.nascentSoul.contactedAt<=120 && (s.friendJourney?.startedAt == null || s.nascentSoul.contactedAt >= s.friendJourney.startedAt+18),
+    availableForMeeting: !friendOnJourney(s),
     present:
-      reliable &&
+      friendPresence(s) === "none" && reliable &&
       ["home", "returned", "rescued"].includes(s.foundationJourney.whereabouts),
   };
 }

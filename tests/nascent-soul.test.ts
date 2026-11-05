@@ -134,6 +134,8 @@ describe("金丹圆满和凝婴真实领域命令", () => {
       s = act(s, { kind: "celebrate", choice: "deferred", office: "declined" });
       for (const kind of ["survey", "shelter", "cross"] as const)
         s = act(s, { kind });
+      s = act(s, {kind:"crossing",move:"shore"});
+      s = act(s, {kind:"cross"});
       expect(nascentGoal(s)).toContain("路标");
       expect(nascentInteractions(s).some(r => r.action.kind === "celebrate" && r.action.choice === "formal")).toBe(true);
       expect(runNascent(s, { kind: "cross" }, "again", tick)).toBe(s);
@@ -448,7 +450,7 @@ it("元婴续篇与亲自试雷是门槛，行功结束仍须应劫", () => {
   s.nascentSoul.thunder.practiced = false;
   expect(nascentQuote(s, { kind: "begin" }).error).not.toBe("");
 });
-it("天劫预览不改状态，承伤不足会失败，不能靠同时击散雷势晋升", () => {
+it("正式天劫气势耗尽会陨落，同归于尽不能晋升或继续恢复", () => {
   let s = prepare(fixture("blade"));
   s = act(s, { kind: "begin" });
   for (const move of ["channel", "observe", "unite"] as const)
@@ -465,11 +467,10 @@ it("天劫预览不改状态，承伤不足会失败，不能靠同时击散雷�
   expect(s.nascentSoul.thunder.cleared).toBe(false);
   expect(s.nascentSoul.thunder.practiced).toBe(true);
   expect(s.nascentSoul.pills).toBe(0);
-  while (s.injury) s = act(s, { kind: "recover" });
-  s = act(s, { kind: "renewMarrow" });
-  s.herbs = 24;
-  s = act(s, { kind: "brew", method: "commission", fire: "steady" });
-  expect(ascend(s).realm).toBe(3);
+  expect(s.status).toBe('dead');
+  expect(s.death?.cause).toBe('tribulation');
+  expect(nascentQuote(s, { kind: 'recover' }).error).toBeTruthy();
+  expect(dispatch(s, { type: 'advance', activity: 'rest', months: 1, id: 'after-death' })).toBe(s);
 });
 it("三重天劫中途序列化续战一致，禁止跨域推进和改换准备", () => {
   let s = prepare(fixture("breath"));

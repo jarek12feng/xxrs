@@ -1,8 +1,10 @@
+import { hasCultivationKit } from '../initiation/rules';
 import { sceneOwner } from "../scene-activity";
 import type { State } from "../core";
 export type StoryChapter =
   | "lizhao"
   | "nascent"
+  | "admission"
   | "opening"
   | "road"
   | "mist"
@@ -18,13 +20,15 @@ export function storyChapters(
   s: State,
   showRoad = false,
 ): { id: StoryChapter; label: string }[] {
+  if(!hasCultivationKit(s))return s.adventure.step === 'done' ? [{id:'admission',label:'药坪求学'}] : [{id:'opening',label:'药乡启程'}];
+  const seeking: {id:StoryChapter;label:string}[] = s.journey.branch === 'none' && (s.realm === 0 || s.foundationJourney.location === 'home') && s.outerSea.location === 'home' ? [{id:'admission',label:'听松药坪 · 再议师承'}] : [];
   // Earned but unclaimed gifts remain accessible after realm advancement.
   const rewards: { id: StoryChapter; label: string }[] =
     (s.adventure.step === "done" && !s.journey.learning.book) ||
     (s.expedition.cleared >= 1 && !s.journey.learning.relic)
       ? [{ id: "rewards", label: "归来谢礼" }]
       : [];
-  if (s.realm === 3) return [{id:"nascent",label:"元婴初成"}, ...rewards];
+  if (s.realm === 3) return [{id:"nascent",label:"元婴初成"}, ...rewards,...seeking];
   if (s.realm === 2) {
     if (!s.goldenCore.farShore)
       return [{ id: "golden", label: "云壁之外" }, ...rewards];
@@ -34,7 +38,7 @@ export function storyChapters(
     if (s.outerSea.notice !== null || s.outerSea.cleared === 2)
       choices.push({ id: "conclave", label: "来信与诸宗会" });
     if (s.conclave.stage >= 2) choices.push({id:"lizhao",label:"离照洞天"},{id:"nascent",label:"圆满与凝婴"});
-    return [...choices, ...rewards];
+    return [...choices, ...rewards,...seeking];
   }
   if (s.realm === 1) {
     const choices: { id: StoryChapter; label: string }[] = [
@@ -54,7 +58,7 @@ export function storyChapters(
     if (s.foundationJourney.cultivation >= 200)
       choices.push({ id: "golden", label: "凝丹筹备" });
     choices.push({ id: "road", label: "青嶂旧路" });
-    return [...choices, ...rewards];
+    return [...choices, ...rewards,...seeking];
   }
   if (s.adventure.step !== "done")
     return [{ id: "opening", label: "寻人入山" }];
@@ -69,7 +73,7 @@ export function storyChapters(
   choices.push(...rewards);
   if (s.journey.learning.book && s.journey.main && !s.adventure.road.thanked)
     choices.push({ id: "practice", label: "药庐试招" });
-  return choices;
+  return [...choices,...seeking];
 }
 export function storyChapter(
   s: State,

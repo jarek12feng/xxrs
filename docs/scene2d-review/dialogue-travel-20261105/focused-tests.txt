@@ -1,0 +1,13 @@
+
+> cultivation-life@0.15.0 test
+> vitest run tests/dialogue-placement.test.ts tests/scene2d-ui.test.ts tests/scene2d-projection.test.ts
+
+fatal: not a git repository (or any of the parent directories): .git
+
+ RUN  v5.0.5 /private/tmp/xxrs-dialogue-snapshot-20261105
+
+
+ Test Files  3 passed (3)
+      Tests  11 passed (11)
+   Start at  08:53:08
+   Duration  579ms (environment 51%, import 22%, transform 20%, tests 7%, worker 1%)

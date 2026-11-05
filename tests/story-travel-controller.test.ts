@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from 'vue';
 import { expect, it } from 'vitest';
-import { createGame, dispatch, type Intent } from '../src/core';
+import { dispatch, type Intent } from "../src/core";
 import { useStoryTravel } from '../src/wayfaring/useStoryTravel';
 it('only published arrival starts playback; unchanged saves and interrupted commands stay at origin',async()=>{
   const s=createGame('抵达验证','wood');s.adventure.step='done';s.adventure.road.map=true;

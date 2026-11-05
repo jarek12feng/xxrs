@@ -1,6 +1,7 @@
+import { endLife } from '../mortality';
 import type { State } from "../world";
 import type { Move } from "../combat";
-import { resolveTurn } from "../combat";
+import { executeBattleAction } from "../combat";
 import { tacticalPreview } from "../combat/game";
 import { foundationPower } from "../foundation-journey/combat";
 import type { ThunderBattle } from "./thunder-state";
@@ -111,10 +112,12 @@ export function startThunder(
 /** Only mutates command-owned draft. A zero-vigor simultaneous finish is failure. */
 export function applyThunderTurn(s: State, move: Move, useHerbs = true) {
   const t = s.nascentSoul.thunder,
-    b = t.battle!,
-    p = thunderExchange(s, move, useHerbs)!;
-  const r = resolveTurn(b, p, { turnLimit: 12, resolution: "simultaneous" });
-  s.herbs -= r.herbs;
+    b = t.battle!;
+  const r = executeBattleAction(b, s.herbs,
+    { turnLimit: 12, resolution: "simultaneous" },
+    () => thunderExchange(s, move, useHerbs))!;
+  const p = r.exchange;
+  s.herbs = r.remainingHerbs;
   Object.assign(b, r.battle);
   b.hp = Math.min(b.hp, b.maxHp);
   b.effect = move;
@@ -133,7 +136,10 @@ export function applyThunderTurn(s: State, move: Move, useHerbs = true) {
   if (stage === "loss") {
     t.battle = null;
     s.injury = Math.min(6, s.injury + (b.kind === "practice" ? 2 : 3));
-    if (b.kind === "tribulation") s.nascentSoul.failures++;
+    if (b.kind === "tribulation") {
+      s.nascentSoul.failures++;
+      if (b.hp <= 0) endLife(s, 'tribulation');
+    }
   } else if (stage === "wave") {
     b.wave++;
     b.turn = 0;

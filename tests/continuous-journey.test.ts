@@ -1,5 +1,6 @@
+import { createGame } from "../src/core";
 import { expect, it } from "vitest";
-import { createGame, dispatch, validState } from "../src/core";
+import { dispatch, validState } from "../src/core";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
 
 it("reviewing a chapter and continuing preserves the same person's world and relationships", () => {

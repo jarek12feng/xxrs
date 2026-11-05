@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import NarrativeStage from "./scene2d/NarrativeStage.vue";
 import { techniques, relics, type State, type Intent } from "./core";
 import { rescueEcho } from "./adventure";
+import { hasCultivationKit } from './initiation/rules';
 import { learningBlocked } from "./learning";
 const props = withDefaults(
   defineProps<{ game: State; busy: boolean; standalone?: boolean }>(),
@@ -12,7 +13,7 @@ const emit = defineEmits<{ act: [intent: Intent]; close: [] }>();
 const selected = ref("");
 const bookAvailable = computed(
   () =>
-    props.game.adventure.step === "done" && !props.game.journey.learning.book,
+    hasCultivationKit(props.game) && props.game.adventure.step === "done" && !props.game.journey.learning.book,
 );
 const relicAvailable = computed(
   () =>
@@ -20,7 +21,7 @@ const relicAvailable = computed(
 );
 const hotspots = computed(() => [
   ...(bookAvailable.value
-    ? [{ id: "book", label: "药工留下的功法木匣", x: 39, y: 63 }]
+    ? [{ id: "book", label: "入道功法木匣", x: 39, y: 63 }]
     : []),
   ...(relicAvailable.value
     ? [{ id: "relic", label: "药队留下的法器木匣", x: 57, y: 65 }]
@@ -42,7 +43,7 @@ function inspect(id: string) {
     title="山祠归途 · 药队谢礼"
     :goal="
       bookAvailable
-        ? '药工请你挑一册功法，往后的路也好有些依仗。'
+        ? '入道行装已收好，从基础抄本中选一册修习。'
         : relicAvailable
           ? '药队留下两件法器，请你从中挑一件。'
           : '谢礼已收妥，可以继续上路了。'
@@ -129,11 +130,11 @@ function inspect(id: string) {
   </NarrativeStage>
   <template v-else>
     <section
-      v-if="game.adventure.step === 'done' && !game.journey.learning.book"
+      v-if="bookAvailable"
       class="learning-choices"
       aria-label="挑选入门功法"
     >
-      <h3>药工的谢礼 · 选一册入门功法</h3>
+      <h3>初入修行 · 选一册基础功法</h3>
       <p>{{ rescueEcho(game.adventure) }}</p>
       <p>选一册学会并设为主修，马上就能运用。以后仍可兼修或更换。</p>
       <p v-if="game.journey.main">

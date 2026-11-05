@@ -1,8 +1,9 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { afterEach, expect, it, vi } from "vitest";
 import { createApp, nextTick, type App } from "vue";
 import WorldAtlas from "../src/WorldAtlas.vue";
-import { createGame, type State } from "../src/core";
+import { type State } from "../src/core";
 let app: App;
 afterEach(() => {
   app?.unmount();
@@ -101,4 +102,19 @@ it("story map conceals unknown locations without inventing travel", async () => 
   expect(selectStory).not.toHaveBeenCalled();
   expect(game).toEqual(before);
   expect(document.querySelectorAll(".story-atlas button.atlas-pin")).toHaveLength(1);
+});
+
+it('拍卖场所附着在原地点，选中仍只返回原旅行目的地', async () => {
+  const { auctionFixture } = await import('../tools/auction-checkpoint');
+  const game = auctionFixture();
+  const before = structuredClone(game);
+  const select = vi.fn();
+  app = createApp(WorldAtlas, {game, selected: 'valley', story: true, selectedStory: 'market', onSelectStory: select});
+  app.mount(document.body.appendChild(document.createElement('div')));
+  const market = [...document.querySelectorAll<HTMLButtonElement>('.atlas-list button')].find(b=>b.textContent?.includes('坊市小拍'))!;
+  expect(market).toBeTruthy();
+  market.click();
+  await nextTick();
+  expect(select).toHaveBeenCalledWith('market');
+  expect(game).toEqual(before);
 });

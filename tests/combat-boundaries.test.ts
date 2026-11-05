@@ -50,7 +50,9 @@ it("keeps the pure engine local and consumers on the public combat entry points"
         if (
           inside &&
           !adapter &&
-          (!name.startsWith("./") || /\/(game|style)$/.test(target))
+          (!name.startsWith(".") ||
+            !target.startsWith("combat/") ||
+            /\/(game|style)$/.test(target))
         )
           violations.push(`${local}: pure engine imports ${name}`);
         if (

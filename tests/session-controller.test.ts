@@ -1,6 +1,7 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { afterEach, expect, it, vi } from "vitest";
 import { ref } from "vue";
-import { createGame } from "../src/core";
+
 import { useGameSession } from "../src/session/use-game-session";
 import { startAutomaticClock } from "../src/session/automatic-clock";
 afterEach(() => vi.useRealTimers());

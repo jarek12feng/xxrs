@@ -1,3 +1,4 @@
+import { assayMoves, assayLabels, assayMethod } from "./assay";
 import type { State } from "../world";
 import { projectInteractions } from "../story-interactions";
 import { lizhaoQuote, type LizhaoAction } from "./rules";
@@ -29,7 +30,7 @@ export function lizhaoOptions(s: State) {
           kind: "prepare",
           preparation: "purify",
         });
-      add("path", l.outerCleared ? "沿已开道路直抵内层" : "踏上分潮石道", {
+      add("path", l.outerCleared ? "直抵内层 · 取药交锋有陨落风险" : "踏上分潮石道", {
         kind: "enter",
       });
     }
@@ -56,20 +57,29 @@ export function lizhaoOptions(s: State) {
     add("exit", "返回外海古渡", { kind: "leave" });
   }
   if (l.location === "outer") {
-    add("path", l.outerCleared ? "穿过已开的阵门，深入药池" : "应对分潮禁阵", {
+    add("path", l.outerCleared ? "深入药池 · 内层有陨落风险，可先回港整备" : "应对分潮禁阵", {
       kind: l.outerCleared ? "deeper" : "fight",
     });
     add("exit", "沿石道回港", { kind: "return" });
   }
   if (l.location === "inner") {
-    add("path", l.cleared ? "进入旧丹室" : "应对守炉傀儡、亲自取药", {
+    add("path", l.cleared ? "进入旧丹室" : "应对守炉傀儡、亲自取药 · 气势耗尽或积毒100会陨落", {
       kind: l.cleared ? "chamber" : "fight",
     });
     add("exit", "沿石道回港", { kind: "return" });
   }
   if (l.location === "chamber") {
-    if (!l.recipeVerified)
-      add("furnace", "以灵草试炉，验证化婴药理", { kind: "verify" });
+    if (!l.recipeVerified) {
+      if(l.assay.phase==="idle")add("furnace", "备普通灵草试炉 · 不动封存辅药", {kind:"verify"});
+      else {
+        for (const move of assayMoves) {
+          const q = assayMethod(s, move);
+          const forecast = move === "discard" ? "封存辅药保留" :
+            `${q.months}月 · 潮息${q.next.tide} / 分药${q.next.separation} / 负担${q.next.strain}${q.next.phase === "stable" ? " · 药理验成" : move === "bind" ? " · 将失稳，药性保留" : ""}`;
+          add("furnace", `${assayLabels[move]} · ${forecast}`, {kind:"assay",move});
+        }
+      }
+    }
     add("exit", "带着药瓶回港", { kind: "return" });
   }
   if (
@@ -92,7 +102,7 @@ export function lizhaoOptions(s: State) {
   }
   if (l.location === "bay") {
     if (l.pursuit === "confront")
-      add("opponent", "应战韩砺舟 · 败退不丢药材", { kind: "fight" });
+      add("opponent", "应战韩砺舟 · 气势耗尽或积毒100会陨落，可主动撤离", { kind: "fight" });
     add("opponent", "赔偿原订户、当面解除雇契", { kind: "negotiate" });
     if (l.pursuit === "defeated") {
       add("opponent", "带雇契归港，揭露私雇夺药", { kind: "expose" });

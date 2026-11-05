@@ -1,6 +1,7 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import "fake-indexeddb/auto";
 import { beforeEach, expect, it } from "vitest";
-import { createGame, dispatch } from "../src/core";
+import { dispatch } from "../src/core";
 import { save, load } from "../src/save";
 import { listSlots, readSlot, writeSlot } from "../src/save-slots";
 beforeEach(async () => {

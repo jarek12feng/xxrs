@@ -1,9 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createApp, nextTick, type App as VueApp } from "vue";
 import { createPinia } from "pinia";
 import App from "../src/App.vue";
-import { createGame, dispatch, type State } from "../src/core";
+import { dispatch, type State } from "../src/core";
 import { load, save } from "../src/save";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
 vi.mock("../src/save", () => ({ load: vi.fn(), save: vi.fn() }));
@@ -392,9 +393,9 @@ it("opens character and inventory overlays without advancing the world", async (
 });
 
 it("shows routine sect work in place and offers equipment immediately after promotion", async () => {
-  await mount(state());
+  const member=state();member.journey.branch='dan';
+  await mount(member);
   await click("师门与委托");
-  await click("拜入丹堂");
   await click("整理旧卷");
   expect(
     document.querySelector(".world-panel .scene-response")?.textContent,

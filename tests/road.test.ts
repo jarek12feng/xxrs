@@ -1,9 +1,9 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 
 import { foundationStep } from "../tools/foundation-playthrough";
 import { expect, it } from "vitest";
 import {
-  createGame,
   dispatch,
   validState,
   migrateSave,
@@ -348,8 +348,10 @@ it("migrates v6 without changing resources, scene, old story or RNG; rejects cor
   const { road: _, ...adventure } = s.adventure;
   const old = { ...s, version: 6, adventure };
   const upgraded = migrateSave(old);
+
   expect(upgraded).toEqual({
     ...s,
+    qiJourney:{...s.qiJourney,narrative:{...s.qiJourney.narrative,initiation:{...s.qiJourney.narrative.initiation,arrival:"legacy"}}},
     journey: { ...s.journey, learning: { book: true, relic: false } },
     version: SAVE_VERSION,
     adventure: { ...adventure, rescueChoice: "legacy", road: freshRoad() },

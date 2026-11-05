@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {auctionVenues} from "./auction";
 import { narrativeAtlasPaths } from "./wayfaring/narrative-map";
 import { computed } from "vue";
 import { currentWorldMap as worldMap, qingxuanPaths } from "./world-geography";
@@ -77,7 +78,7 @@ const points: Record<Place, { x: number; y: number }> = {
                 : node.intent
                   ? "可前往"
                   : "循线索开启"
-          }}</small>
+          }}</small><small v-if="node.auction">{{auctionVenues[node.auction].name}}</small>
         </button>
       </template>
       <template v-else>
@@ -200,7 +201,7 @@ const points: Record<Place, { x: number; y: number }> = {
                   : node.intent
                     ? "可前往"
                     : "循线索开启"
-            }}</small>
+            }}</small><small v-if="node.auction">{{auctionVenues[node.auction].name}}</small>
           </button>
         </template>
         <span class="atlas-inscription">山海未尽，仙途方始</span>

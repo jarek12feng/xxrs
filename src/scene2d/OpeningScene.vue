@@ -14,13 +14,22 @@ import {
   type AdventureAction,
 } from "../adventure";
 import { characterArt, heroArt } from "../presentation/art";
+import ArrivalChoices from '../initiation/ArrivalChoices.vue';
+import { arrivalActive } from '../initiation/rules';
 import QiOrigin from "../qi-journey/QiOrigin.vue";
 import OriginNotes from "../OriginNotes.vue";
 import { openingScene } from "./opening";
+import { useSpeechBubble } from "./speech-bubble";
+import "./speech-bubble.css";
 import type { StageHandle } from "./renderer";
 const props = defineProps<{ game: State; busy: boolean }>();
 const emit = defineEmits<{ act: [intent: Intent]; cultivate: [] }>();
-const scene = computed(() => openingScene(props.game.adventure));
+const arriving = computed(() => arrivalActive(props.game));
+const scene = computed(() => {
+  const scene = openingScene(props.game.adventure);
+  if (!arriving.value) return scene;
+  return {...scene, title:'药乡启程 · 初到听松', lead:'送药抵岸，凭温蘅的引荐求学。先安顿药包，试一试自己的引气之法。', objects:scene.objects.filter(o=>o.id==='origin')};
+});
 const locked = computed(
   () =>
     props.busy ||
@@ -33,8 +42,9 @@ const locked = computed(
       props.game.foundationJourney.duel
     ),
 );
-const selected = ref(props.game.adventure.step === "home" ? "herbs" : "");
+const selected = ref(arriving.value ? "origin" : props.game.adventure.step === "home" ? "herbs" : "");
 const root = ref<HTMLElement>();
+const bubbleStyle = useSpeechBubble(root, () => target.value?.foot ? {...target.value, y: target.value.foot.y - 25} : target.value);
 const responseTarget = ref("");
 const notesOpen = ref(false);
 const walking = ref(false);
@@ -133,6 +143,7 @@ watch(
       ?.scrollTo({ top: 0, behavior: "instant" });
   },
 );
+watch(arriving, () => { void boot(true); });
 watch(
   () => props.game.adventure.step,
   (now, before) => {
@@ -211,7 +222,8 @@ function select(id: string) {
   responseTarget.value = "";
   const o = target.value;
   stage?.focus?.(id);
-  if (o) stage?.move(o.x, o.y);
+  if (o?.foot) stage?.walkTo?.(o.foot.x + (o.foot.x < 40 ? 9 : -9), o.foot.y);
+  else if (o) stage?.move(o.x, o.y);
 }
 function act(action: AdventureAction) {
   if (locked.value) return;
@@ -271,7 +283,7 @@ function act(action: AdventureAction) {
       </button>
     </header>
     <aside class="scene-objective" aria-label="眼前的事">
-      <span>雨中失踪的人</span>
+      <span>{{ arriving ? "我的求道之始" : "在听松求学" }}</span>
       <p>{{ scene.lead }}</p>
       <small v-if="game.adventure.step === 'home'">阵光散去 · 药工已脱险</small>
       <small
@@ -284,12 +296,14 @@ function act(action: AdventureAction) {
       class="stage-interaction"
       :class="{
         'has-target': !!target,
+        'speech-bubble': target?.kind === 'person',
         conversation: target?.kind === 'person',
       }"
+      :style="target?.kind === 'person' ? bubbleStyle : undefined"
       aria-label="冒险操作区"
       aria-live="polite"
     >
-      <template v-if="target">
+      <div v-if="target" :class="{'speech-content': target.kind === 'person'}">
         <img
           v-if="target.portrait"
           class="speaker-portrait"
@@ -309,8 +323,9 @@ function act(action: AdventureAction) {
           </h3>
           <button @click="closeInteraction" aria-label="收起现场操作">×</button>
         </div>
-        <p class="observation">{{ target.detail }}</p>
-        <QiOrigin v-if="target.id==='origin'" :game="game" :busy="busy" @act="emit('act',$event)" />
+        <p v-if="!arriving" class="observation">{{ target.detail }}</p>
+        <ArrivalChoices v-if="arriving" :game="game" :busy="locked" @act="emit('act',$event)" />
+        <QiOrigin v-else-if="target.id==='origin'" :game="game" :busy="busy" @act="emit('act',$event)" />
         <p
           v-if="responseTarget === selected && scene.briefResult"
           class="immediate-response"
@@ -343,7 +358,7 @@ function act(action: AdventureAction) {
             }}</small>
           </button>
         </div>
-      </template>
+      </div>
       <small v-if="failed">场景画面暂未载入，仍可通过标记完成行动。</small>
     </div>
     <div
@@ -740,15 +755,6 @@ button:disabled {
 @media (min-width: 1000px) {
   .opening-stage {
     background: #08191b;
-  }
-  /* Keep the calibrated 16:9 scene, actors and hotspots in one coordinate space. */
-  .stage-world {
-    inset: auto;
-    left: 50%;
-    top: 50%;
-    width: min(100vw, 177.777778dvh);
-    height: min(100dvh, 56.25vw);
-    transform: translate(-50%, -50%);
   }
 
   .stage-interaction {

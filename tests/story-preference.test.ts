@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from 'vitest';
-import { createGame } from '../src/core';
+
 import { advanceStoryPreference, readStoryPreference, writeStoryPreference } from '../src/scene2d/story-preference';
 it('restores a view only for the matching saved snapshot, without mutating progress', () => {
  const s=createGame('行旅','wood',42);s.adventure.step='done';

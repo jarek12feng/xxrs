@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from "vue";
 import { it, expect, vi } from "vitest";
@@ -20,7 +21,7 @@ vi.mock("../src/scene2d/renderer", () => ({
   },
 }));
 import OpeningScene from "../src/scene2d/OpeningScene.vue";
-import { createGame, dispatch, type Intent } from "../src/core";
+import { dispatch, type Intent } from "../src/core";
 const flush = async () => {
   for (let i = 0; i < 8; i++) await nextTick();
 };

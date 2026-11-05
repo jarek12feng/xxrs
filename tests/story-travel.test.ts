@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch } from "../src/core";
+import { dispatch } from "../src/core";
 import { storyRoute, storyLocation } from "../src/wayfaring/story-routes";
 import { foundationArrivalPoint } from "../src/foundation-journey/scene-approach";
 import { outerSeaCheckpoint } from "../tools/outer-sea-checkpoint";

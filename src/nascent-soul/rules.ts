@@ -1,3 +1,4 @@
+import { crossingQuote, crossingView, type CrossingMove } from "./crossing";
 import { nascentPromises, unsettledNascentPromises } from './promises';
 export { nascentPromises } from './promises';
 import { channelingPreview, channelingSituation } from './channeling';
@@ -12,6 +13,7 @@ import { nascentState } from "./state";
 import { advanceMonths } from "../timeline";
 import { quoteSettlement, settleResources } from "../economy";
 export type NascentAction =
+  | { kind: "crossing"; move: CrossingMove }
   | CovenantChoice
   | { kind: "discoverMethod" | "practiceThunder" }
   | { kind: "studyMethod"; method: "continuity" | "stillness" }
@@ -126,7 +128,7 @@ export function nascentQuote(s: State, a: NascentAction) {
     error ||= "凝婴尚在行功，只能应对当前变化或中止";
   if (n.thunder.battle && !["thunderMove", "withdraw"].includes(a.kind))
     error ||= "劫雷未散，先应雷或主动散功撤回";
-  const post = ["emerge", "celebrate", "survey", "shelter", "cross"];
+  const post = ["emerge", "celebrate", "survey", "shelter", "cross", "crossing"];
   if (Number(s.realm) === 3 && !post.includes(a.kind) && !["contact", "covenant", "ceremony"].includes(a.kind))
     error ||= "元婴已成，先出关并兑现新能力";
   if (Number(s.realm) === 3 && !n.emerged && ["contact", "covenant", "ceremony"].includes(a.kind))
@@ -174,6 +176,7 @@ export function nascentQuote(s: State, a: NascentAction) {
       );
       break;
     case "contact":
+      need(!companionContact(s).availableForMeeting, "她尚在勘潮与休养，等此行结束再约仪式");
       months = 6;
       stones = 6;
       need(
@@ -182,7 +185,7 @@ export function nascentQuote(s: State, a: NascentAction) {
         "尚无近期回音，先循旧信路问讯。",
       );
       need(
-        n.contactedAt !== null && s.month - n.contactedAt < 120,
+        companionContact(s).invitationCurrent && s.month - n.contactedAt! < 120,
         "近十年已约定过相见地点",
       );
       break;
@@ -241,15 +244,17 @@ export function nascentQuote(s: State, a: NascentAction) {
       break;
     }
     case "covenant": {
+      need(!companionContact(s).availableForMeeting, "她尚在勘潮与休养，等此行结束再约仪式");
       const values = {meeting:['remember','listen'],form:['quiet','friends'],token:['map','cord'],promise:['return','letters']} as const;
       need(Number(s.conclave.stage)<3 || !(s.social.bonded || s.foundationJourney.bond==='promised' || s.foundationJourney.bond==='covenant'), '先相知定情，再来商议此约');
-      need(!companionContact(s).reliable || !(companionContact(s).present || (n.contactedAt!==null && s.month-n.contactedAt<=120)), '先约好相见，再当面商议');
+      need(!companionContact(s).reliable || !(companionContact(s).present || (companionContact(s).invitationCurrent)), '先约好相见，再当面商议');
       need(!Object.hasOwn(values,a.topic) || !(values[a.topic] as readonly string[]).includes(a.choice), '这份约定尚未说清');
       need(a.topic==='meeting' ? !['none','deferred','solitary'].includes(n.ceremony) : n.ceremony!=='discussed', '先完成眼前的相谈');
       need(n.covenant[a.topic]===a.choice, '这句话已经记下');
       break;
     }
     case "ceremony": {
+      if (["discuss","witness","meal","renew"].includes(a.choice)) need(!companionContact(s).availableForMeeting, "她尚在勘潮与休养，等此行结束再约仪式");
       need(Number(s.conclave.stage) < 3, "圆满后再商议行前仪式");
       const bonded = s.foundationJourney.bond === "covenant";
       const lover = s.social.bonded || s.foundationJourney.bond === "promised";
@@ -258,7 +263,7 @@ export function nascentQuote(s: State, a: NascentAction) {
           !companionContact(s).reliable ||
             !(
               companionContact(s).present ||
-              (n.contactedAt !== null && s.month - n.contactedAt <= 120)
+              (companionContact(s).invitationCurrent)
             ),
           "先与实际能相见的伴侣约好仪式，暂缓不影响凝婴",
         );
@@ -421,13 +426,12 @@ export function nascentQuote(s: State, a: NascentAction) {
       );
       break;
     case "shelter":
-      months = 1;
-      need(n.ability !== "surveyed", "先测明潮隙乱流；再以元婴护持渡口");
-      break;
     case "cross":
-      months = 1;
-      need(n.ability !== "sheltered", "先稳住潮隙乱流护持，再带测绘队渡过");
+    case "crossing": {
+      const q = crossingQuote(s, a.kind === "crossing" ? a.move : a.kind === "shelter" ? "main" : "advance");
+      months=q.months; error ||= q.error;
       break;
+    }
     default:
       need(true, "未知凝婴操作");
   }
@@ -467,8 +471,7 @@ export function nascentGuests(s: State) {
   if (
     companionContact(s).reliable &&
     (companionContact(s).present ||
-      (s.nascentSoul.contactedAt !== null &&
-        s.month - s.nascentSoul.contactedAt <= 120))
+      companionContact(s).invitationCurrent)
   )
     guests.push(s.social.gender === "male" ? "苏婉宁" : "尹照川");
   if (s.conclave.introduced) guests.push("衡璇院轮值使者", "澄渊宗轮值使者");
@@ -492,7 +495,7 @@ export function nascentGoal(s: State) {
         ? "稳固境界，出关报平安。"
         : n.celebration === "none"
           ? "自行决定庆贺规模与是否承担新职责。"
-          : "前往古渡潮隙，以新能力护持测绘队渡过潮隙乱流。";
+          : n.ability !== "none" ? crossingView(s).hint : "前往古渡潮隙，以新能力护持测绘队渡过潮隙乱流。";
   if (!n.trialWon)
     return "离照取药后，修满899，在试丹禁室安排护体、护神与破禁。";
   if (Number(s.conclave.stage) < 3) return "禁室已通，融汇丹元抵达金丹圆满。";
@@ -559,11 +562,12 @@ export function runNascent(
       record(
         `你${a.move === "guard" ? "展开护体承雷" : a.move === "strike" ? "迎着雷隙破开雷脉" : "凝神辨势，将雷流导向空台"}：削去雷势${r.damage}，承伤${r.incoming}${r.healing ? `，耗灵草${r.herbs}回气${r.healing}` : ""}。${r.note}`,
       );
+      if (s.status === 'dead') { n.last = s.result; break; }
       if (r.outcome === "loss")
         record(
           r.kind === "practice"
             ? "试雷余势压破护体，你沿退路离台。伤势2；功法仍在，养伤、调整法宝或补给后可重新验法。"
-            : "最后的雷压震散未稳的婴形，你及时散功退回静室。此丹已耗，伤势3；修为基础、元婴功法、试雷所得与补药渠道保留，恢复后可再叩关。",
+            : "十二合未能化去此重雷势，你趁气势尚存散功退回静室。此丹已耗，伤势3；修为基础、元婴功法、试雷所得与补药渠道保留，恢复后可再叩关。",
         );
       if (r.outcome === "wave")
         record(
@@ -788,7 +792,7 @@ export function runNascent(
         n.attempt = null;
         startThunder(s, "tribulation", d.flow + d.spirit);
         record(
-          "身神相合，未稳的婴形引动天地雷机。你从静室踏上相连的近岸渡劫台，护持者守住外围退路；三重天劫必须亲自承受。此刻仍是金丹，渡过最后一重且保住自身气势才会真正结婴。行功留存的丹元与心神已化为额外气势。",
+          "身神相合，未稳的婴形引动天地雷机。你从静室踏上相连的近岸渡劫台，护持者守住外围退路；三重天劫必须亲自承受。此刻仍是金丹，正式天劫气势耗尽会陨落（同归于尽亦然）；每合出招前可主动散功退劫。渡过最后一重且保住自身气势才会真正结婴。行功留存的丹元与心神已化为额外气势。",
         );
       }
       break;
@@ -812,21 +816,18 @@ export function runNascent(
     case "survey":
       n.ability = "surveyed";
       record(
-        "你以元婴神识探入古渡潮隙，辨出旧日金丹无法持续承受的潮隙乱流间隙，测绘队据此立下退路标记。",
+        "你以元婴神识探入潮隙：主潮横截航道，彼岸回流冲击落脚处，中段却有可安全停舟的回水湾。测绘队在此岸装好测杆，等你决定如何护送；旧日金丹只能独自择隙通过。",
       );
       break;
     case "shelter":
-      n.ability = "sheltered";
-      record(
-        "你将元婴护持延至渡口两岸，连续稳住冲击。测绘队第一次能够带着器材进入旧险段。",
-      );
-      break;
     case "cross":
-      n.ability = "done";
-      record(
-        "最后一艘测绘舟越过乱流，船上有人举灯报平安。你收回护持，测绘队已在彼岸立下第一根路标，将风压与潮路记入新图。",
-      );
+    case "crossing": {
+      const result = crossingQuote(s, a.kind === "crossing" ? a.move : a.kind === "shelter" ? "main" : "advance");
+      n.crossing=result.next;
+      n.ability=result.done ? "done" : "sheltered";
+      record(result.note);
       break;
+    }
   }
   return finish();
 }

@@ -1,4 +1,5 @@
-import { createGame } from "../src/core";
+import { createCultivator as createGame } from "./cultivator-fixture";
+
 import { foundationPower } from "../src/foundation-journey/combat";
 import { challenges } from "../src/foundation-journey/content";
 import type { BattleId } from "../src/foundation-journey/state";

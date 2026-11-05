@@ -1,4 +1,5 @@
-import { createGame, dispatch, validState, type State } from "../src/core";
+import { createCultivator as createGame } from "./cultivator-fixture";
+import { dispatch, validState, type State } from "../src/core";
 import { foundationStep } from "./foundation-playthrough";
 import type { QiRoute } from "../src/qi-journey/state";
 import type { Passage } from "../src/qi-journey/passage";

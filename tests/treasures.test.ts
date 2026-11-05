@@ -1,7 +1,7 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 import { describe, it, expect } from "vitest";
 import {
-  createGame,
   dispatch,
   validState,
   migrateSave,
@@ -12,8 +12,10 @@ import { treasureIds, type Treasure } from "../src/treasures/catalog";
 import { equipmentTurnEffect } from "../src/equipment";
 function ready(seed = 823) {
   const s = createGame("争宝", "wood", seed);
-  s.month = 4;
-  s.age = 196;
+  s.month = 6;
+  s.age = 198;
+  Object.assign(s.adventure,{step:"done",clue:true,method:"medicine",ready:true,attempts:1,rescueChoice:"supplies"});
+  s.adventure.road.stage="market";s.adventure.road.thanked=true;
   s.story.stage = "waiting";
   s.qi = 120;
   s.stones = 200;
@@ -27,6 +29,7 @@ function catalog(s = ready()) {
   return act(s, { kind: "catalog", venue: "market" });
 }
 function enter(s = catalog()) {
+  s=structuredClone(s);s.month=12;s.age=204;
   return act(act(s, { kind: "budget", value: 100 }), { kind: "enter" });
 }
 describe("宝物与有境界限制的拍卖", () => {
@@ -140,7 +143,7 @@ describe("宝物与有境界限制的拍卖", () => {
       }),
     ).not.toBe(b);
   });
-  it.each(["commission", "enter"] as const)(
+  it.each(["commission", "wait"] as const)(
     "%s 在剧情和寿尽时先中断，不扣费用或重抽目录",
     (kind) => {
       for (const death of [false, true]) {
@@ -148,7 +151,7 @@ describe("宝物与有境界限制的拍卖", () => {
         s.month = 11;
         s.age = death ? s.limit - 1 : 203;
         const seed = s.seed;
-        const n = act(s, kind === "enter" ? { kind } : { kind, item: "bell" });
+        const n = act(s, kind === "wait" ? { kind } : { kind, item: "bell" });
         expect(n.month).toBe(12);
         expect(n.stones).toBe(s.stones);
         expect(n.treasures.owned.bell).toBe(0);

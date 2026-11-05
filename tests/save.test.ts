@@ -1,6 +1,7 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import "fake-indexeddb/auto";
 import { beforeEach, describe, expect, it } from "vitest";
-import { createGame, dispatch } from "../src/core";
+import { dispatch } from "../src/core";
 import { save, load } from "../src/save";
 beforeEach(async () => {
   await new Promise<void>((resolve, reject) => {
@@ -78,7 +79,8 @@ it("persists and resumes the new companion adventure without replaying rewards",
 });
 
 it('persists a live auction and preserves its next bid and opponent budget', async () => {
-  let state=createGame('拍卖存档','wood',83);state.month=4;state.age=196;state.story.stage='waiting';state.qi=120;state.stones=200;
+  let state=createGame('拍卖存档','wood',83);state.month=12;state.age=204;state.story.stage='waiting';state.qi=120;state.stones=200;
+  Object.assign(state.adventure,{step:'done',clue:true,method:'medicine',ready:true,attempts:1,rescueChoice:'supplies'});state.adventure.road.stage='market';state.adventure.road.thanked=true;
   for(const [id,action] of [
     ['catalog',{kind:'catalog',venue:'market'}],
     ['budget',{kind:'budget',value:100}],

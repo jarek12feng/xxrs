@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { State } from "../world";
+import { crossingView } from "./crossing";
 import { characterArt, heroArt } from "../presentation/art";
 const props = defineProps<{ game: State }>();
 const n = computed(() => props.game.nascentSoul);
+const crossing = computed(() => crossingView(props.game));
 const voyage = computed(() => n.value.ability !== "none");
 // The saved attendance list is authoritative. An anonymous envoy never impersonates a named elder.
 const guests = computed(() =>
@@ -24,7 +26,10 @@ const guests = computed(() =>
     :class="{
       voyage,
       formal: n.celebration === 'formal',
-      sheltered: ['sheltered', 'done'].includes(n.ability),
+      'main-held': crossing.main,
+      'shore-held': crossing.shore,
+      'at-eddy': crossing.position === 'eddy',
+      'seal-fixed': crossing.fixed,
       crossed: n.ability === 'done',
     }"
     :data-ability="n.ability"
@@ -41,40 +46,67 @@ const guests = computed(() =>
       :alt="voyage ? '你在岸边护持潮隙' : '你出关立于礼庭'"
     />
     <template v-if="voyage">
-      <div class="tidal-current" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="far-landing" aria-label="彼岸可登岸的石坪"></div>
+      <div class="tidal-current main-current" aria-hidden="true">
+        <i></i><i></i><i></i>
+      </div>
+      <div class="tidal-current shore-current" aria-hidden="true">
+        <i></i><i></i>
+      </div>
       <div
-        v-if="['sheltered', 'done'].includes(n.ability)"
-        class="crossing-ward"
+        v-if="crossing.main"
+        class="crossing-ward main-ward"
         role="img"
-        aria-label="元婴护持横贯潮隙"
+        aria-label="主潮被压低，通往回水湾的水道敞开"
       ></div>
+      <div
+        v-if="crossing.shore"
+        class="crossing-ward shore-ward"
+        role="img"
+        aria-label="侧岸回流分开，登岸水面平稳"
+      ></div>
+      <img
+        v-if="crossing.fixed"
+        class="fixed-seal"
+        src="/art/outer-sea/seal.webp"
+        alt="镇潮印悬于主潮，独立镇住浪墙"
+      />
+      <div class="eddy-refuge">回水湾 · 可安全停舟</div>
+      <img
+        class="survey-boat trailing-boat"
+        src="/art/review-fixes/survey-boat.webp"
+        alt="载着测杆的后舟"
+      />
       <img
         class="survey-boat"
         src="/art/review-fixes/survey-boat.webp"
-        alt="携测杆与航图的测绘队木舟"
+        :alt="crossing.boat"
       />
       <div
         v-if="n.ability === 'done'"
         class="shore-marker"
-        aria-label="彼岸新路标"
+        aria-label="彼岸新路标与已展开的测绘航图"
       >
-        ◆<span>新路标</span>
+        ◆<span>测杆已立 · 航图展开</span><i class="survey-chart"></i>
+      </div>
+      <div
+        v-if="n.ability === 'done'"
+        class="survey-team"
+        role="img"
+        aria-label="两名测绘队员在岸上持杆测量"
+      >
+        <i></i><i></i>
       </div>
       <div class="after-receipt" role="status">
-        <strong>{{
-          n.ability === "surveyed"
-            ? "辨清乱流 · 测绘舟候行"
-            : n.ability === "sheltered"
-              ? "护持已展 · 两岸相接"
-              : "测绘舟已抵彼岸"
-        }}</strong
-        ><span>{{
-          n.ability === "surveyed"
-            ? "退路标记已经立下，尚须稳住渡口。"
-            : n.ability === "sheltered"
-              ? "护持延至险段，测绘队等你引航。"
-              : "测杆与航图收妥，彼岸亮起报安的灯。"
-        }}</span>
+        <strong>{{ crossing.boat }}</strong>
+        <span v-if="n.ability === 'done'"
+          >护渡已成，彼岸留下测绘地与通行记录。</span
+        >
+        <span v-else
+          >{{ crossing.main ? "主潮已稳" : "主潮横截航道" }} ·
+          {{ crossing.shore ? "落脚处已稳" : "侧岸回流仍在"
+          }}{{ crossing.fixed ? " · 镇潮印独立镇流" : "" }}</span
+        >
       </div>
     </template>
     <template v-else>
@@ -245,11 +277,12 @@ const guests = computed(() =>
 }
 .survey-boat {
   position: absolute;
-  left: 30%;
-  bottom: 23%;
-  width: 26%;
-  height: 31%;
+  left: 23%;
+  bottom: 18%;
+  width: 20%;
+  height: 25%;
   object-fit: contain;
+  transform-origin: center bottom;
   z-index: 2;
   transition:
     left 1.2s,
@@ -257,9 +290,9 @@ const guests = computed(() =>
     transform 1.2s;
 }
 .crossed .survey-boat {
-  left: 36%;
-  bottom: 42%;
-  transform: scale(0.72);
+  left: 45%;
+  bottom: 49%;
+  transform: scale(0.55);
 }
 .tidal-current {
   position: absolute;
@@ -284,7 +317,8 @@ const guests = computed(() =>
   inset: 55% 15%;
   transform: rotate(12deg);
 }
-.sheltered .tidal-current {
+.main-held .main-current,
+.shore-held .shore-current {
   opacity: 0.35;
 }
 .crossing-ward {
@@ -302,8 +336,8 @@ const guests = computed(() =>
 }
 .shore-marker {
   position: absolute;
-  left: 59%;
-  bottom: 48%;
+  left: 55%;
+  bottom: 49%;
   color: #f0d28c;
   text-shadow: 0 0 12px #ffdf9c;
   font-size: 32px;
@@ -311,6 +345,140 @@ const guests = computed(() =>
 .shore-marker span {
   display: block;
   font-size: 12px;
+}
+.at-eddy .survey-boat {
+  left: 35%;
+  bottom: 34%;
+  transform: scale(0.87);
+}
+.survey-boat.trailing-boat {
+  margin-left: -7%;
+  margin-bottom: -5%;
+  width: 17%;
+}
+.far-landing {
+  position: absolute;
+  left: 46%;
+  bottom: 51%;
+  width: 18%;
+  height: 13%;
+  background-image: linear-gradient(#53685633, #223d4688), url('/art/outer-sea/ferry.webp');
+  background-size: 100% 100%, 500% 500%;
+  background-position: center, left bottom;
+  clip-path: polygon(
+    15% 28%,
+    38% 10%,
+    69% 17%,
+    89% 43%,
+    100% 68%,
+    82% 92%,
+    39% 87%,
+    0 59%
+  );
+  filter: drop-shadow(0 9px 5px #17393699);
+}
+.crossed .survey-boat.trailing-boat {
+  margin-left: -3%;
+  margin-bottom: -2%;
+}
+.survey-team {
+  position: absolute;
+  left: 51%;
+  bottom: 58%;
+  width: 5%;
+  height: 6%;
+  display: flex;
+  gap: 12px;
+  z-index: 3;
+}
+.survey-team i {
+  display: block;
+  width: 13px;
+  height: 25px;
+  background: linear-gradient(90deg, #5e6656, #a3aa8b);
+  border-radius: 45% 45% 15% 15%;
+  position: relative;
+}
+.survey-team i:before {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #c7b592;
+  top: -6px;
+  left: 2px;
+  border-radius: 50%;
+}
+.survey-team i:after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 40px;
+  background: #cbbb8b;
+  top: -11px;
+  left: 15px;
+}
+.main-current {
+  left: 23%;
+  bottom: 26%;
+  width: 29%;
+  height: 29%;
+}
+.shore-current {
+  left: 43%;
+  bottom: 46%;
+  width: 22%;
+  height: 24%;
+  transform: rotate(22deg);
+}
+.crossed .tidal-current {
+  opacity: 0.35;
+}
+.main-ward {
+  left: 23%;
+  bottom: 29%;
+  width: 30%;
+  height: 17%;
+}
+.shore-ward {
+  left: 43%;
+  bottom: 48%;
+  width: 20%;
+  height: 15%;
+  transform: rotate(20deg);
+}
+.fixed-seal {
+  position: absolute;
+  left: 28%;
+  bottom: 45%;
+  width: 8%;
+  height: 12%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 18px #d4eab0);
+  z-index: 3;
+}
+.eddy-refuge {
+  position: absolute;
+  left: 35%;
+  bottom: 37%;
+  color: #f6ebcd;
+  background: #1c3b35b8;
+  border-radius: 50%;
+  border: 1px dashed #b6d5bb;
+  padding: 24px 12px;
+  font-size: 12px;
+}
+.survey-chart {
+  display: block;
+  width: 58px;
+  height: 30px;
+  background: repeating-linear-gradient(
+    35deg,
+    #dccaa0 0 8px,
+    #748d7966 9px 11px
+  );
+  border: 2px solid #8c7751;
+  transform: skewX(-15deg);
 }
 @media (prefers-reduced-motion: reduce) {
   * {

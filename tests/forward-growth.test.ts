@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch, migrateSave, validState } from "../src/core";
+import { dispatch, migrateSave, validState } from "../src/core";
 import { foundationStep } from "../tools/foundation-playthrough";
 import { qiEnemyTell, qiPreview, qiPower, qiError } from "../src/qi-journey/rules";
 import { passagePlan } from "../src/qi-journey/passage";

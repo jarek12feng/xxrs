@@ -21,7 +21,7 @@ import { equipmentTurnEffect, previewEquipment } from "../src/equipment";
 import { foundationExchange } from "../src/foundation-journey/combat";
 import { workshopQuote } from "../src/workshop/rules";
 import { SAVE_VERSION } from "../src/save-version";
-import { createGame as createCultivator } from "../src/core";
+import { createCultivator } from "../tools/cultivator-fixture";
 import { rejectedActionReason } from "../src/action-diagnostics";
 let serial = 0;
 function beforeCache() {

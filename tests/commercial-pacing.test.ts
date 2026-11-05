@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { it, expect } from "vitest";
-import { createGame, eventView, dispatch } from "../src/core";
+import { eventView, dispatch } from "../src/core";
 import { actionReceipt } from "../src/action-feedback";
 
 it.each([0, 1, 3])(

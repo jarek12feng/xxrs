@@ -98,7 +98,7 @@ it("准备现场显示三段征象，动作后才改变丹流阶段", async () =
   ).toBe("1");
   expect(host.textContent).toContain("丹瓶收空");
 });
-it("正式礼只显示保存来客，护渡三步更换现场与舟、护持、路标", async () => {
+it("正式礼只显示保存来客，护渡按两处险段更换现场与舟、护持、路标", async () => {
   const { host, state, click } = mount("nascent");
   await click("庭前礼案与来客");
   await click("稳固半年");
@@ -115,9 +115,15 @@ it("正式礼只显示保存来客，护渡三步更换现场与舟、护持、�
   await click("赴古渡潮隙");
   expect(host.querySelector(".survey-boat")).not.toBeNull();
   expect(host.querySelector(".crossing-ward")).toBeNull();
-  await click("展开元婴护持");
+  await click("主潮 ·");
+  await click("集中护住主潮");
   expect(host.querySelector(".crossing-ward")).not.toBeNull();
-  await click("带测绘队渡过");
+  await click("引舟越过主潮");
+  expect(host.querySelector(".at-eddy")).not.toBeNull();
+  expect(host.querySelector(".shore-marker")).toBeNull();
+  await click("侧岸 ·");
+  await click("将护持转到侧岸");
+  await click("引舟靠岸");
   expect(host.querySelector(".shore-marker")).not.toBeNull();
   expect(host.textContent).toContain("本卷内容");
 });

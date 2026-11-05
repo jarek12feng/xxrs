@@ -6,7 +6,7 @@ import { sites as inlandSites } from "./routes";
 import { additionalStoryRoute, additionalArrival } from "./additional-story";
 import { createTravelEngine } from './engine';
 import { travelProfile } from './profile';
-import { travelSpeeds } from './geography';
+import { goldenAuctionRoute, travelSpeeds } from './geography';
 import { explorationError, places, type State, type Intent } from "../world";
 import { adventureOptions } from "../adventure";
 import { mistError } from "../mist";
@@ -28,7 +28,7 @@ export interface MapSite {
   y: number;
 }
 const near: MapSite[] = [
-  { id: "ferry", name: "雨夜渡口", x: 110, y: 380 },
+  { id: "ferry", name: "听松渡口", x: 110, y: 380 },
   { id: "apothecary", name: "山门药庐", x: 330, y: 320 },
   { id: "forest", name: "雾林旧道", x: 580, y: 270 },
   { id: "shrine", name: "废弃山祠", x: 820, y: 160 },
@@ -42,6 +42,7 @@ const road: MapSite[] = [
   { id: "lookout", name: "云栈旅亭", x: 870, y: 160 },
 ];
 const coast: MapSite[] = [
+  {id:"guild",name:"沧澜会馆",x:790,y:70},
   { id: "home", name: "听松行前居", x: 110, y: 390 },
   { id: "wall", name: "穿云壁", x: 280, y: 300 },
   { id: "ferry", name: "外海古渡", x: 530, y: 280 },
@@ -349,13 +350,13 @@ function authoredStoryRoute(s: State, intent: Intent): StoryRoute | null {
   }
   if (
     intent.type === "outerSea" &&
-    ["sail", "home", "enter", "return"].includes(intent.action.kind) &&
+    ["sail", "home", "enter", "return", "guild", "guildReturn"].includes(intent.action.kind) &&
     !s.outerSea.duel
   ) {
     const from = storyLocation(s, "sea"),
       kind = intent.action.kind,
       to =
-        kind === "sail"
+        kind === "guild" ? "guild" : kind === "sail"
           ? "ferry"
           : kind === "home"
             ? "home"
@@ -378,12 +379,12 @@ function authoredStoryRoute(s: State, intent: Intent): StoryRoute | null {
       to,
       title: "青玄外海 · 潮路",
       sites: coast.filter(
-        (p) => path.includes(p.id) || (p.id === "court" ? knowsLandmark(s,"conclave-court") : p.id === "vault" ? knowsLandmark(s,"conclave-vault") : p.id === "ruins" ? knowsLandmark(s,"outer-ruins") : true),
+        (p) => path.includes(p.id) || (p.id === "guild" ? knowsLandmark(s,"outer-guild") : p.id === "court" ? knowsLandmark(s,"conclave-court") : p.id === "vault" ? knowsLandmark(s,"conclave-vault") : p.id === "ruins" ? knowsLandmark(s,"outer-ruins") : true),
       ),
       path,
-      distance: long ? 54000 : 1800,
+      distance: kind === "guild" || kind === "guildReturn" ? goldenAuctionRoute.distance : long ? 54000 : 1800,
       mode: "sail",
-      note: long
+      note: kind === "guild" || kind === "guildReturn" ? "循商盟引航灯往返会馆，单程两个月；入厅不另扣年月，会期按抵达月核验。" : long
         ? "循已知海路行舟，金丹护体应对长潮；不以普通御剑速度替代航期。"
         : "入境两月、回渡一月包含候潮与探路；不会跳过遗迹守卫。",
     };

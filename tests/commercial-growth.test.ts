@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 
 
 import { expect, it } from "vitest";
-import { createGame, dispatch, migrateSave, validState, type Technique } from "../src/core";
+import { dispatch, migrateSave, validState, type Technique } from "../src/core";
 import { mistDetails } from "../src/mist";
 import { growthComparison } from "../src/growth-feedback";
 import { turnPreview, duelIntent } from "../src/social";

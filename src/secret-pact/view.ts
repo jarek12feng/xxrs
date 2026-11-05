@@ -52,7 +52,7 @@ export function pactView(s: State) {
     );
     add(
       "insist",
-      "暂不让宝，要求继续议价",
+      "拒绝让宝，要求依约商议",
       "贺崇不肯让宝，会毁约相争；可再选择应战或退走。",
     );
     add(

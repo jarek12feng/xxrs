@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "./cultivator-fixture";
 /** Isolated late-Golden fixture, not a normal-play checkpoint. */
-import { createGame, type State } from "../src/core";
+import { type State } from "../src/core";
 import { freshLizhao } from "../src/lizhao/state";
 import { lizhaoExchange } from "../src/lizhao/combat";
 export function lizhaoFixture(

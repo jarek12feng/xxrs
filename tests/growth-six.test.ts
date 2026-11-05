@@ -1,8 +1,9 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
 import { createSSRApp } from "vue";
 import { renderToString } from "vue/server-renderer";
 import SceneResponse from "../src/SceneResponse.vue";
-import { createGame, dispatch, validState, migrateSave, passSolutions, type Intent, type PassSolution } from "../src/core";
+import { dispatch, validState, migrateSave, passSolutions, type Intent, type PassSolution } from "../src/core";
 import { readiness } from "../src/combat/game";
 import { turnPreview } from "../src/social";
 import { actionReceipt } from "../src/action-feedback";

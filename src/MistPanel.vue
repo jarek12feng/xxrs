@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {mistSpeakerFoot} from "./scene2d/actor-anchors";
 import { senseLimit } from "./spirit";
 import MistWorld from "./scene2d/MistWorld.vue";
 import ItemArt from "./presentation/ItemArt.vue";
@@ -322,12 +323,12 @@ function selectHotspot(id: string) {
   if(locked.value)return;
   active.value='';
   // Garden's right half is cliff and distant terrace: stay on the near path.
-  const x=({person:27,object:m.value.stage==='garden'?43:52,prepare:22,road:m.value.stage==='garden'?44:65} as Record<string,number>)[id]??32;
+  const x=({person:mistSpeakerFoot.x-9,object:m.value.stage==='garden'?43:52,prepare:22,road:m.value.stage==='garden'?44:65} as Record<string,number>)[id]??32;
   mistWorld.value?.approach({x,y:87},()=>{if(!locked.value)active.value=id;});
 }
 watch(locked,value=>{if(value){mistWorld.value?.cancel();mistWorld.value?.stop();}});
 const hotspots = computed(() => [
-  { id: "person", label: m.value.stage === "camp" ? "同行约定" : person.value.name, x: 31, y: 52 },
+  { id: "person", kind: "person" as const, label: m.value.stage === "camp" ? "同行约定" : person.value.name, x: mistSpeakerFoot.x, y: 52 },
   { id: "object", label: ({ letter: "来信", camp: "护归阵图", garden: "引灯草与石渠", station: "送信旧阵", gate: "回声阵", archive: "旧日记录", home: "探灵灯", shrine: "旧石墙", dormant: "来信" })[m.value.stage], x: 55, y: 43 },
   { id: "prepare", label: "行装与补给", x: 18, y: 75 },
   { id: "road", label: "山径与归路", x: 80, y: 57 },

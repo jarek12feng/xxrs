@@ -1,0 +1,658 @@
+
+> cultivation-life@0.15.0 test
+> vitest run --maxWorkers=4
+
+
+ RUN  v5.0.5 /Users/admin/Documents/ChatGPT/xxrs
+
+ ❯ tests/world.test.ts (23 tests | 1 failed) 4769ms
+   ❯ v4 world progression (12)
+     × migrates completed v3 saves without changing RNG, resources or original object 4ms
+ ❯ tests/foundation-growth-mainline.test.ts (15 tests | 1 failed) 4526ms
+   × rejects corrupt earned milestones and does not silently import old foundation runs 41ms
+ ❯ tests/road.test.ts (19 tests | 1 failed) 4466ms
+   × migrates v6 without changing resources, scene, old story or RNG; rejects corrupt road data 6ms
+ ❯ tests/conclave-p1.test.ts (5 tests | 1 failed) 2917ms
+   × v36迁移保留破境与战斗现场，不编造旧打法；v37损坏记录与未来版本拒绝 571ms
+ ❯ tests/spirit-control.test.ts (30 tests | 3 failed) 2832ms
+   ❯ 神识成长与御器 (16)
+     × v34 原档不变，保留装备拥有与选择，不虚构神识或新药 4ms
+   × 旧档神识不足时收回超载辅器但不丢失器物或赠送成长 309ms
+   × 低血量旧战档提示法宝变化，仍可撤退重整并重新出战 366ms
+ ❯ tests/conclave.test.ts (7 tests | 1 failed) 2558ms
+   ❯ 诸宗会与凝婴机缘 (7)
+     × 非法资格、宝物、叠加状态拒绝，迁移不补奖励且未知档保护 6ms
+ ❯ tests/sect-contest.test.ts (14 tests | 1 failed) 2438ms
+   ❯ 剧情中的十年内比之约 (11)
+     × v27 不补造参赛与邀约，更新后仍保留原进度 127ms
+ ❯ tests/golden-core.test.ts (9 tests | 1 failed) 2263ms
+   ❯ 凝丹双路与突破 (9)
+     × v28 不补发过去大比奖励，不覆盖原档 4ms
+ ❯ tests/artifact-growth-integration.test.ts (3 tests | 1 failed) 2105ms
+   × 拒绝绕过器室地点与外层历练的战中档，保留正常战中迁移 832ms
+ ❯ tests/nascent-thunder-save.test.ts (3 tests | 2 failed) 1471ms
+   × v39行功退回已服丹药，保留时间与原存档，补齐新准备 4ms
+   × v39已凝婴保留境界，不伪造渡劫历史或重复增寿 1ms
+ ❯ tests/important-scenes.test.ts (5 tests | 1 failed) 1500ms
+   × v41 preserves old teachings and vows without inventing performance choices 4ms
+ ❯ tests/spirit-growth.test.ts (11 tests | 1 failed) 1314ms
+   ❯ 炼神机缘与永久成长 (10)
+     × 40版先验证再迁移，不补发机缘；未知未来与伪造破限拒绝 4ms
+ ❯ tests/narrative-travel.test.ts (5 tests | 1 failed) 1226ms
+   × v37补齐新状态，不编造药窟或照玄；v38字段损坏与未来版本保留拒绝 163ms
+ ❯ tests/qi-preparation.test.ts (12 tests | 1 failed) 2375ms
+   × rejects malformed progress and future versions; 19 gains no invented route achievements 41ms
+ ❯ tests/secret-pact.test.ts (13 tests | 1 failed) 917ms
+   × locks and interrupted travel cannot debit, award or enter; new records survive deterministic save roundtrips 7ms
+ ❯ tests/golden-save-travel.test.ts (4 tests | 1 failed) 901ms
+   × v38 preserves earned Golden history without inventing new scenes or rewards 5ms
+ ❯ tests/balance-review.test.ts (9 tests | 1 failed) 869ms
+   × v22 migration starts only fractional bookkeeping, preserves the original and rejects malformed or future data 5ms
+ ❯ tests/item-growth.test.ts (10 tests | 1 failed) 746ms
+   ❯ 遗戒、储物与旧器成长 (10)
+     × 43版仅补空域，保留已有入道与剧情，不补戒；未知版本不覆盖 48ms
+ ❯ tests/ascension.test.ts (5 tests | 1 failed) 797ms
+   ❯ 三段行功 (5)
+     × 旧35档保留装备并初始化行功，损坏与未来档拒绝 343ms
+ ❯ tests/workshop.test.ts (21 tests | 1 failed) 290ms
+   ❯ workshop public commands (16)
+     × v20 migration adds no earned materials or engraving and rejects corrupt/future states 4ms
+ ❯ tests/social.test.ts (8 tests | 1 failed) 218ms
+   ❯ relationships and arena (7)
+     × requires adulthood and preserves old identity choice 5ms
+ ❯ tests/growth-continuity.test.ts (13 tests | 1 failed) 215ms
+   × migrates v12 conservatively, rejects corrupt growth, and retains it across monthly updates 5ms
+ ❯ tests/opening.test.ts (9 tests | 1 failed) 145ms
+   × rejects missing or premature choice fields and preserves completed v10 as legacy 8ms
+ ❯ tests/migration.test.ts (23 tests | 19 failed) 97ms
+   × keeps original-v5 intact on the first scene-aware save 10ms
+   × preserves original-v8 before writing the new letter chapter 2ms
+   × backs up original-v7 before persisting environmental discoveries 2ms
+   × keeps original-v6 intact before saving the new road chapter 2ms
+   × preserves the original v4 save while migrating social data 1ms
+   × does not rewrite v1 on read; permanently preserves original when starting chapter 1ms
+   × upgrades v2 without resetting progress and preserves its first original snapshot 1ms
+   × preserves original v3 and reloads v4 world and queued work exactly 1ms
+   × preserves original-v9 before recording a different road solution 2ms
+   × keeps v10 original intact, resumes an unfinished rescue and preserves manual slots 3ms
+   × backs up v11 before adding adventure checkpoints 1ms
+   × preserves original-v12 before writing growth inventory 1ms
+   × backs up v13 before persisting six-round combat without changing the original 1ms
+   × preserves original-v14 once, does not invent origin sightings, and rejects future overwrite 1ms
+   × preserves original-v16 before adding foundation progression without fabricating achievements 1ms
+   × preserves original-v31 before introducing travel and keeps future saves untouched 1ms
+   × backs up v32 before adding resumable sea passage 1ms
+   × backs up v33 before saving departure snapshots and preserves its original only once 1ms
+   × backs up actual v34 before storing spirit growth and multi-equipment; current corruption never downgrades 1ms
+ ❯ tests/travel-engine.test.ts (6 tests | 1 failed) 116ms
+   × migrates version 33 in-progress trips conservatively and rejects forged totals or future saves 49ms
+ ❯ tests/recognition.test.ts (11 tests | 1 failed) 91ms
+   × saves preserve earned history; v23 migration creates no fictitious appointment 5ms
+ ❯ tests/initiation.test.ts (7 tests | 1 failed) 92ms
+   ❯ 药乡入道与听松引荐 (7)
+     × migrates v42 conservatively and rejects missing fields and future versions 4ms
+ ❯ tests/adventure.test.ts (7 tests | 1 failed) 37ms
+   × migrates v5 without rewriting progress or forcing the new adventure 7ms
+ ❯ tests/treasures.test.ts (14 tests | 1 failed) 35ms
+   ❯ 宝物与有境界限制的拍卖 (9)
+     × 事件、死亡、交锋期间不能操作；非法领域存档拒绝 5ms
+ ❯ tests/learning.test.ts (8 tests | 1 failed) 26ms
+   × v25 migration marks past rewards settled without grants and rejects invalid or future saves 5ms
+ ❯ tests/artifact-growth.test.ts (6 tests | 1 failed) 18ms
+   × v44保守迁移只补空域，坏档与未来版本拒绝 6ms
+ ❯ tests/wayfaring.test.ts (9 tests | 1 failed) 18ms
+   × version 31 migrates only empty travel facts; malformed current travel and future saves are rejected 4ms
+ ❯ tests/auction.test.ts (9 tests | 1 failed) 18ms
+   ❯ 有地点与会期的拍卖 (6)
+     × v45保守散场保留成交，未来档/损坏会期/重复会次拒绝 4ms
+ ❯ tests/passage.test.ts (4 tests | 1 failed) 17ms
+   × validates route ownership, mutually exclusive travel and old v32 pending inland trips without granting flight 4ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 55 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/adventure.test.ts > migrates v5 without rewriting progress or forcing the new adventure
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/adventure.test.ts:114:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/55]⎯
+
+ FAIL  tests/artifact-growth-integration.test.ts > 拒绝绕过器室地点与外层历练的战中档，保留正常战中迁移
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/artifact-growth-integration.test.ts:84:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/55]⎯
+
+ FAIL  tests/artifact-growth.test.ts > v44保守迁移只补空域，坏档与未来版本拒绝
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/artifact-growth.test.ts:165:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/55]⎯
+
+ FAIL  tests/ascension.test.ts > 三段行功 > 旧35档保留装备并初始化行功，损坏与未来档拒绝
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/ascension.test.ts:57:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/55]⎯
+
+ FAIL  tests/auction.test.ts > 有地点与会期的拍卖 > v45保守散场保留成交，未来档/损坏会期/重复会次拒绝
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/auction.test.ts:119:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/55]⎯
+
+ FAIL  tests/balance-review.test.ts > v22 migration starts only fractional bookkeeping, preserves the original and rejects malformed or future data
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/balance-review.test.ts:122:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/55]⎯
+
+ FAIL  tests/conclave-p1.test.ts > v36迁移保留破境与战斗现场，不编造旧打法；v37损坏记录与未来版本拒绝
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/conclave-p1.test.ts:60:35
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/55]⎯
+
+ FAIL  tests/conclave.test.ts > 诸宗会与凝婴机缘 > 非法资格、宝物、叠加状态拒绝，迁移不补奖励且未知档保护
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/conclave.test.ts:250:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/55]⎯
+
+ FAIL  tests/foundation-growth-mainline.test.ts > rejects corrupt earned milestones and does not silently import old foundation runs
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/foundation-growth-mainline.test.ts:107:74
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/55]⎯
+
+ FAIL  tests/golden-core.test.ts > 凝丹双路与突破 > v28 不补发过去大比奖励，不覆盖原档
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/golden-core.test.ts:221:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/55]⎯
+
+ FAIL  tests/golden-save-travel.test.ts > v38 preserves earned Golden history without inventing new scenes or rewards
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/golden-save-travel.test.ts:14:82
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/55]⎯
+
+ FAIL  tests/growth-continuity.test.ts > migrates v12 conservatively, rejects corrupt growth, and retains it across monthly updates
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/growth-continuity.test.ts:133:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/55]⎯
+
+ FAIL  tests/important-scenes.test.ts > v41 preserves old teachings and vows without inventing performance choices
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/important-scenes.test.ts:45:44
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/55]⎯
+
+ FAIL  tests/initiation.test.ts > 药乡入道与听松引荐 > migrates v42 conservatively and rejects missing fields and future versions
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/initiation.test.ts:81:44
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/55]⎯
+
+ FAIL  tests/item-growth.test.ts > 遗戒、储物与旧器成长 > 43版仅补空域，保留已有入道与剧情，不补戒；未知版本不覆盖
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/item-growth.test.ts:309:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/55]⎯
+
+ FAIL  tests/learning.test.ts > v25 migration marks past rewards settled without grants and rejects invalid or future saves
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/learning.test.ts:120:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/55]⎯
+
+ FAIL  tests/migration.test.ts > keeps original-v5 intact on the first scene-aware save
+ FAIL  tests/migration.test.ts > preserves original-v8 before writing the new letter chapter
+ FAIL  tests/migration.test.ts > backs up original-v7 before persisting environmental discoveries
+ FAIL  tests/migration.test.ts > keeps original-v6 intact before saving the new road chapter
+ FAIL  tests/migration.test.ts > preserves the original v4 save while migrating social data
+ FAIL  tests/migration.test.ts > does not rewrite v1 on read; permanently preserves original when starting chapter
+ FAIL  tests/migration.test.ts > upgrades v2 without resetting progress and preserves its first original snapshot
+ FAIL  tests/migration.test.ts > preserves original v3 and reloads v4 world and queued work exactly
+ FAIL  tests/migration.test.ts > preserves original-v9 before recording a different road solution
+ FAIL  tests/migration.test.ts > keeps v10 original intact, resumes an unfinished rescue and preserves manual slots
+ FAIL  tests/migration.test.ts > backs up v11 before adding adventure checkpoints
+ FAIL  tests/migration.test.ts > preserves original-v12 before writing growth inventory
+ FAIL  tests/migration.test.ts > backs up v13 before persisting six-round combat without changing the original
+ FAIL  tests/migration.test.ts > preserves original-v14 once, does not invent origin sightings, and rejects future overwrite
+ FAIL  tests/migration.test.ts > preserves original-v16 before adding foundation progression without fabricating achievements
+ FAIL  tests/migration.test.ts > preserves original-v31 before introducing travel and keeps future saves untouched
+ FAIL  tests/migration.test.ts > backs up v32 before adding resumable sea passage
+ FAIL  tests/migration.test.ts > backs up v33 before saving departure snapshots and preserves its original only once
+ FAIL  tests/migration.test.ts > backs up actual v34 before storing spirit growth and multi-equipment; current corruption never downgrades
+Error: 存档损坏，已停止自动写入。请导入有效备份。
+ ❯ FDBTransaction.tx.oncomplete src/save.ts:50:16
+     48|       else if (previous) resolve({ state: previous, recovered: true });
+     49|       else if (a.result || b.result)
+     50|         reject(new Error("存档损坏，已停止自动写入。请导入有效备份。"));
+       |                ^
+     51|       else resolve({ state: null, recovered: false });
+     52|     };
+ ❯ invoke node_modules/fake-indexeddb/build/esm/lib/FakeEventTarget.js:14:16
+ ❯ invokeEventListeners node_modules/fake-indexeddb/build/esm/lib/FakeEventTarget.js:51:7
+ ❯ FDBTransaction.dispatchEvent node_modules/fake-indexeddb/build/esm/lib/FakeEventTarget.js:100:7
+ ❯ FDBTransaction._start node_modules/fake-indexeddb/build/esm/FDBTransaction.js:250:14
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/55]⎯
+
+ FAIL  tests/narrative-travel.test.ts > v37补齐新状态，不编造药窟或照玄；v38字段损坏与未来版本保留拒绝
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/narrative-travel.test.ts:145:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/55]⎯
+
+ FAIL  tests/nascent-thunder-save.test.ts > v39行功退回已服丹药，保留时间与原存档，补齐新准备
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/nascent-thunder-save.test.ts:24:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/55]⎯
+
+ FAIL  tests/nascent-thunder-save.test.ts > v39已凝婴保留境界，不伪造渡劫历史或重复增寿
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/nascent-thunder-save.test.ts:34:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/55]⎯
+
+ FAIL  tests/opening.test.ts > rejects missing or premature choice fields and preserves completed v10 as legacy
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/opening.test.ts:130:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/55]⎯
+
+ FAIL  tests/passage.test.ts > validates route ownership, mutually exclusive travel and old v32 pending inland trips without granting flight
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/passage.test.ts:98:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/55]⎯
+
+ FAIL  tests/qi-preparation.test.ts > rejects malformed progress and future versions; 19 gains no invented route achievements
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/qi-preparation.test.ts:253:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/55]⎯
+
+ FAIL  tests/recognition.test.ts > saves preserve earned history; v23 migration creates no fictitious appointment
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/recognition.test.ts:155:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/55]⎯
+
+ FAIL  tests/road.test.ts > migrates v6 without changing resources, scene, old story or RNG; rejects corrupt road data
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/road.test.ts:350:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/55]⎯
+
+ FAIL  tests/secret-pact.test.ts > locks and interrupted travel cannot debit, award or enter; new records survive deterministic save roundtrips
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/secret-pact.test.ts:229:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/55]⎯
+
+ FAIL  tests/sect-contest.test.ts > 剧情中的十年内比之约 > v27 不补造参赛与邀约，更新后仍保留原进度
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/sect-contest.test.ts:193:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/55]⎯
+
+ FAIL  tests/social.test.ts > relationships and arena > requires adulthood and preserves old identity choice
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/social.test.ts:76:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/55]⎯
+
+ FAIL  tests/spirit-control.test.ts > 神识成长与御器 > v34 原档不变，保留装备拥有与选择，不虚构神识或新药
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/spirit-control.test.ts:292:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/55]⎯
+
+ FAIL  tests/spirit-control.test.ts > 旧档神识不足时收回超载辅器但不丢失器物或赠送成长
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/spirit-control.test.ts:405:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/55]⎯
+
+ FAIL  tests/spirit-control.test.ts > 低血量旧战档提示法宝变化，仍可撤退重整并重新出战
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/spirit-control.test.ts:475:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/55]⎯
+
+ FAIL  tests/spirit-growth.test.ts > 炼神机缘与永久成长 > 40版先验证再迁移，不补发机缘；未知未来与伪造破限拒绝
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/spirit-growth.test.ts:87:41
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/55]⎯
+
+ FAIL  tests/travel-engine.test.ts > migrates version 33 in-progress trips conservatively and rejects forged totals or future saves
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/travel-engine.test.ts:61:46
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/55]⎯
+
+ FAIL  tests/treasures.test.ts > 宝物与有境界限制的拍卖 > 事件、死亡、交锋期间不能操作；非法领域存档拒绝
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/treasures.test.ts:223:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/55]⎯
+
+ FAIL  tests/wayfaring.test.ts > version 31 migrates only empty travel facts; malformed current travel and future saves are rejected
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/wayfaring.test.ts:160:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/55]⎯
+
+ FAIL  tests/workshop.test.ts > workshop public commands > v20 migration adds no earned materials or engraving and rejects corrupt/future states
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/workshop.test.ts:383:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/55]⎯
+
+ FAIL  tests/world.test.ts > v4 world progression > migrates completed v3 saves without changing RNG, resources or original object
+Error: 旧存档无法安全迁移，原档未修改。
+ ❯ migrateBeforeAssay src/world.ts:1464:54
+    1463|     next=structuredClone(x) as State;
+    1464|   }else next=migrateBeforeGoldenAuction(x);
+    1465|   next.treasures.goldenKnown=false;
+       |          ^
+    1466|   next.treasures.auctionArchive.golden=null;
+    1467|   next.version=SAVE_VERSION;
+ ❯ migrateSave src/world.ts:1447:15
+ ❯ tests/world.test.ts:253:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/55]⎯
+
+
+ Test Files  34 failed | 164 passed (198)
+      Tests  55 failed | 1296 passed (1351)
+   Start at  12:25:05
+   Duration  56.60s (tests 85%, import 8%, environment 6%, transform 1%)
+
+    Isolate  198 workers spawned · ~127ms startup each (spawn + environment, per file)
+             at least ~6.18s faster with isolate: false — reuses workers across files instead of one per file

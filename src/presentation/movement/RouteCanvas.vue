@@ -3,6 +3,7 @@ import { computed } from "vue";
 export interface RouteSite {
   id: string;
   name: string;
+  subtitle?: string;
   x: number;
   y: number;
 }
@@ -85,14 +86,14 @@ function select(id: string) {
       class="map-site"
       :role="selectable ? 'button' : undefined"
       :tabindex="selectable && !disabled ? 0 : undefined"
-      :aria-label="site.name"
+      :aria-label="site.subtitle ? `${site.name} · ${site.subtitle}` : site.name"
       :aria-pressed="selectable ? selected === site.id : undefined"
       :aria-disabled="selectable ? disabled : undefined"
       @click="select(site.id)"
       @keydown.enter.prevent.stop="select(site.id)"
       @keydown.space.prevent.stop="select(site.id)"
     >
-      <rect x="-74" y="-24" width="148" height="66" rx="8" class="site-hit" />
+      <rect x="-74" y="-24" width="148" :height="site.subtitle ? 88 : 66" rx="8" class="site-hit" />
       <circle
         r="9"
         :fill="
@@ -106,6 +107,7 @@ function select(id: string) {
         stroke-width="2"
       />
       <text y="29" text-anchor="middle" class="site-name">{{ site.name }}</text>
+      <text v-if="site.subtitle" y="50" text-anchor="middle" class="site-subtitle">{{ site.subtitle }}</text>
     </g>
     <slot />
     <text x="30" y="515" class="context">路线示意 · 距离按行程表计算</text>
@@ -127,6 +129,7 @@ function select(id: string) {
   stroke: #132b24;
   stroke-width: 4px;
 }
+.site-subtitle { fill: #e1c791; font-size: 14px; paint-order: stroke; stroke: #132b24; stroke-width: 3px; }
 .region {
   fill: #b1c5b1;
   font-size: 27px;

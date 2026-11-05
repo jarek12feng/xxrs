@@ -1,6 +1,7 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 import { describe,it,expect } from 'vitest';
-import { createGame, dispatch, validState, migrateSave, type State, type Intent } from '../src/core';
+import { dispatch, validState, migrateSave, type State, type Intent } from "../src/core";
 import { foundationStep } from '../tools/foundation-playthrough';
 import { ascensionOptions } from '../src/ascension/rules';
 import { breakthroughDetails, goldenChance } from '../src/progression';

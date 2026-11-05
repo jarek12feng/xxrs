@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import {createApp, h, nextTick, shallowRef} from 'vue';
 import {afterEach,beforeAll,expect,it,vi} from 'vitest';
-import {createGame,dispatch,migrateSave,validState,type State,type Intent} from '../src/core';
+import {dispatch,migrateSave,validState,type State,type Intent} from "../src/core";
 import {goldenLateCheckpoint,finishGoldenCompletion} from '../tools/golden-completion-checkpoint';
 import {nascentQuote} from '../src/nascent-soul/rules';
 import {freshCovenant} from '../src/nascent-soul/covenant';

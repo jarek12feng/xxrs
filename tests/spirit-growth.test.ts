@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { describe,it,expect } from 'vitest';
-import { createGame, dispatch, validState, migrateSave, type State, type Intent } from '../src/core';
+import { dispatch, validState, migrateSave, type State, type Intent } from "../src/core";
 import { journeyPlayer, journeyCheckpoint } from '../tools/foundation-journey-checkpoint';
 import { freshSpirit, senseLimit, controlCapacity, spiritReadiness, injureSpirit } from '../src/spirit';
 import { spiritQuote, spiritTrialPreview, type SpiritAction } from '../src/spirit/rules';

@@ -12,6 +12,7 @@ export interface SceneObject {
   detail: string;
   actions: AdventureAction[];
   art?: string;
+  foot?: {x:number;y:number};
   kind: "person" | "object" | "exit";
   speaker?: string;
   portrait?: string;
@@ -29,11 +30,12 @@ export function openingScene(a: Adventure) {
   ): SceneObject => ({
     id,
     name,
-    x,
-    y,
+    x: id === "medicine" ? 22 : x,
+    y: id === "luchi" ? 55 : y,
     detail,
     actions,
     art,
+    ...(id === "medicine" ? {foot:{x:22,y:72}} : id === "luchi" ? {foot:{x,y:72}} : {}),
     kind:
       id === "luchi" || id === "medicine"
         ? "person"
@@ -53,7 +55,7 @@ export function openingScene(a: Adventure) {
   switch (a.step) {
     case "invitation":
     case "ferry":
-      image = "/art/scene2d/ferry.png";
+      image = "/art/initiation/herb-ferry-arrival.webp";
       objects.push(
         object("origin", "家中药囊", 43, 78, "药囊缝边还留着家乡晒药的草屑。你带着初学的引气法来到听松，尚未拜入宗门。", []),
         object(
@@ -80,13 +82,13 @@ export function openingScene(a: Adventure) {
           38,
           a.clue
             ? "带着青瘴粉，去药庐问温蘅。"
-            : "先看看岸边药篓，找到药工留下的线索。",
+            : "你认得药队的绳结，先看看漂回的药篓。",
           a.step === "invitation" ? ["enter"] : ["depart"],
         ),
       );
       lead = a.clue
         ? "青瘴粉留在篓中。沿石阶上山，去药庐问温蘅。"
-        : "山里响了三下铃。先看看岸边漂回的药篓。";
+        : "你来听松求学，却认出漂回的药篓系着药队求援的结。先查清痕迹，再带去药庐。";
       break;
     case "apothecary":
       image = "/art/scene2d/apothecary-floor-v1.png";

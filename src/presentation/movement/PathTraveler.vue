@@ -11,7 +11,7 @@ const props = withDefaults(
     duration?: number;
     progress?: number;
   }>(),
-  { duration: 2600, progress: 0 },
+  { duration: 6500, progress: 0 },
 );
 const emit = defineEmits<{ finished: [] }>();
 const progress = ref(props.progress),

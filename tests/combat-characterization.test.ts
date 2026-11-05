@@ -1,13 +1,18 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { createHash } from "node:crypto";
 import { expect, it } from "vitest";
-import { createGame, type Technique } from "../src/core";
+import { type Technique } from "../src/core";
 import { tacticalPreview, readiness } from "../src/combat/game";
 import { foundationExchange } from "../src/foundation-journey/combat";
 import { turnPreview } from "../src/social";
 import { challenges } from "../src/foundation-journey/content";
-import expected from "./fixtures/combat-before-extraction.json";
+import expected from "./fixtures/combat-equipment-sequence.json";
 
-// Captured from the pre-extraction implementations. These are behavior fingerprints,
+// Historical extraction baseline remains in combat-before-extraction.json.
+// 2026-11-05: only realm-one tactical/foundation groups change for mirror sequences;
+// arena, realm-zero and realm-two fingerprints stay identical. Sequence rules and
+// command settlement are independently asserted in equipment-sequence.test.ts.
+// These are behavior fingerprints,
 // not balance or win-rate claims. Each group enumerates HP, moves, effects and equipment.
 function fingerprint(value: unknown) {
   return createHash("sha256")
@@ -38,7 +43,7 @@ function fixture(main: Technique, realm: 0 | 1 | 2) {
   s.treasures.owned.mirror = 2;
   return s;
 }
-it("preserves the pre-extraction tactical, foundation and arena calculations", () => {
+it("preserves tactical, foundation and arena calculations with explicit equipment sequences", () => {
   const groups: Record<string, string> = {};
   for (const main of ["blade", "spring", "breath"] as const) {
     for (const realm of [0, 1, 2] as const) {

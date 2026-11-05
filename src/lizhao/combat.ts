@@ -1,3 +1,4 @@
+import { lizhaoRelicResponse } from "./relic-response";
 import type { State } from "../world";
 import type { Move, CombatEncounter } from "../combat";
 import { tacticalPreview } from "../combat/game";
@@ -94,6 +95,7 @@ export function lizhaoExchange(s: State, move: Move) {
           ...(w!.opening ? ["strike" as const] : []),
         ];
   // Natural exposure always supplies at least strike; other tides always allow guard.
+  const relicResponse=lizhaoRelicResponse(s,move,responses.includes(move));
   const toxin =
     d.kind === "han"
       ? 0
@@ -101,7 +103,7 @@ export function lizhaoExchange(s: State, move: Move) {
           0,
           d.toxin +
             (move === "strike" ? 29 : move === "guard" ? 13 : -24) -
-            (l.preparation === "purify" ? 10 : 0),
+            (l.preparation === "purify" ? 10 : 0) + relicResponse.toxin,
         );
   const p = tacticalPreview(s, {
     move,
@@ -187,7 +189,7 @@ export function lizhaoExchange(s: State, move: Move) {
     herbs: won ? 0 : p.herbs,
     toxin,
     note:
-      p.note +
+      p.note + relicResponse.note +
       `离照分流：本合用于${move === "discern" ? "探路排毒" : move === "guard" ? "稳炉蓄势" : "破枢"}，削阵为战力输出的${Math.round(factor * 100)}%。`,
   };
 }

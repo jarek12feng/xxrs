@@ -1,3 +1,4 @@
+import { seekerStep } from "./initiation-policy";
 import {
   createGame,
   dispatch,
@@ -38,6 +39,7 @@ export function balanceOpening(
     "return",
   ] as const)
     send({ type: "adventure", action });
+  for(let i=0;i<6;i++){const step=seekerStep(state);if(!step)break;send(step);}
   send({ type: "learning", choice: path === "wood" ? "spring" : "blade" });
   send({ type: "equip", technique: path === "wood" ? "spring" : "blade" });
   return {

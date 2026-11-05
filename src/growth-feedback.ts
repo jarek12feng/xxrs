@@ -30,7 +30,7 @@ export function growthComparison(before: State, after: State): string[] {
     const oldGain = cultivationMonthlyGain(before),
       newGain = cultivationMonthlyGain(after);
     compare(
-      after.realm ? "下月吐纳筑基修行" : "下月吐纳修为",
+      after.realm === 2 ? "下月吐纳丹元修行" : after.realm === 1 ? "下月吐纳筑基修行" : "下月吐纳修为",
       oldGain,
       newGain,
     );

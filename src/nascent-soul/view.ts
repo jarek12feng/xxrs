@@ -1,3 +1,5 @@
+import { mortalWarning } from "../mortality";
+import { crossingView } from "./crossing";
 import { nascentPromises } from './promises';
 import { spiritReadiness } from "../spirit";
 import { thunderExchange, thunderMethodNames } from "./thunder";
@@ -11,7 +13,7 @@ import {
   type NascentAction,
 } from "./rules";
 export type NascentObject =
-  "method" | "trial" | "letters" | "companion" | "furnace" | "chamber" | "gate";
+  "method" | "trial" | "letters" | "companion" | "furnace" | "chamber" | "gate" | "current" | "landing";
 export function nascentInteractions(s: State) {
   const n = s.nascentSoul;
   const rows: {
@@ -30,7 +32,7 @@ export function nascentInteractions(s: State) {
       const p = thunderExchange(s, move, true)!;
       add(
         "chamber",
-        `${label} · 削雷${p.damage} / 承伤${p.incoming}${p.healing ? ` / 耗草${p.herbs}回气${p.healing}` : ""}`,
+        `${label} · 削雷${p.damage} / 承伤${p.incoming}${p.healing ? ` / 耗草${p.herbs}回气${p.healing}` : ""}${n.thunder.battle.kind === "tribulation" ? mortalWarning(n.thunder.battle, p, 12) : ""}`,
         { kind: "thunderMove", move, useHerbs: true },
       );
     }
@@ -93,10 +95,18 @@ export function nascentInteractions(s: State) {
     }
     if (n.emerged && n.celebration !== "none" && n.ability === "none")
       add("gate", "赴古渡潮隙，探明潮隙乱流", { kind: "survey" });
-    else if (n.ability === "surveyed")
-      add("gate", "展开元婴护持，稳住渡口", { kind: "shelter" });
-    else if (n.ability === "sheltered")
-      add("gate", "带测绘队渡过险段，带回记录", { kind: "cross" });
+    else if (["surveyed", "sheltered"].includes(n.ability)) {
+      const v=crossingView(s);
+      add("current", "集中护住主潮 · 舟队先到回水湾", {kind:"crossing",move:"main"});
+      add("current", "镇潮印固定潮头 · 腾出护持照看彼岸", {kind:"crossing",move:"seal"});
+      add("landing", "将护持转到侧岸 · 分开登岸回流", {kind:"crossing",move:"shore"});
+      for(const object of ["current","landing","gate"] as const){
+        add(object, "铺开护持 · 同照两处，每段缓行两月", {kind:"crossing",move:"wide"});
+        add(object, v.position==='near' && v.fixed && v.focus==='shore' ? "连续引航两段 · 舟队直抵彼岸" :
+          v.position==='near' ? "引舟越过主潮 · 前往回水湾" : "引舟靠岸 · 卸下测杆、立起路标", {kind:"crossing",move:"advance"});
+        add(object, "收势等候 · 舟队安全系泊，进度保留", {kind:"crossing",move:"release"});
+      }
+    }
   } else {
     if (!n.thunder.discovered)
       add("method", "携归潮与离照所得，核对元婴续篇", {
@@ -175,7 +185,7 @@ export function nascentInteractions(s: State) {
     if (s.injury) add("chamber", "免费静养一月 · 伤势减1", { kind: "recover" });
     add(
       "chamber",
-      `服一枚化婴丹 · 全程30月，预计${Math.floor((s.age + 30) / 12)}岁${(s.age + 30) % 12}月迎劫`,
+      `服一枚化婴丹 · 全程30月，预计${Math.floor((s.age + 30) / 12)}岁${(s.age + 30) % 12}月迎劫；正式天劫气势耗尽会陨落，可逐合散功退劫`,
       { kind: "begin" },
     );
   }

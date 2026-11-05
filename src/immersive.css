@@ -992,7 +992,7 @@
  .story-exploring:not(.scene-first) .narrative-stage { border:0; border-radius:0; }
  .story-exploring:not(.scene-first) .narrative-heading { top:210px; }
  .story-exploring:not(.scene-first) .narrative-goal { top:110px; }
- .story-exploring:not(.scene-first) .narrative-inspector { top:220px; bottom:88px; }
+ .story-exploring:not(.scene-first) .narrative-stage:not(.practice-stage) .narrative-inspector:not(.speech-bubble) { top:220px; bottom:88px; }
  .story-exploring:not(.scene-first) .narrative-hint { bottom:90px; }
 }
 @media (min-width: 901px) {
@@ -1065,32 +1065,27 @@
 .combat-receipt-entry button:hover,.combat-receipt-entry button:focus-visible { background:#34563f; outline:2px solid #ebce94; outline-offset:2px; }
 @media(max-width:900px) { .combat-receipt-entry { top:66px; max-width:200px; } .combat-receipt-entry button { font-size:12px; padding:6px 10px; } }
 
-/* Travel is a single desktop workspace between the HUD and the carry bar. */
-@media (min-width: 851px) {
-  .immersive-shell:has(.story-scenes .travel-map, .story-scenes .story-travel) .journey > nav,
-  .story-scenes:has(.travel-map, .story-travel) .story-chapters { visibility: hidden; }
-  .story-scenes .travel-map, .story-scenes .story-travel {
-    position: fixed; inset: 116px 24px 84px; z-index: 7;
-    display: flex; flex-direction: column; min-height: 0; overflow: hidden;
-  }
-  .story-scenes .travel-layout, .story-scenes .travel-body {
-    flex: 1; min-height: 0; overflow: hidden; align-items: center;
-  }
-  .story-scenes .route-canvas { height: 100%; max-height: 100%; }
-  .story-scenes .travel-layout aside, .story-scenes .travel-body aside {
-    max-height: 100%; overflow-y: auto; min-height: 0;
-  }
-  .story-scenes .travel-map footer, .story-scenes .story-travel footer { flex-shrink: 0; }
-}
-@media (min-width: 851px) {
-  .immersive-shell.story-exploring .story-scenes .story-travel,
-  .immersive-shell.story-exploring .story-scenes .travel-map {
-    height: calc(100dvh - 200px); max-height: calc(100dvh - 200px);
-  }
-  .story-scenes .travel-map footer, .story-scenes .story-travel footer { display: block; }
-  .story-scenes .travel-actions { width: 100%; }
-}
-
 @media (min-width: 1000px) {
   .modal[data-panel="world"] { width: min(1520px, calc(100vw - 64px)); max-height: 94dvh; }
 }
+
+.immersive-shell:has(.story-travel, .travel-map) :is(.game-hud,.carry-bar,.story-chapters,.quest-tracker) { visibility:hidden; }
+/* The saved arrival may precede playback; do not announce it over the journey. */
+body:has(.story-travel,.travel-map) .scene-arrival { display:none; }
+/* Learning already opens the live demonstration: retain a small receipt at the edge. */
+body:has(.story-scenes[data-chapter="practice"]) .receipt-dock { top:92px; bottom:auto; right:24px; width:280px; }
+body:has(.story-scenes[data-chapter="practice"]) .receipt-dock :is(.eyebrow,h2,.receipt-brief,.receipt-time,.receipt-changes) { display:none; }
+body:has(.story-scenes[data-chapter="practice"]) .receipt-dock .receipt-body { padding:10px 14px; }
+
+/* Keep opening follow-up scenes usable when the app side panel is narrow. */
+@media (max-width: 900px) {
+ .story-exploring:not(.scene-first) .narrative-stage { height:calc(100dvh - 170px); min-height:440px; }
+}
+
+/* Ending actions stay before the potentially long life review. */
+.ending-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:16px; }
+.ending-actions button { margin:0; min-width:0; }
+@media(max-width:600px) { .ending-actions { grid-template-columns:1fr; } }
+
+.ending-sound { display:flex; align-items:center; flex-wrap:wrap; gap:12px; color:#c9b88e; }
+.ending-sound button { margin:0; padding:6px 12px; }

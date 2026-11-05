@@ -1,5 +1,7 @@
+import { freshInitiation, type Initiation } from '../initiation/state';
 export type CaveMethod = "medicine" | "body" | "array";
 export interface QiNarrative {
+  initiation: Initiation;
   motive: "unspoken" | "world" | "life" | "kin" | "quiet";
   sectBriefed: boolean;
   homeReply: "none" | "letter" | "entrust";
@@ -23,6 +25,7 @@ export interface QiNarrative {
   last: string;
 }
 export const freshQiNarrative = (): QiNarrative => ({
+  initiation: freshInitiation(),
   motive: "unspoken",
   sectBriefed: false,
   homeReply: "none",

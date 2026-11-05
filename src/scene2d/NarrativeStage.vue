@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useSpeechBubble } from "./speech-bubble";
+import "./speech-bubble.css";
 import { sceneFocus } from "./scene-focus";
 export interface SceneHotspot {
+  kind?: "person";
   id: string;
   label: string;
   x: number;
@@ -28,18 +31,19 @@ const props = withDefaults(
     body: "",
     activityTitle: "交锋之中",
     battleInspector: true,
-    focusScene: true,
+    focusScene: false,
   },
 );
 const emit = defineEmits<{ select: [id: string]; close: [] }>();
 const root = ref<HTMLElement>();
+const bubbleStyle = useSpeechBubble(root, () => target.value);
 const notes = ref(false);
 const width = ref(0);
 const hidden = ref(false);
 let resize: ResizeObserver | undefined;
 const focus = computed(() =>
   sceneFocus(
-    props.battle || notes.value || !props.focusScene ? undefined : target.value,
+    props.battle || notes.value || target.value?.kind === "person" || !props.focusScene ? undefined : target.value,
     width.value,
   ),
 );
@@ -197,7 +201,9 @@ onBeforeUnmount(() => {
       v-else-if="battle ? battleInspector : active"
       :key="active || stageKey"
       class="narrative-inspector"
-      :class="{ 'battle-inspector': battle }"
+      :class="{ 'battle-inspector': battle, 'speech-bubble': !battle && target?.kind === 'person' }"
+      :data-speaker="target?.kind === 'person' ? target.id : undefined"
+      :style="!battle && target?.kind === 'person' ? bubbleStyle : undefined"
       aria-label="现场操作"
     >
       <div class="narrative-inspector-heading">
@@ -206,7 +212,7 @@ onBeforeUnmount(() => {
           ×
         </button>
       </div>
-      <slot />
+      <div :class="{'speech-content': target?.kind === 'person' && !battle}"><slot /></div>
     </section>
     <p v-else-if="!battle" class="narrative-hint">
       选择场景中的人物、器物或道路 · Tab 选择，Enter 查看

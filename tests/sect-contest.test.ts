@@ -1,3 +1,4 @@
+import { admissionStep } from '../tools/initiation-policy';
 import { SAVE_VERSION } from "../src/save-version";
 import { legacyEquipment } from "./legacy-equipment";
 import { describe, it, expect } from "vitest";
@@ -19,8 +20,13 @@ export function eligible(main: "spring" | "blade" | "breath" = "spring") {
   p.cultivate(200);
   p.fight("exit");
   p.act({ kind: "ferryOutcome", outcome: "escort" });
-  p.send({ type: "join", branch: "dan" });
   p.act({ kind: "travel", destination: "home" });
+  for(let i=0;i<4 && p.state.journey.branch==='none';i++) {
+    const step=admissionStep(p.state,'dan'); if(!step)throw Error('Missing admission witness');
+    p.send(step);
+  }
+  // A new member reports after admission to receive the next meeting notice.
+  p.send({type:'duty',duty:'copy'});
   expect(validState(p.state)).toBe(true);
   return p.state;
 }
@@ -63,7 +69,7 @@ describe("剧情中的十年内比之约", () => {
   it("中期归山同门告知，提前十年；金丹预告基准五十年，无新独立入口", () => {
     const s = eligible();
     expect(s.sectContest.stage).toBe("invited");
-    expect(s.sectContest.source).toBe("return");
+    expect(s.sectContest.source).toBe("mentor");
     expect(s.sectContest.starts - s.month).toBe(120);
     expect(NOTICE_MONTHS.golden).toBe(600);
     expect(s.sectContest.last).toContain("许砚舟");

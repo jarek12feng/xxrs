@@ -3,7 +3,7 @@ import { settleResources } from "../economy";
 import { quoteMedicineUse } from "../medicines";
 import { advanceMonths } from "../timeline";
 import { goldenChance, goldenBreakthroughError, goldenSuccess } from "../progression";
-import { resolveTurn, startBattle } from "../combat";
+import { executeBattleAction, startBattle } from "../combat";
 import type { State } from "../world";
 import type { Move } from "../expedition/content";
 import { tacticalPreview } from "../combat/game";
@@ -278,14 +278,12 @@ export function runGolden(
     record("守药石偶抬起双臂。最多十六合；败退伤势 +1，主动撤回不加伤。");
   }
   if (a.kind === "move") {
-    const p = goldenExchange(s, a.move)!,
-      d = g.duel!;
-    const turn = resolveTurn(d, p, {
-      turnLimit: 16,
-      resolution: "simultaneous",
-    });
+    const d = g.duel!;
+    const turn = executeBattleAction(d, s.herbs, { turnLimit: 16, resolution: "simultaneous" }, () => goldenExchange(s, a.move));
+    if (!turn) return input;
+    const p = turn.exchange;
     Object.assign(d, turn.battle);
-    s.herbs -= turn.herbs;
+    s.herbs = turn.remainingHerbs;
     d.effect = a.move;
     record(
       `破阵 ${p.damage}、承伤 ${p.incoming}${p.healing ? `，耗草 ${p.herbs} 回气 ${p.healing}` : ""}。${p.note}`,

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import AuctionScene from "./auction/AuctionScene.vue";
+import { auctionLocationError } from "./auction";
+const auctionOpen = ref(false);
+import {roadSpeakerFoot} from "./scene2d/actor-anchors";
 import { treasureQuote } from "./treasures/rules";
 import { senseLimit } from "./spirit";
 import RoadWorld from "./scene2d/RoadWorld.vue";
@@ -34,6 +38,7 @@ const props = defineProps<{
   busy: boolean;
   receipt?: ActionReceipt | null;
 }>();
+watch(() => props.game.treasures.auction?.venue === 'market' && props.game.treasures.auction.entered && !props.game.treasures.auction.closed, entered => { if(entered)auctionOpen.value=true; }, {immediate:true});
 const emit = defineEmits<{
   act: [intent: Intent];
   cultivate: [];
@@ -54,6 +59,7 @@ const active = ref("");
 const world = ref<InstanceType<typeof RoadWorld>>();
 function selectObject(id:string){
   if(locked.value)return;
+  if(id==='auction'){auctionOpen.value=true;return;}
   active.value='';world.value?.approach(id,()=>{if(!locked.value)active.value=id;});
 }
 function invoke(action:RoadAction){
@@ -68,7 +74,8 @@ function continueMist(){
   active.value='';world.value?.approach('forward',()=>{if(!locked.value)emit('mist');});
 }
 const hotspots = computed(() => [
-  { id: "person", label: person.value.name, x: 32, y: 52 },
+  ...(!auctionLocationError(props.game,"market") ? [{id:"auction",label:"坊市拍卖行",x:68,y:36}] : []),
+  { id: "person", kind: "person" as const, label: person.value.name, x: roadSpeakerFoot(road.value.stage).x, y: 52 },
   { id: "objects", label: road.value.stage === "pass" ? "山口与阵纹" : "沿途痕迹", x: 56, y: 42 },
   { id: "prepare", label: ["pass", "camp"].includes(road.value.stage) ? "药队与行装" : "随身行装", x: 22, y: 76 },
   { id: "road", label: "前路与归途", x: 79, y: 57 },
@@ -340,7 +347,8 @@ const person = computed(() =>
     @keydown="keyboard"
     aria-label="走出听松山主线"
   >
-      <NarrativeStage :image="scene.image" :title="scene.name" :goal="roadGoal(game)" :body="scene.body"
+      <AuctionScene v-if="auctionOpen" :game="game" :busy="busy" venue="market" @act="emit('act',$event)" @close="auctionOpen=false" />
+      <NarrativeStage v-else :image="scene.image" :title="scene.name" :goal="roadGoal(game)" :body="scene.body"
         :stage-key="`road-${road.stage}`" :hotspots="hotspots" :active="active" :battle="!!game.expedition.duel"
         @select="selectObject" @close="active = ''; world?.cancel()">
       <template #world><RoadWorld v-show="!game.expedition.duel" ref="world" :game="game" @performed="active = ''" /></template>

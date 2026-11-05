@@ -1,8 +1,14 @@
 <script setup lang="ts">
+import {revisitView} from "../world-revisits/projection";
+import RevisitPanel from "../world-revisits/RevisitPanel.vue";
+import AuctionScene from "../auction/AuctionScene.vue";
+import { auctionLocationError } from "../auction";
+const auctionOpen = ref(false);
+import {foundationSpeakerFoot} from "../scene2d/actor-anchors";
+import { knowsInland } from "../wayfaring/discovery";
 import CacheScene from "../item-growth/CacheScene.vue";
 import { cacheSite } from "../item-growth/rules";
 const cacheOpen = ref(false);
-import { knowsInland } from "../wayfaring/discovery";
 import SpiritScene from "../spirit/SpiritScene.vue";
 import { spiritSite } from "../spirit/rules";
 const spiritOpen = ref(false);
@@ -54,9 +60,10 @@ const props = withDefaults(
   }>(),
   { mode: "journey" },
 );
-watch(() => cacheSite(props.game), available => { if(!available) cacheOpen.value=false; });
-watch(() => props.game.itemGrowth.trial, trial => { if(trial) cacheOpen.value=true; }, {immediate:true});
+watch(() => props.game.treasures.auction?.venue === 'foundation' && props.game.treasures.auction.entered && !props.game.treasures.auction.closed, entered => { if(entered)auctionOpen.value=true; }, {immediate:true});
 const emit = defineEmits<{ act: [intent: Intent]; equipment: []; road: [] }>();
+watch(() => cacheSite(props.game), available => { if(!available) cacheOpen.value = false; });
+watch(() => props.game.itemGrowth.trial, trial => { if(trial) cacheOpen.value = true; }, {immediate:true});
 watch(() => props.game.spirit.trial, trial => { if(trial?.source === "well") spiritOpen.value = true; }, {immediate:true});
 const preparation = computed(() =>
   journeyPreparation(props.game, props.mode === "board"),
@@ -105,6 +112,7 @@ const active = ref("");
 const world = ref<InstanceType<typeof FoundationWorld>>();
 function selectObject(id: string) {
   if(props.busy || q.value.duel)return;
+  if(id === "auction"){auctionOpen.value=true;return;}
   if(id === "cache"){cacheOpen.value=true;return;}
   if(id === "spirit"){spiritOpen.value=true;return;}
   active.value='';
@@ -127,9 +135,13 @@ const storyActions = computed(() => pact.value.actions.filter(option => storyObj
 const storyReceipt = ref('');
 watch(active, () => { storyReceipt.value = ''; });
 watch(() => props.game.secretPact.last, value => { if(storyObject.value) storyReceipt.value = value; });
+const revisit = computed(()=>q.value.location==='estate' ? revisitView(props.game,'estate') : null);
 const hotspots = computed(() => [
+  ...(props.mode==='journey' && revisit.value ? [{id:'revisit',label:revisit.value.title,x:72,y:52}] : []),
+  ...(props.mode === "journey" && !auctionLocationError(props.game,"foundation") ? [{id:"auction",label:"晴川交易院 · 拍卖行",x:68,y:35}] : []),
   {
     id: "encounter",
+    kind: presentation.value.speaker ? "person" as const : undefined,
     label:
       props.mode === "board"
         ? "试剑石台"
@@ -144,7 +156,7 @@ const hotspots = computed(() => [
               inn: "旅亭",
               frontier: "古道",
             }[q.value.location],
-    x: 42,
+    x: foundationSpeakerFoot.x,
     y: 57,
   },
   { id: "prepare", label: "随身行囊", x: 23, y: 76 },
@@ -155,7 +167,7 @@ const hotspots = computed(() => [
     ? [{ id: "pact", label: "照玄之约", x: 82, y: 67 }]
     : []),
   ...storyObjects.value,
-  ...(props.mode === "journey" && cacheSite(props.game) ? [{id:"cache",label:"侧室石匣 · 前人遗物",x:73,y:36}] : []),
+  ...(props.mode === "journey" && cacheSite(props.game) ? [{id:"cache",label:props.game.itemGrowth.ring?"侧室石匣 · 遗戒已得":"侧室石匣 · 前人遗物",x:73,y:36}] : []),
   ...(props.mode === "journey" && spiritSite(props.game) === "well" ? [{id:"spirit",label:props.game.spirit.manual==='learned'?"回声石壁 · 分念诀已通":"沉井回声 · 炼神残篇",x:62,y:42}] : []),
 ]);
 const selectedOptions = computed(() =>
@@ -194,7 +206,8 @@ function act(action: JourneyAction) {
           : '筑基行旅'
     "
   >
-    <CacheScene v-if="(cacheOpen && cacheSite(game)) || game.itemGrowth.trial" :game="game" :busy="busy" @act="emit('act',$event)" @close="cacheOpen=false" />
+    <AuctionScene v-if="auctionOpen" :game="game" :busy="busy" venue="foundation" @act="emit('act',$event)" @close="auctionOpen=false" />
+    <CacheScene v-else-if="(cacheOpen && cacheSite(game)) || game.itemGrowth.trial" :game="game" :busy="busy" @act="emit('act',$event)" @close="cacheOpen=false" />
     <SpiritScene v-else-if="spiritOpen || game.spirit.trial?.source==='well'" :game="game" :busy="busy" @act="emit('act',$event)" @close="spiritOpen=false" />
     <template v-else>
     <TravelMap v-if="mapOpen" :game="game" :busy="busy" :destination="mapDestination" @act="emit('act',$event)" @close="mapOpen=false" />
@@ -303,6 +316,8 @@ function act(action: JourneyAction) {
           :game="game"
           :target="preparation.target"
           :months="preparation.months"
+          :busy="busy"
+          @act="emit('act', $event)"
         />
         <button
           v-if="preparation.missing"
@@ -401,7 +416,7 @@ function act(action: JourneyAction) {
             <p>
               首胜奖励：灵石 {{ row.prize }}、筑基修行
               {{
-                Math.max(0, Math.min(40, foundationCap(game) - q.cultivation))
+                row.cultivationReward
               }}（当前上限 {{ foundationCap(game) }}）{{
                 row.extra ? `、${row.extra}` : ""
               }}。每场首胜可获报酬。
@@ -430,6 +445,7 @@ function act(action: JourneyAction) {
       </template>
       <template v-else>
         <template v-if="mode === 'journey'">
+          <RevisitPanel v-if="q.location==='estate' && active==='revisit'" :game="game" site="estate" :busy="busy" @act="emit('act',$event)"/>
           <template v-if="active === 'prepare'">
             <h3>筑基行旅 · 青玄界</h3>
             <p>

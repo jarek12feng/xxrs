@@ -12,11 +12,11 @@ const selected=ref('companion');
 const n=computed(()=>props.game.nascentSoul);
 const c=computed(()=>n.value.covenant);
 const partner=computed(()=>partnerName(props.game));
-const present=computed(()=>companionContact(props.game).reliable && (companionContact(props.game).present || (n.value.contactedAt!==null && props.game.month-n.value.contactedAt<=120)));
+const present=computed(()=>companionContact(props.game).availableForMeeting && companionContact(props.game).reliable && (companionContact(props.game).present || companionContact(props.game).invitationCurrent));
 const lover=computed(()=>props.game.social.bonded||props.game.foundationJourney.bond==='promised'||props.game.foundationJourney.bond==='covenant');
 const phase=computed(()=>n.value.ceremony==='witnessed'?'礼成 · 灯下共餐':n.value.ceremony==='married'||n.value.ceremony==='renewed'?'旧约新灯':n.value.ceremony==='discussed'?'同心之约 · 筹备':'古渡小院 · 重逢');
 const hotspots=computed(()=>[
- {id:'companion',label:present.value?partner.value:'约见与来信',x:52,y:50},
+ {id:'companion',kind:present.value?'person' as const:undefined,label:present.value?partner.value:'约见与来信',x:52,y:50},
  ...(present.value&&lover.value?[{id:'table',label:n.value.ceremony==='witnessed'?'灯下饭桌':'信物与约书',x:46,y:73},{id:'lantern',label:'院中灯火',x:25,y:40}]:[]),
  {id:'exit',label:'回古渡静室',x:86,y:84},
 ]);

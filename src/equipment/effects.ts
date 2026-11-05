@@ -14,13 +14,26 @@ import {
 } from "./context";
 export type EquipmentSituation =
   | { kind: "base"; includeAttuned?: boolean }
-  | { kind: "turn"; move: "strike" | "guard" | "discern"; correct: boolean; previousMove?: "strike" | "guard" | "discern" | "none" }
+  | {
+      kind: "turn";
+      move: "strike" | "guard" | "discern";
+      correct: boolean;
+      previousMove?: "strike" | "guard" | "discern" | "none";
+    }
   | { kind: "challenge"; opponent: "guardian" | "raider" }
   | { kind: "road" }
   | { kind: "mist"; hazard: string };
 export interface EquipmentContribution {
   source: EquipmentId;
-  effect: "base" | "temper" | "auxiliary" | "attuned" | "exploration" | "focus" | "sequence" | "reforge";
+  effect:
+    | "base"
+    | "temper"
+    | "auxiliary"
+    | "attuned"
+    | "exploration"
+    | "focus"
+    | "reforge"
+    | "sequence";
   damage: number;
   armor: number;
   incoming: number;
@@ -62,7 +75,6 @@ export function evaluateEquipment(
     if (situation.includeAttuned) {
       if (s.treasures.artifacts.includes("tideBlade") && artifactReady(s,"tideBlade"))
         add("tideBlade", "attuned", {damage:3});
-
       if (
         s.treasures.artifacts.includes("tideSeal") &&
         artifactReady(s, "tideSeal")
@@ -90,7 +102,6 @@ export function evaluateEquipment(
       add("tideSeal","sequence",{incoming:-3});
     if (correct && active("spiritPearl") && s.itemGrowth?.golden?.pearl && move==="discern")
       add("spiritPearl","sequence",{incoming:-3});
-
     const temper = relic ? s.workshop.temper[relic] : "plain";
     const resolve = (rules: readonly TurnRule[], level: number) => {
       let damage = 0,
@@ -124,6 +135,23 @@ export function evaluateEquipment(
     for (const id of s.treasures.equipped) {
       const level = s.treasures.owned[id];
       if (level) add(id, "auxiliary", resolve(auxiliaryRules[id], level));
+      // Only a caller with a saved previous move can activate a sequence.
+      // No extra state or hidden charge; staying on one move cannot refresh it.
+      if (level && s.realm === 1 && correct) {
+        if (
+          id === "bell" &&
+          situation.previousMove === "guard" &&
+          move !== "guard"
+        )
+          add(id, "sequence", { incoming: -2 });
+        if (
+          id === "mirror" &&
+          move === "discern" &&
+          (situation.previousMove === "guard" ||
+            situation.previousMove === "strike")
+        )
+          add(id, "sequence", { damage: 2 });
+      }
     }
   } else if (relic && rank) {
     if (situation.kind === "challenge")
@@ -187,14 +215,24 @@ export function equipmentTurnEffect(
   const reforgeNote = reforged
     ? `其中${equipmentCatalog[reforged.source].name}重铸：${reforged.damage ? `伤害 +${reforged.damage}` : `承伤 ${reforged.incoming}`}（已计入器物修正；最终承伤受下限与击倒免反击影响）。`
     : "";
-  const artifactNote = sources.filter(v=>v.effect==="sequence").map(v=>v.source==="tideBlade"?"潮纹剑蓄势破罡：正确反击伤害+10、承伤+2（已计入器物修正）。":v.source==="tideSeal"?"镇潮印镇压：正确守势承伤−3（已计入器物修正）。":"定神珠护识：正确辨影承伤−3（已计入器物修正）。").join("");
+  const sequenceNote = sources
+    .filter((source) => source.effect === "sequence")
+    .map((source) =>
+      source.source === "tideBlade" ? "潮纹剑蓄势破罡：正确反击伤害+10、承伤+2（已计入器物修正）。"
+        : source.source === "tideSeal" ? "镇潮印镇压：正确守势承伤−3（已计入器物修正）。"
+        : source.source === "spiritPearl" ? "定神珠护识：正确辨影承伤−3（已计入器物修正）。"
+        : source.source === "bell"
+        ? "镇岳钟余音护转：守势后正确换招承伤 −2（已计入器物修正）。"
+        : "照隙镜转照：换招后正确辨影伤害 +2（已计入器物修正）。",
+    )
+    .join("");
   return {
     damage,
     incoming,
     note:
       damage || incoming
-        ? `器物修正：伤害 ${damage >= 0 ? "+" : ""}${damage}、承伤 ${incoming >= 0 ? "+" : ""}${incoming}。${reforgeNote}${artifactNote}`
-        : reforgeNote + artifactNote,
+        ? `器物修正：伤害 ${damage >= 0 ? "+" : ""}${damage}、承伤 ${incoming >= 0 ? "+" : ""}${incoming}。${reforgeNote}${sequenceNote}`
+        : reforgeNote + sequenceNote,
   };
 }
 export function equipmentCultivationBonus(s: RelicContext & { realm: number }) {

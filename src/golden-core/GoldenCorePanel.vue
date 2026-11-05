@@ -146,7 +146,7 @@ const hotspots = computed(() => {
     },
     { id: "furnace", label: "合药炉", x: 27, y: 60 },
     {
-      id: "elder",
+      id: "elder", kind: "person" as const,
       label: g.value.champion === "pending" ? "师门传讯" : "护关阵台",
       x: 40,
       y: 62,

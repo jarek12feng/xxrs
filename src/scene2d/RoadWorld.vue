@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {roadSpeakerFoot} from './actor-anchors';
 import {computed,onBeforeUnmount,onMounted,ref,watch} from 'vue';
 import type {State} from '../core';
 import CharacterSprite from '../presentation/CharacterSprite.vue';
@@ -14,6 +15,7 @@ const paused=ref(false),walkReady=ref(false);
 const sheet=computed(()=>props.game.realm===1?'/art/scene2d/foundation-walk/hero-male-v1.png':'/art/scene2d/hero-qi-walk-v2.png');
 function foot(target:string) {
   const stage=props.game.adventure.road.stage;
+  if(target==='person'){const npc=roadSpeakerFoot(stage);return {x:npc.x-9,y:npc.y};}
   // Reviewed foreground only: pass uses its central stair; cloud-frontier stays on the left platform.
   const places=stage==='pass'
     ? {entry:[57,91],person:[53,85],objects:[55,81],prepare:[57,90],road:[53,77],forward:[52,73],back:[58,92]}
@@ -48,7 +50,7 @@ defineExpose({skip,approach,cancel:walk.cancel});
     <div v-if="field.route==='medicine'" class="root-path" aria-label="恢复生机的镇风草窄径"><img v-for="n in 4" :key="n" :src="itemArt('herbs')" alt="" /></div>
     <div v-if="field.route==='sword'" class="open-pass" aria-label="斩开风脉后的宽路"><i></i><i></i></div>
     <WalkingActor :key="sheet" :character="heroArt(game.social.gender,game.realm)" :pose="cue?.pose || 'idle'" :label="game.name" :position="walk.position.value" :moving="walk.moving.value" :frame="walk.frame.value" :facing="walk.facing.value" :sheet="sheet" @ready="walkReady=$event" />
-    <CharacterSprite v-if="field.person" class="road-npc" :class="{'pass-npc':game.adventure.road.stage==='pass'}" :character="field.person" :label="field.person==='yuqing'?'郁青':'青嶂'" />
+    <CharacterSprite v-if="field.person" class="road-npc" :style="{left:roadSpeakerFoot(game.adventure.road.stage).x+'%',bottom:(100-roadSpeakerFoot(game.adventure.road.stage).y)+'%'}" :class="{'pass-npc':game.adventure.road.stage==='pass'}" :character="field.person" :label="field.person==='yuqing'?'郁青':'青嶂'" />
     <img v-if="field.map" class="road-map" :src="itemArt('map')" alt="已补全的行路图" />
     <div v-if="walk.moving.value" class="road-cue" role="status"><span>沿近处石路走近</span><button @click.stop="walk.skip">略过走近</button></div>
     <div v-if="cue" class="road-cue" role="status"><span>{{cue.label}}</span><button @click.stop="skip">跳过演出</button></div>
@@ -56,7 +58,7 @@ defineExpose({skip,approach,cancel:walk.cancel});
 </template>
 <style scoped>
 .road-world{position:absolute;inset:0;pointer-events:none}
-.road-npc{position:absolute;left:35%;bottom:17%;width:190px;height:270px;filter:drop-shadow(0 10px 8px #0009)}
+.road-npc{position:absolute;transform:translateX(-50%);left:35%;bottom:17%;width:190px;height:270px;filter:drop-shadow(0 10px 8px #0009)}
 .pass-npc{left:44%;bottom:17%}
 .road-map{position:absolute;left:48%;bottom:20%;width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 6px 8px #0009)}
 .pass-wind{position:absolute;left:51%;top:30%;width:20%;height:38%;transform:rotate(-12deg)}

@@ -1,3 +1,4 @@
+import { seekerStep } from './initiation-policy';
 import { foundationStep } from "./foundation-playthrough";
 import { createGame, dispatch, validState, type Intent, type Path, type Aptitude, type AdventureAction, type RoadAction } from "../src/core";
 import { encounters } from "../src/expedition/content";
@@ -29,6 +30,7 @@ export function expeditionSession(
     "return",
   ] as AdventureAction[])
     send({ type: "adventure", action });
+  for(let i=0;i<6;i++){const step=seekerStep(state);if(!step)break;send(step);}
   send({ type: "learning", choice: path === "sword" ? "blade" : "spring" });
   // The opening medicine route is available to both paths through its own preparation.
   for (const action of ["thanks", "market", "talk", "accept"] as RoadAction[])

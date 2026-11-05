@@ -1,7 +1,7 @@
 import { goldenCap } from "../conclave/state";
 import type { State } from "../world";
 export interface OuterSea {
-  location: "home" | "ferry" | "ruins";
+  location: "home" | "ferry" | "ruins" | "guild";
   met: boolean;
   pact: "none" | "share" | "private";
   prepared: boolean;
@@ -46,7 +46,7 @@ export function validOuterSea(s: State) {
     Number.isSafeInteger(n) && Number(n) >= 0 && Number(n) <= max;
   if (
     !o ||
-    !["home", "ferry", "ruins"].includes(o.location) ||
+    !["home", "ferry", "ruins", "guild"].includes(o.location) ||
     !["none", "share", "private"].includes(o.pact) ||
     !["none", "seal", "manual"].includes(o.reward) ||
     !["none", "continue", "clear"].includes(o.method) ||

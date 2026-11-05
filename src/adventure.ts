@@ -1,3 +1,4 @@
+import { hasCultivationKit } from './initiation/rules';
 import { senseLimit } from "./spirit";
 import { validAdventureV10 } from "./legacy-adventure-v10";
 import type { State } from "./world";
@@ -53,7 +54,7 @@ export const adventureScenes = {
     body: "信上说，药工进山后迟迟未归，有人从上游捞回了他的药篓。渡口仍有人等着，盼你过去看一眼。",
   },
   ferry: {
-    name: "雨夜渡口",
+    name: "听松渡口",
     image: "/characters/luchi-ferry.png",
     mood: "rain",
     goal: "调查失踪药工最后留下的痕迹。",
@@ -296,16 +297,16 @@ export function runAdventure(
     case "return":
     case "takeHerbs":
       a.rescueChoice = action === "return" ? "roots" : "supplies";
-      if (a.rescueChoice === "supplies") s.herbs += 4;
+      if (a.rescueChoice === "supplies" && hasCultivationKit(s)) s.herbs += 4;
       a.step = "done";
-      s.stones += 12;
+      if(hasCultivationKit(s)) s.stones += 12;
       if (a.method === "medicine") s.study = Math.min(4, s.study + 1);
       if (a.method === "guide") s.sense = Math.min(senseLimit(s.realm, s.spirit), s.sense + 1);
       if (a.method === "ward") s.foundation = Math.min(24, s.foundation + 2);
       a.result =
         rescueEcho(a) +
-        (a.rescueChoice === "supplies" ? "获得灵草 4。" : "已学会护根手法。") +
-        "获得灵石 12。" +
+        (a.rescueChoice === "supplies" ? hasCultivationKit(s) ? "获得灵草 4。" : "四株灵草先由温蘅代存，取得入道行装时交还。" : "已学会护根手法。") +
+        (hasCultivationKit(s) ? "获得灵石 12。" : "药队记下营救酬劳，回药坪议定求学与行装时交付。") +
         {
           medicine: "从配药中学到辨药心得 +1（上限 4）。",
           guide: "与陆迟分工练就观察力，神识 +1（上限 12）。",

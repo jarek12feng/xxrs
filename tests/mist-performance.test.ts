@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { describe, expect, it } from 'vitest';
-import { createGame } from '../src/core';
+
 import { freshMist } from '../src/mist';
 import { mistSnapshot, mistTransition, mistWorld } from '../src/scene2d/mist-performance';
 describe('雾海只读现场投影', () => {

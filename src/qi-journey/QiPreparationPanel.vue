@@ -68,7 +68,7 @@ const choices = {
         :disabled="busy"
         @click="emit('sect')"
       >
-        查看宗门与入门条件
+        到药坪向温蘅求教
       </button>
       <button
         v-if="game.qiJourney.preparations[game.qiJourney.gates]![key] === 0"

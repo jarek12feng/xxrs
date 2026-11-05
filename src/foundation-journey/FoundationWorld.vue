@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {foundationSpeakerFoot} from "../scene2d/actor-anchors";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { State } from '../world';
 import { challenges } from './content';
@@ -64,7 +65,7 @@ defineExpose({skip,approachObject,cancelMovement});
     <div v-if="arrayBattle" class="battle-array" role="img" :aria-label="arrayBattle+'的阵纹'"><i></i><i></i><i></i><span></span></div>
     <template v-if="!game.foundationJourney.duel">
     <WalkingActor class="foundation-player" :character="heroArt(game.social.gender,game.realm)" :pose="frame?.pose || 'idle'" :label="game.name" :position="position" :moving="moving" :frame="walkFrame" :facing="facing" sheet="/art/scene2d/foundation-walk/hero-male-v1.png" @ready="walkReady=$event" />
-    <img v-if="companion" class="foundation-companion" :src="`/art/companionship/shentinglan-${companionPose}.webp`" :alt="game.foundationJourney.heroine.meeting==='none' ? '青嶂勘路人正在测路' : '苏婉宁在现场'" />
+    <img v-if="companion" class="foundation-companion" :style="{left:foundationSpeakerFoot.x+'%',bottom:(100-foundationSpeakerFoot.y)+'%'}" :src="`/art/companionship/shentinglan-${companionPose}.webp`" :alt="game.foundationJourney.heroine.meeting==='none' ? '青嶂勘路人正在测路' : '苏婉宁在现场'" />
     <div v-if="sequence && frame?.prop" class="performance-prop" :style="{left:(position.x+8)+'%'}" :class="[`prop-${frame?.prop}`,`phase-${index}`]" aria-hidden="true">
       <span class="prop-halo"></span><img v-if="propArt" :src="propArt" alt="" />
     </div>
@@ -98,7 +99,7 @@ defineExpose({skip,approachObject,cancelMovement});
 .battle-array span {position:absolute;left:34%;top:29%;width:32%;height:42%;border:1px solid #d5e0bb99;transform:rotate(12deg);}
 .battle-array b {position:absolute;left:50%;top:-24%;transform:translateX(-50%);white-space:nowrap;font-weight:400;font-size:14px;color:#f0e5c7;text-shadow:0 2px 4px #07150d;background:#12281cbb;padding:3px 9px;border-bottom:1px solid #baaa7e88;}
 .foundation-player {z-index:2;width:calc(var(--field-actor-height) * .75);height:var(--field-actor-height);}
-.foundation-companion {position:absolute;left:38%;bottom:12%;width:calc(var(--field-actor-height) * .75);height:var(--field-actor-height);object-fit:contain;object-position:bottom;filter:drop-shadow(0 14px 12px #0009);}
+.foundation-companion {position:absolute;transform:translateX(-50%);left:38%;bottom:12%;width:calc(var(--field-actor-height) * .75);height:var(--field-actor-height);object-fit:contain;object-position:bottom;filter:drop-shadow(0 14px 12px #0009);}
 .performance-prop {position:absolute;left:29%;bottom:24%;width:90px;height:90px;display:grid;place-items:center;}
 .performance-prop img {position:relative;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 6px #000a);}
 .prop-halo {position:absolute;inset:-15px;border:1px solid #dfd5a3aa;border-radius:50%;background:radial-gradient(ellipse,#d7d6a02e,transparent 70%);animation:light-breathe 850ms ease-in-out alternate infinite;}

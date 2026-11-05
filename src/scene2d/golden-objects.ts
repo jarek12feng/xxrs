@@ -17,6 +17,7 @@ const golden: Record<GoldenAction["kind"], string> = {
   move: "path",
 };
 const sea: Record<SeaAction["kind"], string> = {
+  auctionNews:"merchant", guild:"merchant", guildReturn:"exit",
   meet: "friends",
   pact: "friends",
   report: "friends",

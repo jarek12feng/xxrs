@@ -1,3 +1,4 @@
+import type { InitiationAction } from '../initiation/rules';
 import type { QiNarrativeAction } from "./narrative";
 import type { PersonAction } from "./people";
 import type { PreparationAction } from "./preparation";
@@ -102,6 +103,7 @@ export const qiRoutes = {
   },
 } as const;
 export type QiAction =
+  | InitiationAction
   | QiNarrativeAction
   | PersonAction
   | PreparationAction

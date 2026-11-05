@@ -61,7 +61,7 @@ export const qingxuanLandmarks = [
   },
   {
     key: "ferry",
-    label: "雨夜渡口",
+    label: "听松渡口",
     x: 12,
     y: 84,
     scene: "ferry",

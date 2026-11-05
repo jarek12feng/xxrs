@@ -1,3 +1,4 @@
+import { deathView } from "./mortality";
 import type { State } from "./core";
 import { sceneMusic, type MusicCue } from "./local-music";
 import type { AmbientCue } from "./foundation-audio";
@@ -64,6 +65,7 @@ export function gameAudioScene(
   panel: string,
   name: string,
 ) {
+  if (s?.status === "dead") return { music: deathView(s).music, ambient: null };
   if (s?.status === "alive") {
     if (s.social.arena.duel || s.expedition.duel || s.qiJourney.duel)
       return { music: "trial" as MusicCue, ambient: null };

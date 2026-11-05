@@ -1,8 +1,9 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
+import { admissionStep } from '../tools/initiation-policy';
 import { SAVE_VERSION } from "../src/save-version";
 import { foundationStep } from "../tools/foundation-playthrough";
 import { describe, expect, it } from "vitest";
 import {
-  createGame,
   dispatch,
   validState,
   migrateSave,
@@ -42,6 +43,15 @@ const choose = (s: State, option: string) =>
 function met() {
   return choose(advance(createGame("访客", "wood", 1), "work", 3), "promise");
 }
+function admittedCandidate() {
+  const s=met();
+  for(const action of ['inspect','depart','medicine','prepare','depart','trail','challenge','return'] as const) {
+    const next=dispatch(s,{type:'adventure',action,id:`fixture-rescue-${action}-${s.adventure.step}`});
+    Object.assign(s,next);
+  }
+  s.qiJourney.narrative.initiation={arrival:'sensed',admission:'pledged',witness:'escort',practice:'passed',kit:'none',last:''};
+  return s;
+}
 function settled() {
   const s = met();
   s.realm = 1;
@@ -72,7 +82,7 @@ describe("v4 world progression", () => {
   it.each(["dan", "jian"] as const)(
     "earns %s promotion through experience and a mentor conversation",
     (branch) => {
-      let s = act(met(), { type: "join", branch });
+      let s = act(admittedCandidate(), { type: "join", branch });
       expect(
         act(s, { type: "join", branch: branch === "dan" ? "jian" : "dan" }),
       ).toBe(s);
@@ -203,7 +213,7 @@ describe("v4 world progression", () => {
   });
   it("prioritizes death over duty and exploration rewards", () => {
     for (const type of ["duty", "explore"] as const) {
-      let s = act(met(), { type: "join", branch: "dan" });
+      let s = act(admittedCandidate(), { type: "join", branch: "dan" });
       s.age = s.limit - 1;
       s = act(
         s,
@@ -460,7 +470,10 @@ it("replays 60 journeys through exploration and independent fresh starts", () =>
     expect(s.journey.settled).toBe(true);
     while (s.injury) send({ type: "advance", activity: "rest", months: 12 });
     if (branch !== "none") {
-      send({ type: "join", branch });
+      for(let i=0;i<4 && s.journey.branch==='none';i++) {
+        const step=admissionStep(s,branch); if(!step)throw Error('Missing admission witness');
+        send(step);
+      }
       for (let i = 0; i < 3; i++) send({ type: "duty", duty: "copy" });
       send({ type: "mentor", answer: "seek" });
       send({ type: "promote" });

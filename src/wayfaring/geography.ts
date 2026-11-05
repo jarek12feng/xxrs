@@ -6,7 +6,7 @@ export const worldRegions = [
     name: "听松山及近郊",
     scope: "炼气起行",
     detail:
-      "雨夜渡口、药庐、雾林与山祠属于近郊短途；石涧药窟承接淬脉后的历练，青嶂关与支路承接出山。",
+      "听松渡口、药庐、雾林与山祠属于近郊短途；石涧药窟承接淬脉后的历练，青嶂关与支路承接出山。",
   },
   {
     id: "inland",
@@ -23,8 +23,13 @@ export const worldRegions = [
       "穿云壁兑现金丹能力，外海古渡接两层退潮遗迹；古渡来信引向诸宗会谷；后期循潮路赴离照洞天，伏潮湾承接真实分配争议。",
   },
 ] as const;
+export const goldenAuctionRoute = {months:2,distance:12000} as const;
 export const worldStoryPlaces = [
-  { id: "opening-ferry", name: "雨夜渡口", region: "tingsong", parent: null },
+  {id:"guild",name:"沧澜会馆",region:"coast",parent:null},
+  {id:"golden-auction",name:"沧澜金丹拍卖厅",region:"coast",parent:"guild"},
+  { id: "market-auction", name: "坊市拍卖行", region: "tingsong", parent: "market" },
+  { id: "foundation-auction", name: "晴川交易院", region: "inland", parent: "estate" },
+  { id: "opening-ferry", name: "听松渡口", region: "tingsong", parent: null },
   { id: "apothecary", name: "山门药庐", region: "tingsong", parent: null },
   { id: "forest", name: "雾林旧道", region: "tingsong", parent: null },
   { id: "shrine", name: "废弃山祠", region: "tingsong", parent: null },

@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
 import { createSSRApp } from "vue";
 import { renderToString } from "vue/server-renderer";
@@ -13,7 +14,7 @@ import InventoryPanel from "../src/InventoryPanel.vue";
 import BattleStage from "../src/expedition/BattleStage.vue";
 import SocialPanel from "../src/SocialPanel.vue";
 import { rivals } from "../src/social";
-import { createGame } from "../src/core";
+
 
 it("renders female practice and combat art without mutating the save", async () => {
   const game = createGame("美术测试", "wood", 42);

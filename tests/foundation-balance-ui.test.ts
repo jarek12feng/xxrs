@@ -1,8 +1,9 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from "vue";
 import { expect, it } from "vitest";
 import FoundationPanel from "../src/foundation-journey/FoundationPanel.vue";
-import { createGame, dispatch, type Intent } from "../src/core";
+import { dispatch, type Intent } from "../src/core";
 
 it("offers herbs without blocking entry, emits the purchase command, and refreshes after settlement", async () => {
   const initial = createGame("行前补给", "wood", 42);

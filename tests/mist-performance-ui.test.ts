@@ -1,9 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from 'vue';
 import { afterEach, expect, it, vi } from 'vitest';
 import MistWorld from '../src/scene2d/MistWorld.vue';
 import MistPanel from '../src/MistPanel.vue';
-import { createGame } from '../src/core';
+
 const apps: ReturnType<typeof createApp>[] = [];
 afterEach(() => { apps.splice(0).forEach(app => app.unmount()); vi.useRealTimers(); vi.restoreAllMocks(); });
 function mount(completed = false) {

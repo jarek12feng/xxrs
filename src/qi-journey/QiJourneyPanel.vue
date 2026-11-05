@@ -66,7 +66,7 @@ const hotspots = computed(() => q.value.duel ? [] : q.value.node ? [{ id: "journ
   { id: "journey", label: q.value.essence ? "晋升灵材" : site.value?.name || "筑基前路", x: 60, y: 42 },
   { id: "prepare", label: "山道与历练", x: 35, y: 50 },
   { id: "supplies", label: "坊市摊位", x: 19, y: 72 },
-  { id: "narrative", label: "药坪与药窟", x: 48, y: 65 },
+  { id: "narrative", label: props.game.journey.branch === "none" ? "药坪与药窟 · 求学引荐" : "药坪与药窟", x: 48, y: 65 },
   { id: "people", label: "许照岚与裴铸", x: 78, y: 65 },
 ]);
 watch(stageKey, () => { active.value = ""; });
@@ -108,7 +108,7 @@ const combatOptions=computed(()=>Object.entries(moves).map(([id,label])=>{
       :game="game"
       :busy="busy"
       @act="emit('act', $event)"
-      @sect="emit('sect')"
+      @sect="narrativeOpen=true"
     />
     <template v-if="active === 'journey' && q.node === 2">
       <h4>灵流逆涌 · 剩余气势 {{ q.vigor }}</h4>
@@ -176,7 +176,7 @@ const combatOptions=computed(()=>Object.entries(moves).map(([id,label])=>{
         <details :open="!game.journey.equipped || game.herbs < 8">
           <summary>行前准备建议</summary>
           <p>
-            灵剑利于抢攻；灵瓶持续减伤，途中还能护脉通行。主修研至熟练后，具备神识 8、心得 2 可不耗材穿阵并恢复气势；护脉丹恢复更多，适合这次救急。长春诀守势会耗草回气。选择一项主要投入，留足盘缠即可尝试。
+            灵剑利于抢攻；灵瓶持续减伤，途中还能护脉通行，但一阶灵瓶不能独自保障两战续航。主修研至熟练可提高伤害，辅修研习可补护体；具备神识 8、心得 2 与熟练主修可不耗材穿阵并恢复气势。护脉丹恢复更多，适合气势损耗较大时救急。长春诀守势会耗草回气，先留足入境费用，再搭配应敌手段与途中恢复；不必买齐所有器物。
           </p>
         </details>
         <p v-if="game.journey.main === 'spring' || game.herbs < 8" class="supply-note">药理护身先耗四株灵草，余下 {{ Math.max(0, game.herbs - 4) }} 株可留给战中回气。入境资格不代表能胜过两场交锋；可先准备法器、研修主修，或备一枚护脉丹供途中恢复。</p>

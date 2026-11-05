@@ -1,5 +1,5 @@
+import { createCultivator as createGame } from "./cultivator-fixture";
 import {
-  createGame,
   dispatch,
   type State,
   type Stance,

@@ -21,6 +21,7 @@ import { enrichReceipt } from "./journey-feedback";
 
 import type { ActionProcess } from "./action-process";
 export interface ActionReceipt {
+  equipment?: { id: string; stage: string };
   process?: ActionProcess;
   title: string;
   ritual:
@@ -57,6 +58,8 @@ export function actionReceipt(
   after: State,
   intent: Intent,
 ): ActionReceipt | null {
+  // Mail keeps its response beside the immutable letter, without replaying an old scene receipt.
+  if (intent.type === "correspondence") return null;
   if (intent.type === "ascension") {
     if (intent.action !== "commit") return null;
     const result = actionReceipt(before, after, before.realm === 0 ? {type:"break",pill:true} : {type:"goldenCore",action:{kind:"break"}});
@@ -82,6 +85,8 @@ export function actionReceipt(
   )
     return null;
   if (
+    (intent.type === "artifactGrowth" && !!after.itemGrowth.golden.duel) ||
+    (intent.type === "itemGrowth" && !!after.itemGrowth.trial) ||
     (intent.type === "spirit" && !!after.spirit.trial) ||
     (intent.type === "lizhao" && !!after.lizhao.duel) ||
     (intent.type === "nascentSoul" && !!(after.nascentSoul.trial || after.nascentSoul.attempt)) ||
@@ -210,7 +215,7 @@ export function actionReceipt(
   if (ritual === "forge") title = failed ? "炼器中断" : "灵器炼成";
   if (ritual === "challenge")
     title = failed ? "暂退一步 · 整备再来" : "闯关告捷";
-  if (dead) title = "寿元已尽 · 此行止步";
+  if (dead) title = after.death && after.death.cause !== "lifespan" ? "身陨道止 · 此生落笔" : "寿元已尽 · 此行止步";
   const labels: Partial<Record<Intent["type"], string>> = {
     supplies: "补给已入囊",
     equip: "功法已装配",
@@ -259,7 +264,9 @@ export function actionReceipt(
     if (before.realm === after.realm && !dead) title = advancement[0]!;
     growthNotes.push(...advancement);
   }
+  if(effective.type === "itemGrowth" && !dead) { title=after.itemGrowth.ring>before.itemGrowth.ring?"栖尘戒 · 空间已开":effective.action.kind==="reforge"?"旧器重铸":"沉井遗物"; growthNotes.push(after.itemGrowth.last); }
   if(effective.type === "spirit" && !dead) { title=after.spirit.trauma>before.spirit.trauma?"识海受创 · 调息再来":effective.action.kind==="study"?"分念诀已通 · 识海拓展":effective.action.kind==="refine"?"玉髓炼化 · 神识破限":"炼神行旅"; growthNotes.push(after.spirit.last); }
+  if(effective.type === "revisit" && !dead){ title="旧地回访 · 按约补给"; growthNotes.push(after.log[0]?.text ?? ""); }
   if(effective.type === "goldenStory" && !dead){ title="外海道途 · 交谈与亲历"; growthNotes.push(after.goldenStory.last); }
   if(effective.type === "lizhao" && !dead){ title=after.lizhao.cleared&&!before.lizhao.cleared?"离照取药 · 机缘在手":"离照行旅"; growthNotes.push(after.lizhao.last); }
   if(effective.type === "nascentSoul" && !dead){ title=after.realm>before.realm?"元婴已成":after.conclave.stage>before.conclave.stage?"金丹圆满":"凝婴道途"; growthNotes.push(after.nascentSoul.last); }

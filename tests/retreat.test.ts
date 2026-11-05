@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch, migrateSave } from "../src/core";
+import { dispatch, migrateSave } from "../src/core";
 import {
   retreatDurations,
   retreatPlan,

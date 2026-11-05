@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { conclaveCheckpoint } from "../tools/conclave-checkpoint";
 import { SAVE_VERSION } from "../src/save-version";
 import { expect, it } from "vitest";
@@ -6,7 +7,6 @@ import {
   dispatch,
   migrateSave,
   validState,
-  createGame,
   type State,
 } from "../src/core";
 import {
@@ -108,6 +108,7 @@ it("地图所有新地点资源存在、连线端点有效；查看不会制造�
   const goldenCopy = structuredClone(golden);
   const known = structuredClone(golden);
   known.secretPact.pursuit="notified"; known.qiJourney.narrative.pursuit="warned"; known.lizhao.pursuit="warned"; known.goldenStory.teachings.push("pill"); known.conclave.introduced=true;
+  known.treasures.goldenKnown=true;
   const allNodes = [...nodes, ...routeNodes(known)];
   for (const [a, b] of narrativeAtlasPaths) {
     expect(allNodes.some((n) => n.key === a), a).toBe(true);
@@ -144,7 +145,7 @@ it("v37补齐新状态，不编造药窟或照玄；v38字段损坏与未来版�
   const before = JSON.stringify(old),
     n = migrateSave(old);
   expect(n.version).toBe(SAVE_VERSION);
-  expect(n.qiJourney.narrative).toEqual(freshQiNarrative());
+  expect(n.qiJourney.narrative).toEqual({...freshQiNarrative(),initiation:{...freshQiNarrative().initiation,arrival:'legacy',kit:'legacy'}});
   expect(n.secretPact.trial).toBe("none");
   expect(n.foundationJourney).toEqual(s.foundationJourney);
   expect(n.seed).toBe(s.seed);

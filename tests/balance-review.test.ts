@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch, migrateSave, validState } from "../src/core";
+import { dispatch, migrateSave, validState } from "../src/core";
 import { cultivationProjection, incidentalQiGain } from "../src/progression";
 import { foundationCombatFixture } from "../tools/foundation-combat-fixture";
 import {
@@ -120,7 +121,8 @@ it("v22 migration starts only fractional bookkeeping, preserves the original and
   const copy = structuredClone(old),
     n = migrateSave(old);
   expect(old).toEqual(copy);
-  expect(n).toEqual(s);
+  const expected=structuredClone(s); expected.qiJourney.narrative.initiation.arrival='legacy';
+  expect(n).toEqual(expected);
   for (const value of [-1, 240, 0.5, NaN, undefined])
     expect(validState({ ...s, cultivationRemainder: value })).toBe(false);
   expect(() => migrateSave({ ...s, version: 999 })).toThrow();

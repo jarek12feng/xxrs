@@ -1,9 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from "vue";
 import { expect, it } from "vitest";
 import InventoryPanel from "../src/InventoryPanel.vue";
 import InjuryImpact from "../src/InjuryImpact.vue";
-import { createGame, dispatch, type Intent } from "../src/core";
+import { dispatch, type Intent } from "../src/core";
 it("selecting equipment is read-only; equipping refreshes the comparison", async () => {
   const s = createGame("试装", "wood", 42);
   s.journey.relics.sword = s.journey.relics.vial = 1;

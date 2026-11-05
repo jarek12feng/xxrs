@@ -24,6 +24,7 @@ export function combatOwner(s: State): EncounterOwner | "arena" | null {
   return null;
 }
 export function sceneOwner(s: State): EncounterOwner | null {
+  if(s.treasures.auction?.entered && !s.treasures.auction.closed)return s.treasures.auction.venue === "golden" ? "sea" : s.treasures.auction.venue === "market" ? "road" : "foundation";
   if (s.itemGrowth?.golden?.duel) return s.lizhao.location === "harbor" ? "lizhao" : "sea";
   if (s.itemGrowth?.trial) return "foundation";
   if (s.spirit?.trial) return s.spirit.trial.source === "well" ? "foundation" : "sea";
@@ -37,6 +38,7 @@ export function sceneOwner(s: State): EncounterOwner | null {
   const combat = combatOwner(s);
   if (combat && combat !== "arena") return combat;
   if (s.realm === 2 && s.conclave.location !== "away") return "conclave";
+  if (s.realm === 2 && s.outerSea.location === "guild") return "sea";
   if (s.realm === 2 && s.outerSea.location === "ruins") return "sea";
   if (s.realm === 1 && s.sectContest.stage === "entered") return "contest";
   if (s.realm === 1 && s.goldenCore.expedition !== "idle") return "golden";

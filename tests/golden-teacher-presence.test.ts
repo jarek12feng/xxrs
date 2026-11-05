@@ -1,6 +1,8 @@
 // @vitest-environment happy-dom
 import {createApp,h,shallowRef,nextTick} from 'vue';
 import {beforeAll,it,expect} from 'vitest';
+import {materialSolution} from '../src/golden-story/material-practice';
+import {clickPractice} from './helpers/practice-scene';
 import Scene from '../src/golden-story/GoldenStoryScene.vue';
 import {dispatch,validState,type Intent} from '../src/core';
 import {teachingCheckpoints} from '../docs/golden-completion/review-fixes/shen-scene/checkpoints';
@@ -17,7 +19,7 @@ for(const name of ['present','record'] as const)it(`${name}合法问法身份与
   const click=async(label:string)=>{const b=[...host.querySelectorAll('button')].find(b=>b.textContent?.includes(label))!;expect(b.disabled).toBe(false);b.click();await nextTick();};
   await click('演示旧法滞涩');expect(game.value.goldenStory.practice?.step).toBe(0);
   expect(host.querySelectorAll('.teaching-elder.demonstrating')).toHaveLength(name==='present'?1:0);
-  await click('缓下旧脉');expect(game.value.goldenStory.practice?.step).toBe(1);
-  await click('候新流回转');expect(game.value.goldenStory.teachings).toContain('method');expect(validState(game.value)).toBe(true);
+  for (const move of materialSolution('method',0)) await clickPractice('method',move);expect(game.value.goldenStory.practice?.step).toBe(1);
+  for (const move of materialSolution('method',1)) await clickPractice('method',move);expect(game.value.goldenStory.teachings).toContain('method');expect(validState(game.value)).toBe(true);
  }finally{app.unmount();host.remove();}
 });

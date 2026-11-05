@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 import { legacyEquipment } from "./legacy-equipment";
 import { describe, it, expect } from "vitest";
@@ -5,7 +6,6 @@ import {
   dispatch,
   validState,
   migrateSave,
-  createGame,
   type State,
 } from "../src/core";
 import {

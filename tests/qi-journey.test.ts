@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { it, expect } from "vitest";
-import { createGame, dispatch, validState, migrateSave } from "../src/core";
+import { dispatch, validState, migrateSave } from "../src/core";
 import { expeditionSession } from "../tools/expedition-simulation";
 import { foundationStep } from "../tools/foundation-playthrough";
 import { qiPreview } from "../src/qi-journey/rules";

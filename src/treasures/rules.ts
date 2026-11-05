@@ -1,36 +1,26 @@
-import { senseLimit } from "../spirit";
 import { getEquipment, type EquipmentId } from "../equipment";
-import { grantTechnique } from "../techniques";
-import { quoteSettlement, settleResources, type ResourceAmounts } from "../economy";
+import { settleResources } from "../economy";
 import { advanceMonths } from "../timeline";
 import { equipmentChangeError, applyEquipmentChange } from "../equipment";
-import type { State, Technique } from "../world";
+import type { State } from "../world";
 import { workshopLock, workshopLocationError } from "../workshop/rules";
+import { treasures, treasureIds, type Treasure } from "./catalog";
 import {
-  treasures,
-  treasureIds,
-  bookIds,
-  lotInfo,
-  venueError,
-  type Treasure,
-  type LotItem,
-  type Venue,
-} from "./catalog";
-import type { Lot } from "./state";
+  auctionQuote,
+  applyAuction,
+  isAuctionAction,
+  type AuctionAction,
+} from "../auction";
 export type TreasureAction =
   | { kind: "deploy" | "withdraw"; item: EquipmentId }
   | { kind: "commission" | "refine" | "equip"; item: Treasure }
   | { kind: "unequip" }
-  | { kind: "catalog"; venue: Venue }
-  | { kind: "enter" | "bid" | "pass" | "leave" }
-  | { kind: "budget"; value: number };
+  | AuctionAction;
 export function isEquipmentAction(a: TreasureAction) {
   return ["equip", "unequip", "deploy", "withdraw"].includes(a.kind);
 }
-function lotReward(item: LotItem): ResourceAmounts {
-  return item === "ward" || item === "healing" || item === "clarity" ? { [item]: 1 } : {};
-}
 export function treasureQuote(s: State, a: TreasureAction) {
+  if (isAuctionAction(a)) return auctionQuote(s, a);
   let error = workshopLock(s),
     stones = 0,
     iron = 0,
@@ -39,7 +29,11 @@ export function treasureQuote(s: State, a: TreasureAction) {
   const active = s.treasures.auction;
   if (a.kind === "deploy" || a.kind === "withdraw") {
     error ||= equipmentChangeError(s, { kind: a.kind, id: a.item });
-  } else if (a.kind === "commission" || a.kind === "refine" || a.kind === "equip") {
+  } else if (
+    a.kind === "commission" ||
+    a.kind === "refine" ||
+    a.kind === "equip"
+  ) {
     if (!treasureIds.includes(a.item))
       return { error: "未知器物", stones, iron, months };
     const def = treasures[a.item];
@@ -58,58 +52,13 @@ export function treasureQuote(s: State, a: TreasureAction) {
     }
   } else if (a.kind === "unequip")
     error ||= equipmentChangeError(s, { kind: "unequip", slot: "auxiliary" });
-  else if (a.kind === "catalog") {
-    error ||= !["market", "foundation"].includes(a.venue)
-      ? "未知会场"
-      : venueError(s, a.venue);
-    error ||=
-      active && !active.closed
-        ? "本场目录已公布，赴会或离场后再候下场"
-        : s.month < s.treasures.nextMonth
-          ? `下场目录在第 ${s.treasures.nextMonth} 月公布`
-          : "";
-  } else if (a.kind === "budget")
-    error ||=
-      !Number.isSafeInteger(a.value) || a.value < 0 || a.value > 1e9
-        ? "预算须为非负整数"
-        : !active || active.closed
-          ? "先查看拍卖目录"
-          : "";
-  else if (["enter", "bid", "pass", "leave"].includes(a.kind)) {
-    error ||=
-      !active || active.closed
-        ? "本场已结束或尚未公布目录"
-        : venueError(s, active.venue);
-    if (active && !active.closed) {
-      if (a.kind === "enter") {
-        months = 1;
-        error ||= active.entered ? "已经入场" : "";
-      }
-      if (a.kind === "bid" || a.kind === "pass")
-        error ||= !active.entered ? "先赴会入场" : "";
-      if (a.kind === "bid") {
-        const l = active.lots[active.index];
-        stones = l.price + l.step;
-        error ||=
-          stones > active.budget ? "本次出价超过预算；可调整上限或放弃" : "";
-        error ||= quoteSettlement(s, { stones }, lotReward(l.item)).error;
-        if (
-          treasureIds.includes(l.item as Treasure) &&
-          s.treasures.owned[l.item as Treasure]
-        )
-          error ||= "已经拥有此器，可放弃本拍";
-        if (
-          bookIds.includes(l.item as Technique) &&
-          s.journey.known.includes(l.item as Technique)
-        )
-          error ||= "已经学会此功法，可放弃本拍";
-      }
-    }
-  } else error ||= "未知宝物操作";
+  else error ||= "未知宝物操作";
   if (
     active?.entered &&
     !active.closed &&
-    ["commission", "refine", "equip", "unequip", "deploy", "withdraw"].includes(a.kind)
+    ["commission", "refine", "equip", "unequip", "deploy", "withdraw"].includes(
+      a.kind,
+    )
   )
     error ||= "先结束本场拍卖";
   error ||=
@@ -120,31 +69,6 @@ export function treasureQuote(s: State, a: TreasureAction) {
         : "";
   return { error, stones, iron, months };
 }
-function draw(s: State, n: number) {
-  let x = s.seed;
-  x ^= x << 13;
-  x ^= x >>> 17;
-  x ^= x << 5;
-  s.seed = x >>> 0;
-  return s.seed % n;
-}
-function makeLot(s: State, pool: LotItem[]): Lot {
-  const item = pool[draw(s, pool.length)]!,
-    reference = lotInfo(item).price,
-    step = 2,
-    opening = Math.max(4, Math.floor(reference / 2 / 2) * 2);
-  const rival =
-    opening + draw(s, Math.max(2, Math.floor(reference / 4))) * step;
-  return {
-    item,
-    opening,
-    price: opening - step,
-    rival,
-    step,
-    result: "waiting",
-    paid: 0,
-  };
-}
 export function runTreasure(
   input: State,
   a: TreasureAction,
@@ -154,98 +78,42 @@ export function runTreasure(
   const quote = treasureQuote(input, a);
   if (quote.error) return input;
   let s = structuredClone(input);
-  const elapsed = advanceMonths(s, quote.months, { tick, interrupt: s => (s.status !== "alive" || s.pending || s.social.scene) ? "interrupted" : "" });
+  const elapsed = advanceMonths(s, quote.months, {
+    tick,
+    interrupt: (s) =>
+      s.status !== "alive" || s.pending || s.social.scene ? "interrupted" : "",
+  });
   s = elapsed.state;
   if (elapsed.stopped) {
-      s.treasures.last = "行程中断，未扣灵石材料，也未领取拍品或器物。";
-      return finish();
-
+    s.treasures.last = "行程中断，未扣灵石材料，也未领取拍品或器物。";
+    return finish();
   }
   const t = s.treasures;
   if (a.kind === "deploy" || a.kind === "withdraw") {
-    if (applyEquipmentChange(s, { kind: a.kind, id: a.item }).error) return input;
+    if (applyEquipmentChange(s, { kind: a.kind, id: a.item }).error)
+      return input;
     t.last = `${getEquipment(a.item).name}已${a.kind === "deploy" ? "出战" : "收回"}。`;
   } else if (a.kind === "commission" || a.kind === "refine") {
-    if (settleResources(s, { stones: quote.stones, iron: quote.iron }).error) return input;
-    if (applyEquipmentChange(s, {
-      kind: a.kind === "commission" ? "acquire" : "refine",
-      id: a.item,
-    }).error) return input;
+    if (settleResources(s, { stones: quote.stones, iron: quote.iron }).error)
+      return input;
+    if (
+      applyEquipmentChange(s, {
+        kind: a.kind === "commission" ? "acquire" : "refine",
+        id: a.item,
+      }).error
+    )
+      return input;
     t.last = `${treasures[a.item].name}${a.kind === "refine" ? "精炼完成" : "已收入储物袋"}，花费灵石 ${quote.stones}。装配后才生效。`;
   } else if (a.kind === "equip") {
-    if (applyEquipmentChange(s, { kind: "equip", id: a.item }).error) return input;
+    if (applyEquipmentChange(s, { kind: "equip", id: a.item }).error)
+      return input;
     t.last = `已装配${treasures[a.item].name}。${treasures[a.item].hint}`;
   } else if (a.kind === "unequip") {
-    if (applyEquipmentChange(s, { kind: "unequip", slot: "auxiliary" }).error) return input;
+    if (applyEquipmentChange(s, { kind: "unequip", slot: "auxiliary" }).error)
+      return input;
     t.last = "已卸下辅器。";
-  } else if (a.kind === "catalog") {
-    const gear = treasureIds.filter(
-      (k) =>
-        !t.owned[k] &&
-        treasures[k].realm <= (a.venue === "market" ? 0 : s.realm),
-    );
-    const manuals = bookIds.filter((k) => !s.journey.known.includes(k));
-    const drugs: LotItem[] = s.realm ? ["healing"] : ["healing", "ward"];
-    if (s.sense < Math.min(24, senseLimit(s.realm, s.spirit))) drugs.push("clarity");
-    t.auction = {
-      venue: a.venue,
-      lots: [
-        makeLot(s, gear.length ? gear : drugs),
-        makeLot(s, drugs),
-        makeLot(s, manuals.length ? manuals : drugs),
-      ],
-      index: 0,
-      entered: false,
-      closed: false,
-      budget: 0,
-    };
-    t.nextMonth = s.month + 12;
-    t.last = "目录已公布。可先筹资并设置预算，赴会时耗一月。刷新不会更换拍品。";
-  } else if (a.kind === "budget") {
-    t.auction!.budget = a.value;
-    t.last = `每口出价上限设为 ${a.value} 灵石，仍须逐次确认。`;
-  } else if (a.kind === "enter") {
-    t.auction!.entered = true;
-    t.last = "已入拍卖会，请量力出价。未竞得不扣灵石。";
-  } else if (a.kind === "leave") {
-    const auction = t.auction!;
-    auction.entered = true;
-    for (const l of auction.lots)
-      if (l.result === "waiting") l.result = "passed";
-    auction.index = 3;
-    auction.closed = true;
-    t.nextMonth = Math.max(t.nextMonth, s.month + 12);
-    t.last = "已离场，已竞得的拍品保留，其余不扣款。";
-  } else if (a.kind === "bid" || a.kind === "pass") {
-    const auction = t.auction!,
-      l = auction.lots[auction.index];
-    if (a.kind === "pass") {
-      l.result = "passed";
-      t.last = `放弃${lotInfo(l.item).name}，未扣灵石。`;
-    } else {
-      const offer = l.price + l.step;
-      if (offer + l.step <= l.rival) {
-        l.price = offer + l.step;
-        t.last = `另一位买家出价 ${l.price} 灵石。你尚未付款，可以继续或放弃。`;
-      } else {
-        l.price = offer;
-        l.paid = offer;
-        l.result = "won";
-        if (settleResources(s, { stones: offer }, lotReward(l.item)).error) return input;
-        if (treasureIds.includes(l.item as Treasure)) {
-          if (applyEquipmentChange(s, { kind: "acquire", id: l.item as Treasure }).error) return input;
-        } else if (bookIds.includes(l.item as Technique)) {
-          if (!grantTechnique(s, l.item as Technique)) return input;
-        }
-        t.last = `${lotInfo(l.item).name}以 ${offer} 灵石落槌，已交付。`;
-      }
-    }
-    if (l.result !== "waiting") auction.index++;
-    if (auction.index === 3) {
-      auction.closed = true;
-      t.nextMonth = Math.max(t.nextMonth, s.month + 12);
-      t.last += " 本场结束。";
-    }
+  } else if (isAuctionAction(a)) {
+    if (!applyAuction(s, a)) return input;
   }
   return finish();
   function finish() {

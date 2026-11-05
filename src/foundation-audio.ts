@@ -38,6 +38,7 @@ const files = new Set<string>([
   ...foundationAmbience,
 ]);
 export function audioUrl(cue: string) {
+  if (["last-lamp", "lost-tide", "silent-thunder"].includes(cue)) return `${import.meta.env.BASE_URL}audio/mortality-v1/${cue}.wav`;
   if (["foundation-rise", "golden-rise", "golden-breakthrough", "breakthrough"].includes(cue)) return `${import.meta.env.BASE_URL}audio/breakthrough-v1/${cue}.wav`;
   return `${import.meta.env.BASE_URL}audio/${files.has(cue) ? "foundation-v2" : "original-v1"}/${cue}.wav`;
 }

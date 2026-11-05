@@ -1,3 +1,4 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import { foundationStep } from '../tools/foundation-playthrough';
 // @vitest-environment happy-dom
@@ -6,7 +7,6 @@ import { createApp, nextTick, type App as VueApp } from "vue";
 import { createPinia } from "pinia";
 import App from "../src/App.vue";
 import {
-  createGame,
   dispatch,
 } from "../src/core";
 import { load, save } from "../src/save";

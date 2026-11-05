@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { dispatch, validState, migrateSave, type State } from "../src/core";
-import { createGame as createCultivator } from "../src/core";
+import { createCultivator } from "../tools/cultivator-fixture";
 import { lizhaoFixture, lizhaoTick } from "../tools/lizhao-fixture";
 import {
   artifactQuote,

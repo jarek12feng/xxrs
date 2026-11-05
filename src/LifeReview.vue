@@ -7,12 +7,12 @@ const review = computed(() => lifeReview(props.game));
 </script>
 <template>
   <section class="life-summary" aria-label="修行履历">
-    <h3>一路走来，你做成了什么</h3>
+    <h3>修行履历 · 一路走来</h3>
     <ul>
       <li v-for="line in review.records" :key="line">{{ line }}</li>
     </ul>
-    <details v-if="review.unfinished.length">
-      <summary>还有哪些事未完成</summary>
+    <details v-if="review.unfinished.length" :open="game.status === 'dead'">
+      <summary>未竟之愿</summary>
       <ul>
         <li v-for="line in review.unfinished" :key="line">{{ line }}</li>
       </ul>

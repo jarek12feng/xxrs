@@ -1,12 +1,13 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch } from "../src/core";
+import { dispatch } from "../src/core";
 import { currentLandmark, routeNodes, presences } from "../src/landmarks";
 import { sceneMusic } from "../src/local-music";
 import { mistCheckpoint } from "../tools/mist-checkpoint";
 it("keeps map reading pure and only offers the existing investigated route", () => {
   const s = createGame("旅人", "wood", 42),
     snapshot = JSON.stringify(s);
-  expect(currentLandmark(s).title).toBe("雨夜渡口");
+  expect(currentLandmark(s).title).toBe("听松渡口");
   expect(
     routeNodes(s).find((n) => n.key === "apothecary")?.intent,
   ).toBeUndefined();

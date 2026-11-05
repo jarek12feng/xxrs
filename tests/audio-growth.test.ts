@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch, type Intent } from "../src/core";
+import { dispatch, type Intent } from "../src/core";
 import { gameAudioScene } from "../src/audio-scene";
 import { actionSound } from "../src/action-sound";
 import { journeyCheckpoint } from "../tools/foundation-journey-checkpoint";

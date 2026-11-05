@@ -1,5 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
-import { createGame, dispatch } from "../src/core";
+import { dispatch } from "../src/core";
 import { trialBoard, journeyHorizon } from "../src/world-ambition";
 import { openingGuide } from "../src/opening-guide";
 import { lifeReview } from "../src/life-review";

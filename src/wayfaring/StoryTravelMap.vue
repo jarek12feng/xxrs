@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import AuctionDestination from "../auction/AuctionDestination.vue";
+import AuctionTiming from "../auction/AuctionTiming.vue";
+import "./travel-stage.css";
+import { travelPlaybackDuration } from "./playback";
 import { computed, nextTick, ref, watch } from "vue";
 import type { State } from "../world";
 import type { StoryRoute } from "./story-routes";
@@ -95,11 +99,13 @@ function pause() {
           :mode="route.mode"
           :playing="arrived && !finished"
           :progress="progress"
-          :duration="route.months ? 2600 : 1400"
+          :duration="travelPlaybackDuration(route.distance, route.mode, game.realm)"
           @finished="complete"
         />
       </RouteCanvas>
       <aside>
+<AuctionTiming v-if="!arrived" :game="game" :months="remaining" />
+        <AuctionDestination v-if="route.domain==='road' || route.domain==='inland' || route.domain==='sea'" :game="game" :place="route.to" :months="arrived ? 0 : remaining" />
         <p class="route-line">{{ route.path.map(name).join(" → ") }}</p>
         <p>
           路程 {{ route.distance.toLocaleString() }} 里 ·

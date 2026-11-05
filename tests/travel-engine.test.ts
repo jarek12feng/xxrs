@@ -1,9 +1,10 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 import { legacyEquipment } from "./legacy-equipment";
 import {expect,it} from 'vitest';
 import {createTravelEngine,effectiveSpeed,validJourneyPlan,type TravelerProfile} from '../src/wayfaring/engine';
 import {inlandTravel} from '../src/wayfaring/routes';
-import {createGame,dispatch,migrateSave,validState} from '../src/core';
+import {dispatch,migrateSave,validState} from "../src/core";
 import {journeyCheckpoint} from '../tools/foundation-journey-checkpoint';
 import {travelQuote} from '../src/wayfaring/rules';
 const traveler:TravelerProfile={realm:1,speeds:{land:1200,flight:3600,sail:9000},effects:[]};

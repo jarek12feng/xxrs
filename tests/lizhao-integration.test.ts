@@ -35,6 +35,8 @@ for (const main of ["spring", "blade", "breath"] as const)
     }
     act({ kind: "chamber" });
     act({ kind: "verify" });
+    act({kind:"assay",move:"drain"});
+    act({kind:"assay",move:"bind"});
     act({ kind: "allocate", allocation: "private" });
     act({ kind: "return" });
     act({ kind: "leave" });

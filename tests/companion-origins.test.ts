@@ -1,8 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 import { expeditionSession } from "../tools/expedition-simulation";
 import { expect, it } from "vitest";
 import {
-  createGame,
   dispatch,
   eventView,
   validState,

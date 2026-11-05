@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdmissionScene from "../initiation/AdmissionScene.vue";
 import LizhaoPanel from "../lizhao/LizhaoPanel.vue";
 import NascentPanel from "../nascent-soul/NascentPanel.vue";
 import { sceneOwner } from "../scene-activity";
@@ -30,6 +31,7 @@ const preferred=ref(props.entryChapter || readStoryPreference(props.game, localS
 watch(() => props.entryChapter, (entry) => { if (entry && !encounter.value) preferred.value=entry; });
 watch(() => props.showRoad, (road) => { if (!encounter.value) preferred.value=road ? 'road' : 'mist'; });
 watch(() => props.game.adventure.step, (step,old) => { if(step==='done' && old!=='done' && !props.game.journey.learning.book) preferred.value='rewards'; });
+watch(() => props.game.qiJourney.narrative.initiation.kit, (kit,old) => { if(old==='none' && kit!=='none')preferred.value='rewards'; });
 watch(() => props.game.journey.learning.book, (book,old) => { if(book&&!old) preferred.value='practice'; });
 const chapters=computed(()=>storyChapters(props.game,props.showRoad).filter(item=>item.id!=='conclave'));
 const chapter=computed(()=>storyChapter(props.game,preferred.value,props.showRoad));
@@ -52,7 +54,8 @@ defineExpose({ choose });
    <button v-for="item in chapters" :key="item.id" :aria-pressed="chapter===item.id" :disabled="busy||encounter" @click="choose(item.id)">{{item.label}}</button>
   <button v-if="!game.realm && game.journey.learning.book && !encounter && chapter !== 'qi'" class="growth-return" :disabled="busy" @click="followGrowth">修行目标 · {{ qiGoal(game) }} →</button>
   </nav>
-  <LearningChoices v-if="chapter==='rewards'" standalone :game="game" :busy="busy" @act="travel.act($event)" @close="followGrowth" />
+  <AdmissionScene v-if="chapter==='admission'" :game="game" :busy="busy" @act="travel.act($event)" />
+  <LearningChoices v-else-if="chapter==='rewards'" standalone :game="game" :busy="busy" @act="travel.act($event)" @close="followGrowth" />
   <FirstPractice v-else-if="chapter==='practice'" standalone :game="game" :busy="busy" @close="followGrowth" />
   <AdventurePanel v-else-if="chapter==='opening'" :game="game" :busy="busy" :receipt="receipt" @act="travel.act($event)" @cultivate="emit('cultivate')" />
   <RoadPanel v-else-if="chapter==='road'" :game="game" :busy="busy" :receipt="receipt" @act="travel.act($event)" @cultivate="emit('cultivate')" @map="emit('map')" @breakthrough="emit('breakthrough')" @mist="preferred = 'mist'; emit('mist')" />

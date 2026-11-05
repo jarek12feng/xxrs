@@ -1,6 +1,6 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { expect, it } from "vitest";
 import {
-  createGame,
   dispatch,
   validState,
   migrateSave,
@@ -128,8 +128,10 @@ it("rejects missing or premature choice fields and preserves completed v10 as le
   const old = { ...current, version: 10, adventure };
   const frozen = structuredClone(old);
   const upgraded = migrateSave(old);
+
   expect(upgraded).toEqual({
     ...current,
+    qiJourney:{...current.qiJourney,narrative:{...current.qiJourney.narrative,initiation:{...current.qiJourney.narrative.initiation,arrival:"legacy"}}},
     journey: { ...current.journey, learning: { book: true, relic: false } },
     adventure: { ...adventure, rescueChoice: "legacy" },
   });

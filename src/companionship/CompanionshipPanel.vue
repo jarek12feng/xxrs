@@ -19,7 +19,7 @@ const actionObject = computed(() =>
     : "companion",
 );
 const hotspots = computed(() => [
-  { id: "companion", label: scene.value.name, x: 52, y: 56 },
+  { id: "companion", kind: "person" as const, label: scene.value.name, x: 52, y: 56 },
   {
     id: "route",
     label: props.game.social.gender === "male" ? "尺绳与归路" : "风标与归路",

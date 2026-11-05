@@ -6,7 +6,7 @@ import { methodQuote } from "../techniques";
 import { inspectInteraction } from "../story-interactions";
 import { settleResources } from "../economy";
 import { advanceMonths } from "../timeline";
-import { resolveTurn, startBattle } from "../combat";
+import { executeBattleAction, startBattle } from "../combat";
 import {
   passageKey,
   passageError,
@@ -22,7 +22,6 @@ import { rivals, wardens } from "./content";
 export type ConclaveAction =
   | {
       kind:
-        | "wait"
         | "mid"
         | "late"
         | "visit"
@@ -35,6 +34,7 @@ export type ConclaveAction =
         | "withdraw"
         | "attune";
     }
+  | { kind: "wait"; until?: "meeting" }
   | { kind: "training"; style: "none" | "ward" | "insight" }
   | { kind: "route"; route: "shelter" | "current" }
   | { kind: "method"; method: "inherit" | "still" }
@@ -82,7 +82,7 @@ export function conclaveQuote(s: State, a: ConclaveAction) {
     };
   if (a.kind === "wait") {
     months = Math.min(
-      120,
+      a.until === "meeting" ? 600 : 120,
       Math.max(
         0,
         s.outerSea.notice !== null && s.month < s.outerSea.notice + 600
@@ -90,6 +90,9 @@ export function conclaveQuote(s: State, a: ConclaveAction) {
           : c.retryAt - s.month,
       ),
     );
+    if (a.until !== undefined && a.until !== "meeting") error ||= "未知候约方式";
+    if (a.until === "meeting" && (c.location !== "away" || s.outerSea.notice === null || s.month >= s.outerSea.notice + 600))
+      error ||= "仅能按已经得知、尚未到来的诸宗会期候约";
     if (c.location === "vault" || months <= 0)
       error ||= "当前没有需要候待的会期或调息期限";
   } else if (a.kind === "mid" || a.kind === "late") {
@@ -239,7 +242,7 @@ export function conclaveGoal(s: State) {
     (c.wins < 2 || c.depth < 2 || c.method === "none")
   )
     return s.outerSea.notice !== null && s.month < s.outerSea.notice + 600
-      ? "丹元已凝，可继续闭关或筹备行装；等道友来信，再从古渡赴五十年之约。"
+      ? "丹元已凝，已具备会谷登台所需境界，无须先修满599。可继续修炼增强实力，也可按会期候约；两胜便能争取归潮秘境资格。"
       : s.outerSea.location === "home"
         ? "回到外海古渡，循道友来信前往会谷；已有胜绩保留。"
         : "循道友来信前往会谷；旧胜绩与秘境进度仍在，可接续未完的道途。";
@@ -294,7 +297,7 @@ export function runConclave(
   if (settleResources(s, { stones: q.stones, herbs: q.herbs }).error) return input;
   const c = s.conclave;
   if (a.kind === "wait")
-    record("你留居候约，修行年月与余寿照常流逝；未自动报名或参加斗法。");
+    record("你留居候约，年月与余寿照常流逝，修为没有增长；尚未报名或参加斗法。");
   if (a.kind === "mid" || a.kind === "late") {
     c.stage = a.kind === "mid" ? 1 : 2;
     s.outerSea.cultivation = c.stage * 300;
@@ -373,15 +376,13 @@ export function runConclave(
     );
   }
   if (a.kind === "move") {
-    const d = c.duel!,
-      p = conclaveExchange(s, a.move, a.useHerbs)!;
-    const turn = resolveTurn(d, p, {
-      turnLimit: 18,
-      resolution: "simultaneous",
-    });
+    const d = c.duel!;
+    const turn = executeBattleAction(d, s.herbs, { turnLimit: 18, resolution: "simultaneous" }, () => conclaveExchange(s, a.move, a.useHerbs));
+    if (!turn) return input;
+    const p = turn.exchange;
     const review = turn.outcome === "loss" ? defeatReview(s, a.move, p.damage, p.incoming, p.note, turn.battle.turn >= 18 && turn.battle.hp > 0) : "";
     Object.assign(d, turn.battle);
-    s.herbs -= turn.herbs;
+    s.herbs = turn.remainingHerbs;
     if(d.effort){d.effort.moves[a.move]++;d.effort.herbs+=turn.herbs;}
     d.effect = a.move;
     record(

@@ -32,6 +32,7 @@ export function foundationBoard(s: State) {
       won: q.board.wins.includes(id),
       current: i === count,
       prize: challenges[id].prize + (i + 1) * 4,
+      cultivationReward: Math.max(0, Math.min(victoryCultivation, foundationCap(s) - q.cultivation)),
       extra: i === 2 ? "回春散 2 瓶" : i === 4 ? "清心丹 2 瓶" : "",
       turns: q.board.best[id],
     })),

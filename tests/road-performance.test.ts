@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 // @vitest-environment happy-dom
 import {expect,it,vi} from 'vitest';
 import {createApp,h,nextTick,shallowRef} from 'vue';
-import {createGame,dispatch,passSolutions} from '../src/core';
+import {dispatch,passSolutions} from "../src/core";
 import {mistCheckpoint} from '../tools/mist-checkpoint';
 import {roadSceneSnapshot,roadSceneTransition,roadWorldState} from '../src/scene2d/road-performance';
 import RoadWorld from '../src/scene2d/RoadWorld.vue';

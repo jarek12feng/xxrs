@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ItemArt from "./presentation/ItemArt.vue";
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import type { ActionReceipt } from "./action-feedback";
 const props = defineProps<{ receipt: ActionReceipt; expanded?: boolean }>();
@@ -148,6 +149,10 @@ const ritualText = {
         <small class="muted">Esc 跳过</small>
       </template>
       <template v-else>
+        <div v-if="receipt.equipment" class="earned-equipment" aria-label="器物成长结果">
+          <ItemArt :id="receipt.equipment.id" :size="72" />
+          <strong>{{ receipt.equipment.stage }}</strong>
+        </div>
         <div v-if="receipt.person" class="reply-person">
           <img
             :src="receipt.person.portrait"

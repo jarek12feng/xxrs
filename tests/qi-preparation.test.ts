@@ -1,7 +1,8 @@
+import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 import { freshQiNarrative } from "../src/qi-journey/narrative-state";
 import { expect, it } from "vitest";
-import { createGame, dispatch, validState, migrateSave, type Intent } from "../src/core";
+import { dispatch, validState, migrateSave, type Intent } from "../src/core";
 import { foundationStep } from "../tools/foundation-playthrough";
 import {
   freshPreparation,
@@ -15,7 +16,7 @@ it("凝元历练后缺少内府图时指向取图，不提前声称可进入内�
   s.qi = 256; s.qiJourney.gates = 1;
   s.qiJourney.preparations[1]!.medicine = 3;
   expect(qiGoal(s)).toContain("石涧药窟");
-  s.qiJourney.narrative={...freshQiNarrative(),phase:"applied",method:"array",company:"alone",retreatMarked:true,mixture:"separated"};
+  s.qiJourney.narrative={...freshQiNarrative(),initiation:s.qiJourney.narrative.initiation,phase:"applied",method:"array",company:"alone",retreatMarked:true,mixture:"separated"};
   expect(qiGoal(s)).toContain("先赴青石遗府取得丹方与内府图");
   s.story.choice = "self";
   expect(qiGoal(s)).toContain("凝元晶髓");
@@ -32,7 +33,7 @@ function run(route: PreparationRoute, path: "wood" | "sword", seed: number) {
   return { s, trace };
 }
 it.each(["medicine", "sect", "wander"] as const)(
-  "%s alone earns both entry gates from fresh characters",
+  "%s earns both entry gates, with an outside witness before sect admission",
   (route) => {
     for (const path of ["wood", "sword"] as const)
       for (const seed of [1, 42, 2718]) {
@@ -43,7 +44,7 @@ it.each(["medicine", "sect", "wander"] as const)(
         for (const p of a.s.qiJourney.preparations) {
           expect(p[route]).toBe(3);
           for (const other of ["medicine", "sect", "wander"] as const)
-            if (other !== route) expect(p[other]).toBe(0);
+            if (other !== route) expect(p[other]).toBe(route === 'sect' && other === 'wander' && p === a.s.qiJourney.preparations[0] ? 3 : 0);
         }
         if (route === "wander") expect(a.s.journey.branch).toBe("none");
       }
@@ -277,7 +278,7 @@ it("learned beast and construct responses reduce real incoming damage", () => {
   s.qi = 240;
   s.stones = 50;
   s.qiJourney.preparations[1]!.wander = 3;
-  s.qiJourney.narrative={...freshQiNarrative(),phase:"applied",method:"array",company:"alone",retreatMarked:true,mixture:"separated"};
+  s.qiJourney.narrative={...freshQiNarrative(),initiation:s.qiJourney.narrative.initiation,phase:"applied",method:"array",company:"alone",retreatMarked:true,mixture:"separated"};
   s = dispatch(s, {
     type: "qiJourney",
     action: "enter:array",

@@ -1,3 +1,4 @@
+import { seekerStep } from "./initiation-policy";
 import { finishSpiritManual } from "./spirit-policy";
 import { finishPactTrial } from "./foundation-pact-policy";
 import { foundationCap } from "../src/foundation-journey/growth-state";
@@ -237,6 +238,7 @@ export function runRoute(
       "takeHerbs",
     ] as const)
       send({ type: "adventure", action });
+  for(let i=0;i<6;i++){const step=seekerStep(s);if(!step)break;send(step);}
     send({ type: "learning", choice: technique === "blade" ? "blade" : "spring" });
     send({
       type: "equip",
