@@ -29,3 +29,5 @@ export {
   type EncounterProfile,
   type EncounterPreview,
 } from "./encounter";
+
+export { executeBattleAction } from "./action";

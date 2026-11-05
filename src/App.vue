@@ -1406,7 +1406,7 @@ onUnmounted(() => {
         </button>
       </aside>
       <nav v-if="!sceneCombat" class="quick-dock" aria-label="随身功能">
-        <button @click="openPanel('inventory')">储物袋 <kbd>B</kbd></button
+        <button @click="openPanel('inventory')">{{ game.itemGrowth.ring ? '储物戒' : '储物袋' }} <kbd>B</kbd></button
         ><button @click="openPanel('skills')">功法 <kbd>K</kbd></button
         ><button @click="openPanel('world')">地图 <kbd>M</kbd></button
         ><button @click="openPanel('journal')">见闻 <kbd>J</kbd></button

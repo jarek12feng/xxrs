@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import CacheScene from "../item-growth/CacheScene.vue";
+import { cacheSite } from "../item-growth/rules";
+const cacheOpen = ref(false);
 import { knowsInland } from "../wayfaring/discovery";
 import SpiritScene from "../spirit/SpiritScene.vue";
 import { spiritSite } from "../spirit/rules";
@@ -51,6 +54,8 @@ const props = withDefaults(
   }>(),
   { mode: "journey" },
 );
+watch(() => cacheSite(props.game), available => { if(!available) cacheOpen.value=false; });
+watch(() => props.game.itemGrowth.trial, trial => { if(trial) cacheOpen.value=true; }, {immediate:true});
 const emit = defineEmits<{ act: [intent: Intent]; equipment: []; road: [] }>();
 watch(() => props.game.spirit.trial, trial => { if(trial?.source === "well") spiritOpen.value = true; }, {immediate:true});
 const preparation = computed(() =>
@@ -100,6 +105,7 @@ const active = ref("");
 const world = ref<InstanceType<typeof FoundationWorld>>();
 function selectObject(id: string) {
   if(props.busy || q.value.duel)return;
+  if(id === "cache"){cacheOpen.value=true;return;}
   if(id === "spirit"){spiritOpen.value=true;return;}
   active.value='';
   const arrived=()=>{if(!props.busy && !q.value.duel)active.value=id;};
@@ -149,6 +155,7 @@ const hotspots = computed(() => [
     ? [{ id: "pact", label: "照玄之约", x: 82, y: 67 }]
     : []),
   ...storyObjects.value,
+  ...(props.mode === "journey" && cacheSite(props.game) ? [{id:"cache",label:"侧室石匣 · 前人遗物",x:73,y:36}] : []),
   ...(props.mode === "journey" && spiritSite(props.game) === "well" ? [{id:"spirit",label:props.game.spirit.manual==='learned'?"回声石壁 · 分念诀已通":"沉井回声 · 炼神残篇",x:62,y:42}] : []),
 ]);
 const selectedOptions = computed(() =>
@@ -187,7 +194,8 @@ function act(action: JourneyAction) {
           : '筑基行旅'
     "
   >
-    <SpiritScene v-if="spiritOpen || game.spirit.trial?.source==='well'" :game="game" :busy="busy" @act="emit('act',$event)" @close="spiritOpen=false" />
+    <CacheScene v-if="(cacheOpen && cacheSite(game)) || game.itemGrowth.trial" :game="game" :busy="busy" @act="emit('act',$event)" @close="cacheOpen=false" />
+    <SpiritScene v-else-if="spiritOpen || game.spirit.trial?.source==='well'" :game="game" :busy="busy" @act="emit('act',$event)" @close="spiritOpen=false" />
     <template v-else>
     <TravelMap v-if="mapOpen" :game="game" :busy="busy" :destination="mapDestination" @act="emit('act',$event)" @close="mapOpen=false" />
     <button v-if="!mapOpen && game.wayfaring.trip" @click="openTravel(game.wayfaring.trip.to)">展开途中路图 · 继续剩余行程</button>

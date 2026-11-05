@@ -1,0 +1,86 @@
+{
+  "relic-ring": {
+    "original_size": [
+      1254,
+      1254
+    ],
+    "final_size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "transparent_pixels": 225009,
+    "partial_alpha_pixels": 36201,
+    "alpha_bbox": [
+      91,
+      73,
+      443,
+      455
+    ],
+    "bytes": 67992
+  },
+  "reforged-sword": {
+    "original_size": [
+      1254,
+      1254
+    ],
+    "final_size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "transparent_pixels": 242499,
+    "partial_alpha_pixels": 18661,
+    "alpha_bbox": [
+      52,
+      57,
+      458,
+      451
+    ],
+    "bytes": 41202
+  },
+  "reforged-vial": {
+    "original_size": [
+      1254,
+      1254
+    ],
+    "final_size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "transparent_pixels": 223699,
+    "partial_alpha_pixels": 37877,
+    "alpha_bbox": [
+      73,
+      54,
+      459,
+      443
+    ],
+    "bytes": 70332
+  },
+  "sealed-cache": {
+    "original_size": [
+      1672,
+      941
+    ],
+    "final_size": [
+      1280,
+      720
+    ],
+    "mode": "RGB",
+    "bytes": 248156
+  }
+}

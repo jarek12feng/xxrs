@@ -27,11 +27,11 @@ const budget = ref(0);
 const sceneFailed = ref(false);
 const control = computed(() => equipmentControl(props.game));
 const loadoutPreviews = computed(() => Object.fromEntries(
-  [...treasureIds, "tideSeal", "spiritPearl"].map((item) => {
+  [...treasureIds, "tideSeal", "spiritPearl", "tideBlade"].map((item) => {
     return [item, loadoutPreview(props.game, { kind: "deploy", id: item as EquipmentId })];
   }),
 ));
-const artifacts = ["tideSeal", "spiritPearl"] as const;
+const artifacts = ["tideSeal", "spiritPearl", "tideBlade"] as const;
 const auction = computed(() => props.game.treasures.auction);
 const lot = computed(() =>
   auction.value && !auction.value.closed
@@ -140,6 +140,9 @@ const venueIds: Venue[] = ["market", "foundation"];
             getEquipment(id).damage
           }}、护体 +{{ getEquipment(id).armor }}
         </p>
+        <p v-if="id==='tideBlade'">守势或辨影后正确反击：伤害+10、承伤+2，连攻不触发。先在外海读旧器谱，再赴离照可选器室争胚、温养。</p>
+        <p v-else-if="id==='tideSeal' && game.itemGrowth.golden.seal">潮图续炼：正确守势承伤−3，已计入行动预览。</p>
+        <p v-else-if="id==='spiritPearl' && game.itemGrowth.golden.pearl">拓本续炼：正确辨影承伤−3，已计入行动预览。</p>
         <p>
           {{
             inspectEquipment(game, id).rank

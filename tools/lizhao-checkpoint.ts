@@ -10,6 +10,7 @@ import { conclaveQuote, type ConclaveAction } from "../src/conclave/rules";
 import type { State } from "../src/core";
 export function lizhaoCheckpoint(
   main: "spring" | "blade" | "breath" = "spring",
+  stopAt: "late" | "inner-sea" = "late",
 ): State {
   const p = seaPlayer(outerSeaCheckpoint(main));
   const sea = (action: SeaAction) => p.send({ type: "outerSea", action });
@@ -56,6 +57,7 @@ export function lizhaoCheckpoint(
       });
     }
   }
+  if (stopAt === "inner-sea") { p.work(24); p.herbs(4); return p.state; }
   sea({ kind: "method", method: "continue" });
   while (p.state.outerSea.cultivation < 299)
     p.send({ type: "advance", activity: "cultivate", months: 120 });

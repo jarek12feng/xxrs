@@ -25,7 +25,7 @@ export interface Auction {
 export interface Treasures {
   owned: Record<Treasure, number>;
   equipped: Treasure[];
-  artifacts: ("tideSeal" | "spiritPearl")[];
+  artifacts: ("tideSeal" | "spiritPearl" | "tideBlade")[];
   auction: Auction | null;
   nextMonth: number;
   last: string;
@@ -57,8 +57,8 @@ export function validTreasures(t: Treasures, realm: number, legacy = false) {
         t.equipped.some((id) => !treasureIds.includes(id) || !t.owned[id]) ||
         !Array.isArray(t.artifacts) ||
         new Set(t.artifacts).size !== t.artifacts.length ||
-        t.artifacts.length > 2 ||
-        t.artifacts.some((id) => !["tideSeal", "spiritPearl"].includes(id))) ||
+        t.artifacts.length > 3 ||
+        t.artifacts.some((id) => !["tideSeal", "spiritPearl", "tideBlade"].includes(id))) ||
     !integer(t.nextMonth) ||
     typeof t.last !== "string" ||
     t.last.length > 2000

@@ -1,3 +1,4 @@
+import { preservedHerbSaving } from "../item-growth/state";
 import { equipmentChangeError } from "../equipment";
 import type { State } from "../world";
 import { hasFoundationRecipe } from "../foundation";
@@ -115,5 +116,7 @@ export function planOrder(s: State, o: WorkshopOrder) {
         reason = "炼气中期开始筹备护脉丹";
     }
   }
+  const saved = "product" in o ? Math.min(herbs, preservedHerbSaving(s.itemGrowth, o.product, method)) : 0;
+  if (saved) { herbs -= saved; effect += ` 栖尘戒内层隔存药材，本炉节省灵草${saved}。`; }
   return { name, effect, stones, herbs, iron, months, study, reason };
 }

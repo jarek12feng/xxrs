@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ArtifactScene from "../artifact-growth/ArtifactScene.vue";
+const artifactOpen=ref(false);
 import SpiritScene from "../spirit/SpiritScene.vue";
 import { spiritSite } from "../spirit/rules";
 const spiritOpen=ref(false);
@@ -208,7 +210,8 @@ watch(hotspots, (objects) => {
 });
 </script>
 <template>
-  <SpiritScene v-if="spiritOpen || game.spirit.trial?.source==='tide'" :game="game" :busy="busy" @act="emit('act',$event)" @close="spiritOpen=false" />
+  <ArtifactScene v-if="artifactOpen || (game.itemGrowth.golden.duel && game.lizhao.location==='away')" :game="game" :busy="busy" @act="emit('act',$event)" @close="artifactOpen=false"/>
+  <SpiritScene v-else-if="spiritOpen || game.spirit.trial?.source==='tide'" :game="game" :busy="busy" @act="emit('act',$event)" @close="spiritOpen=false" />
   <template v-else>
   <GoldenStoryScene
     v-if="storyOpen"
@@ -297,6 +300,7 @@ watch(hotspots, (objects) => {
       />
     </template>
 
+    <button v-if="selected === 'friends' && o.met && o.location==='ferry'" @click="artifactOpen=true">旧器谱与法宝温养 · 潮纹剑的线索</button>
     <p v-if="selected === 'friends'">
       {{
         o.met

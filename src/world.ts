@@ -1,3 +1,7 @@
+import { freshArtifactGrowth, validArtifactGrowth } from "./artifact-growth/state";
+import { runArtifactGrowth, validArtifactState, type ArtifactAction } from "./artifact-growth/rules";
+import { freshItemGrowth, type ItemGrowth } from "./item-growth/state";
+import { runItemGrowth, validItemGrowth, type ItemGrowthAction } from "./item-growth/rules";
 import { freshCovenant } from './nascent-soul/covenant';
 import { freshSpirit, senseLimit, type SpiritState } from "./spirit";
 import { runSpirit, validSpirit, type SpiritAction } from "./spirit/rules";
@@ -214,6 +218,7 @@ export * from "./adventure";
 export interface State extends Omit<chapter.State, "version"> {
   version: typeof SAVE_VERSION;
   spirit: SpiritState;
+  itemGrowth: ItemGrowth;
   goldenStory: GoldenStory;
   lizhao: Lizhao;
   nascentSoul: NascentSoul;
@@ -238,6 +243,8 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | {id:string;type:"artifactGrowth";action:ArtifactAction}
+  | {id:string;type:"itemGrowth";action:ItemGrowthAction}
   | {id:string;type:"spirit";action:SpiritAction}
   | {id:string;type:"goldenStory";action:GoldenStoryAction}
   | {id:string;type:"lizhao";action:LizhaoAction}
@@ -307,6 +314,7 @@ const fresh = (): Journey => ({
 });
 function base(s: State): chapter.State {
   const {
+    itemGrowth: _itemGrowth,
     wayfaring: _wayfaring,
     journey: _,
     social: __,
@@ -338,6 +346,7 @@ function lift(
   return {
     ...s,
     version: SAVE_VERSION,
+    itemGrowth: freshItemGrowth(),
     spirit: s.spirit ? structuredClone(s.spirit) : freshSpirit(),
     goldenStory: freshGoldenStory(),
     lizhao: freshLizhao(),
@@ -540,6 +549,8 @@ export function promotionError(s: State) {
   return "";
 }
 function normalize(n: State, old: State) {
+  n.itemGrowth = n.life === old.life ? structuredClone(old.itemGrowth) : freshItemGrowth();
+  if (n.status !== "alive") { n.itemGrowth.trial=null; n.itemGrowth.golden.duel=null; }
   if (n.status !== "alive") n.spirit.trial = null;
   n.goldenStory = structuredClone(old.goldenStory);
   n.lizhao = structuredClone(old.lizhao);
@@ -634,6 +645,10 @@ export function dispatch(input: State, c: Command): State {
 }
 function dispatchCommand(input: State, c: Command): State {
   if (!c.id || input.seen.includes(c.id)) return input;
+  if (input.itemGrowth.golden.duel && c.type !== "artifactGrowth" && c.type !== "choose") return input;
+  if (c.type === "artifactGrowth") return runArtifactGrowth(input,c.action,c.id,s=>workshopMonth(s,"法宝温养"));
+  if (input.itemGrowth.trial && c.type !== "itemGrowth" && c.type !== "choose") return input;
+  if (c.type === "itemGrowth") return runItemGrowth(input,c.action,c.id,s=>workshopMonth(s,"遗物整备"));
   if (input.spirit.trial && c.type !== "spirit" && c.type !== "choose") return input;
   if (c.type === "spirit") return runSpirit(input,c.action,c.id,s=>workshopMonth(s,"炼神调息"));
   if (input.status === "alive" && qiNarrativeActive(input) && c.type !== "qiJourney" && c.type !== "choose") return input;
@@ -1288,13 +1303,15 @@ export function validState(x: unknown): x is State {
 }
 function validWorldState(
   x: unknown,
-  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42,
+  version: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
     (x as { version: unknown }).version !== version ||
+    (version >= 44 && !validItemGrowth(s)) ||
+    (version >= 45 && !validArtifactGrowth(s.itemGrowth?.golden)) ||
     (version >= 41 && !validSpirit(s)) ||
     (version < 41 && s.sense > senseLimit(s.realm)) ||
     (version < 39 && (s.realm > 2 || s.conclave?.stage > 2)) ||
@@ -1333,6 +1350,7 @@ function validWorldState(
     (version >= 13 && !validGrowth(s,version < 35))
   )
     return false;
+  if (version >= 45 && !validArtifactState(s)) return false;
   if (version >= 35 && (equipmentControl(s).error || s.treasures.artifacts.some(id => !artifactReady(s, id)))) return false;
   const integer = (v: unknown, max = 1e9) =>
     Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= max;
@@ -1399,6 +1417,14 @@ function validWorldState(
 }
 export function migrateSave(x:unknown):State {
   if(validState(x)) return structuredClone(x);
+  if(x && typeof x === "object" && "version" in x && (x.version===44 || x.version===43 || x.version===42)) {
+    if(!validWorldState(x,x.version))throw new Error("旧存档损坏，原档未修改。");
+    const n=structuredClone(x) as State;
+    n.version=SAVE_VERSION;
+    if(x.version===44)n.itemGrowth.golden=freshArtifactGrowth();else n.itemGrowth=freshItemGrowth();
+    if(!validState(n))throw new Error("旧存档无法安全迁移，原档未修改。");
+    return n;
+  }
   if(x && typeof x==='object' && 'version' in x && x.version===41) {
     if(!validWorldState(x,41)) throw new Error('旧存档损坏，原档未修改。');
     const n=upgradeImportantScenes(structuredClone(x) as State);
@@ -1804,6 +1830,7 @@ function upgradeNarrative(s: State): State {
 }
 
 function upgradeImportantScenes(s:State):State {
+ s.itemGrowth=freshItemGrowth();
  s.goldenStory.practice ??= null;
  s.goldenStory.teachingPracticeResults ??= [];
  s.nascentSoul.covenant ??= freshCovenant();

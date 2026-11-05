@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ArtifactScene from "../artifact-growth/ArtifactScene.vue";
+const artifactOpen=ref(false);
 import { computed, ref, watch } from "vue";
 import type { State, Intent } from "../core";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
@@ -133,7 +135,8 @@ const hero = computed(() =>
 );
 </script>
 <template>
-  <NarrativeStage
+  <ArtifactScene v-if="artifactOpen || game.itemGrowth.golden.duel" :game="game" :busy="busy" @act="emit('act',$event)" @close="artifactOpen=false"/>
+  <NarrativeStage v-else
     class="lizhao-stage"
     :image="image"
     :title="title"
@@ -232,6 +235,7 @@ const hero = computed(() =>
     <p v-if="l.duel">{{ l.last }}</p>
     <template v-else
       ><p>{{ l.last }}</p>
+      <button v-if="l.location==='harbor' && (selected==='friends'||selected==='supplies')" @click="artifactOpen=true">旧器谱与器室侧路 · 法宝温养</button>
       <div v-for="row in visible" :key="row.id" class="lizhao-choice">
         <button :disabled="busy || !row.available" @click="send(row.action)">
           {{ row.label }}</button

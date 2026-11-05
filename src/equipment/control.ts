@@ -7,6 +7,7 @@ export const controlCosts: Record<EquipmentId, number> = {
   bell: 2,
   cord: 2,
   mirror: 4,
+  tideBlade: 10,
   tideSeal: 8,
   spiritPearl: 6,
 };
@@ -32,11 +33,11 @@ export function equipmentControl(s: EquipmentContext) {
 }
 export function artifactReady(
   s: EquipmentContext,
-  id: "tideSeal" | "spiritPearl",
+  id: "tideSeal" | "spiritPearl" | "tideBlade",
 ) {
   return (
     s.realm >= 2 &&
-    !!(id === "tideSeal"
+    !!(id === "tideBlade" ? s.itemGrowth?.golden?.blade === "attuned" : id === "tideSeal"
       ? s.outerSea?.seal && s.outerSea.attuned
       : (s.conclave?.depth ?? 0) >= 1 && s.conclave?.attuned)
   );

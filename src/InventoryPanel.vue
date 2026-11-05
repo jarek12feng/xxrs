@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ItemGrowthPanel from "./item-growth/ItemGrowthPanel.vue";
 import { equipmentCategoryLabel } from "./equipment";
 import { treasureQuote } from "./treasures/rules";
 import { controlCapacity, senseLimit } from "./spirit";
@@ -124,6 +125,7 @@ const craft = computed(() =>
       game.journey.equipped ? relics[game.journey.equipped].name : "未装备"
     }}
   </p>
+  <ItemGrowthPanel :game="game" :busy="busy" @act="emit('act',$event)" />
   <nav class="panel-tabs" aria-label="物品分类">
     <button
       v-for="tab in ['全部', '装备', '丹药', '材料']"
@@ -134,6 +136,7 @@ const craft = computed(() =>
     </button>
   </nav>
   <div class="inventory-layout">
+
     <div class="item-grid">
       <button
         v-for="entry in visible"
@@ -142,7 +145,7 @@ const craft = computed(() =>
         @click="selected = entry.id"
       >
         <ItemArt
-          :id="entry.id"
+          :id="(entry.id === 'sword' || entry.id === 'vial') && game.itemGrowth.reforged[entry.id] ? `reforged-${entry.id}` : entry.id"
           :tier="
             entry.id === 'sword' || entry.id === 'vial'
               ? game.journey.relics[entry.id]
@@ -155,7 +158,7 @@ const craft = computed(() =>
     </div>
     <section v-if="item" class="item-detail">
       <ItemArt
-        :id="item.id"
+        :id="(item.id === 'sword' || item.id === 'vial') && game.itemGrowth.reforged[item.id] ? `reforged-${item.id}` : item.id"
         :size="128"
         :tier="
           item.id === 'sword' || item.id === 'vial'

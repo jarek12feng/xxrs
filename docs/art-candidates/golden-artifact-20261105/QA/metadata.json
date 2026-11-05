@@ -1,0 +1,54 @@
+[
+  {
+    "name": "tide-embryo",
+    "original": {
+      "width": 1254,
+      "height": 1254,
+      "hasAlpha": true
+    },
+    "output": {
+      "width": 512,
+      "height": 512,
+      "format": "webp",
+      "hasAlpha": true,
+      "bytes": 79766
+    },
+    "alpha": {
+      "zero": 222899,
+      "partial": 38367,
+      "outerEdgeMax": 0,
+      "bbox": [
+        26,
+        27,
+        487,
+        499
+      ]
+    }
+  },
+  {
+    "name": "tide-blade",
+    "original": {
+      "width": 1254,
+      "height": 1254,
+      "hasAlpha": true
+    },
+    "output": {
+      "width": 512,
+      "height": 512,
+      "format": "webp",
+      "hasAlpha": true,
+      "bytes": 62554
+    },
+    "alpha": {
+      "zero": 231736,
+      "partial": 29514,
+      "outerEdgeMax": 1,
+      "bbox": [
+        0,
+        19,
+        500,
+        500
+      ]
+    }
+  }
+]

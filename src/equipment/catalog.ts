@@ -14,7 +14,7 @@ export const treasures = {
     name: "镇岳钟",
     realm: 0,
     price: 28,
-    hint: "守势承伤 −2；反击伤害 −1。精炼后守势承伤 −3。",
+    hint: "守势承伤 −2；反击伤害 −1。精炼后守势承伤 −3。筑基行旅中，守势后正确换招承伤再减2，连守不触发。",
     quality: "中品灵器",
   },
   cord: {
@@ -28,7 +28,7 @@ export const treasures = {
     name: "照隙镜",
     realm: 1,
     price: 42,
-    hint: "正确辨影伤害 +2；精炼后 +3。辨错不生效。",
+    hint: "正确辨影伤害 +2；精炼后 +3。辨错不生效。筑基行旅中，守势或反击后正确辨影再增伤2，连续辨影不触发。",
     quality: "上品灵器",
   },
 } as const;
@@ -100,6 +100,9 @@ export const equipmentCatalog = {
     maxRank: 2,
     qi: 120,
   },
+  tideBlade: {
+    name: "潮纹剑", shape: "sword", categories: ["attack"], tier: "artifact", slot: "attuned", damage: 3, armor: 0,
+  },
   tideSeal: {
     name: "镇潮印",
     shape: "seal",
@@ -121,7 +124,8 @@ export const equipmentCatalog = {
 } as const;
 export type EquipmentId = keyof typeof equipmentCatalog;
 export type EquipableId = Relic | Treasure;
-export const getEquipment = <T extends EquipmentId>(id: T) => equipmentCatalog[id];
+export const getEquipment = <T extends EquipmentId>(id: T) =>
+  equipmentCatalog[id];
 
 export interface TurnRule {
   move: "strike" | "guard" | "discern";

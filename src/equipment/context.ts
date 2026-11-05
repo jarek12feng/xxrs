@@ -2,6 +2,7 @@ import type { SpiritState } from "../spirit";
 import type { Relic, Treasure } from "./catalog";
 /** Structural view over the existing save. No dependency on the world or chapter modules. */
 export interface EquipmentContext {
+  itemGrowth?: { golden?: { blade: string; seal: boolean; pearl: boolean }; reforged: { sword: boolean; vial: boolean } };
   realm: number;
   sense: number;
   spirit?: SpiritState;
@@ -15,7 +16,7 @@ export interface EquipmentContext {
   };
   treasures: {
     equipped: Treasure[];
-    artifacts: ("tideSeal" | "spiritPearl")[];
+    artifacts: ("tideSeal" | "spiritPearl" | "tideBlade")[];
     owned: Record<Treasure, number>;
   };
   outerSea?: { attuned: boolean; seal: boolean };

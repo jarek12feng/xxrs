@@ -18,11 +18,11 @@ export type EquipmentChange =
   | { kind: "unequip"; slot: "primary" | "auxiliary" };
 export function inspectEquipment(s: EquipmentContext, id: EquipmentId) {
   const definition = equipmentCatalog[id];
-  if (id === "tideSeal" || id === "spiritPearl")
+  if (id === "tideSeal" || id === "spiritPearl" || id === "tideBlade")
     return {
       definition,
       rank: (
-        id === "tideSeal" ? s.outerSea?.seal : (s.conclave?.depth ?? 0) >= 1
+        id === "tideBlade" ? !!s.itemGrowth?.golden && s.itemGrowth.golden.blade !== "none" : id === "tideSeal" ? s.outerSea?.seal : (s.conclave?.depth ?? 0) >= 1
       )
         ? 1
         : 0,
@@ -182,7 +182,7 @@ function equipmentDraft<T extends EquipmentContext>(s: T): T {
 }
 function changeLoadout(s: EquipmentContext, id: EquipmentId, equip: boolean) {
   if (id === "sword" || id === "vial") s.journey.equipped = equip ? id : null;
-  else if (id === "tideSeal" || id === "spiritPearl")
+  else if (id === "tideSeal" || id === "spiritPearl" || id === "tideBlade")
     s.treasures.artifacts = equip
       ? [...s.treasures.artifacts, id]
       : s.treasures.artifacts.filter((x) => x !== id);

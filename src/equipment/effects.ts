@@ -14,13 +14,13 @@ import {
 } from "./context";
 export type EquipmentSituation =
   | { kind: "base"; includeAttuned?: boolean }
-  | { kind: "turn"; move: "strike" | "guard" | "discern"; correct: boolean }
+  | { kind: "turn"; move: "strike" | "guard" | "discern"; correct: boolean; previousMove?: "strike" | "guard" | "discern" | "none" }
   | { kind: "challenge"; opponent: "guardian" | "raider" }
   | { kind: "road" }
   | { kind: "mist"; hazard: string };
 export interface EquipmentContribution {
   source: EquipmentId;
-  effect: "base" | "temper" | "auxiliary" | "attuned" | "exploration" | "focus";
+  effect: "base" | "temper" | "auxiliary" | "attuned" | "exploration" | "focus" | "sequence" | "reforge";
   damage: number;
   armor: number;
   incoming: number;
@@ -60,6 +60,9 @@ export function evaluateEquipment(
       });
     }
     if (situation.includeAttuned) {
+      if (s.treasures.artifacts.includes("tideBlade") && artifactReady(s,"tideBlade"))
+        add("tideBlade", "attuned", {damage:3});
+
       if (
         s.treasures.artifacts.includes("tideSeal") &&
         artifactReady(s, "tideSeal")
@@ -79,6 +82,15 @@ export function evaluateEquipment(
     }
   } else if (situation.kind === "turn") {
     const { move, correct } = situation;
+    const active=(id: "tideBlade"|"tideSeal"|"spiritPearl")=>s.treasures.artifacts.includes(id)&&artifactReady(s,id);
+    if (correct && active("tideBlade") && move==="strike" &&
+      (situation.previousMove==="guard"||situation.previousMove==="discern"))
+      add("tideBlade","sequence",{damage:10,incoming:2});
+    if (correct && active("tideSeal") && s.itemGrowth?.golden?.seal && move==="guard")
+      add("tideSeal","sequence",{incoming:-3});
+    if (correct && active("spiritPearl") && s.itemGrowth?.golden?.pearl && move==="discern")
+      add("spiritPearl","sequence",{incoming:-3});
+
     const temper = relic ? s.workshop.temper[relic] : "plain";
     const resolve = (rules: readonly TurnRule[], level: number) => {
       let damage = 0,
@@ -94,6 +106,21 @@ export function evaluateEquipment(
       return { damage, incoming };
     };
     if (relic && rank) add(relic, "temper", resolve(temperRules[temper], rank));
+    if (relic && rank && s.itemGrowth?.reforged[relic]) {
+      add(
+        relic,
+        "reforge",
+        relic === "sword"
+          ? {
+              damage:
+                move === "strike" ? 3 : move === "discern" && correct ? 1 : 0,
+            }
+          : {
+              incoming:
+                move === "guard" ? -2 : move === "discern" && correct ? -1 : 0,
+            },
+      );
+    }
     for (const id of s.treasures.equipped) {
       const level = s.treasures.owned[id];
       if (level) add(id, "auxiliary", resolve(auxiliaryRules[id], level));
@@ -145,19 +172,29 @@ export function equipmentTurnEffect(
   s: EquipmentContext,
   move: "strike" | "guard" | "discern",
   correct: boolean,
+  previousMove?: "strike" | "guard" | "discern" | "none",
 ) {
-  const { damage, incoming } = evaluateEquipment(s, {
+  const { damage, incoming, sources } = evaluateEquipment(s, {
     kind: "turn",
     move,
     correct,
+    previousMove,
   });
+  const reforged = sources.find(
+    (source) =>
+      source.effect === "reforge" && (source.damage || source.incoming),
+  );
+  const reforgeNote = reforged
+    ? `其中${equipmentCatalog[reforged.source].name}重铸：${reforged.damage ? `伤害 +${reforged.damage}` : `承伤 ${reforged.incoming}`}（已计入器物修正；最终承伤受下限与击倒免反击影响）。`
+    : "";
+  const artifactNote = sources.filter(v=>v.effect==="sequence").map(v=>v.source==="tideBlade"?"潮纹剑蓄势破罡：正确反击伤害+10、承伤+2（已计入器物修正）。":v.source==="tideSeal"?"镇潮印镇压：正确守势承伤−3（已计入器物修正）。":"定神珠护识：正确辨影承伤−3（已计入器物修正）。").join("");
   return {
     damage,
     incoming,
     note:
       damage || incoming
-        ? `器物修正：伤害 ${damage >= 0 ? "+" : ""}${damage}、承伤 ${incoming >= 0 ? "+" : ""}${incoming}。`
-        : "",
+        ? `器物修正：伤害 ${damage >= 0 ? "+" : ""}${damage}、承伤 ${incoming >= 0 ? "+" : ""}${incoming}。${reforgeNote}${artifactNote}`
+        : reforgeNote + artifactNote,
   };
 }
 export function equipmentCultivationBonus(s: RelicContext & { realm: number }) {

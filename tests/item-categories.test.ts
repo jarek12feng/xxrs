@@ -24,7 +24,7 @@ it("classifies equipment by purpose independently of shape, tier and slot", () =
     defense: "防御",
     speed: "速度",
   });
-  expect(listEquipment("attack")).toEqual(["sword", "mirror", "tideSeal"]);
+  expect(listEquipment("attack")).toEqual(["sword", "mirror", "tideBlade", "tideSeal"]);
   expect(listEquipment("defense")).toContain("tideSeal");
   expect(listEquipment("defense")).toContain("vial");
   expect(listEquipment("speed")).toEqual([]);

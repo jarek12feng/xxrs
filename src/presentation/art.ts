@@ -77,6 +77,8 @@ const items: Readonly<Record<string, string>> = {
   lamp: "spirit-lantern",
 };
 export function itemArt(id: string, tier = 0): string | undefined {
+  if(id==="tideBlade"||id==="tide-embryo")return `/art/golden-artifact/${id==="tideBlade"?"tide-blade":"tide-embryo"}.webp`;
+  if (["relic-ring", "reforged-sword", "reforged-vial"].includes(id)) return `/art/item-growth/${id}.webp`;
   if (["bell", "mirror", "cord", "seal"].includes(id)) return `/art/treasures/${id}.webp`;
   if (id === "ward" || id === "iron")
     return `/art/workshop/${id === "ward" ? "meridian-pill" : "spirit-iron"}.webp`;

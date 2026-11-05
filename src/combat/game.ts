@@ -61,7 +61,16 @@ export function tacticalPreview(s: State, context: TacticalContext) {
       power: context.power ?? readiness(s),
       ...techniqueCombatProfile(s),
       herbs: context.useHerbs === false ? 0 : s.herbs,
-      equipment: equipmentTurnEffect(s, move, correct),
+      equipment: equipmentTurnEffect(
+        s,
+        move,
+        correct,
+        context.effect === "guard" ||
+          context.effect === "strike" ||
+          context.effect === "discern"
+          ? context.effect
+          : "none",
+      ),
       pressure:
         context.pressure ??
         (e.realm !== undefined && e.stage !== undefined

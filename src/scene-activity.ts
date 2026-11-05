@@ -6,6 +6,8 @@ export type EncounterOwner =
   "lizhao" | "nascent" | "qi" | "road" | "foundation" | "contest" | "golden" | "sea" | "conclave";
 /** Read-only ownership shared by navigation and feedback. Not command authorization. */
 export function combatOwner(s: State): EncounterOwner | "arena" | null {
+  if (s.itemGrowth?.golden?.duel) return s.lizhao.location === "harbor" ? "lizhao" : "sea";
+  if (s.itemGrowth?.trial) return "foundation";
   if (s.spirit?.trial) return s.spirit.trial.source === "well" ? "foundation" : "sea";
   if (nascentActive(s)) return "nascent";
   if (s.lizhao.duel) return "lizhao";
@@ -22,6 +24,8 @@ export function combatOwner(s: State): EncounterOwner | "arena" | null {
   return null;
 }
 export function sceneOwner(s: State): EncounterOwner | null {
+  if (s.itemGrowth?.golden?.duel) return s.lizhao.location === "harbor" ? "lizhao" : "sea";
+  if (s.itemGrowth?.trial) return "foundation";
   if (s.spirit?.trial) return s.spirit.trial.source === "well" ? "foundation" : "sea";
   if (s.lizhao.location !== "away" || s.wayfaring.passage?.route.startsWith("lizhao:")) return "lizhao";
   if (nascentActive(s) || s.realm === 3) return "nascent";
