@@ -6,10 +6,10 @@ import type { BattleId } from "./state";
 // Match the same turn/pattern as combat. Descriptions never select a move or consume RNG.
 const cues: Record<BattleId, Record<Move, string>> = {
   pactRival: {guard:"贺崇沉肩逼近，剑锋正压向护体灵光。",discern:"他右腕微颤，剑影分开，真正的落点藏在左侧。",strike:"贺崇收剑换气，右腕旧伤令剑势停了一息。"},
-  application: {guard:"两道灵流连续压来，先护经脉。",discern:"壁上亮起假阵眼，真流藏在其后。",strike:"乱流交错后露出短暂空隙。"},
+  application: {guard:"两道灵流连续压来，经脉承压。",discern:"壁上亮起假阵眼，真流藏在其后。",strike:"乱流交错后露出短暂空隙。"},
   salamander: {guard:"玄鳞螈低伏蓄水，药床前水面鼓起。",discern:"水下尾影摆动，冲势正在变向。",strike:"蓄水已落，玄鳞螈露出侧身。"},
   deer: {guard:"霜角发亮，鹿蹄向你压来。",discern:"蹄声停了一息，雪纹指向另一侧。",strike:"冲势已尽，采髓点露出空隙。"},
-  steady: {guard:"逆流压向经脉，先稳住呼吸。",discern:"两股灵流交错，需辨清去向。",strike:"滞涩松动，可送出所蓄之力。"},
+  steady: {guard:"逆流压向经脉，呼吸渐急。",discern:"两股灵流交错，去向藏在明暗之间。",strike:"滞涩松动，经脉间露出空隙。"},
   culmination: {
     guard: "三股乱流压向经脉，护阵旗已收起。",
     discern: "经脉渐稳，交错的灵光各有去向。",
@@ -75,17 +75,19 @@ export function foundationBattleCue(s: State) {
   const d = s.foundationJourney.duel;
   if (!d) return "";
   const move = expectedMove(s);
+  const phase = d.ruleset === 2 && d.id === "culmination"
+    ? ({guard:"第一重：",discern:"第二重：",strike:"最后一重："} as const)[move] : "";
+  return phase + cues[d.id][move];
+}
+
+/** Optional explanation, separate from the observable enemy tell. */
+export function foundationBattleHint(s: State) {
+  const d = s.foundationJourney.duel;
+  if (!d) return "";
   const teaching = d.id === "well" || d.id === "rank1";
-  return (
-    cues[d.id][move] +
-    tacticalCue(s) +
-    (d.ruleset === 2 && d.id === "culmination"
-      ? "同招连用会被灵流截住，伤害 −6、承伤 +3。"
-      : "") +
-    (teaching
-      ? `初试提示：${moves[move]}可顺势应对；也可比较下方伤害与消耗。`
-      : "")
-  );
+  return tacticalCue(s) + (d.ruleset === 2 && d.id === "culmination"
+    ? "同招连用会被灵流截住，伤害 −6、承伤 +3。" : "") + (teaching
+    ? `初试提示：${moves[expectedMove(s)]}可顺势应对；也可比较下方伤害与消耗。` : "");
 }
 
 // Prospective effects are visible before committing a move; no extra settlement or prediction.

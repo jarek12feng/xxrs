@@ -1,0 +1,20 @@
+[
+  {
+    "cue": "nascent-rise",
+    "seconds": 12.0,
+    "channels": 2,
+    "sampleRate": 44100,
+    "peak": 0.26132,
+    "rms": 0.06405,
+    "sha256": "b22a4f87340f1efebfc8a6da0b07e7bd755c44a9c05f7959ece8a8af8e079125"
+  },
+  {
+    "cue": "nascent-breakthrough",
+    "seconds": 4.0,
+    "channels": 2,
+    "sampleRate": 44100,
+    "peak": 0.30554,
+    "rms": 0.06186,
+    "sha256": "c5c4679bfcdfbb28dae737b40f7750598b3f1439c1ec126a90a75a39b2d73a08"
+  }
+]

@@ -4,9 +4,9 @@ import type { State } from '../world';
 import type { JourneyAction, BattleId } from './state';
 import { resourceRoutes, type ResourceRoute, hasSteady } from './growth-state';
 export const routeInfo = {
-  estate: {name:'药庄养元',material:'养元药心',foe:'salamander',intro:'岑霁正在核对药性：先稳住护圃阵，再引开药泽玄鳞螈，采得成熟药心。',careful:'保全根床 · 灵草 3；后续药量保留',swift:'取成熟药心 · 不额外耗材；当季订单减量'},
+  estate: {name:'药庄养元',material:'养元药心',foe:'salamander',intro:'岑霁正在核对药性：成熟药心仍在药床深处，护圃阵旁盘踞着药泽玄鳞螈。',careful:'保全根床 · 灵草 3；后续药量保留',swift:'取成熟药心 · 不额外耗材；当季订单减量'},
   snow: {name:'雪线淬元',material:'寒髓晶',foe:'deer',intro:'霜角鹿守着采髓点。备好护寒物资，辨清蹄声与霜纹，逼退它后取晶。',careful:'绕行缓坡 · 多一月；交锋承伤 −2',swift:'抢过风口 · 节省一月；交锋承伤 +2'},
-  frontier: {name:'古道归元',material:'归元阵髓',foe:'frontier',intro:'裴铸提醒你先看阵枢，再动器物。备好灵器或通达主修，击破外缘石偶，取出阵髓。',careful:'修复回流支点 · 灵石 8；本路线外缘重试免补给',swift:'开单向裂隙 · 不额外耗材；外缘重试照常补给'},
+  frontier: {name:'古道归元',material:'归元阵髓',foe:'frontier',intro:'裴铸指向外缘阵枢：归元阵髓仍被石偶守住，灵器或通达主修可作行前准备。',careful:'修复回流支点 · 灵石 8；本路线外缘重试免补给',swift:'开单向裂隙 · 不额外耗材；外缘重试照常补给'},
 } as const;
 export type GrowthAction = Extract<JourneyAction, {kind:'routePrepare'|'routeChoose'|'routeProcess'|'routeRevisit'|'steadyStudy'|'rankGift'}>;
 export function isGrowthAction(a: JourneyAction): a is GrowthAction {

@@ -28,7 +28,7 @@ export function relicJourneyError(s: State) {
 }
 export function foundationGoal(s: State) {
   if (s.realm) return "筑基已成：重返青嶂旧阵，尝试炼气时无法承受的交锋。";
-  if(s.qiJourney && s.qiJourney.gates<2) return s.qiJourney.gates===0 ? "炼气中期后，赴药谷淬脉泉取凝露草，炼化后突破后期瓶颈。" : "淬脉已成，修炼至后期；赴青石内府取凝元晶髓，炼化后准备圆满与筑基。";
+  if(s.qiJourney && s.qiJourney.gates<2) return s.qiJourney.gates===0 ? "当前目标是淬脉、突破后期瓶颈；药谷淬脉泉的凝露草可温养经脉。" : "淬脉已成，当前目标是凝元；青石内府藏有凝元晶髓，药窟杂气也须亲自化解。";
   if (s.pills)
     return `筑基丹已备齐。${s.qi < 360 ? `还差 ${360 - s.qi} 修为；` : ""}疗伤与固本能提高把握，突破时必消耗一枚。`;
   if (hasFoundationRecipe(s))

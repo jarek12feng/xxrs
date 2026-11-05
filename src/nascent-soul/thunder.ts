@@ -29,17 +29,20 @@ export function thunderSignal(b: ThunderBattle) {
   return [
     {
       name: "云根蓄雷",
-      tell: "云根向石台收拢，先护住身形或辨清分流。",
+      tell: "云根向石台收拢，四周雷光向中央聚集。",
+      hint: "蓄雷时护体或辨清分流，都能减少正面承压。",
       responses: ["guard", "discern"] as Move[],
     },
     {
       name: "雷脉分岔",
-      tell: "分枝将合拢，抢先劈开雷脉或辨明主雷。",
+      tell: "雷光分出数枝，明暗不同，正在重新合拢。",
+      hint: "分岔时可劈开雷脉，也可辨明主雷；两者的承伤与消耗不同。",
       responses: ["strike", "discern"] as Move[],
     },
     {
       name: "正雷压顶",
-      tell: "主雷已落，可借稳守化去余势，或沿前一合辨出的空隙反击。",
+      tell: "主雷直落台心，余电沿前一合的雷路蔓延。",
+      hint: "正雷落下时可稳守化去余势，或沿前一合辨出的空隙反击。",
       responses: ["guard", "strike"] as Move[],
     },
   ][stage]!;

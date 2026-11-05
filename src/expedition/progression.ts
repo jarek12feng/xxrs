@@ -8,13 +8,13 @@ export function expeditionGoal(s: State): string | null {
   if (!q.accepted || q.cleared >= 3) return null;
   if (q.duel) return "留意来招，选择守势、反击或辨影；也可主动撤回准备。";
   if (q.cleared === 0) return "护送药车通过山道；准备好补给后开始交锋。";
-  if (q.cleared === 1) return "调查古阵：凝神研读辨阵，或备齐灵草 4 温养草根。";
+  if (q.cleared === 1) return "探明药签所指的古阵，找出乱流与草根下的旧物。";
   if (s.realm === 1)
     return "筑基已成：重返青嶂关，与药队会合，挑战蚀阵傀儡并取出转运册。功法通达与灵器精炼已开放，可按交锋需要准备，不是入阵条件。";
   const preparation =
     s.qi >= 360
       ? "修为已满，可以查看突破把握，再决定现在叩关还是继续准备。"
-      : `还差 ${360 - s.qi} 修为。回洞府选择吐纳，可用自动行动积累；遇剧情或修为满会暂停。`;
+      : `距离筑基圆满积累还差 ${360 - s.qi} 修为。`;
   return `青嶂已封住旧阵，待你筑基承受阵核反噬，再回来取出转运册。${preparation}${foundationGoal(s)}不必把所有属性练满。线索与小关进度保留。`;
 }
 export function expeditionIntermission(s: State): string | null {

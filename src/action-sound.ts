@@ -1,3 +1,4 @@
+import { journeySound } from "./journey-sound";
 import type { Intent, State } from "./core";
 import type { SoundCue } from "./sound-cues";
 // Called only after persistence succeeds. No oscillator or game state belongs here.
@@ -9,9 +10,11 @@ export function actionSound(
   // Terminal outcomes take priority over the action that happened to cause them.
   if (after.life > before.life) return "rebirth";
   if (after.status === "dead" && before.status !== "dead") return "death";
-  if (after.realm > before.realm) return after.realm >= 2 ? "golden-breakthrough" : "breakthrough";
+  if (after.realm > before.realm) return after.realm === 3 ? "nascent-breakthrough" : after.realm >= 2 ? "golden-breakthrough" : "breakthrough";
   if (after.status === "complete" && before.status !== "complete")
     return "closure";
+  const journey = journeySound(before, after, intent);
+  if (journey) return journey;
   if (intent.type === "ascension") {
     if (intent.action === "commit" && (after.pills < before.pills || after.goldenCore.pills < before.goldenCore.pills)) return "failure";
     if (intent.action === "withdraw") return "rest";
@@ -236,7 +239,7 @@ export function actionSound(
 }
 
 // Only a settled advancement triggers a short score. Restoration is not an action.
-export function breakthroughMusic(before:State, after:State): "foundation-rise" | "golden-rise" | null {
+export function breakthroughMusic(before:State, after:State): "foundation-rise" | "golden-rise" | "nascent-rise" | null {
   return after.status === 'alive' && after.realm > before.realm
-    ? after.realm >= 2 ? 'golden-rise' : 'foundation-rise' : null;
+    ? after.realm === 3 ? "nascent-rise" : after.realm >= 2 ? 'golden-rise' : 'foundation-rise' : null;
 }

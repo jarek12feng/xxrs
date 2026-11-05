@@ -210,7 +210,7 @@ export function mistGoal(s: State): string {
         ? "举起探灵灯，看看当初无法看见的东西。"
         : "记住这道看不清的刻痕。雾海来信提到的灯，也许能照出它。";
   if (m.stage === "archive")
-    return "读完陈渡的记录，带走探灵灯；它能照见旧地点的隐藏阵迹。";
+    return "陈渡留下的记录或许能解释这封来信。案旁的旧灯仍泛着灵光。";
   if (m.stage === "home" && m.revisited)
     return s.journey.maps.sea === 3
       ? "归灯与家书都已完成。可补探尚未走过的支线，或回看人物档案。"

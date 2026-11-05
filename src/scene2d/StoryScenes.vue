@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { guidanceNotes } from "../player-guidance";
 import AdmissionScene from "../initiation/AdmissionScene.vue";
 import LizhaoPanel from "../lizhao/LizhaoPanel.vue";
 import NascentPanel from "../nascent-soul/NascentPanel.vue";
@@ -11,7 +12,7 @@ import { computed, ref, watch } from 'vue';
 import type { State, Intent } from '../core';
 import type { ActionReceipt } from '../action-feedback';
 import type { CombatFeedback } from '../foundation-journey/feedback';
-import { storyChapter, storyChapters } from './story-routing';
+import { storyChapter, storyChapters, type StoryChapter } from './story-routing';
 import LearningChoices from '../LearningChoices.vue';
 import FirstPractice from './FirstPractice.vue';
 import AdventurePanel from '../AdventurePanel.vue';
@@ -24,7 +25,7 @@ import GoldenCorePanel from '../golden-core/GoldenCorePanel.vue';
 import OuterSeaPanel from '../outer-sea/OuterSeaPanel.vue';
 import ConclavePanel from '../conclave/ConclavePanel.vue';
 const props=defineProps<{game:State;busy:boolean;showRoad:boolean;entryChapter?:string;receipt?:ActionReceipt|null;combatFeedback?:CombatFeedback|null}>();
-const emit=defineEmits<{act:[intent:Intent];cultivate:[];map:[];breakthrough:[];mist:[];road:[];equipment:[];board:[];sect:[];inventory:[]}>();
+const emit=defineEmits<{scene:[chapter:StoryChapter];act:[intent:Intent];cultivate:[];map:[];breakthrough:[];mist:[];road:[];equipment:[];board:[];sect:[];inventory:[]}>();
 const travel=useStoryTravel(()=>props.game,()=>props.busy,intent=>emit('act',intent));
 const {route:travelRoute,arrived:travelArrived}=travel;
 const preferred=ref(props.entryChapter || readStoryPreference(props.game, localStorage) || (props.game.adventure.step === 'done' && !props.game.journey.learning.book ? 'rewards' : props.showRoad ? 'road' : ''));
@@ -35,6 +36,7 @@ watch(() => props.game.qiJourney.narrative.initiation.kit, (kit,old) => { if(old
 watch(() => props.game.journey.learning.book, (book,old) => { if(book&&!old) preferred.value='practice'; });
 const chapters=computed(()=>storyChapters(props.game,props.showRoad).filter(item=>item.id!=='conclave'));
 const chapter=computed(()=>storyChapter(props.game,preferred.value,props.showRoad));
+watch(chapter, value => emit('scene', value), { immediate: true });
 const encounter=computed(()=>!!sceneOwner(props.game));
 // Loading or mounting mid-encounter must also retain that journey after its final turn.
 // Otherwise the temporary forced chapter would fall back to the old road preference.
@@ -54,6 +56,7 @@ defineExpose({ choose });
    <button v-for="item in chapters" :key="item.id" :aria-pressed="chapter===item.id" :disabled="busy||encounter" @click="choose(item.id)">{{item.label}}</button>
   <button v-if="!game.realm && game.journey.learning.book && !encounter && chapter !== 'qi'" class="growth-return" :disabled="busy" @click="followGrowth">修行目标 · {{ qiGoal(game) }} →</button>
   </nav>
+  <aside v-if="!encounter && guidanceNotes(game).length" class="known-guidance" aria-label="已知约期与行路"><p v-for="note in guidanceNotes(game)" :key="note">{{ note }}</p></aside>
   <AdmissionScene v-if="chapter==='admission'" :game="game" :busy="busy" @act="travel.act($event)" />
   <LearningChoices v-else-if="chapter==='rewards'" standalone :game="game" :busy="busy" @act="travel.act($event)" @close="followGrowth" />
   <FirstPractice v-else-if="chapter==='practice'" standalone :game="game" :busy="busy" @close="followGrowth" />
@@ -72,6 +75,8 @@ defineExpose({ choose });
  </div>
 </template>
 <style scoped>
+.known-guidance {flex:0!important;color:#e9ddc2;background:#112d25e8;padding:4px 12px;font-size:13px;}
+.known-guidance p {margin:4px 0;}
 .story-location {height:100%;min-height:0;display:flex;flex-direction:column;}
 .story-location > :not(.story-chapters) {flex:1;min-height:0;}
 .story-scenes.travel-open {overflow:auto;}

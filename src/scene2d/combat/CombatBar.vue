@@ -3,6 +3,7 @@ export interface CombatOption {
   id: string;
   label: string;
   detail?: string;
+  preview?: string;
   disabled?: boolean;
 }
 const props = withDefaults(
@@ -14,6 +15,7 @@ const props = withDefaults(
     enemyMax: number;
     enemyName: string;
     tell: string;
+    help?: string;
     options: CombatOption[];
     busy?: boolean;
     retreatLabel?: string;
@@ -43,6 +45,14 @@ function keyboard(event: KeyboardEvent) {
       ><span>{{ enemyName }} {{ enemy }} / {{ enemyMax }}</span>
     </div>
     <p class="combat-tell">来势 · {{ tell }}</p>
+    <details v-if="help" :key="enemyName" class="combat-help">
+      <summary>查看应对提示（可选）</summary>
+      <p>{{ help }}</p>
+    </details>
+    <details v-if="options.some(option => option.preview)" :key="`${enemyName}-forecast`" class="combat-help">
+      <summary>查看本合推演（可选）</summary>
+      <p v-for="option in options" :key="option.id">{{ option.label }}：{{ option.preview }}</p>
+    </details>
     <slot name="preparation" />
     <div class="combat-commands">
       <button
@@ -90,6 +100,9 @@ function keyboard(event: KeyboardEvent) {
   margin: 8px 0;
   color: #f7e9c9;
 }
+.combat-help { margin: 6px 0; font-size: 13px; }
+.combat-help summary { cursor: pointer; color: #e0d2ab; }
+.combat-help p { margin: 6px 0; line-height: 1.5; }
 .combat-commands {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(120px, 0.65fr);

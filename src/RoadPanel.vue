@@ -82,8 +82,8 @@ const hotspots = computed(() => [
 ]);
 watch(() => props.game.adventure.road.stage, () => { active.value = ""; });
 const choiceGroup = (action: RoadAction) =>
-  ["thanks", "talk", "accept", "deliver", "verify", "invite"].includes(action) ? "person" :
-  ["inspect", "challenge", "shelteredChallenge", "survey"].includes(action) ? "objects" :
+  ["thanks", "talk", "accept", "deliver", "verify", "invite", "survey"].includes(action) ? "person" :
+  ["inspect", "challenge", "shelteredChallenge"].includes(action) ? "objects" :
   ["art", "relic", "friend"].includes(action) ? "prepare" : "road";
 const showLegacy = ref(false);
 const epilogueDismissed = ref(false);
@@ -427,10 +427,9 @@ const person = computed(() =>
         >
           <h3>你要留下怎样的归路？</h3>
           <p class="keyboard-hint">
-            点击下方“观察”按钮比较三条路线。键盘操作：Tab 移入本面板后，按 1 / 2
-            / 3 切换观察。
+            山风穿过草根、断崖与旧阵，三处各有不同的痕迹。
           </p>
-          <p>观察免费；筑基后备齐所需物资才能实施。满足条件即成功，不掷骰；归路建成后不能改选。</p>
+          <p>观察不耗月份与物资。筑基后可改变归路；动手前可查看所需代价，归路建成后不能改选。</p>
           <article
             v-for="key in solutionKeys"
             :key="key"
@@ -438,8 +437,8 @@ const person = computed(() =>
             :class="{ 'chosen-solution': road.prepared === key }"
           >
             <h4>{{ passSolutions[key].name }}</h4>
-            <p>{{ passSolutions[key].consequence }}</p>
-            <p class="fineprint">
+            <p v-if="road.prepared === key">{{ passSolutions[key].consequence }}</p>
+            <p v-if="road.prepared === key" class="fineprint">
               {{ passSolutions[key].requirement }}均需筑基、伤势低于
               3；不推进月份。
             </p>
@@ -807,7 +806,7 @@ const person = computed(() =>
   margin: 0;
 }
 .keyboard-hint {
-  color: #52684f;
+  color: #c8d4c3;
 }
 @media (max-width: 600px) {
   .keyboard-hint {
@@ -822,6 +821,7 @@ const person = computed(() =>
   display: grid;
   gap: 12px;
 }
+.pass-solutions > p, .pass-solutions > h3 { margin: 0; }
 .pass-solutions h4 {
   margin: 0;
   font-size: 1.1rem;

@@ -284,7 +284,7 @@ export function journeyPresentation(s: State, relationship = false) {
       : q.rescue === 4
         ? "接应已经完成，探索队回到落脚点。程砚收好归绳，向你指了指谷口的归流阵：“大家都已安顿。接下来，走你自己的路。”"
         : q.rescue === 2 || q.rescue === 3
-          ? "内侧灯号未断，众人暂在石室避险。先开外缘、送补给，再约好撤出的次序。程砚接过外侧阵旗，示意你先调息。"
+          ? "内侧灯号未断，众人暂在石室避险，补给却快用尽。程砚守着外侧阵旗，等你商议接应。"
           : "";
   }
   if (!relationship && ["estate", "snow", "inn"].includes(q.location)) {
@@ -308,7 +308,7 @@ export function journeyPresentation(s: State, relationship = false) {
   if(!relationship && q.location === "home" && maleMainline(s) && !["away","missing","shelter"].includes(q.whereabouts)) {
     speaker=q.heroine.meeting === "none" ? "青嶂勘路人" : "苏婉宁";
     portrait=q.reunion ? "shentinglan-reunion" : "shentinglan-growth";
-    if(q.heroine.meeting === "none" && !s.adventure.road.surveyed)body="一位女修正在校对青嶂路图。她指向山门：先到云栈旅亭踏勘归路吧，回来再商议石梁的勘测。";
+    if(q.heroine.meeting === "none" && !s.adventure.road.surveyed)body="一位女修正在校对青嶂路图。她指向山门：云栈旅亭还缺一份青嶂归路的实测。没有可靠归路，石梁勘测的队伍便难以往返。";
     else if(q.heroine.meeting === "none")body="你正要踏上青嶂石梁，崖下有人敲了两下尺杆：左边那块是空的。女修收紧绳索，请你稳住上面的石梁，她来测落脚处。";
     else if(q.growth.refined && q.heroine.map === "none")body="苏婉宁带回试印图，药舍住户却指着图上的井口与果树，问她能否不公开住处。她停下刻刀，和你重新商量：保留干道，由药工引路；或撤下刻样，另探一条替代路。";
     else if(q.reunion && !q.heroine.expedition)body="苏婉宁带回独立测完的图，修正了曾轻信的旧里程。闻岑小队邀她复核古道深处，临行前，她想与你再试一遍备用路标。";

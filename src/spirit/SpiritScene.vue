@@ -12,7 +12,7 @@ const source=computed(()=>trial.value?.source??spiritSite(props.game));
 const goal=computed(()=>{
  if(trial.value)return '四轮内取纹至少6，保住心神；念力不足时强探会回震。';
  const p=props.game.spirit;
- if(source.value==='well')return p.manual==='learned'?'分念诀已通。回到沉井主法，试运新法时亲自运用护神所得。':p.manual==='found'?'分念诀残篇已取得。到调息石台研修三月，将法门化为自身神识。':'残篇被回声阵封住。先取法、再研修，接续沉井主法的试运。';
+ if(source.value==='well')return p.manual==='learned'?'分念诀已通。回到沉井主法，试运新法时亲自运用护神所得。':p.manual==='found'?'分念诀残篇已取得。到调息石台研修三月，将法门化为自身神识。':'回声阵深处封着分念诀残篇，取出它能补上沉井新法的护神缺口。';
  return p.jade==='refined'?'澄神玉髓已融入识海。带着护神所得，继续圆满与凝婴的准备。':p.jade==='found'?'澄神玉髓已收入玉匣。到调息石台炼化半年，永久拓展识海。':'归潮拓本指向潮隙中的灵物。此行自愿，取出后还须亲自炼化。';
 });
 watch(()=>props.game.spirit.trial,(now,before)=>{if(before&&!now)selected.value='rest';});
@@ -36,7 +36,8 @@ const rows=computed(()=>{
  <template #world><div v-if="trial" class="array-status" role="status">第{{trial.turn+1}} / 4轮 · {{spiritPressure[trial.turn]}}<br>心神 {{trial.stability}} · 念力 {{trial.energy}} · 纹路 {{trial.progress}} / 6</div></template>
  <template v-if="trial || selected==='array'">
   <p v-if="!trial">{{source==='well'?'旧主人的神念沿石壁分成三股，彼此照应。残篇就在回声尽处，蛮力触碰只会将杂音引入识海。':'拓本上的断纹与潮隙暗流逐一吻合。玉髓伏在乱流深处，须护住自己的神念才能取出。'}}</p>
-  <p>阵势依次为回声叠影、逆潮冲识、阵隙暂开、逆潮冲识。辨读回声擅长开局，守神能回念，阵隙暂开时深入较稳。失败增识海创伤1，免费调息可恢复。</p>
+  <p>失败增识海创伤1，免费调息可恢复；撤回不新增创伤。</p>
+  <details :key="source ?? 'none'" class="spirit-help"><summary>查看探阵提示（可选）</summary><p>回声叠影时辨读较稳；逆潮会冲击心神，守神可恢复念力；阵隙暂开时深入取纹较稳。可比较各动作的念力、心神与纹路变化。</p></details>
   <button v-for="row in rows" :key="JSON.stringify(row.action)" :disabled="busy||!!row.quote.error" @click="emit('act',{type:'spirit',action:row.action})">{{row.label}}<small v-if="row.quote.months">准备{{row.quote.months}}月</small><small>{{row.quote.error}}</small></button>
  </template>
  <SpiritSummary v-if="!trial&&(selected==='rest'||selected==='array')" :game="game" :busy="busy" @act="emit('act',$event)"/>

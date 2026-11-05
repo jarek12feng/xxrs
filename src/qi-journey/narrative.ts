@@ -140,10 +140,10 @@ export function qiNarrativeGoal(s: State) {
   if (n.phase === "processed")
     return "把亲手调成的药液用于逆流调息，检验能否稳定经脉。";
   if (n.phase === "won")
-    return "旧药床安静下来。分离或调匀药性，再亲手用一次。";
+    return "旧药床安静下来，药液中的杂气仍未化开。";
   if (n.phase === "challenge")
     return "药气沿旧阵翻涌；看清每一合来势，守住气息。";
-  return "凝元前须亲自处理杂气。备好解法、选同行方式并留退路，再试药窟旧阵。";
+  return "凝元前须亲自处理杂气。旧药阵仍在运转，同行方式与行前准备由你决定。";
 }
 function requirement(s: State, a: QiNarrativeAction) {
   const n = s.qiJourney.narrative;
@@ -322,14 +322,14 @@ export function qiNarrativeTell(s: State) {
   const move = e.pattern[n.duel.turn % e.pattern.length];
   return n.location === "cave"
     ? {
-        guard: "药气正面冲来，先护住经脉。",
+        guard: "药气沿旧阵正面涌来，经脉随之震颤。",
         discern: "阵槽忽明忽暗，辨清哪一道是真流。",
         strike: "药气回落，正好切断逆流。",
       }[move]
     : {
         guard: "段厉压步劈来，先收势护身。",
         discern: "他虚晃一招，留意侧面的短刃。",
-        strike: "他收刀换气，正是反击空隙。",
+        strike: "他收刀换气，胸前短暂露出空隙。",
       }[move];
 }
 export function runQiNarrative(

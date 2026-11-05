@@ -81,7 +81,7 @@ export function growthGoals(s: State): string[] {
   const goals: string[] = [];
   if (s.realm >= 3) {
     if (s.injury) goals.push("丹药：伤势未愈，可先服药或静养。");
-    goals.push("境界：元婴初成，先出关安顿，再决定如何与故人相见，并试用新成的神通。");
+    goals.push("境界：元婴初成，可安顿出关后的生活，选择与故人相见或试用新成的神通。");
     return goals;
   }
   if (!s.journey.main)
@@ -97,7 +97,7 @@ export function growthGoals(s: State): string[] {
   if (s.injury) goals.push("丹药：回春散可恢复伤势；无材料时可免费静养。");
   if (!s.realm)
     goals.push(
-      `境界：修为 ${s.qi}/360；先闯遗府备齐筑基丹，再以固本与疗伤提高把握。`,
+      `境界：修为 ${s.qi}/360；筑基丹是叩关必需，固本与疗伤可提高把握。`,
     );
   else if(s.realm === 2) goals.push("境界：金丹已成，可在凝丹机缘中越过云壁，试用丹元护体。");
   else {

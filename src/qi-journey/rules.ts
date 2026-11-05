@@ -36,7 +36,7 @@ export function qiGoal(s: State) {
   const q = s.qiJourney;
   if (s.realm || !q) return null;
   if (qiNarrativeActive(s)) return qiNarrativeGoal(s);
-  if(q.gates===1 && preparationReady(s) && !qiCaveComplete(s)) return "赴石涧药窟：先完成实战、药性处置与实际运用，再往凝元内府。";
+  if(q.gates===1 && !q.node && !q.trial && !q.essence && !qiCaveComplete(s)) return "凝元前须化解经脉杂气，石涧药窟留有相关药理与实测之地。";
   if (q.trial)
     return `${preparationRoutes[q.trial].name}：独自闯过此关，再往秘境取材。`;
   if (q.node)
@@ -44,11 +44,13 @@ export function qiGoal(s: State) {
   if (q.essence)
     return `${qiSites[q.gates]!.material}已取得：自行炼化、请师门护脉或付费请匠师协助。`;
   if (q.gates === 2)
-    return "经脉与凝元已稳：备齐圆满修为与筑基丹，再考虑固本和疗伤后叩关。";
+    return "经脉与凝元已稳，当前目标是筹备筑基。圆满修为与筑基丹必需，根基和伤势影响把握。";
   if (s.qi >= qiSites[q.gates]!.qi && !preparationReady(s))
     return "药谷采药、师门护送、独闯古阵，择一历练，再入秘境取材。";
   if (q.gates === 1 && preparationReady(s) && !hasFoundationRecipe(s))
-    return "先赴青石遗府取得丹方与内府图：回洞府丹炉查看遗府之约与探府准备。";
+    return s.story.choice === "missed"
+      ? "凝元内府尚缺丹方与内府图。旧约已过，洞府丹炉处仍可独自重返青石遗府。"
+      : "凝元内府的去路尚缺丹方与内府图，线索在青石遗府之约中。";
   return s.qi < qiSites[q.gates]!.qi
     ? `先修炼到 ${qiSites[q.gates]!.qi} 修为，准备${qiSites[q.gates]!.name}。`
     : `突破${q.gates === 0 ? "后期" : "圆满"}瓶颈：准备功法、法器与补给，进入${qiSites[q.gates]!.name}取得${qiSites[q.gates]!.material}。`;
@@ -105,7 +107,7 @@ function qiRequirementError(s: State, a: QiAction): string {
     if (s.qi < qiSites[q.gates]!.qi) return `需要修为 ${qiSites[q.gates]!.qi}`;
     if (q.gates === 1 && !qiCaveComplete(s)) return "先完成石涧药窟实战、处置与实际运用";
     if (q.gates === 1 && !hasFoundationRecipe(s))
-      return "先赴青石遗府取得丹方与内府图";
+      return s.story.choice === "missed" ? "旧约已过，可从洞府丹炉独自重返遗府取图" : "先赴青石遗府取得丹方与内府图";
     if (s.injury >= 3) return "先养伤至 2 以下";
     if (!s.journey.main) return "先装配一门主修功法";
     if (s.stones < qiSites[q.gates]!.fee)

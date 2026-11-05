@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { movePurpose } from "../player-guidance";
 import QiNarrativeScene from "./QiNarrativeScene.vue";
 import { qiNarrativeActive } from "./narrative";
 import QiWorld from "./QiWorld.vue";
@@ -74,7 +75,7 @@ watch(()=>!!q.value.node, entered=>world.value?.reset({x:entered?18:30,y:87}));
 watch(()=>props.busy || !!props.game.pending || props.game.status!=='alive',locked=>{if(locked){world.value?.cancel();world.value?.stop();}});
 const combatOptions=computed(()=>Object.entries(moves).map(([id,label])=>{
   const p=qiPreview(props.game,id as Move);
-  return {id,label,disabled:locked(id as QiAction),detail:`伤害 ${p?.damage} · 承伤 ${p?.incoming} · 回气 ${p?.healing} · 耗草 ${p?.herbs}`};
+  return {id,label,disabled:locked(id as QiAction),detail: `${movePurpose[id]} 耗草 ${p?.herbs ?? 0}`, preview:`伤害 ${p?.damage} · 承伤 ${p?.incoming} · 回气 ${p?.healing} · 耗草 ${p?.herbs}`};
 }));
 </script>
 <template>
@@ -103,7 +104,7 @@ const combatOptions=computed(()=>Object.entries(moves).map(([id,label])=>{
       {{ game.foundation }} · 伤势 {{ game.injury }}
     </p>
     <p v-if="q.last.includes('暂缓') && !q.duel" role="status" class="interruption-note">{{ q.last }}</p>
-    <details v-if="q.last && !q.duel"><summary>刚才的经过</summary><p role="status">{{ q.last }}</p></details>
+    <details v-if="q.last && q.last !== game.qiJourney.narrative.initiation.last && !q.duel"><summary>刚才的经过</summary><p role="status">{{ q.last }}</p></details>
     <QiPreparationPanel v-if="active === 'prepare'"
       :game="game"
       :busy="busy"
@@ -173,13 +174,13 @@ const combatOptions=computed(()=>Object.entries(moves).map(([id,label])=>{
           两场交锋之间须穿过险地，气势不会自动补满。每次入内需一月、灵石
           {{ site.fee }}；可撤退准备后再来。
         </p>
-        <details :open="!game.journey.equipped || game.herbs < 8">
+        <details>
           <summary>行前准备建议</summary>
           <p>
             灵剑利于抢攻；灵瓶持续减伤，途中还能护脉通行，但一阶灵瓶不能独自保障两战续航。主修研至熟练可提高伤害，辅修研习可补护体；具备神识 8、心得 2 与熟练主修可不耗材穿阵并恢复气势。护脉丹恢复更多，适合气势损耗较大时救急。长春诀守势会耗草回气，先留足入境费用，再搭配应敌手段与途中恢复；不必买齐所有器物。
           </p>
         </details>
-        <p v-if="game.journey.main === 'spring' || game.herbs < 8" class="supply-note">药理护身先耗四株灵草，余下 {{ Math.max(0, game.herbs - 4) }} 株可留给战中回气。入境资格不代表能胜过两场交锋；可先准备法器、研修主修，或备一枚护脉丹供途中恢复。</p>
+        <p v-if="game.journey.main === 'spring' || game.herbs < 8" class="supply-note">药理护身先耗四株灵草，余下 {{ Math.max(0, game.herbs - 4) }} 株可留给战中回气。入境资格不代表能胜过两场交锋，请量力准备补给。</p>
         <div class="qi-actions">
           <button
             v-for="(route, key) in qiRoutes"

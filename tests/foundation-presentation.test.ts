@@ -2,7 +2,7 @@
 import { createApp, nextTick, reactive, h } from "vue";
 import { expect, it } from "vitest";
 import JourneyResult from "../src/foundation-journey/JourneyResult.vue";
-import { foundationBattleCue } from "../src/foundation-journey/battle-cues";
+import { foundationBattleCue, foundationBattleHint } from "../src/foundation-journey/battle-cues";
 import { foundationExchange } from "../src/foundation-journey/combat";
 import { challenges } from "../src/foundation-journey/content";
 import { journeyCheckpoint } from "../tools/foundation-journey-checkpoint";
@@ -60,7 +60,8 @@ it("describes every real pattern step, retains opening guidance, and leaves comb
       );
       const cue = foundationBattleCue(s);
       expect(cue.length).toBeGreaterThan(10);
-      expect(cue.includes("初试提示")).toBe(id === "well" || id === "rank1");
+      expect(cue).not.toContain("初试提示");
+      expect(foundationBattleHint(s).includes("初试提示")).toBe(id === "well" || id === "rank1");
       if (id !== "well" && id !== "rank1")
         for (const move of Object.values(moves))
           expect(cue).not.toContain(move);

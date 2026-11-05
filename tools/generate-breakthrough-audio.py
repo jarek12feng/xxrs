@@ -6,9 +6,11 @@ out = root / 'public/audio/breakthrough-v1'
 out.mkdir(parents=True, exist_ok=True)
 rate = 44100
 report = []
-for name, seconds, base, score in [('foundation-rise',12,146.83,True),('golden-rise',12,196,True),('breakthrough',3.2,146.83,False),('golden-breakthrough',4,196,False)]:
+for name, seconds, base, score in [('foundation-rise',12,146.83,True),('golden-rise',12,196,True),('breakthrough',3.2,146.83,False),('golden-breakthrough',4,196,False),('nascent-rise',12,220,True),('nascent-breakthrough',4,220,False)]:
     data = [0.0] * int(seconds*rate)
     melody = [0,7,12,14,19,24,19,14,12] if score else [0,7,12,19,24]
+    if name.startswith("nascent"):
+        melody = [0,12,7,19,24,26,31,24,19] if score else [0,12,19,24,31]
     for k, semitone in enumerate(melody):
         start = k * (0.92 if score else 0.23)
         length = 3.3 if score else 2.5

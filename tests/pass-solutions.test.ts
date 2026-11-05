@@ -289,7 +289,7 @@ it("rejects invented outcomes, missing fields and impossible preparation in curr
     expect(() => migrateSave(bad)).toThrow();
   }
 });
-it("shows all three tradeoffs before commitment and persistent characters after returning", async () => {
+it("reveals observed tradeoffs before commitment and keeps characters after returning", async () => {
   const p = session();
   const render = async (target: string) => {
     const host = document.createElement("div");
@@ -299,10 +299,13 @@ it("shows all three tradeoffs before commitment and persistent characters after 
   };
   let html = await render("山口与阵纹");
   for (const key of keys)
-    expect(html).toContain(passSolutions[key].consequence);
-  expect(html).toContain("满足条件即成功，不掷骰");
+    expect(html).not.toContain(passSolutions[key].consequence);
+  expect(html).toContain("建成后不能改选");
   p.equip("sword");
   p.road("markCut");
+  html = await render("山口与阵纹");
+  expect(html).toContain(passSolutions.sword.consequence);
+  expect(html).toContain(passSolutions.sword.requirement);
   p.road("cutPass");
   html = await render("青嶂");
   expect(html).toContain("青嶂");

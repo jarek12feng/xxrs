@@ -17,7 +17,7 @@ it("凝元历练后缺少内府图时指向取图，不提前声称可进入内�
   s.qiJourney.preparations[1]!.medicine = 3;
   expect(qiGoal(s)).toContain("石涧药窟");
   s.qiJourney.narrative={...freshQiNarrative(),initiation:s.qiJourney.narrative.initiation,phase:"applied",method:"array",company:"alone",retreatMarked:true,mixture:"separated"};
-  expect(qiGoal(s)).toContain("先赴青石遗府取得丹方与内府图");
+  expect(qiGoal(s)).toContain("去路尚缺丹方与内府图，线索在青石遗府");
   s.story.choice = "self";
   expect(qiGoal(s)).toContain("凝元晶髓");
 });

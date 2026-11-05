@@ -114,7 +114,7 @@ it("恢复遗迹交锋时无需选中对象便能应对并显示来势", async (
   app.mount(host);
   try {
     expect(host.querySelector(".battle-inspector")).not.toBeNull();
-    expect(host.textContent).toContain("先辨灵流");
+    expect(host.textContent).toContain("阵眼轮流明灭，真正的灵流藏在暗处");
     await clickSceneAction(host, "辨影");
     expect(sent).toEqual([
       { type: "outerSea", action: { kind: "move", move: "discern" } },

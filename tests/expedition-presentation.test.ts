@@ -9,7 +9,7 @@ import BattleStage from "../src/expedition/BattleStage.vue";
 it("introduces the small fight before requiring foundation preparation", () => {
   const p = expeditionSession();
   expect(p.state.realm).toBe(0);
-  expect(openingGuide(p.state)?.title).toBe("先试山道护送");
+  expect(openingGuide(p.state)?.title).toBe("山道护送");
   p.send({ type: "expedition", action: "accept" });
   const before = p.state;
   p.send({ type: "expedition", action: "enter" });
@@ -22,7 +22,7 @@ it("introduces the small fight before requiring foundation preparation", () => {
   p.send({ type: "equip", technique: "spring" });
   expect(openingGuide(p.state)?.title).toContain("灵器");
   p.send({ type: "equipRelic", relic: "vial" });
-  expect(openingGuide(p.state)?.title).toContain("两种准备");
+  expect(openingGuide(p.state)?.title).toContain("探明古阵");
 });
 it("suggests only relevant recovery steps and never mutates state", () => {
   const p = expeditionSession();

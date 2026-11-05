@@ -9,7 +9,7 @@ const emit=defineEmits<{act:[intent:Intent];close:[]}>();
 const active=ref('teacher');
 </script>
 <template>
-  <NarrativeStage stage-key="admission" title="听松山下 · 药坪求学" image="/art/initiation/tingsong-admission-court.webp" eyebrow="我的入道之路" goal="凭亲历求教，试稳护路绳阵，再决定拜入听松或以散修身份立约。" :hotspots="[{id:'teacher',label:'温蘅与季衡',kind:'person',x:61,y:64}]" :active="active" :speaker="'温蘅与季衡'" @select="active=$event" @close="active=''">
+  <NarrativeStage stage-key="admission" title="听松山下 · 药坪求学" image="/art/initiation/tingsong-admission-court.webp" eyebrow="我的入道之路" goal="争取修行传承与基础行装。拜入听松或以散修身份立约，由你决定。" :hotspots="[{id:'teacher',label:'温蘅与季衡',kind:'person',x:61,y:64}]" :active="active" :speaker="'温蘅与季衡'" @select="active=$event" @close="active=''">
     <template #world>
       <img class="seeker" :src="characterArt(heroArt(game.social.gender,game.realm))" :alt="game.name" />
       <img class="teacher" src="/characters/wenheng.png" alt="温蘅" />

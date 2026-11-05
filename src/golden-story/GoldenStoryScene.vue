@@ -172,7 +172,7 @@ const cooperation = computed(() => goldenCooperation(props.game));
     :active="selected"
     :goal="
       tide
-        ? '读潮尺、测回流，按分工复测后，再回古渡决定潮图是否公开。'
+        ? '核实潮堤的水势，留下可供药船通行的实测记录。'
         : '将修行中的疑处带到石案前，亲手试过，再问前路。'
     "
     @select="$event === 'exit' ? emit('close') : (selected = $event)"
@@ -211,7 +211,7 @@ const cooperation = computed(() => goldenCooperation(props.game));
       顾沧遥须保药船，叶问苓要校旧图。读完两处刻度，再选一项分工；各备所需，复测一月。
     </p>
     <p v-if="selected === 'record'">
-      旧主人研究的是潮息与护体。先把法宝和功法用过，再辨旧录能证明什么。
+      旧主人研究的是潮息与护体。你自己的修行经历，或许能与旧录互相印证。
     </p>
     <p v-if="selected === 'teaching'">
       {{ g.practice ? exercise?.clue : "石案旁留着四件试法之物：双流玉盘、听潮石、分药盏与护关阵盘。先说清自己的疑处，再择一件亲试。" }}

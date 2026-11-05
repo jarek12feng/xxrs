@@ -1,3 +1,4 @@
+import { guidanceNotes } from './player-guidance';
 import { freshLegacyMaterialPractice, validLegacyMaterialPractice } from './golden-story/legacy-material-practice';
 import { validDeath, type DeathRecord } from './mortality';
 import { upgradeMaterialPractice, validMaterialPractice } from './golden-story/material-practice';
@@ -525,6 +526,9 @@ export function aidError(s: State, p: TrialPlace, helper: "mentor" | "luchi") {
   return "";
 }
 export function nextGoal(s: State) {
+  return [nextStageGoal(s), ...guidanceNotes(s)].filter(Boolean).join(" ");
+}
+function nextStageGoal(s: State) {
   if (s.realm === 3 || (s.realm === 2 && s.conclave.stage >= 2 && !lizhaoActivity(s))) return nascentGoal(s);
   if (lizhaoActivity(s)) return lizhaoGoal(s);
   if(s.realm===2 && s.goldenCore.farShore) return seaGoal(s);
@@ -550,7 +554,7 @@ export function nextGoal(s: State) {
   if (s.adventure.road.map && !s.adventure.road.surveyed) return roadGoal(s);
   if (s.realm === 1) return foundationGoal(s);
   if (s.story.stage === "unmet" && s.adventure.step === "done")
-    return "药工已平安归家。先修炼与休整，第三个月赴渡口，再听陆迟未说完的心事。";
+    return "药工已平安归家。第三个月，陆迟会在渡口等你；其间可自行修炼或休整。";
   if (s.realm === 0 || s.story.stage !== "resolved")
     return chapter.nextGoal(base(s));
   if (s.journey.maps.sea < 3) return familyQuestGoal(s);

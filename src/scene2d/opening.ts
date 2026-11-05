@@ -88,7 +88,7 @@ export function openingScene(a: Adventure) {
       );
       lead = a.clue
         ? "青瘴粉留在篓中。沿石阶上山，去药庐问温蘅。"
-        : "你来听松求学，却认出漂回的药篓系着药队求援的结。先查清痕迹，再带去药庐。";
+        : "你来听松求学，却认出漂回的药篓系着药队求援的结。药篓上的痕迹或许能说明他们的去向。";
       break;
     case "apothecary":
       image = "/art/scene2d/apothecary-floor-v1.png";

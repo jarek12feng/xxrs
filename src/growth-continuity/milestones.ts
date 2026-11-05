@@ -36,14 +36,14 @@ export function equipmentMilestone(before: State, after: State) {
   if (a.blade === "embryo" && b.blade === "attuned")
     return ready(
       "tideBlade",
-      "装配后可赴试罡石台；先辨影或守势，再反击破罡。石台是实战，可撤回重备。",
+      "装配后可赴试罡石台，检验潮纹剑能否破开罡衣。石台是实战，可撤回重备。",
     );
   if (!a.proven && b.proven)
     return milestone(
       "tideBlade",
       "试罡已过",
       "石偶的罡衣已经破开，这柄剑的蓄势连招由你亲手试成。",
-      "后续交锋仍须先辨影或守势再反击；在离照药池看清阵势开口，将连招带入取药实战。",
+      "你已掌握潮纹剑的蓄势破罡。离照药池仍有取药实战，可按阵势选用所得。",
     );
   if (!before.outerSea.seal && after.outerSea.seal)
     return milestone(
@@ -55,7 +55,7 @@ export function equipmentMilestone(before: State, after: State) {
   if (!before.outerSea.attuned && after.outerSea.attuned)
     return ready(
       "tideSeal",
-      "内府潮压可借镇潮印应对；先在行囊选择是否出战，再按现场要求备齐行装与修为。",
+      "镇潮印可护持内府潮压，是否出战由你在行囊决定；行装与修为要求可在入口查看。",
     );
   if (before.conclave.depth === 0 && after.conclave.depth >= 1)
     return milestone(

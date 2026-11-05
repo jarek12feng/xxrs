@@ -44,5 +44,5 @@ export function spiritPracticeQuote(s:State,move:TeachingMove) {
  return {error,herbs,next,failed,passed,note};
 }
 export function spiritPracticeView(p:TeachingPractice) {
- return {title:p.step===0?'听潮：护住本念，辨清双声':'横潮实测：听辨会积起识压',clue:p.step===0?'两股回声绕过中央细光。让本念稳住、两股线索都清楚，且识压不高于一层，再放开试阵。':'横潮不断压向神念。逐股听辨每次会添一层识压；分念能同时追踪两股。放开试阵前，要兼顾中心、双声与识压。',visual:'本念与双声'};
+ return {title:p.step===0?'听潮：护住本念，辨清双声':'横潮实测：听辨会积起识压',clue:p.step===0?'护住本念，辨清两股回声，并将识压保持在一层以内。':'横潮不断压向神念。目标仍是本念稳定、双声清楚，且识压不高于一层。',visual:'本念与双声'};
 }

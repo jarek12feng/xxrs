@@ -1,3 +1,7 @@
+import { roadScenes } from "./road";
+import { mistScenes } from "./mist";
+import { combatOwner } from "./scene-activity";
+import type { StoryChapter } from "./scene2d/story-routing";
 import { deathView } from "./mortality";
 import type { State } from "./core";
 import { sceneMusic, type MusicCue } from "./local-music";
@@ -7,7 +11,7 @@ export function foundationAudioScene(
   s: State | null | undefined,
   panel: string,
 ): { music: MusicCue; ambient: AmbientCue } | null {
-  if (!s || s.realm < 1) return null;
+  if (!s || s.realm !== 1) return null;
   const q = s.foundationJourney;
   if (q.duel)
     return {
@@ -64,15 +68,131 @@ export function gameAudioScene(
   s: State | null | undefined,
   panel: string,
   name: string,
-) {
+  chapter?: StoryChapter,
+): { music: MusicCue; ambient: AmbientCue | null } {
   if (s?.status === "dead") return { music: deathView(s).music, ambient: null };
   if (s?.status === "alive") {
-    if (s.social.arena.duel || s.expedition.duel || s.qiJourney.duel)
-      return { music: "trial" as MusicCue, ambient: null };
+    const owner = combatOwner(s);
+    if (owner === "foundation" && s.foundationJourney.duel)
+      return (
+        foundationAudioScene(s, panel) ?? { music: "trial", ambient: null }
+      );
+    if (owner) return { music: "trial", ambient: null };
+    if (s.ascension) return { music: "mystery", ambient: null };
+    // The chapter is reported by the rendered scene, including local tab changes.
+    if (chapter) {
+      if (s.wayfaring.trip || s.wayfaring.passage)
+        return { music: "journey", ambient: null };
+      const auction = s.treasures.auction;
+      if (auction?.entered && !auction.closed)
+        return {
+          music: "journey",
+          ambient: "wind-chimes",
+        };
+      if (chapter === "sea") {
+        if (s.outerSea.location === "home")
+          return {
+            music: "vista",
+            ambient: "wind-chimes",
+          };
+        if (s.outerSea.location === "ruins")
+          return {
+            music: "sunken",
+            ambient: "waterside",
+          };
+        const reunion = s.goldenStory.reunion.stage;
+        const music: MusicCue = [
+          "met",
+          "planned",
+          "anchored",
+          "resolved",
+          "shared",
+        ].includes(reunion)
+          ? "survey"
+          : s.goldenStory.practice
+            ? "lamps"
+            : "journey";
+        return { music, ambient: "waterside" };
+      }
+      if (chapter === "conclave")
+        return {
+          music: s.conclave.location === "vault" ? "sunken" : "journey",
+          ambient: "waterside",
+        };
+      if (chapter === "lizhao")
+        return {
+          music: ["outer", "inner", "bay"].includes(s.lizhao.location)
+            ? "mystery"
+            : s.lizhao.location === "chamber"
+              ? "lamps"
+              : "journey",
+          ambient: "waterside",
+        };
+      if (chapter === "nascent")
+        return {
+          music:
+            s.realm === 3
+              ? "vista"
+              : s.nascentSoul.ceremony === "witnessed" ||
+                  s.nascentSoul.ceremony === "married"
+                ? "return"
+                : "lamps",
+          ambient: "wind-chimes",
+        };
+      if (chapter === "golden")
+        return {
+          music: s.goldenCore.expedition === "path" ? "mystery" : "vista",
+          ambient: "wind-chimes",
+        };
+      if (chapter === "contest")
+        return {
+          music: "journey",
+          ambient: "wind-chimes",
+        };
+      if (chapter === "foundation")
+        return (
+          foundationAudioScene(s, "world") ?? {
+            music: "vista",
+            ambient: "wind-chimes",
+          }
+        );
+      if (chapter === "qi")
+        return {
+          music: s.qiJourney.node ? "mystery" : "journey",
+          ambient: null,
+        };
+      if (chapter === "road")
+        return {
+          music: sceneMusic(roadScenes[s.adventure.road.stage].name),
+          ambient: null,
+        };
+      if (chapter === "mist")
+        return {
+          music: sceneMusic(
+            mistScenes[s.adventure.mist.stage].title,
+            s.adventure.mist.revisited,
+          ),
+          ambient: null,
+        };
+      if (["admission", "practice", "rewards"].includes(chapter))
+        return {
+          music: "home",
+          ambient: "wind-chimes",
+        };
+      // Revisiting a qi chapter must not inherit the player's higher-realm score.
+      return {
+        music: sceneMusic(name, s.adventure.mist.revisited),
+        ambient: null,
+      };
+    }
     const foundation = foundationAudioScene(s, panel);
     if (foundation) return foundation;
-    if (s.qiJourney.node > 0)
-      return { music: "mystery" as MusicCue, ambient: null };
+    if (s.realm >= 2)
+      return {
+        music: "vista",
+        ambient: "wind-chimes",
+      };
+    if (s.qiJourney.node > 0) return { music: "mystery", ambient: null };
   }
   return {
     music: sceneMusic(name, s?.adventure.mist.revisited ?? false),

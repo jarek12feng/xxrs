@@ -162,3 +162,13 @@ it('突破短乐不循环，重复场景更新不重播，结束后恢复常规�
  expect(audios.at(-1)!.loop).toBe(true);
  player.dispose();
 });
+
+it("plays nascent breakthrough once, then resumes a looping scene", async () => {
+  const { player, audios } = setup();
+  player.scene("nascent-rise"); player.settings(true,0.5); player.unlock();
+  await Promise.resolve();
+  expect(audios[0].loop).toBe(false);
+  player.scene("vista"); await Promise.resolve();
+  expect(audios[1].loop).toBe(true);
+  player.dispose();
+});

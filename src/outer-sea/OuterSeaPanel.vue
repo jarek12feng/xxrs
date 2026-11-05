@@ -185,10 +185,10 @@ const seaTell = computed(() => {
   if (!d) return "";
   const move = seaFoe(d.depth).pattern[d.turn % 3];
   return move === "guard"
-    ? "石臂挟潮横扫，先守住来势。"
+    ? "石臂挟潮横扫，浪墙迎面压来。"
     : move === "discern"
-      ? "阵眼轮流明灭，先辨灵流。"
-      : "石卫回身归位，趁隙反击。";
+      ? "阵眼轮流明灭，真正的灵流藏在暗处。"
+      : "石卫回身归位，胸前石缝短暂露出。";
 });
 const combat = computed(() => goldenCombat(props.game, "sea"));
 const combatOptions = computed(() =>

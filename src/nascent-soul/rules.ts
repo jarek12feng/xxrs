@@ -497,9 +497,9 @@ export function nascentGoal(s: State) {
           ? "自行决定庆贺规模与是否承担新职责。"
           : n.ability !== "none" ? crossingView(s).hint : "前往古渡潮隙，以新能力护持测绘队渡过潮隙乱流。";
   if (!n.trialWon)
-    return "离照取药后，修满899，在试丹禁室安排护体、护神与破禁。";
+    return "当前目标是通过试丹禁室，融汇金丹所学。入室需离照取药成果与修行899。";
   if (Number(s.conclave.stage) < 3) return "禁室已通，融汇丹元抵达金丹圆满。";
-  return "修满1200，研成元婴续篇并试雷验法，备好化婴丹、灵地与护持；三段行功后须亲自渡过天劫，结契自愿。";
+  return "当前目标是筹备凝婴并亲自渡过天劫。修为、法门、试雷与药物等缺口可在叩关处查看；结契自愿。";
 }
 export function runNascent(
   input: State,

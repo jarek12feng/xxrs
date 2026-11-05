@@ -80,3 +80,22 @@ it("route preview has a real keyboard focus entry", async () => {
   panel.focus();
   expect(document.activeElement).toBe(panel);
 });
+it('归路后果随观察出现，未调查的路线不预告结局', async()=>{
+ const props=reactive({game:mistCheckpoint(42,'wood','male',true),busy:false});
+ props.game.adventure.road.prepared='none';
+ app=createApp({render:()=>h(RoadPanel,props)});app.mount(document.body.appendChild(document.createElement('div')));
+ document.querySelector<HTMLButtonElement>('[data-hotspot="objects"]')!.click();await nextTick();
+ const plans=()=>document.querySelector('.pass-solutions')!;
+ expect(plans().textContent).not.toContain(passSolutions.sword.consequence);
+ props.game.adventure.road.prepared='medicine';await nextTick();
+ expect(plans().textContent).toContain(passSolutions.medicine.consequence);
+ expect(plans().textContent).toContain(passSolutions.medicine.requirement);
+ expect(plans().textContent).not.toContain(passSolutions.sword.consequence);
+});
+it('旅亭行路手记直接提供记路行动', async()=>{
+ const game=mistCheckpoint(42,'wood','male',true);game.adventure.road.stage='lookout';game.adventure.road.passed=true;game.adventure.road.surveyed=false;
+ const act=vi.fn();app=createApp(RoadPanel,{game,busy:false,onAct:act});app.mount(document.body.appendChild(document.createElement('div')));
+ document.querySelector<HTMLButtonElement>('[data-hotspot="person"]')!.click();await nextTick();
+ const button=Array.from(document.querySelectorAll('button')).find(b=>b.textContent?.includes('将安全的归路记入路簿'))!;
+ expect(button).toBeDefined();button.click();expect(act).toHaveBeenCalledWith({type:'road',action:'survey'});
+});

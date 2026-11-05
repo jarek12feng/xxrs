@@ -239,7 +239,7 @@ onMounted(() => {
         </h3>
         <p class="mail-body">{{ current.body }}</p>
         <p class="mail-state">现况：{{ messageStatus(game, current) }}</p>
-        <p v-if="lead" class="mail-lead">接下来：{{ lead }}</p>
+        <p v-if="lead" class="mail-lead">相关线索：{{ lead }}</p>
         <p v-if="current.response !== 'none'">
           你的回信：{{
             {

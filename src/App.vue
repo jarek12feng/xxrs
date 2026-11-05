@@ -65,7 +65,7 @@ const musicVolume = ref(0.45);
 const musicNotice = ref("");
 const musicTitle = ref("");
 const musicPlaying = ref("");
-const breakthroughScore = ref<"foundation-rise" | "golden-rise" | null>(null);
+const breakthroughScore = ref<ReturnType<typeof breakthroughMusic>>(null);
 let breakthroughTimer: ReturnType<typeof setTimeout> | undefined;
 function stopBreakthroughScore() {
   clearTimeout(breakthroughTimer);
@@ -218,6 +218,7 @@ const selectedPlace = ref<"valley" | "peak" | "sea">("valley");
 const view = ref<"story" | "cultivation">("story");
 const cultivationPane = ref<"" | "practice" | "chores" | "prepare" | "notes">("");
 const storyEntry = ref("");
+const audioChapter = ref<import("./scene2d/story-routing").StoryChapter>();
 watch(view, (next) => { cultivationPane.value = ""; if (next === "cultivation") storyEntry.value = ""; });
 function leaveCultivation() {
   if (!game.value || ui.busy || receiptExpanded.value) return;
@@ -844,6 +845,7 @@ onMounted(async () => {
             titleScreen.value ? null : game.value,
             dialog.value,
             currentScene.value.name,
+            !ui.history && view.value === "story" ? audioChapter.value : undefined,
           ),
         }),
         ({ scene, audio, score }) => {
@@ -1115,7 +1117,7 @@ onUnmounted(() => {
             人生卷宗
           </button>
         </nav>
-        <StoryScenes :entry-chapter="storyEntry" v-if="!ui.history && view === 'story'" :game="game" :busy="ui.busy || ui.running" :show-road="showRoad" :receipt="receipt" :combat-feedback="combatFeedback"
+        <StoryScenes @scene="audioChapter = $event" :entry-chapter="storyEntry" v-if="!ui.history && view === 'story'" :game="game" :busy="ui.busy || ui.running" :show-road="showRoad" :receipt="receipt" :combat-feedback="combatFeedback"
           @act="worldAct" @cultivate="view = 'cultivation'" @map="openPanel('world')" @breakthrough="dialog = 'break'" @mist="openMist" @road="showRoad = true" @equipment="openPanel('gear')" @board="openPanel('arena')" @sect="openPanel('sect')" @inventory="openPanel('inventory')" />
         <template v-if="!ui.history && view === 'cultivation'"
           ><section

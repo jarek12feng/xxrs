@@ -105,7 +105,7 @@ it('offers a free explicit road exit before the foundation route is surveyed', a
   app.mount(host);
   try {
     host.querySelector<HTMLButtonElement>('[data-hotspot="encounter"]')!.click();await nextTick();
-    expect(host.textContent).toContain('先到云栈旅亭踏勘归路');
+    expect(host.textContent).toContain('云栈旅亭还缺一份青嶂归路的实测');
     const exit=Array.from(host.querySelectorAll('button')).find(b=>b.textContent==='前往青嶂旧路')!;
     exit.click();expect(exits).toBe(1);expect(commands).toEqual([]);expect(state).toEqual(before);
   } finally {app.unmount();}

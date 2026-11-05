@@ -6,6 +6,7 @@ import ThunderWorld from "./ThunderWorld.vue";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
 import NascentPracticeWorld from "./NascentPracticeWorld.vue";
 import NascentAfterWorld from "./NascentAfterWorld.vue";
+import { thunderSignal } from "./thunder";
 import { crossingView } from "./crossing";
 import { channelingSituation } from "./channeling";
 import { nascentGoal, nascentActive, nascentPromises } from "./rules";
@@ -180,6 +181,14 @@ const sceneImage = computed(() =>
         >镇潮印已离开装配，原镇流失效；可重新装配或改用自身护持。</span
       >
     </p>
+    <details v-if="n.thunder.battle" :key="n.thunder.battle.kind" class="optional-guidance">
+      <summary>查看接雷提示（可选）</summary>
+      <p>{{ thunderSignal(n.thunder.battle).hint }}</p>
+    </details>
+    <details v-if="game.realm === 3 && ['surveyed','sheltered'].includes(n.ability) && ['gate','current','landing'].includes(selected)" class="optional-guidance">
+      <summary>查看护渡提示（可选）</summary>
+      <p>集中护持可分段带队，铺开护持则覆盖主潮与侧岸，但每段更慢。镇潮印可固定主潮，让你腾出手护岸；所需年月见各项操作。</p>
+    </details>
     <div v-if="selected === 'letters'">
       <p v-if="!actualPromises.length">长关前已无待交接之事。</p>
       <p v-for="key in actualPromises" :key="key">

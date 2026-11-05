@@ -17,13 +17,13 @@ export function foundationGoal(s: State) {
   if (heroineGoal(s)) return heroineGoal(s);
   if (!s.adventure.road.surveyed)
     return "先以筑基之力走通青嶂关，在云栈旅亭留下归路。";
-  if (!q.ferry) return "去山河地图的筑基行旅，前往无名渡争取沉井传承。";
+  if (!q.ferry) return "无名渡传来沉井旧府的消息，可争取适合筑基修行的传承。";
   if (q.ferry === 1)
     return "准备功法与灵器，挑战沉井守府石偶。寻姐与取证可自由选择。";
   if (q.inheritance === "none")
     return "选择一条适合自己打法的沉井传承，然后亲手试用。";
-  if (s.spirit?.manual !== "learned" && !q.won.includes("application")) return "沉井回声仍困着一册分念诀。到无名渡内室探阵取法，研修后再试运新法；神识不足可用灵草4护神。";
-  if (!q.won.includes("application")) return "分念诀已研修。装配沉井主修，在无名渡试运新法；守势后辨影可借炼神所得稳住逆流。";
+  if (s.spirit?.manual !== "learned" && !q.won.includes("application")) return "试运新法尚需护神之法相承，无名渡内室的回声中封着分念诀。";
+  if (!q.won.includes("application")) return "分念诀已研修，当前目标是在无名渡亲自试运沉井新法。";
   if (q.ferry === 2) return "中期已可积累；准备好后挑战离渡执卫，打通三地药路。";
   if (q.ferry === 3) return "可护送渡客或破禁离渡，也可留下寻亲、查证。";
   if (q.cultivation < 200) return `再积累 ${200-q.cultivation} 点到筑基中期，前往三地择一取材。`;
@@ -31,14 +31,14 @@ export function foundationGoal(s: State) {
   if(!maleMainline(s) && q.rescue === 2)return q.heroine.supplied ? "补给已送达，向程砚学稳脉，再安排内层接应。" : q.won.includes("frontier") ? "外缘已打通，将补给送入石室。" : "击退外缘石偶，送入第一批补给。";
   if(!maleMainline(s) && q.rescue === 3)return "比较境界差距与越阶准备，再完成内层接应；晋后期需另行炼化机缘主材。";
   if (!q.growth.refined) return foundationBlock(s);
-  if (!pactTrialComplete(s.secretPact)) return "灵元已凝练；从山河地图赴照玄，完成共同行险、分宝和离府实战。药庄、雪线均无需重做古道取材。";
+  if (!pactTrialComplete(s.secretPact)) return "灵元已凝练，照玄旧府仍有一场检验修行的历练。药庄、雪线所得主材同样有效，无需重做古道取材。";
   if (q.cultivation < 400) return `照玄的逆流已走通。再积累 ${400-q.cultivation} 点到后期，便能以更稳的灵元准备古道接应；出关前可先备妥护身药。`;
   if (!hasSteady(q)) return "可请药庄岑霁助你行功，去古道自行调息，或接应后向程砚请教稳脉。";
-  if (!q.condensation && q.cultivation >= 500) return "稳脉与积累已足，可到云外古道贯通周天，再以换招增伤减伤亲试长风归流。也可先整备，不必继续闭关。";
-  if (!q.condensation) return `稳脉已成。下一步要将沉井与古道所学贯成周天，交锋换招时便能增伤减伤；修行至 500 后到古道试运（当前 ${q.cultivation}）。`;
+  if (!q.condensation && q.cultivation >= 500) return "稳脉与积累已足，当前目标是在云外古道贯通周天。可自行整备，不必继续闭关。";
+  if (!q.condensation) return `稳脉已成，当前目标是贯通周天；古道试运需修行至 500（当前 ${q.cultivation}）。`;
   if (!q.won.includes("culmination")) return "到古道独自完成长风归流；已学贯流在换招时增伤减伤。";
   if (q.cultivation < 600) return `归流已通，凝丹是下一道大关。再积累 ${600-q.cultivation} 点至圆满；也可先筹备凝丹主药与灵地，出关后便有着落。`;
-  if (!q.epilogue) return "回听松行前居，收束筑基篇，查看凝丹筹备缺口。";
+  if (!q.epilogue) return "长风归流已成，行前居仍有人等你归山。凝丹的筹备可在此后继续。";
   return "筑基篇已完成。可以继续原角色，回访故人或挑战尚未完成的榜单。也可筹备凝丹主药、丹药与灵地，叩关金丹。";
 }
 export function battleError(s: State, id: BattleId) {

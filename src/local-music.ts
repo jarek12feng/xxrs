@@ -4,6 +4,7 @@ export type MusicCue =
   | "last-lamp" | "lost-tide" | "silent-thunder"
   | "foundation-rise"
   | "golden-rise"
+  | "nascent-rise"
   | "home"
   | "trial"
   | "journey"
@@ -17,6 +18,7 @@ export const musicNames: Record<MusicCue, string> = {
   "silent-thunder": "雷散人未归 · 天关",
   "foundation-rise": "道基初成 · 出关",
   "golden-rise": "丹成云开 · 出关",
+  "nascent-rise": "婴成天阔 · 出关",
   home: "听松入定 · 洞府与归家",
   trial: "护路破阵 · 交锋",
   journey: "青山同行 · 山外行路",
@@ -211,6 +213,6 @@ export function createMusicPlayer(
     factory,
     report,
     playback,
-    cue => cue !== "foundation-rise" && cue !== "golden-rise",
+    cue => cue !== "foundation-rise" && cue !== "golden-rise" && cue !== "nascent-rise",
   );
 }

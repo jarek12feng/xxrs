@@ -165,7 +165,7 @@ export function roadGoal(s: State): string {
       : !r.commission
         ? "决定是否帮郁青备齐山口伤药，换取图角。"
         : !r.map
-          ? "交付灵草 4，或凭神识 6、心得 2 帮忙辨药，完成委托。"
+          ? "郁青的伤药委托尚未完成，报酬是缺失的航图。可在药摊查看交药与辨药的条件。"
           : "航图补全了。可以邀郁青同行，去青嶂关看看。";
   if (r.stage === "beyond")
     return r.surveyed
@@ -178,7 +178,7 @@ export function roadGoal(s: State): string {
   if (r.obstacle === "none") return "先观察守境妖修与山风，别急着闯关。";
   if (s.realm === 0)
     return "准备筑基：积累修为、赴陆迟旧约、凝神固本，再挑战山口。";
-  return "观察镇风草、断崖与旧阵，选择你愿意留给后来人的归路。三种解法满足条件后必定成功。";
+  return "疏通青嶂归路，让后来的人也能过山；草根、断崖与旧阵都留下了线索。";
 }
 export function roadDetails(
   s: State,

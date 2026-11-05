@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { movePurpose } from "../player-guidance";
 import {revisitView} from "../world-revisits/projection";
 import RevisitPanel from "../world-revisits/RevisitPanel.vue";
 import AuctionScene from "../auction/AuctionScene.vue";
@@ -49,7 +50,7 @@ import JourneyResult from "./JourneyResult.vue";
 import { chapterEnding } from "./aftermath";
 import { journeyPreparation } from "./preparation";
 import { formatLifeMonths } from "../progression";
-import { foundationBattleCue, foundationMoveSetup } from "./battle-cues";
+import { foundationBattleCue, foundationBattleHint, foundationMoveSetup } from "./battle-cues";
 import CultivationOutlook from "../CultivationOutlook.vue";
 const props = withDefaults(
   defineProps<{
@@ -95,7 +96,7 @@ const moveOptions = computed(() =>
   })),
 );
 const battleSnapshot = computed(()=>q.value.duel && foe.value ? {id:q.value.duel.id,turn:q.value.duel.turn,player:q.value.duel.hp,enemy:q.value.duel.enemy,enemyName:foe.value.foe,enemyImage:foe.value.foe.endsWith('阵') ? undefined : foe.value.image,effect:q.value.duel.effect} : null);
-const fieldOptions = computed(()=>moveOptions.value.map(m=>({id:m.move,label:m.label,disabled:!!journeyActionError(props.game,{kind:'move',move:m.move}),detail:[
+const fieldOptions = computed(()=>moveOptions.value.map(m=>({id:m.move,label:m.label,disabled:!!journeyActionError(props.game,{kind:'move',move:m.move}),detail: [movePurpose[m.move], `耗草 ${m.preview?.herbs ?? 0}`, m.setup, m.preview && q.value.duel && m.preview.incoming >= q.value.duel.hp ? "此招承伤会耗尽气势，回春无法救回；可改招或撤退。" : ""].filter(Boolean).join(" · "), preview:[
   m.preview ? `伤敌 ${m.preview.damage} / 承伤 ${m.preview.incoming}${m.preview.herbs ? ` / 耗草 ${m.preview.herbs}`:''}${m.preview.healing ? ` / 回气 ${m.preview.healing}`:''}` : '',
   m.preview && q.value.duel && m.preview.incoming>=q.value.duel.hp ? '此招承伤会耗尽气势，回春无法救回；可改招或撤退。' : '',m.setup
 ].filter(Boolean).join(' · ')})));
@@ -236,7 +237,7 @@ function act(action: JourneyAction) {
       <template #world>
         <FoundationWorld ref="world" :game="game" :mode="mode" @start="active = ''" />
         <CombatField :snapshot="battleSnapshot" :hero="heroArt(game.social.gender,game.realm)" :hero-name="game.name" />
-        <CombatBar v-if="q.duel && foe" :turn="q.duel.turn" :player="q.duel.hp" :player-max="foundationPower(game).hp" :enemy="q.duel.enemy" :enemy-max="foe.hp" :enemy-name="`${foe.foe} · ${opponentRealmName(foe)}`" :tell="foundationBattleCue(game)" :options="fieldOptions" :busy="busy" :retreat-disabled="!!journeyActionError(game,{kind:'withdraw'})" retreat-label="沿原路撤退 · 补给不退" @move="fieldMove" @retreat="act({kind:'withdraw'})" />
+        <CombatBar v-if="q.duel && foe" :turn="q.duel.turn" :player="q.duel.hp" :player-max="foundationPower(game).hp" :enemy="q.duel.enemy" :enemy-max="foe.hp" :enemy-name="`${foe.foe} · ${opponentRealmName(foe)}`" :tell="foundationBattleCue(game)" :help="foundationBattleHint(game)" :options="fieldOptions" :busy="busy" :retreat-disabled="!!journeyActionError(game,{kind:'withdraw'})" retreat-label="沿原路撤退 · 补给不退" @move="fieldMove" @retreat="act({kind:'withdraw'})" />
         <details v-if="q.duel && foe" class="field-battle-details">
           <summary>交锋准备与本合明细</summary>
           <p>{{battlePreparation?.description}} {{battlePreparation?.cooperationNote}}</p>
@@ -271,7 +272,7 @@ function act(action: JourneyAction) {
         </template>
       </template>
       <aside v-if="mode === 'journey' && q.location === 'home' && !game.adventure.road.surveyed && (active === 'encounter' || active === 'road')" aria-label="青嶂归路指引">
-        <p>先沿青嶂旧路到云栈旅亭，记录归路；再回行前居商议同行。</p>
+        <p>同行勘测需要可靠的青嶂归路，云栈旅亭留有往来路簿。</p>
         <button :disabled="busy" @click="emit('road')">前往青嶂旧路</button>
       </aside>
       <CombatFeedbackView

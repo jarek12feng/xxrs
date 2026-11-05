@@ -28,6 +28,20 @@
       "sampleRate": 44100,
       "peak": 0.3228,
       "rms": 0.0645
+    },
+    {
+      "cue": "nascent-rise",
+      "seconds": 12,
+      "sampleRate": 44100,
+      "peak": 0.2613,
+      "rms": 0.0673
+    },
+    {
+      "cue": "nascent-breakthrough",
+      "seconds": 4,
+      "sampleRate": 44100,
+      "peak": 0.3056,
+      "rms": 0.0646
     }
   ]
 }

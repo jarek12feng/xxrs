@@ -11,7 +11,7 @@ const label=computed(()=>({none:'拿出引荐纸，说明求学之意',deferred:
 <template>
   <section v-if="game.journey.branch === 'none'" aria-label="药坪求学与引荐">
     <p>温蘅认得你带来的药乡引荐纸。药坪上的草药要送入丹堂，季衡的药队正在整备。你可以在这里求学，再决定是否拜入听松宗。</p>
-    <p v-if="n.last" role="status">{{ n.last }}</p>
+    <p v-if="n.last && n.admission !== 'none'" role="status">{{ n.last }}</p>
     <template v-if="n.admission !== 'pledged'">
       <button :disabled="busy || !!initiationError(game,action)" @click="emit('act',{type:'qiJourney',action})">{{ label }}</button>
       <small v-if="initiationError(game,action)">{{ initiationError(game,action) }}</small>

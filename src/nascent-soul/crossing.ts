@@ -64,8 +64,8 @@ export function crossingView(s: State) {
     hint: done
       ? "测杆已经立起，测绘队能在彼岸展开航图。这条通过险段的记录已留存。"
       : c.position === "eddy"
-        ? "中段回水湾可以停舟。侧岸回流仍会推开靠岸的船只，护住落脚处即可引队登岸；可随时收势等候。"
-        : "主潮横截航道，侧岸回流冲击落脚处。可先集中护住主潮，分段带队；也可铺开护持缓渡。镇潮印能固定主潮，让你腾出手护岸。",
+        ? "舟队停在中段回水湾，目标是平安登岸。侧岸回流仍会推开靠岸的船只；可随时收势等候。"
+        : "护送测绘队平安渡过潮隙。主潮横截航道，侧岸回流冲击落脚处。",
   };
 }
 /** All movement is committed by the command, never by an animation or clock. */

@@ -52,7 +52,7 @@ const rows=computed(()=>{
  if(['none','discussed'].includes(stage))add('这一回先不行礼',{kind:'ceremony',choice:lover.value?'defer':'solitary'});
  return rows.map(r=>({...r,quote:nascentQuote(props.game,r.action)}));
 });
-const goal=computed(()=>!present.value?'先沿旧信路递个口信，等回音到了，再约在院中相见。':n.value.ceremony==='discussed'?'看一看院中的灯，选好信物，再把往后的约定说给彼此听。':n.value.ceremony==='witnessed'?'礼已成，饭还温着。坐下来，与对方说几句家常。':n.value.ceremony==='married'?'约书已收好，往后的长关与远行，都有一条可以报平安的信路。':'潮声在墙外，今夜先不急着告别。');
+const goal=computed(()=>!present.value?'对方尚未到场，旧信路仍通。相见须有双方约定。':n.value.ceremony==='discussed'?'一同筹备你们愿意的礼式，往后的约定由彼此商议。':n.value.ceremony==='witnessed'?'礼已成，饭还温着。坐下来，与对方说几句家常。':n.value.ceremony==='married'?'约书已收好，往后的长关与远行，都有一条可以报平安的信路。':'潮声在墙外，今夜先不急着告别。');
 </script>
 <template>
  <NarrativeStage class="covenant-scene" image="/art/important-scenes/covenant-courtyard.webp" :title="phase" stage-key="covenant" :goal="goal" :body="n.last" :hotspots="hotspots" :active="selected" @select="$event==='exit'?emit('close'):selected=$event" @close="selected=''">

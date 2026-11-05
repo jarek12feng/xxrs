@@ -8,9 +8,9 @@ export const contestFoes = [
     attack: 18,
     pattern: ["guard", "strike", "discern"] as Move[],
     tells: [
-      "沉肩推掌，先稳住来势。",
+      "沉肩推掌，厚重掌风迎面压来。",
       "掌势已尽，侧身露出空当。",
-      "他借石台尘影换步，须辨真身。",
+      "他借石台尘影换步，脚步与身影错开。",
     ],
     after: "许砚舟记下你的应对：“往后护送远路，也许能同行。”",
   },
@@ -21,9 +21,9 @@ export const contestFoes = [
     attack: 20,
     pattern: ["discern", "strike", "guard"] as Move[],
     tells: [
-      "两股灵流交错，先辨哪一道是真劲。",
-      "回气尚未接续，此刻可以抢入。",
-      "灵流合拢护住周身，先卸去反震。",
+      "两股灵流交错，一明一暗。",
+      "回气尚未接续，身侧露出空隙。",
+      "灵流合拢护住周身，近身处传来反震。",
     ],
     after: "温序把你刚才的换招画在掌心：“原来这口气还能这样接。我回去再试试。”",
   },
@@ -34,7 +34,7 @@ export const contestFoes = [
     attack: 23,
     pattern: ["guard", "discern", "strike"] as Move[],
     tells: [
-      "剑势连成一线，不能迎着剑锋抢攻。",
+      "剑势连成一线，正面来路被剑锋封住。",
       "剑影偏向左侧，落脚却在右边。",
       "第三剑收得太急，护身出现间隙。",
     ],

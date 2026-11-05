@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { movePurpose } from "../player-guidance";
 import AdmissionChoices from "../initiation/AdmissionChoices.vue";
 import { computed, ref, watch } from "vue";
 import type { State, Intent } from "../core";
@@ -151,7 +152,7 @@ const combatOptions = computed(() =>
       id,
       label,
       disabled: props.busy,
-      detail: `伤害 ${p?.damage} · 承伤 ${p?.incoming} · 回气 ${p?.healing} · 耗草 ${p?.herbs}`,
+      detail: `${movePurpose[id]} 耗草 ${p?.herbs ?? 0}`, preview: `伤害 ${p?.damage} · 承伤 ${p?.incoming} · 回气 ${p?.healing} · 耗草 ${p?.herbs}`,
     };
   }),
 );
@@ -285,21 +286,22 @@ watch(
     />
     <AdmissionChoices v-if="active === 'teacher'" :game="game" :busy="busy" @act="emit('act',$event)" />
     <p v-if="active === 'teacher' && game.journey.branch !== 'none'">
-      药棚下正按运送去向分药。丹堂与剑院同属听松宗；你可以入门，也可以作为散修求教与合作。
+      药棚下正按运送去向分药。你已在师门受录，仍可自行选择药路上的历练与合作。
     </p>
     <p v-if="active === 'notes'">
       这里只分额外观察札记，不影响核心药法。分抄可让凝元内府伤害+1，保留完整札记则+2，交出札记会失去额外加成。独占会拒绝卢雁回的分抄要求，并招来段厉索取；之前结伴的守退路约定仍保留，但她不会替你打斗。
     </p>
     <p v-if="active === 'bed'">
-      药理诱引利于守势护脉、趁药气回落切流；护体直接承压；辨阵在真假流间解除节点。失败伤势+1，保留准备，可回山疗伤重试。
+      阵内逆流强度相当于炼气后期，气势耗尽会受伤一层；主动沿退路返回不新增伤势。准备保留，可整备后重试。
     </p>
+    <p v-if="active === 'road'">药窟逆流强度相当于炼气后期。凝元前须亲自化解；修为不足时可先修行，已做准备会保留。</p>
     <p v-if="active === 'road' || active === 'bed'">
       入窟前另留两株灵草：过阵并处理药性后，还须用它们调息一月，才算完成这次历练。若选配药诱引，连同行前两株共需四株；长春诀战中回气的用草另计。缺草可先回山采药，已做的准备与实测成果保留。
     </p>
     <p v-if="active === 'table'">
       先取得亲身实测，再处理药性。调息用两株灵草、一月检验，恢复至多一层伤势，并让后续凝元内府交锋护甲+1。
     </p>
-    <p v-if="n.last" role="status">{{ n.last }}</p>
+    <details v-if="n.last && active !== 'teacher' && active !== 'road'"><summary>此前行旅记录</summary><p>{{ n.last }}</p></details>
     <div class="cave-actions">
       <button
         v-for="choice in choices"

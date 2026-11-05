@@ -45,6 +45,7 @@ const view = computed(() =>
           <meter min="0" max="2" :value="assay.strain"
         /></label>
       </div>
+      <details v-if="!verified" class="assay-help"><summary>查看试炉提示（可选）</summary><p>分槽缓炼稳妥省料；分念辨性较快，但会积累行炉负担。收念可消退负担，滤草或御印可处理潮息；每项操作的耗时与炉况变化在下方显示。</p></details>
       <small v-if="!verified"
         >观察不耗时，可留炉回港。缓炼两月，其他行炉操作各一月；弃炉不耗月。下方显示操作后的炉况。行炉负担仅属本炉，不损伤识海。封存辅药不动用。</small
       >

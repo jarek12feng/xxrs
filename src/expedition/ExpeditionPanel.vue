@@ -128,7 +128,7 @@ const actions = computed<
         <p>
           {{
             q.cleared === 1
-              ? "药签上的印记通往旧阵。阵眼被乱流和草根缠住，先辨清阵纹或温养草根，再取出压在下面的东西。"
+              ? "药签上的印记通往旧阵。阵眼被乱流和草根缠住，下面似乎压着一件旧物。"
               : expeditionIntermission(game) || encounter.story
           }}
         </p>

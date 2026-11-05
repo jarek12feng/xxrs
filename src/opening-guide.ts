@@ -16,7 +16,7 @@ export function openingGuide(s: State) {
       label: "回到行路，重返旧阵",
     };
   }
-  if(!hasCultivationKit(s))return {title:'回药坪求学',body:'你尚无正式传承与修行行装。请温蘅指点，试稳护路绳阵，再决定拜入听松宗或以散修身份立约。',action:'initiation' as const,label:'到药坪求教'};
+  if(!hasCultivationKit(s))return {title:'回药坪求学',body:'你尚无正式传承与修行行装。药坪的温蘅熟悉求学门路；入宗或以散修身份立约，由你决定。',action:'initiation' as const,label:'到药坪求教'};
   const echo = rescueEcho(s.adventure);
   if (!s.journey.learning.book) return {
     title: "挑选入门功法",
@@ -61,24 +61,24 @@ export function openingGuide(s: State) {
   if (!r.map)
     return {
       title: "坊市问路",
-      body: "与郁青交谈、接下伤药委托，交灵草或帮助辨药补齐航图。炼气修士也可接下山道护送，赚些盘缠。",
+      body: "补齐缺角航图，寻找通往山外的路。坊市的郁青或许认得图上的标记；护送药队也是一条谋生门路。",
       action: "road" as const,
       label: "循缺角航图去坊市",
     };
   if (!q.accepted && !r.passed)
     return {
-      title: "先试山道护送",
-      body: "到青嶂关或行营接取护送与旧阵。首关只需灵石 2 与一月时间，不要求筑基；观察来招，尝试守势、反击和辨影。",
+      title: "山道护送",
+      body: "青嶂关的药队正在寻找护送之人。首关补给需灵石 2 与一月时间，炼气修士即可参与。",
       action: "road" as const,
       label: "查看护送委托",
     };
   if (q.accepted && q.cleared < 2)
     return {
-      title: q.cleared === 0 ? "护住药车，追查名单" : "古阵前有两种准备路线",
+      title: q.cleared === 0 ? "护住药车，追查名单" : "探明古阵",
       body:
         q.cleared === 0
           ? "观察来招，护住药车。若败退，可先静养，再来一试。"
-          : "神识 6、心得 2 可以辨阵；也可用灵草 4 温养草根。选择适合自己的准备方式即可。",
+          : "阵眼被乱流与草根缠住。寻踪所得的药签指向这里，准备方式可在阵前查看。",
       action: "road" as const,
       label: "返回关口",
     };
@@ -110,16 +110,18 @@ export function openingGuide(s: State) {
       action: "road" as const,
       label: "回到山下求学",
     };
+  if (s.story.choice === "missed" && !s.crafted && !s.pills)
+    return { title: "独自再探遗府", body: "旧约已过。洞府丹炉处可独自重返青石遗府，取得筑基丹与丹方；入府仍须修为180与破阵准备。", action: "break" as const, label: "查看遗府筹备" };
   if (s.qi < 360)
     return {
-      title: "为三年之约作准备",
-      body: `距第三十六月${s.month < 36 ? `还有 ${36 - s.month} 个月` : "的约定已有进展"}。吐纳积累修为，积累 180 修为并准备一种破阵手段，通关后才能依方炼筑基丹；闭关会经过六个月，赴约前留意时辰。`,
+      title: s.story.stage === "waiting" ? "为三年之约作准备" : "积累修为，准备筑基",
+      body: s.story.stage === "waiting" ? `第三十六月赴约，尚余 ${Math.max(0,36-s.month)} 个月。入府需 180 修为与一种破阵手段；修行与历练都会消耗月份。` : "圆满修为与筑基丹是叩关所需，疗伤与固本可改善把握。",
       action: "cultivate" as const,
       label: "回洞府准备",
     };
   return {
     title: "修为已满，先检查准备",
-    body: "筑基必须有一枚筑基丹；遗府通关后可凭丹方补炼。伤势会拖累突破，养伤与护法能改善把握。先查看突破面板的代价，再决定是否叩关。",
+    body: "筑基必须有一枚筑基丹；遗府通关后可凭丹方补炼。伤势会拖累突破，养伤与护法能改善把握。突破面板可查看本次代价与把握。",
     action: "break" as const,
     label: "查看突破准备",
   };
