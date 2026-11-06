@@ -1,5 +1,7 @@
 # 实施记录
 
+> 当前可玩范围、近期改动和验证边界统一见 [项目最新情况](project-status.md)（2026-11-06）。下方按日期保留历史记录，旧“金丹未开放”等说明不代表当前状态。
+
 2026-11-05 传讯第二批以只读 view 接入事件归并、约定与关注会期、真实旅行报价及闭关风险提示，无新增持久字段。见 [设计](correspondence-design.md#2026-11-05-第二批往来归并与约定提醒) 与 [证据](correspondence-review/README.md)。
 
 2026-11-05 传讯由独立 correspondence 域保存来信、已读、关注和回应，源适配器只读取既有领域事实，照玄约定/人物核验复用原命令；存档v47。设计与扩展接口见 [传讯设计](correspondence-design.md)，测试、浏览器证据及未实现边界见 [实施记录](correspondence-review/README.md)。

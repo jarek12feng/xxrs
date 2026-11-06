@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import {useActorPlayback} from "../presentation/actor-action/use-actor-playback";
 import {foundationSpeakerFoot} from "../scene2d/actor-anchors";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { State } from '../world';
 import { challenges } from './content';
 import WalkingActor from '../scene2d/WalkingActor.vue';
@@ -14,16 +15,13 @@ const emit=defineEmits<{start:[]}>();
 const walkReady=ref(false);
 const approach=useSceneApproach({animated:()=>walkReady.value && props.game.social.gender==='male',initial:foundationArrivalPoint('home',props.game.foundationJourney.location)});
 const {position,moving,frame:walkFrame,facing}=approach;
-function approachObject(point:Point,arrived:()=>void){skip();approach.walkTo(point,arrived);}
+function approachObject(point:Point,arrived:()=>void){skip();approach.walkTo(point,arrived,point.x===foundationSpeakerFoot.x-9?foundationSpeakerFoot.x:undefined);}
 function cancelMovement(){approach.cancel();}
 watch(()=>props.game,()=>approach.cancel());
 watch([()=>props.game.foundationJourney.location,()=>props.mode],([next],[previous])=>approach.reset(next!==previous ? foundationArrivalPoint(previous,next) : {x:24,y:88}));
-const root=ref<HTMLElement>();
-const sequence=ref<FoundationPerformance>();
-const index=ref(0);
-let timer:ReturnType<typeof setTimeout>|undefined;
-let media:MediaQueryList|undefined;
-let revision=0;
+const playback=useActorPlayback<{kind:FoundationPerformance;index:number}>();
+const sequence=computed(()=>playback.frame.value?.kind);
+const index=computed(()=>playback.frame.value?.index ?? 0);
 const frame=computed(()=>sequence.value ? foundationPerformanceFrames[sequence.value][index.value] : undefined);
 const arrayBattle=computed(()=>{const id=props.game.foundationJourney.duel?.id;return id && ['estate','snow','application','culmination'].includes(id) ? challenges[id].foe : '';});
 const site=computed(()=>foundationSiteState(props.game,props.mode));
@@ -33,14 +31,12 @@ const propArt=computed(()=> {
   const key=frame.value?.prop;
   return key ? itemArt(key==='manual' ? props.game.foundationJourney.inheritance : key) : undefined;
 });
-function skip(){revision++;if(timer!==undefined)clearTimeout(timer);timer=undefined;sequence.value=undefined;index.value=0;}
+const skip=playback.stop;
 function play(kind:FoundationPerformance){
-  skip();approach.cancel();
-  if(media?.matches || document.hidden)return;
-  sequence.value=kind;emit('start');
-  const token=revision;
-  function step(){timer=setTimeout(()=>{if(token!==revision)return;index.value++;if(index.value>=foundationPerformanceFrames[kind].length)skip();else step();},850);}
-  step();
+ skip();approach.cancel();
+ if(playback.reduced.value || document.hidden)return;
+ playback.play(foundationPerformanceFrames[kind].map((_,index)=>({value:{kind,index},durationMs:850})));
+ emit('start');
 }
 let saved=foundationSceneSnapshot(props.game);
 watch(()=>foundationSceneSnapshot(props.game), next=>{
@@ -49,15 +45,10 @@ watch(()=>foundationSceneSnapshot(props.game), next=>{
   if(kind && props.mode==='journey')play(kind);else skip();
 });
 watch(()=>props.mode,skip);
-function keyboard(e:KeyboardEvent){if(e.key==='Escape' && sequence.value && root.value?.getClientRects().length){skip();e.preventDefault();}}
-function visibility(){if(document.hidden)skip();}
-function reduce(){if(media?.matches)skip();}
-onMounted(()=>{media=window.matchMedia?.('(prefers-reduced-motion: reduce)');media?.addEventListener('change',reduce);window.addEventListener('keydown',keyboard,true);document.addEventListener('visibilitychange',visibility);});
-onBeforeUnmount(()=>{skip();media?.removeEventListener('change',reduce);window.removeEventListener('keydown',keyboard,true);document.removeEventListener('visibilitychange',visibility);});
 defineExpose({skip,approachObject,cancelMovement});
 </script>
 <template>
-  <div ref="root" class="foundation-world" :data-performance="sequence" :data-phase="index">
+  <div  class="foundation-world" :data-performance="sequence" :data-phase="index">
     <div v-if="game.secretPact.site === 'away' && site.estate" class="estate-channel site-result" role="img" aria-label="老根下已露出的育苗细渠与木签"><i></i><i></i><i></i><b></b><b></b></div>
     <div v-if="game.secretPact.site === 'away' && site.snow" class="snow-guide site-result" role="img" aria-label="已经试通的西门绳槽留引"><i></i><i></i><i></i><span></span></div>
     <div v-if="game.secretPact.site === 'away' && site.well" class="well-opening site-result" role="img" aria-label="石偶身后亮起的传承室入口"><span></span></div>

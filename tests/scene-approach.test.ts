@@ -50,3 +50,23 @@ it('旧环境matchMedia缺少监听方法仍可挂载、减少动态与卸载',(
  app=createApp({setup(){api=useSceneApproach({animated:()=>true});return()=>h('div');}});app.mount(document.createElement('div'));
  const done=vi.fn();expect(()=>api.walkTo({x:40,y:85},done)).not.toThrow();expect(done).toHaveBeenCalledOnce();expect(()=>app.unmount()).not.toThrow();
 });
+
+it.each(['walk', 'skip', 'reduced'] as const)('从人物右侧走到左侧后转身面向人物：%s', (mode) => {
+ const {api,tick}=harness(true,mode==='reduced');
+ api.reset({x:80,y:85});
+ const done=vi.fn(()=>expect(api.facing.value).toBe(1));
+ api.walkTo({x:45,y:85},done,54);
+ if(mode==='skip')api.skip();else tick(2000);
+ expect(done).toHaveBeenCalledOnce();
+ expect(api.position.value.x).toBe(45);
+ expect(api.facing.value).toBe(1);
+});
+
+it('旧帧回调延迟到达不推进替代行程，抵达回调可接续且只保留一个帧任务',()=>{
+ const {api,tick,callbacks}=harness();
+ api.walkTo({x:70,y:85});const late=[...callbacks.values()][0]!;
+ api.walkTo({x:50,y:85},()=>api.walkTo({x:80,y:85}));
+ const before={...api.position.value};late(900);expect(api.position.value).toEqual(before);
+ tick(1800);expect(api.position.value.x).toBe(50);expect(api.moving.value).toBe(true);expect(callbacks.size).toBe(1);
+ tick(3000);expect(api.position.value.x).toBe(80);expect(callbacks.size).toBe(0);
+});

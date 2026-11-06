@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import {useActorPlayback} from "../presentation/actor-action/use-actor-playback";
+import { computed, watch } from "vue";
 import { usePageVisible } from "../presentation/usePageVisible";
 const pageVisible = usePageVisible();
-import { characterArt, heroArt, heroBattlePose } from "../presentation/art";
+import { characterFlip, characterArt, heroArt, heroBattlePose } from "../presentation/art";
 import type { Expedition } from "./rules";
 const props = defineProps<{
   gender?: string | null;
@@ -13,18 +14,26 @@ const props = defineProps<{
   enemyMax?: number;
   telegraph?: string;
 }>();
+const playback=useActorPlayback<Expedition['effect']>();
+watch(()=>({attempts:props.quest.attempts,cleared:props.quest.cleared,turn:props.quest.duel?.turn,effect:props.quest.effect}),(next,before)=>{
+ playback.stop();
+ const exchange=next.attempts===before.attempts && next.turn!==undefined && before.turn!==undefined && next.turn===before.turn+1;
+ const conclusion=before.turn!==undefined && next.turn===undefined && ['win','loss'].includes(next.effect);
+ if(exchange||conclusion)playback.play([{value:next.effect,durationMs:1000}]);
+});
+const pose=computed(()=>heroBattlePose(playback.frame.value ?? 'none'));
 const hero = computed(() =>
   characterArt(
     heroArt(props.gender, props.realm),
-    heroBattlePose(props.quest.effect),
+    pose.value,
   ),
 );
 const enemy = computed(() =>
   characterArt(
     props.foe === "蚀阵傀儡" ? "golem" : "raider",
-    ["strike", "win"].includes(props.quest.effect)
+    ["strike", "win"].includes(playback.frame.value ?? "none")
       ? "hurt"
-      : props.quest.effect === "hurt" || props.telegraph === "guard"
+      : playback.frame.value === "hurt" || props.telegraph === "guard"
         ? "attack"
         : "idle",
   ),
@@ -33,8 +42,8 @@ const enemy = computed(() =>
 <template>
   <div
     class="battle-stage"
-    :class="[quest.effect, { 'art-paused': !pageVisible }]"
-    :key="`${quest.attempts}-${quest.cleared}-${quest.duel?.turn}-${quest.effect}`"
+    :class="[playback.frame.value, { 'art-paused': !pageVisible }]"
+    :key="playback.frame.value ? `${quest.attempts}-${quest.cleared}-${quest.duel?.turn}` : 'rest'"
     :data-foe="foe === '蚀阵傀儡' ? 'golem' : 'raider'"
     :data-tell="telegraph"
     role="group"
@@ -75,6 +84,7 @@ const enemy = computed(() =>
       <g class="hero">
         <image
           :href="hero"
+          :transform="characterFlip(heroArt(gender, realm), pose, 1) === -1 ? 'translate(270 0) scale(-1 1)' : undefined"
           x="65"
           y="5"
           width="140"

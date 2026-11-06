@@ -61,9 +61,12 @@ it.each([true, false])(
     expect(save).not.toHaveBeenCalled();
     expect(!!document.querySelector(".creation")).toBe(archiveSucceeds);
     if (archiveSucceeds) {
+      expect(document.querySelector('option[value="female"]')).toBeNull();
+      expect(document.body.textContent).toContain('女修创建暂未开放');
       await click("踏入仙途");
       expect(save).toHaveBeenCalledTimes(1);
       const created = vi.mocked(save).mock.calls[0]![0];
+      expect(created.social.gender).toBe("male");
       expect(created.month).toBe(0);
       expect(created.age).toBe(192);
       expect(created.inherited).toBe("none");

@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { computed, onMounted } from "vue";
+import {useActorPlayback} from "./presentation/actor-action/use-actor-playback";
 import { presences } from "./landmarks";
 defineProps<{ from: string; to: string }>();
 const emit = defineEmits<{ finish: [] }>();
-const visible = ref(true);
-let timer: ReturnType<typeof setTimeout>;
-onMounted(() => {
-  timer = setTimeout(() => {
-    visible.value = false;
-    emit("finish");
-  }, 4200);
+const playback=useActorPlayback<boolean>({onEnd:reason=>{
+ if(reason!=='disposed'&&reason!=='replaced')emit('finish');
+}});
+const visible=computed(()=>playback.frame.value===true);
+onMounted(()=>{
+ const frames=[{value:true,durationMs:4200}];
+ playback.play(frames,frames);
 });
-onUnmounted(() => clearTimeout(timer));
 </script>
 <template>
   <div v-if="visible" class="scene-arrival" role="status">

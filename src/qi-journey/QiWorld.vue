@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import {useActorPlayback} from "../presentation/actor-action/use-actor-playback";
+import { computed, ref, watch } from 'vue';
 import type { State } from '../core';
 import CombatField from '../scene2d/combat/CombatField.vue';
 import WalkingActor from '../scene2d/WalkingActor.vue';
@@ -10,42 +11,32 @@ import { qiEnemy } from './rules';
 import { qiSceneSnapshot, qiSceneTransition, qiActionBeats, type QiSceneCue } from './scene-performance';
 const props=defineProps<{game:State}>();
 const emit=defineEmits<{performed:[]}>();
-const cue=ref<QiSceneCue>();
-const walkReady=ref(false), beatIndex=ref(0), actionFailed=ref(false);
+const playback=useActorPlayback<{cue:QiSceneCue;index:number}>();
+const cue=computed(()=>playback.frame.value?.cue);
+const beatIndex=computed(()=>playback.frame.value?.index ?? 0);
+const walkReady=ref(false), actionFailed=ref(false);
 const walk=useSceneApproach({animated:()=>props.game.realm===0 && props.game.social.gender==='male' && walkReady.value,initial:{x:30,y:87}});
 const beat=computed(()=>cue.value ? qiActionBeats(cue.value)[beatIndex.value] : undefined);
 const actionFrame=computed(()=>props.game.social.gender==='male' && props.game.realm===0 && !actionFailed.value ? beat.value?.frame : undefined);
 const actionStyle=computed(()=>({backgroundPosition:`${((actionFrame.value??0)%4)*100/3}% ${Math.floor((actionFrame.value??0)/4)*100}%`}));
 const approach=(point:Point,arrived?:()=>void)=>{stop();walk.walkTo(point,arrived);};
-const hidden=ref(false);
+const hidden=playback.hidden;
 const enemy=computed(()=>qiEnemy(props.game));
 const q=computed(()=>props.game.qiJourney);
 const pose=computed(()=>beat.value?.pose ?? (q.value.duel ? heroBattlePose(q.value.duel.effect) : 'idle'));
 const combat=computed(()=>q.value.duel && enemy.value ? {id:`qi-${q.value.gates}-${q.value.node}-${enemy.value.identity}`,turn:q.value.duel.turn,player:q.value.duel.hp,enemy:q.value.duel.enemy,enemyName:enemy.value.name,enemyImage:q.value.trial?enemy.value.image:`/art/scene2d/${enemy.value.identity}-v1.png`,effect:q.value.duel.effect} : null);
 const material=computed(()=>`/art/qi-progression/${(cue.value?.kind==='refine' ? q.value.gates-1 : q.value.gates) ? 'condensed-essence' : 'dew-herb'}.webp`);
-let timer:ReturnType<typeof setTimeout>|undefined;
-let preference:MediaQueryList|undefined;
-function stop(){if(timer!==undefined)clearTimeout(timer);timer=undefined;cue.value=undefined;beatIndex.value=0;}
-function nextBeat(){if(!cue.value)return; if(beatIndex.value+1<qiActionBeats(cue.value).length){beatIndex.value++;timer=setTimeout(nextBeat,700);}else stop();}
-function visibility(){hidden.value=document.hidden;if(hidden.value)stop();}
-function reduced(){if(preference?.matches)stop();}
-function keyboard(e:KeyboardEvent){if(e.key==='Escape')stop();}
+const stop=playback.stop;
 watch(()=>qiSceneSnapshot(props.game),(next,previous)=>{
   const transition=qiSceneTransition(previous,next);
   stop();
-  if(!transition || transition.kind==='exchange' || document.hidden || preference?.matches)return;
-  walk.cancel();cue.value=transition;beatIndex.value=0;
+  if(!transition || transition.kind==='exchange' || document.hidden || playback.reduced.value)return;
+  walk.cancel();
+  const beats=qiActionBeats(transition);
+  playback.play(beats.map((_,index)=>({value:{cue:transition,index},durationMs:beats.length>1?700:1800})));
   if(['material','refine','retreat','victory'].includes(transition.kind))emit('performed');
-  timer=setTimeout(nextBeat,qiActionBeats(transition).length>1?700:1800);
+
 });
-onMounted(()=>{
-  visibility();
-  preference=window.matchMedia?.('(prefers-reduced-motion: reduce)');
-  preference?.addEventListener?.('change',reduced);
-  document.addEventListener('visibilitychange',visibility);
-  window.addEventListener('keydown',keyboard);
-});
-onBeforeUnmount(()=>{stop();preference?.removeEventListener?.('change',reduced);document.removeEventListener('visibilitychange',visibility);window.removeEventListener('keydown',keyboard);});
 defineExpose({stop,approach,cancel:walk.cancel,skip:walk.skip,reset:walk.reset});
 </script>
 <template>

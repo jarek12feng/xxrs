@@ -1,3 +1,4 @@
+import { createPlayback, type PlaybackEnd } from "../presentation/actor-action/playback";
 /** Ephemeral presentation only: callers must supply successfully persisted snapshots. */
 export interface ActionSnapshot {
   prepared: boolean;
@@ -22,11 +23,10 @@ export interface ActionFrame {
   durationMs: number;
   index: number;
 }
-export type ActionEndReason =
-  "completed" | "skipped" | "replaced" | "disposed" | "reduced";
+export type ActionEndReason = PlaybackEnd;
 interface SequenceOptions<Timer> {
   initial: ActionSnapshot;
-  reduced: boolean;
+  reduced: boolean | (() => boolean);
   /** Schedule asynchronously, returning a handle that cancel can release. */
   schedule: (delayMs: number, callback: () => void) => Timer;
   cancel: (timer: Timer) => void;
@@ -73,71 +73,30 @@ export function savedActionTransition(
 
 export function createActionSequence<Timer>(options: SequenceOptions<Timer>) {
   let saved = { ...options.initial };
-  let active: ActionSequence | undefined;
-  let pending: { timer: Timer } | undefined;
-  let revision = 0;
-  let disposed = false;
-
-  const finish = (reason: ActionEndReason) => {
-    revision++;
-    if (pending) options.cancel(pending.timer);
-    pending = undefined;
-    const sequence = active;
-    active = undefined;
-    if (sequence) options.onEnd(sequence, reason);
-  };
-  const start = (sequence: ActionSequence) => {
-    finish("replaced");
-    if (disposed) return;
-    active = sequence;
-    if (options.reduced) {
-      finish("reduced");
-      return;
-    }
-    const token = revision;
-    const show = (index: number) => {
-      if (disposed || token !== revision) return;
-      const item = frames[sequence][index];
-      if (!item) {
-        finish("completed");
-        return;
-      }
-      options.onFrame({
-        sequence,
-        phase: item[0],
-        label: item[1],
-        durationMs: item[2],
-        index,
-      });
-      // Callbacks may skip/dispose synchronously; do not leave a new timer behind.
-      if (disposed || token !== revision) return;
-      pending = {
-        timer: options.schedule(item[2], () => {
-          if (disposed || token !== revision) return;
-          pending = undefined;
-          show(index + 1);
-        }),
-      };
-    };
-    show(0);
-  };
-  return {
-    get active() {
-      return active;
+  let active: ActionSequence | undefined, disposed = false;
+  const player = createPlayback<ActionFrame, Timer>({
+    schedule: options.schedule, cancel: options.cancel, reduced: () => typeof options.reduced === 'function' ? options.reduced() : options.reduced,
+    show: options.onFrame,
+    end: reason => {
+      const sequence = active; active = undefined;
+      if (sequence) options.onEnd(sequence, reason);
     },
+  });
+  return {
+    get active() { return active; },
     sync(next: ActionSnapshot) {
       if (disposed) return;
       const sequence = savedActionTransition(saved, next);
       saved = { ...next };
-      if (sequence) start(sequence);
-    },
-    skip() {
-      if (!disposed) finish("skipped");
-    },
-    dispose() {
+      if (!sequence) return;
+      player.stop('replaced');
       if (disposed) return;
-      disposed = true;
-      finish("disposed");
+      active = sequence;
+      player.play(frames[sequence].map(([phase, label, durationMs], index) => ({
+        durationMs, value: { sequence, phase, label, durationMs, index },
+      })));
     },
+    skip() { player.stop(); },
+    dispose() { if (!disposed) { disposed = true; player.dispose(); } },
   };
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch, onUnmounted } from "vue";
+import {useActorPlayback} from "../presentation/actor-action/use-actor-playback";
+import { computed, ref, watch } from "vue";
 import type { State } from "../world";
 import type { CombatFeedback } from "./feedback";
 import { foundationPower } from "./combat";
@@ -10,40 +11,26 @@ const props = defineProps<{
   initialPlayback?: boolean;
 }>();
 const result = computed(() => props.result);
-const animate = ref(false);
-const serial = ref(0);
-const settled = ref(true);
-let frame: ReturnType<typeof setTimeout> | undefined;
-let finish: ReturnType<typeof setTimeout> | undefined;
-function clear() {
-  clearTimeout(frame);
-  clearTimeout(finish);
-}
+const playback=useActorPlayback<'before'|'after'>();
+const animate=computed(()=>playback.frame.value!==null);
+const settled=computed(()=>playback.frame.value!=='before');
+const serial=ref(0);
 watch(
   result,
   (r, previous) => {
-    clear();
+    playback.stop();
     serial.value++;
-    animate.value = false;
-    settled.value = true;
+
     if (
       !r ||
-      (previous === undefined && !props.initialPlayback) ||
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+      (previous === undefined && !props.initialPlayback)
     )
       return;
-    settled.value = false;
-    animate.value = true;
-    frame = setTimeout(() => {
-      settled.value = true;
-    }, 20);
-    finish = setTimeout(() => {
-      animate.value = false;
-    }, 500);
+    playback.play([{value:'before',durationMs:20},{value:'after',durationMs:480}]);
   },
   { immediate: true },
 );
-onUnmounted(clear);
+
 const rows = computed(() => {
   const d = props.game.foundationJourney.duel;
   const r = result.value;

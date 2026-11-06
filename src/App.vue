@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { monthlyWorkIncome } from "./preparation-rates";
+import {useActorPlayback} from "./presentation/actor-action/use-actor-playback";
+import { monthlyWorkIncome, monthlyGatherIncome } from "./preparation-rates";
 import {cultivationQuote} from "./qi-cultivation/rules";
 import CultivationScene from "./qi-cultivation/CultivationScene.vue";
 import CultivationPanel from "./qi-cultivation/CultivationPanel.vue";
@@ -125,7 +126,6 @@ import {
   aptitudes,
   activeEventId,
   companion,
-  type Gender,
   refineCost,
   growthGoals,
   type Aptitude,
@@ -177,9 +177,9 @@ const receipt = shallowRef<ActionReceipt | null>(null);
 const receiptExpanded = ref(false);
 const receiptSerial = ref(0);
 const arrivalFinished = ref(false);
-const practice = ref<Activity | null>(null);
+const practicePlayback=useActorPlayback<Activity>();
+const practice=practicePlayback.frame;
 const practiceSerial = ref(0);
-let practiceTimer: ReturnType<typeof setTimeout> | undefined;
 let receiptTimer: ReturnType<typeof setTimeout> | undefined;
 let actionOrigin: HTMLElement | null = null;
 async function closeReceipt() {
@@ -361,7 +361,7 @@ function resetJourneyView() {
   stopBreakthroughScore();
   preparationSelection.value = null;
   clearTimeout(receiptTimer);
-  clearTimeout(practiceTimer);
+  practicePlayback.stop();
   titleScreen.value = false;
   creating.value = false;
   ui.running = false;
@@ -370,7 +370,6 @@ function resetJourneyView() {
   pauseReason.value = null;
   receipt.value = null;
   receiptExpanded.value = false;
-  practice.value = null;
   actionOrigin = null;
   arrivalFinished.value = false;
   dialog.value = "";
@@ -419,7 +418,6 @@ const {game, ready, loadError, notice, saved, persist} = session;
 const sceneCombat = computed(() => !!game.value && !titleScreen.value && !ui.history && view.value === "story" && !!combatOwner(game.value) && combatOwner(game.value) !== 'arena');
 const name = ref("沈青禾"),
   aptitude = ref<Aptitude>("insightful"),
-  gender = ref<Gender>("male"),
   activity = ref<Activity>("cultivate"),
   dialog = ref("");
 watch(
@@ -590,12 +588,9 @@ async function executeAct(intent: Intent) {
         "rest",
       ].includes(performed)
     ) {
-      clearTimeout(practiceTimer);
-      practice.value = performed as Activity;
+      practicePlayback.stop();
       practiceSerial.value++;
-      practiceTimer = setTimeout(() => {
-        practice.value = null;
-      }, 3600);
+      practicePlayback.play([{value:performed as Activity,durationMs:3600}]);
     }
     if (
       !automatic ||
@@ -639,7 +634,7 @@ async function start() {
           "wood",
           crypto.getRandomValues(new Uint32Array(1))[0],
           aptitude.value,
-          gender.value,
+          "male",
         ),
       )
     ) {
@@ -919,7 +914,7 @@ onUnmounted(() => {
   stopAudioWatches.forEach((stop) => stop());
   sound.dispose();
   music?.dispose();
-  clearTimeout(practiceTimer);
+  practicePlayback.stop();
   window.removeEventListener("storage", syncSoundPreference);
   window.removeEventListener("blur", blurSound);
   window.removeEventListener("focus", hidden);
@@ -1022,7 +1017,8 @@ onUnmounted(() => {
     </main>
     <main v-else-if="ready && (creating || !game)" class="creation">
       <div class="creation-art">
-        <img src="/mountains.svg" alt="云海中的听松山" />
+        <img class="creation-landscape" src="/art/scene2d/ferry.png" alt="渡舟停在听松山下，灯火照亮入山石阶" />
+        <img class="creation-traveler" src="/art/hero-male/qi-idle.webp" alt="即将启程的少年修士" />
         <div class="art-copy">
           <span class="eyebrow">炼气篇 / 初入仙途</span>
           <h1>初入听松山</h1>
@@ -1038,13 +1034,8 @@ onUnmounted(() => {
         <h2>写下这段旅程的名字</h2>
         <label for="name">道号</label
         ><input id="name" v-model="name" maxlength="16" class="name-input" />
+        <p class="creation-identity">男修 · 十六岁启程<small>女修创建暂未开放</small></p>
         <h3>选择先天资质</h3>
-        <label class="field-label"
-          >角色性别<select v-model="gender">
-            <option value="male">男修 · 筑基主线与苏婉宁同行</option>
-            <option value="female">女修 · 成年筑基后可结识尹照川</option>
-          </select></label
-        >
         <div class="aptitude-list">
           <button
             v-for="(a, id) in aptitudes"
@@ -1280,7 +1271,7 @@ onUnmounted(() => {
                         : a.id === "work"
                           ? `每月灵石 +${monthlyWorkIncome(game)}${!game.realm && game.journey.main ? " · 修为 +" + incidentalQiGain(game, "work") : ""}`
                           : a.id === "gather"
-                            ? `灵草 +${2 + (game.journey.support === "herb" ? 1 + game.growth.training.herb : 0)} · 修为 +${incidentalQiGain(game, "gather")}`
+                            ? `灵草 +${monthlyGatherIncome(game)} · 修为 +${incidentalQiGain(game, "gather")}`
                             : a.id === "meditate"
                               ? `神识 +1${game.realm ? "" : " · 修为 +" + incidentalQiGain(game, "meditate")}；神识 8 可识阵、省炼丹灵石`
                               : a.hint)

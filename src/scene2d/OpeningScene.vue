@@ -94,6 +94,7 @@ async function boot(preservePosition = false) {
         ),
         image: s.image,
         hero: characterArt(heroArt(props.game.social.gender, props.game.realm)),
+        heroCharacter: heroArt(props.game.social.gender, props.game.realm),
         objects: s.objects,
         calm: s.calm,
         gate: s.key === "shrine",
@@ -222,7 +223,7 @@ function select(id: string) {
   responseTarget.value = "";
   const o = target.value;
   stage?.focus?.(id);
-  if (o?.foot) stage?.walkTo?.(o.foot.x + (o.foot.x < 40 ? 9 : -9), o.foot.y);
+  if (o?.foot) stage?.walkTo?.(o.foot.x + (o.foot.x < 40 ? 9 : -9), o.foot.y, o.foot.x);
   else if (o) stage?.move(o.x, o.y);
 }
 function act(action: AdventureAction) {

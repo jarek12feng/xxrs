@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { createApp, h, nextTick, shallowRef } from "vue";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import LizhaoPanel from "../src/lizhao/LizhaoPanel.vue";
 import {
   lizhaoFixture,
@@ -10,6 +10,7 @@ import {
 import { runLizhao } from "../src/lizhao/rules";
 import type { Intent } from "../src/core";
 it("热点只读，现场命令结算准备与战斗，刷新后从保存战况继续", async () => {
+  vi.useFakeTimers();
   const state = shallowRef(lizhaoFixture());
   state.value = runLizhao(state.value, { kind: "visit" }, "visit", lizhaoTick);
   const host = document.createElement("div");
@@ -61,14 +62,25 @@ it("热点只读，现场命令结算准备与战斗，刷新后从保存战况�
       { guard: "守势护丹", strike: "破枢反击", discern: "辨影排毒" }[move],
     );
     expect(state.value.lizhao.duel?.turn).toBe(1);
+    expect(host.querySelector('.lizhao-exchange')).toBeNull();
+    await vi.advanceTimersByTimeAsync(180);
+    expect(host.querySelector('.lizhao-exchange')).toBeTruthy();
+    const saved = JSON.stringify(state.value);
+    window.dispatchEvent(new KeyboardEvent('keydown', {key:'Escape'}));
+    await nextTick();
+    expect(host.querySelector('.lizhao-exchange')).toBeNull();
+    expect(JSON.stringify(state.value)).toBe(saved);
     state.value = JSON.parse(JSON.stringify(state.value));
     await nextTick();
     expect(host.textContent).toContain("第 2 合");
+    expect(host.querySelector('.lizhao-exchange')).toBeNull();
     await click("撤回港口");
     expect(state.value.lizhao.location).toBe("harbor");
     expect(host.querySelector(".combat-bar")).toBeNull();
   } finally {
     app.unmount();
     host.remove();
+    vi.clearAllTimers();
+    vi.useRealTimers();
   }
 });

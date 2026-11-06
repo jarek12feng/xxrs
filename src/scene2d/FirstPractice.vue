@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import {useActorPlayback} from "../presentation/actor-action/use-actor-playback";
 import { computed, ref, watch } from "vue";
 import NarrativeStage from "./NarrativeStage.vue";
 import type { State } from "../core";
 import { techniques } from "../core";
 import { combatStyle } from "../combat/game";
 import { tacticalPreview } from "../combat/game";
-import { characterArt, heroArt } from "../presentation/art";
+import { actorAppearance, heroArt } from "../presentation/art";
 import type { Move } from "../expedition/content";
 const props = withDefaults(
   defineProps<{ game: State; busy: boolean; standalone?: boolean }>(),
@@ -13,9 +14,12 @@ const props = withDefaults(
 );
 const emit = defineEmits<{ close: [] }>();
 const stroke = ref(0);
+const playback=useActorPlayback<Move>();
+const appearance=computed(()=>actorAppearance(heroArt(props.game.social.gender,props.game.realm),playback.frame.value==='strike'?'attack':playback.frame.value?'guard':'idle',1));
 function practice(id: Move) {
   move.value = id;
   stroke.value++;
+  playback.play([{value:id,durationMs:650}]);
 }
 
 const move = ref<Move | null>(null);
@@ -23,6 +27,7 @@ const open = ref(false);
 watch(
   () => props.game.journey.main,
   () => {
+    playback.stop();
     move.value = null;
     open.value = false;
   },
@@ -78,14 +83,9 @@ const basic = computed(() =>
       ><span>可选试演 · 不耗年月与物资 · 不留伤势 · 无奖励</span></template
     >
     <template #world
-      ><div class="practice-actors" :class="move" :key="stroke">
+      ><div class="practice-actors" :class="playback.frame.value" :key="stroke">
         <img
-          :src="
-            characterArt(
-              heroArt(game.social.gender, game.realm),
-              move === 'strike' ? 'attack' : move ? 'guard' : 'idle',
-            )
-          "
+          :src="appearance.src" :style="{transform:`scaleX(${appearance.flipX ? -1 : 1})`}"
           alt="主角试演所学功法"
         />
         <div class="practice-target">
@@ -145,14 +145,9 @@ const basic = computed(() =>
       {{ open ? "收起试招" : "在药庐外试一招 · 可选" }}
     </button>
     <div v-if="open" class="practice-area">
-      <div class="practice-picture" :class="move" :key="move || 'idle'">
+      <div class="practice-picture" :class="playback.frame.value" :key="stroke">
         <img
-          :src="
-            characterArt(
-              heroArt(game.social.gender, game.realm),
-              move === 'strike' ? 'attack' : move ? 'guard' : 'idle',
-            )
-          "
+          :src="appearance.src" :style="{transform:`scaleX(${appearance.flipX ? -1 : 1})`}"
           alt="主角试演所学功法"
         />
         <div class="practice-ring" aria-hidden="true"></div>
@@ -165,7 +160,7 @@ const basic = computed(() =>
           :key="id"
           :disabled="busy"
           :aria-pressed="move === id"
-          @click="move = id"
+          @click="practice(id)"
         >
           {{ label }}
         </button>

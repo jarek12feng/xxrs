@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import CharacterSprite from '../presentation/CharacterSprite.vue';
-import type { CharacterId, Pose } from '../presentation/art';
+import { actorAppearance, type CharacterId, type Pose } from '../presentation/art';
 import type { Point } from './navigation';
 const props = withDefaults(defineProps<{
   character: CharacterId; label: string; position: Point; moving: boolean; frame: number; facing: number;
@@ -13,10 +13,10 @@ const sprite = computed(() => ({ transform:`translate(${-((props.frame % 4) * 25
 </script>
 <template>
   <div class="walking-actor" :data-moving="moving && loaded" :style="{left:position.x+'%',top:position.y+'%'}">
-    <div class="walk-crop" v-show="moving && loaded && !failed" :style="{transform:`scaleX(${facing})`}" role="img" :aria-label="label + '行走'">
+    <div class="walk-crop" v-show="moving && loaded && !failed" :style="{transform:`scaleX(${actorAppearance(character, pose, facing, true).flipX ? -1 : 1})`}" role="img" :aria-label="label + '行走'">
       <img :src="sheet" :style="sprite" alt="" @load="loaded=true; emit('ready',true)" @error="failed=true; emit('ready',false)" />
     </div>
-    <CharacterSprite v-if="!moving || !loaded || failed" :character="character" :pose="pose" :label="label" />
+    <CharacterSprite v-if="!moving || !loaded || failed" :character="character" :pose="pose" :facing="facing" :label="label" />
   </div>
 </template>
 <style scoped>

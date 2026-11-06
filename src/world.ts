@@ -1,3 +1,5 @@
+import { freshEstateLife, validEstateLife, type EstateLife } from "./estate-life/state";
+import { runEstateLife, type EstateAction } from "./estate-life/rules";
 import { monthlyWorkIncome } from "./preparation-rates";
 import {freshQiCultivation,validQiCultivation} from './qi-cultivation/state';
 import {isCultivationAction,cultivationActive,runCultivation} from './qi-cultivation/rules';
@@ -239,6 +241,7 @@ export interface State extends Omit<chapter.State, "version"> {
   version: typeof SAVE_VERSION;
   death: DeathRecord | null;
   friendJourney: FriendJourney;
+  estateLife: EstateLife;
   tideSurvey: TideSurvey;
   correspondence: Correspondence;
   spirit: SpiritState;
@@ -267,6 +270,7 @@ export interface State extends Omit<chapter.State, "version"> {
   social: SocialState;
 }
 export type Command =
+  | {id:string;type:"estateLife";action:EstateAction}
   | {id:string;type:"tideSurvey";action:TideSurveyAction}
   | {id:string;type:"revisit";action:RevisitAction}
   | { id: string; type: "correspondence"; action: CorrespondenceAction }
@@ -342,6 +346,7 @@ const fresh = (): Journey => ({
 function base(s: State): chapter.State {
   const {
     friendJourney: _friendJourney,
+    estateLife: _estateLife,
     tideSurvey: _tideSurvey,
     correspondence: _correspondence,
     itemGrowth: _itemGrowth,
@@ -378,6 +383,7 @@ function lift(
     version: SAVE_VERSION,
     death: null,
     friendJourney: freshFriendJourney(),
+    estateLife: freshEstateLife(),
     tideSurvey: freshTideSurvey(),
     correspondence: freshCorrespondence(),
     itemGrowth: freshItemGrowth(),
@@ -590,6 +596,7 @@ export function promotionError(s: State) {
 function normalize(n: State, old: State) {
   n.death = n.life === old.life ? structuredClone(old.death) : null;
   n.friendJourney = n.life === old.life ? structuredClone(old.friendJourney) : freshFriendJourney();
+  n.estateLife = n.life === old.life ? structuredClone(old.estateLife) : freshEstateLife();
   n.tideSurvey = n.life === old.life ? structuredClone(old.tideSurvey) : freshTideSurvey();
   n.correspondence = n.life === old.life ? structuredClone(old.correspondence) : freshCorrespondence();
   n.itemGrowth = n.life === old.life ? structuredClone(old.itemGrowth) : freshItemGrowth();
@@ -720,6 +727,7 @@ function dispatchCommand(input: State, c: Command): State {
   if (input.lizhao.duel && c.type !== "lizhao" && c.type !== "choose") return input;
   if (c.type === "goldenStory" && lizhaoActivity(input)) return input;
   if (c.type === "goldenStory") return runGoldenStory(input,c.action,c.id,workshopMonth);
+  if (c.type === "estateLife") return runEstateLife(input,c.action,c.id,s=>workshopMonth(s,"药庄合作"));
   if (c.type === "tideSurvey") return runTideSurvey(input,c.action,c.id,workshopMonth);
   if (c.type === "revisit") return runRevisit(input,c.action,c.id);
   if (c.type === "lizhao") return runLizhao(input,c.action,c.id,workshopMonth);
@@ -1332,13 +1340,14 @@ export function validState(x: unknown): x is State {
 }
 function validWorldState(
   x: unknown,
-  version: 59 | 58 | 57 | 56 | 55 | 54 | 53 | 52 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51,
+  version: 60 | 59 | 58 | 57 | 56 | 55 | 54 | 53 | 52 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
     (x as { version: unknown }).version !== version ||
+    (version >= 60 && !validEstateLife(s.estateLife)) ||
     (version >= 59 && (!validQiCultivation(s.qiJourney?.cultivation) || !Number.isInteger(s.qiJourney.trialProgress) || s.qiJourney.trialProgress<0 || s.qiJourney.trialProgress>4)) ||
     (version >= 57 && !validDeath(s)) ||
     (version >= 56 && s.goldenStory?.practice && s.goldenStory.practice.topic !== "spirit" && !(version >= 58 ? validMaterialPractice(s.goldenStory.practice.material) : validLegacyMaterialPractice(s.goldenStory.practice.material))) ||
@@ -1459,6 +1468,19 @@ function validWorldState(
 }
 export function migrateSave(x:unknown):State {
   if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=60)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===59){
+    if(!validWorldState(x,59))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  }else next=migrateBeforeEstateLife(x);
+  next.estateLife=freshEstateLife();
+  next.version=SAVE_VERSION;
+  if(!validState(next))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeEstateLife(x:unknown):State {
+  if(validState(x))return structuredClone(x);
   if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=59)throw new Error('未知或损坏的存档，原档未修改。');
   let next:State;
   if(x && typeof x==='object' && 'version' in x && x.version===58){
@@ -1468,7 +1490,7 @@ export function migrateSave(x:unknown):State {
   next.qiJourney.trialProgress ??= 0;
   next.qiJourney.cultivation=validQiCultivation(next.qiJourney.cultivation)?next.qiJourney.cultivation:{...freshQiCultivation(),middle:next.realm>0||next.qi>=120,relic:["self","gift"].includes(next.story.choice)||next.crafted>0};
   next.version=SAVE_VERSION;
-  if(!validState(next))throw new Error('旧存档无法安全迁移，原档未修改。');
+  if(!validWorldState({...next,version:59},59))throw new Error('旧存档无法安全迁移，原档未修改。');
   return next;
 }
 function migrateBeforeQiCultivation(x:unknown):State {

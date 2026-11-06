@@ -1,65 +1,20 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import CharacterSprite from "../../presentation/CharacterSprite.vue";
-import { heroBattlePose, type CharacterId } from "../../presentation/art";
-import {
-  createCombatSequence,
-  type CombatBeat,
-  type CombatSnapshot,
-} from "./sequence";
+import type { CharacterId } from "../../presentation/art";
+import type { CombatSnapshot } from "./sequence";
+import { useCombatPresentation } from "./use-combat-presentation";
 const props = defineProps<{
   snapshot: CombatSnapshot | null;
   hero: CharacterId;
   heroName: string;
 }>();
-const beat = ref<CombatBeat | null>(null),
-  failed = ref(false);
-let preference: MediaQueryList | undefined;
-const reduced = () => !!preference?.matches || document.hidden;
-const player = createCombatSequence({
-  initial: props.snapshot,
-  schedule: (ms, callback) => setTimeout(callback, ms),
-  cancel: (timer) => clearTimeout(timer),
-  reduced,
-  show: (value) => (beat.value = value),
-});
-const pose = computed(() => {
-  if (!beat.value) return "idle";
-  if (beat.value.phase === "impact" && beat.value.playerLost) return "hurt";
-  if (beat.value.phase === "strike")
-    return heroBattlePose(beat.value.snapshot.effect);
-  return "idle";
-});
-watch(
-  () => props.snapshot,
-  (value) => player.sync(value),
-  { deep: true },
-);
+const failed = ref(false);
+const {beat,pose,stop}=useCombatPresentation(()=>props.snapshot);
 watch(
   () => props.snapshot?.enemyImage,
   () => (failed.value = false),
 );
-function stop() {
-  player.stop();
-}
-function preferenceChanged() {
-  if (reduced()) stop();
-}
-function keyboard(e: KeyboardEvent) {
-  if (e.key === "Escape") stop();
-}
-onMounted(() => {
-  preference = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-  preference?.addEventListener?.("change", preferenceChanged);
-  document.addEventListener("visibilitychange", preferenceChanged);
-  window.addEventListener("keydown", keyboard);
-});
-onBeforeUnmount(() => {
-  player.dispose();
-  preference?.removeEventListener?.("change", preferenceChanged);
-  document.removeEventListener("visibilitychange", preferenceChanged);
-  window.removeEventListener("keydown", keyboard);
-});
 defineExpose({ stop });
 </script>
 <template>
@@ -73,7 +28,7 @@ defineExpose({ stop });
     }"
   >
     <div class="combat-player">
-      <CharacterSprite :character="hero" :pose="pose" :label="heroName" /><span
+      <CharacterSprite :character="hero" :pose="pose" :facing="1" :label="heroName" /><span
         class="combat-name"
         >{{ heroName }}</span
       ><b v-if="beat?.phase === 'impact' && beat.playerLost" class="combat-loss"

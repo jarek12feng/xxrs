@@ -1,0 +1,112 @@
+{
+  "scope": "Economy quote controls vary realm for comparison, not earned progress. Age pressure changes only age on an earned golden-late checkpoint and projects cultivation to 899; it ignores events and does not prove delayed full-story survival.",
+  "economy": [
+    {
+      "realm": 0,
+      "workPerMonth": 5,
+      "baseGather": 2,
+      "trainedHerbGather": 4,
+      "herbsAffordablePerWorkMonth": 2.5,
+      "ordinaryBatch": {
+        "quantity": 1,
+        "stones": 4,
+        "herbs": 2,
+        "months": 1,
+        "opportunityCostPerItem": 13
+      },
+      "buyPrice": 12
+    },
+    {
+      "realm": 1,
+      "workPerMonth": 8,
+      "baseGather": 4,
+      "trainedHerbGather": 7,
+      "herbsAffordablePerWorkMonth": 4,
+      "ordinaryBatch": {
+        "quantity": 2,
+        "stones": 4,
+        "herbs": 2,
+        "months": 1,
+        "opportunityCostPerItem": 8
+      },
+      "buyPrice": 12
+    },
+    {
+      "realm": 2,
+      "workPerMonth": 12,
+      "baseGather": 6,
+      "trainedHerbGather": 9,
+      "herbsAffordablePerWorkMonth": 6,
+      "ordinaryBatch": {
+        "quantity": 3,
+        "stones": 4,
+        "herbs": 2,
+        "months": 1,
+        "opportunityCostPerItem": 6.666666666666667
+      },
+      "buyPrice": 12
+    },
+    {
+      "realm": 3,
+      "workPerMonth": 16,
+      "baseGather": 8,
+      "trainedHerbGather": 11,
+      "herbsAffordablePerWorkMonth": 8,
+      "ordinaryBatch": {
+        "quantity": 4,
+        "stones": 4,
+        "herbs": 2,
+        "months": 1,
+        "opportunityCostPerItem": 6
+      },
+      "buyPrice": 12
+    }
+  ],
+  "agePressure": [
+    {
+      "delayYears": 0,
+      "age": 232.91666666666666,
+      "limit": 500,
+      "current": 600,
+      "target": 899,
+      "monthsToTarget": 544,
+      "remainingAfterTarget": 2661
+    },
+    {
+      "delayYears": 120,
+      "age": 352.9166666666667,
+      "limit": 500,
+      "current": 600,
+      "target": 899,
+      "monthsToTarget": 544,
+      "remainingAfterTarget": 1221
+    },
+    {
+      "delayYears": 180,
+      "age": 412.9166666666667,
+      "limit": 500,
+      "current": 600,
+      "target": 899,
+      "monthsToTarget": 544,
+      "remainingAfterTarget": 501
+    },
+    {
+      "delayYears": 220,
+      "age": 452.9166666666667,
+      "limit": 500,
+      "current": 600,
+      "target": 899,
+      "monthsToTarget": null,
+      "remainingAfterTarget": null
+    },
+    {
+      "delayYears": 240,
+      "age": 472.9166666666667,
+      "limit": 500,
+      "current": 600,
+      "target": 899,
+      "monthsToTarget": null,
+      "remainingAfterTarget": null
+    }
+  ]
+}

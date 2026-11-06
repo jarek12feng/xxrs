@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {useActorPlayback} from "./presentation/actor-action/use-actor-playback";
 import { qiPeople, personReply } from "./qi-journey/people";
 import type { CombatFeedback } from "./foundation-journey/feedback";
 import { realmPressure, opponentRealmName } from "./realm-pressure";
@@ -10,7 +11,7 @@ import { trialBoard } from "./world-ambition";
 import CharacterSprite from "./presentation/CharacterSprite.vue";
 import { heroArt, rivalArt } from "./presentation/art";
 import { mainlineRomanceReady } from "./foundation-journey/heroine";
-import { computed, ref, watch, nextTick, onUnmounted } from "vue";
+import { computed, ref, watch, nextTick } from "vue";
 import SceneBackdrop from "./SceneBackdrop.vue";
 import {
   companion,
@@ -65,26 +66,19 @@ watch(
 );
 const duel = computed(() => props.game.social.arena.duel);
 const board = ref<HTMLElement>();
-const resolving = ref(false);
-let impactTimer: ReturnType<typeof setTimeout> | undefined;
+const playback=useActorPlayback<boolean>();
+const resolving=computed(()=>playback.frame.value===true);
 watch(
   () => duel.value?.turn,
   async (turn) => {
-    clearTimeout(impactTimer);
-    if (turn === undefined) {
-      resolving.value = false;
-      return;
-    }
-    resolving.value = true;
-    impactTimer = setTimeout(
-      () => (resolving.value = false),
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650,
-    );
+    playback.stop();
+    if (turn === undefined) return;
+    playback.play([{value:true,durationMs:650}]);
     await nextTick();
     board.value?.scrollIntoView({ block: "start", behavior: "instant" });
   },
 );
-onUnmounted(() => clearTimeout(impactTimer));
+
 const mood = computed(() =>
   props.mode === "arena"
     ? "arena"
@@ -479,7 +473,8 @@ const intentText: Record<Stance, string> = {
             <p
               v-else
               :key="duel.turn"
-              class="combat-receipt combat-impact"
+              class="combat-receipt"
+              :class="{'combat-impact':resolving}"
               role="status"
             >
               {{ duel.log.at(-1) }}

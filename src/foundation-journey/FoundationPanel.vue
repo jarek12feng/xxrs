@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import SnowSupplyPanel from "../estate-life/SnowSupplyPanel.vue";
+import EstateLifePanel from "../estate-life/EstateLifePanel.vue";
+import { revisitLocation } from "../world-revisits/rules";
 import { movePurpose } from "../player-guidance";
 import {revisitView} from "../world-revisits/projection";
 import RevisitPanel from "../world-revisits/RevisitPanel.vue";
@@ -138,6 +141,7 @@ watch(active, () => { storyReceipt.value = ''; });
 watch(() => props.game.secretPact.last, value => { if(storyObject.value) storyReceipt.value = value; });
 const revisit = computed(()=>q.value.location==='estate' ? revisitView(props.game,'estate') : null);
 const hotspots = computed(() => [
+  ...(props.mode==='journey' && revisitLocation(props.game,'estate') ? [{id:'estate-life',label:'药案与护运',x:43,y:40}] : []),
   ...(props.mode==='journey' && revisit.value ? [{id:'revisit',label:revisit.value.title,x:72,y:52}] : []),
   ...(props.mode === "journey" && !auctionLocationError(props.game,"foundation") ? [{id:"auction",label:"晴川交易院 · 拍卖行",x:68,y:35}] : []),
   {
@@ -231,7 +235,7 @@ function act(action: JourneyAction) {
         mode === 'board' ? '听松试剑榜 · 筑基组' : destinations[q.location].name
       "
       :stage-key="stageKey"
-      :goal="mode === 'board' ? board.next : foundationGoal(game)"
+      :goal="active==='estate-life' ? '为下一程备药，自选合作、求教或购买。' : mode === 'board' ? board.next : foundationGoal(game)"
       :hotspots="q.duel ? [] : hotspots"
       :active="active"
       :battle="!!q.duel"
@@ -450,6 +454,8 @@ function act(action: JourneyAction) {
       </template>
       <template v-else>
         <template v-if="mode === 'journey'">
+          <SnowSupplyPanel v-if="q.location==='snow' && !q.duel && (active==='prepare' || active==='encounter')" :game="game" :busy="busy" @act="emit('act',$event)" @estate="openTravel('estate')"/>
+          <EstateLifePanel v-if="active==='estate-life' && revisitLocation(game,'estate')" :game="game" :busy="busy" @act="emit('act',$event)"/>
           <RevisitPanel v-if="q.location==='estate' && active==='revisit'" :game="game" site="estate" :busy="busy" @act="emit('act',$event)"/>
           <template v-if="active === 'prepare'">
             <h3>筑基行旅 · 青玄界</h3>

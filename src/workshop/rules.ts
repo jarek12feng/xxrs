@@ -31,17 +31,17 @@ export function workshopLocationError(s: State): string {
     ? "此处可调整出战器物；炼器、精炼、刻纹、委托与拍卖需回坊市"
     : "";
 }
-function workshopReward(order: WorkshopOrder): ResourceAmounts {
+function workshopReward(order: WorkshopOrder, quantity: number): ResourceAmounts {
   if ("relic" in order) return {};
   switch (order.product) {
     case "foundation": return { pills: 1 };
     case "healing": case "clarity": case "spirit": case "ward": case "iron":
-      return { [order.product]: 1 };
+      return { [order.product]: quantity };
     default: return {};
   }
 }
 export function workshopQuote(s: State, o: WorkshopOrder) {
-  const { name, effect, stones, herbs, iron, months, study, reason } =
+  const { name, effect, stones, herbs, iron, months, study, reason, quantity } =
     planOrder(s, o);
   const cost = [
     herbs ? `灵草 ${herbs}` : "",
@@ -61,11 +61,11 @@ export function workshopQuote(s: State, o: WorkshopOrder) {
     (s.stones < stones || s.herbs < herbs || s.workshop.iron < iron
       ? `需要${cost}；灵草和玄铁料可在坊市购入`
       : "") ||
-    quoteSettlement(s, { stones, herbs, iron }, workshopReward(o)).error;
+    quoteSettlement(s, { stones, herbs, iron }, workshopReward(o, quantity)).error;
   const hint = "product" in o && o.product === "clarity" && s.sense >= 12 && s.sense < 24
     ? "每颗最多增加神识 2；凝神每月增加 1 且不耗材料。接近本境或药力上限时，实际药效会减少。"
     : "";
-  return { name, effect: [effect, hint].filter(Boolean).join(" "), stones, herbs, iron, months, study, cost, error };
+  return { name, effect: [effect, hint].filter(Boolean).join(" "), stones, herbs, iron, months, study, cost, error, quantity };
 }
 export function runWorkshop(
   input: State,
@@ -91,7 +91,7 @@ export function runWorkshop(
 
   }
   const selfFoundation="product" in order && order.product==="foundation" && order.method==="craft";
-  const reward = selfFoundation?{}:workshopReward(order);
+  const reward = selfFoundation?{}:workshopReward(order, quote.quantity);
   if (settleResources(s, { stones: quote.stones, herbs: quote.herbs, iron: quote.iron }, reward).error) return input;
   if ("relic" in order) {
     if (applyEquipmentChange(s, {

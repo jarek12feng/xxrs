@@ -1,4 +1,7 @@
 import Phaser from "phaser";
+import { createActorMotion } from "../presentation/actor-action/motion";
+import { observeActionEnvironment } from "../presentation/actor-action/environment";
+import { actorAppearance, type CharacterId } from "../presentation/art";
 import type { Adventure } from "../adventure";
 import type { SceneObject } from "./opening";
 import { createActionPlayer } from "./action-player";
@@ -9,6 +12,7 @@ export interface StageConfig {
   method?: Adventure["method"];
   image: string;
   hero: string;
+  heroCharacter?: CharacterId;
   heroAction?: string;
   entry?: {x:number;y:number};
   heroWalk?: { url: string; frameWidth: number; frameHeight: number };
@@ -26,7 +30,7 @@ export interface StageConfig {
 export interface StageHandle {
   move(x: number, y: number): void;
   getPosition?(): {x:number;y:number};
-  walkTo?(x: number, y: number): void;
+  walkTo?(x: number, y: number, faceX?: number): void;
   nudge?(x: number, y: number): void;
   skipWalk?(): void;
   skipPerformance?(): void;
@@ -61,10 +65,11 @@ export function mountStage(
   };
   const position = { x: width * (config.entry?.x ?? 35) / 100, y: height * (config.entry?.y ?? 84) / 100 };
   const people = new Map<string,Phaser.GameObjects.Image>();
-  let walkRevision = 0;
-  let walkEnd: { x: number; y: number } | undefined;
+  let environment: ReturnType<typeof observeActionEnvironment> | undefined;
   const placeActor = () => {
     if (!actor) return;
+    const listener = people.get("luchi");
+    listener?.setFlipX(position.x < listener.x);
     const scale = groundScale(position.y, height);
     actor
       .setPosition(position.x, position.y)
@@ -80,6 +85,19 @@ export function mountStage(
       .setScale(scale)
       .setDepth(position.y - 3);
   };
+  const motion = createActorMotion({
+    initial: position,
+    duration: (from, to) => Math.max(30, Math.hypot(to.x-from.x, to.y-from.y) / Math.max(.1, unit) / .24),
+    show: next => {
+      Object.assign(position, next.position);
+      if (actor) {
+        const walking = next.moving && !!current?.textures.exists('hero-walk');
+        actor.stop().setTexture(walking ? 'hero-walk' : 'hero', walking ? next.frame : undefined);
+        actor.setFlipX(actorAppearance(config.heroCharacter ?? 'hero-male-qi', 'idle', next.facing, walking).flipX);
+      }
+      placeActor(); config.onMotion?.(next.moving);
+    },
+  });
   const applyState = () => {
     rescuedWorker?.setVisible(state.rescued);
     readiness?.setVisible(state.prepared).setAlpha(state.rescued ? 0.12 : 0.3);
@@ -143,7 +161,6 @@ export function mountStage(
       for (const o of config.objects) if (o.art) this.load.image(o.id, o.art);
     }
     create() {
-      if (this.textures.exists("hero-walk")) this.anims.create({ key: "walk", frames: this.anims.generateFrameNumbers("hero-walk", { start: 0, end: 7 }), frameRate: 10, repeat: -1 });
       if (destroyed) return;
       current = this;
       if (this.textures.exists("backdrop")) {
@@ -216,6 +233,7 @@ export function mountStage(
         actor = this.add
           .sprite(position.x, position.y, "hero")
           .setOrigin(0.5, 1);
+        motion.reset(position);
         placeActor();
       }
       if (!config.reduced) {
@@ -225,15 +243,16 @@ export function mountStage(
       this.preparation = this.add.graphics().setDepth(height);
       this.drawPreparation(0);
       applyState();
-      performance=createActionPlayer(this,{initial:state,reduced:config.reduced,width,height,unit,sceneKey:config.sceneKey,
+      performance=createActionPlayer(this,{initial:state,reduced:()=>config.reduced || !!environment?.reduced() || document.hidden,width,height,unit,sceneKey:config.sceneKey,
         hero:actor,worker:rescuedWorker,shadow,onCaption:config.onPerformance,
         restore:(sequence,reason)=>{
-          if(sequence === "rescue" && reason !== "disposed" && reason !== "replaced") Object.assign(position,{x:width*.41,y:height*.82});
+          if(sequence === "rescue" && reason !== "disposed" && reason !== "replaced") motion.reset({x:width*.41,y:height*.82});
           actor?.setTexture("hero");placeActor();applyState();}});
       onReady();
       if (document.hidden) this.game.loop.sleep();
     }
-    update(time: number) {
+    update(time: number, delta: number) {
+      motion.advance(delta);
       this.drawPreparation(time);
       if (!this.weather) return;
       const g = this.weather.clear();
@@ -273,43 +292,25 @@ export function mountStage(
     if (document.hidden) game.loop.sleep();
     else game.loop.wake();
   };
+  environment = observeActionEnvironment(() => { motion.cancel(); performance?.skip(); });
   document.addEventListener("visibilitychange", visibility);
-  function stopWalking() {
-    walkRevision++;
-    current?.tweens.killTweensOf(position);
-    walkEnd = undefined;
-    if(actor?.texture.key === "hero-walk") actor.setFlipX(!actor.flipX);
-    actor?.stop();actor?.setTexture("hero");placeActor();config.onMotion?.(false);
-  }
-  function walkTo(x: number, y: number) {
-    if (destroyed) return;
-    const route = planWalk(config.sceneKey ?? "", {x:position.x / width * 100,y:position.y / height * 100}, {x,y});
-    if (!route.length) return;
-    // Redirect the path without restarting the gait on every held-key repeat.
-    walkRevision++;current?.tweens.killTweensOf(position);walkEnd=undefined;
+  function stopWalking() { motion.cancel(); }
+  function walkTo(x: number, y: number, faceX?: number) {
+    if (destroyed || document.hidden) return;
     performance?.skip();
-    Object.assign(position,{x:route[0].x / 100 * width,y:route[0].y / 100 * height});
-    const ticket=walkRevision;
-    const last=route[route.length-1];walkEnd={x:last.x / 100 * width,y:last.y / 100 * height};
-    if (!actor || !current || config.reduced) { Object.assign(position,walkEnd);stopWalking();return; }
-    config.onMotion?.(true);
-    const step=(index:number) => {
-      if(ticket!==walkRevision || destroyed || !actor || !current) return;
-      if(index>=route.length){stopWalking();return;}
-      const p={x:route[index].x / 100 * width,y:route[index].y / 100 * height};
-      const distance=Math.hypot(p.x-position.x,p.y-position.y);
-      if(distance<1){step(index+1);return;}
-      // Generated walk frames face right; idle reference faces left.
-      actor.setFlipX(current.textures.exists("hero-walk") ? p.x < position.x : p.x > position.x);
-      if(current.textures.exists("hero-walk")) actor.play("walk",true);
-      current.tweens.add({targets:position,...p,duration:Math.max(30,distance / Math.max(.1,unit) / .24),ease:"Linear",onUpdate:placeActor,onComplete:()=>step(index+1)});
-    };
-    step(0);
+    const route = planWalk(config.sceneKey ?? '', {x:position.x / width * 100,y:position.y / height * 100}, {x,y});
+    if (!route.length) return;
+    const points = route.map(p => ({x:p.x / 100 * width,y:p.y / 100 * height}));
+    // The route planner may project the current point back onto the reviewed floor.
+    motion.reset(points[0]!);
+    motion.approach({path:points.slice(1).length ? points.slice(1) : points,
+      faceX:faceX === undefined ? undefined : faceX / 100 * width,
+      instant:!actor || !current?.textures.exists('hero-walk') || config.reduced || environment?.reduced()});
   }
   return {
     move(x,y) {
       const point=approachPoint(width,height,x,y);
-      walkTo(point.x / width * 100,point.y / height * 100);
+      walkTo(point.x / width * 100,point.y / height * 100,x);
     },
     walkTo,
     skipPerformance(){performance?.skip();},
@@ -323,7 +324,7 @@ export function mountStage(
       }
     },
     nudge(x,y){walkTo(position.x / width * 100+x,position.y / height * 100+y);},
-    skipWalk(){if(walkEnd)Object.assign(position,walkEnd);stopWalking();},
+    skipWalk(){motion.skip();},
     stop:stopWalking,
     settle(calm) {
       settled = calm;
@@ -350,6 +351,7 @@ export function mountStage(
       if (destroyed) return;
       stopWalking();
       destroyed = true;
+      motion.dispose(); environment?.dispose();
       document.removeEventListener("visibilitychange", visibility);
       performance?.dispose();
       performance=undefined;

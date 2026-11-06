@@ -1,0 +1,61 @@
+/* Opening composition: readable choices, a clear silhouette, and a path into the world. */
+.immersive-shell .title-screen {
+  margin: clamp(24px, 5vh, 64px) 0 0 6vw;
+  max-width: 410px;
+  gap: 12px;
+  padding: 24px 28px;
+  background: linear-gradient(110deg, #0c201ce6, #0c201c80 70%, transparent);
+  border-left: 1px solid #d4b97980;
+}
+.title-screen h1 { font-size: clamp(46px, 5.6vw, 80px); }
+.title-screen > p { margin: 0; }
+.title-screen > small { color: #d5c8a9; }
+.title-screen button { padding: 12px 20px; }
+.immersive-shell .creation { overflow: hidden; }
+.immersive-shell .creation-art { min-height: 660px; background: #152e30; }
+.creation-art .creation-landscape { object-position: 62% center; }
+.creation-art::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(#0b2026dc, transparent 52%, #071b2199);
+}
+.creation-art .creation-traveler {
+  z-index: 1; width: 64%; height: 65%; bottom: 1%; left: 5%;
+  object-fit: contain; object-position: center bottom; transform: scaleX(-1);
+  filter: drop-shadow(0 16px 12px #051512aa);
+}
+.immersive-shell .creation .art-copy {
+  z-index: 2; padding: 32px 36px; background: none;
+}
+.immersive-shell .creation .art-copy :is(h1, p, .eyebrow) {
+  color: #f4e7ca; text-shadow: 0 2px 10px #071b21;
+}
+.immersive-shell .creation .art-copy h1 { font-size: clamp(34px, 3.5vw, 52px); margin: 12px 0; }
+.immersive-shell .creation .art-copy p { font-size: 14px; line-height: 1.9; }
+.creation-identity { padding: 10px 14px; border-left: 2px solid #9c8152; background: #e7dfcd; }
+.creation-identity small { display: block; margin-top: 4px; color: #596454; }
+@media (max-width: 700px) {
+  .immersive-shell .title-screen { margin: 20px 0; padding: 20px; max-width: 100%; }
+  .immersive-shell .creation-art { min-height: 460px; }
+  .immersive-shell .creation .art-copy { padding: 24px; }
+  .creation-art .creation-traveler { height: 60%; left: 0; }
+}
+@media (min-width: 701px) and (max-height: 850px) {
+  .immersive-shell .creation { margin: 8px auto; min-height: 0; }
+  .immersive-shell .creation-art { min-height: 570px; }
+  .creation-form { padding: 18px 30px; }
+  .creation-form h2 { margin: 10px 0; font-size: 23px; }
+  .creation-form h3 { margin: 12px 0 8px; }
+  .creation-form p { margin: 8px 0; }
+  .creation-form .aptitude-list { gap: 6px; }
+  .creation-form .aptitude-list button { padding: 10px 14px; }
+  .creation-form .fineprint { font-size: 11px; line-height: 1.6; }
+  .creation-form .name-input { padding: 8px 12px; }
+  .creation-form .creation-identity { padding: 6px 12px; }
+}
+@media (min-width: 701px) and (max-height: 850px) {
+  .creation-form .aptitude-list button { padding: 7px 12px; }
+  .creation-form .aptitude-list small { margin-top: 3px; }
+  .creation-form .start { margin-top: 8px; padding: 11px 18px; }
+  .creation-form .fineprint:last-child { margin-bottom: 0; }
+  .creation-form .quiet { padding: 4px 0; }
+}

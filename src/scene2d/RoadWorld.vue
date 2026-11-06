@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import {useActorPlayback} from "../presentation/actor-action/use-actor-playback";
 import {roadSpeakerFoot} from './actor-anchors';
-import {computed,onBeforeUnmount,onMounted,ref,watch} from 'vue';
+import {computed,ref,watch} from 'vue';
 import type {State} from '../core';
 import CharacterSprite from '../presentation/CharacterSprite.vue';
 import WalkingActor from './WalkingActor.vue';
@@ -10,8 +11,9 @@ import {roadSceneSnapshot,roadSceneTransition,roadWorldState} from './road-perfo
 const props=defineProps<{game:State}>();
 const emit=defineEmits<{performed:[]}>();
 const field=computed(()=>roadWorldState(props.game));
-const cue=ref<ReturnType<typeof roadSceneTransition>>();
-const paused=ref(false),walkReady=ref(false);
+const playback=useActorPlayback<NonNullable<ReturnType<typeof roadSceneTransition>>>();
+const cue=playback.frame, paused=playback.hidden;
+const walkReady=ref(false);
 const sheet=computed(()=>props.game.realm===1?'/art/scene2d/foundation-walk/hero-male-v1.png':'/art/scene2d/hero-qi-walk-v2.png');
 function foot(target:string) {
   const stage=props.game.adventure.road.stage;
@@ -28,20 +30,14 @@ function foot(target:string) {
   return {x:point[0]!,y:point[1]!};
 }
 const walk=useSceneApproach({animated:()=>walkReady.value && props.game.social.gender==='male' && props.game.realm<=1,initial:foot('entry')});
-function approach(target:string,arrived?:()=>void){skip();walk.walkTo(foot(target),arrived);}
+function approach(target:string,arrived?:()=>void){skip();walk.walkTo(foot(target),arrived,target==='person'?roadSpeakerFoot(props.game.adventure.road.stage).x:undefined);}
 watch(sheet,()=>{walk.cancel();walkReady.value=false;});
-let timer:ReturnType<typeof setTimeout>|undefined,media:MediaQueryList|undefined;
-function skip(){if(timer!==undefined)clearTimeout(timer);timer=undefined;cue.value=undefined;}
-function visibility(){paused.value=document.hidden;if(paused.value)skip();}
-function reduce(){if(media?.matches)skip();}
-function keyboard(e:KeyboardEvent){if(e.key==='Escape')skip();}
+const skip=playback.stop;
 watch(()=>roadSceneSnapshot(props.game),(next,before)=>{
   skip();if(next.stage!==before.stage)walk.reset(foot('entry'));const nextCue=roadSceneTransition(before,next);
-  if(!nextCue || document.hidden || media?.matches)return;
-  walk.cancel();cue.value=nextCue;emit('performed');timer=setTimeout(skip,1800);
+  if(!nextCue || document.hidden || playback.reduced.value)return;
+  walk.cancel();playback.play([{value:nextCue,durationMs:1800}]);emit('performed');
 });
-onMounted(()=>{media=window.matchMedia?.('(prefers-reduced-motion: reduce)');media?.addEventListener?.('change',reduce);visibility();document.addEventListener('visibilitychange',visibility);window.addEventListener('keydown',keyboard);});
-onBeforeUnmount(()=>{skip();media?.removeEventListener?.('change',reduce);document.removeEventListener('visibilitychange',visibility);window.removeEventListener('keydown',keyboard);});
 defineExpose({skip,approach,cancel:walk.cancel});
 </script>
 <template>

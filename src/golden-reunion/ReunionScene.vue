@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import WalkingActor from "../scene2d/WalkingActor.vue";
+import { useSceneApproach } from "../scene2d/use-scene-approach";
+import { computed, ref, watch } from "vue";
 import type { State, Intent } from "../core";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
-import { characterArt, heroArt } from "../presentation/art";
+import { heroArt } from "../presentation/art";
 import { goldenStoryQuote } from "../golden-story/rules";
 import {
   reunionAvailable,
@@ -33,6 +35,16 @@ const goal = computed(
       departed: "苏婉宁已往下游复测。古渡信路仍通，此处留下你们共同的测读。",
     })[r.value.stage],
 );
+const walkReady=ref(false);
+const approach=useSceneApproach({animated:()=>walkReady.value && props.game.social.gender==='male',initial:{x:25,y:83}});
+function select(id:string) {
+ approach.cancel();
+ if(id==='exit'){emit('close');return;}
+ selected.value='';
+ const target=id==='tide'?{x:52,y:83,face:64}:{x:27,y:83,face:39};
+ approach.walkTo({x:target.x,y:target.y},()=>{selected.value=id;},target.face);
+}
+watch(present,()=>{approach.cancel();});
 const rows = computed(() => {
   const list: { label: string; action: ReunionAction }[] = [];
   const add = (label: string, action: ReunionAction) =>
@@ -100,15 +112,13 @@ const rows = computed(() => {
       { id: 'tide', label: '侧堤归绳与水尺', x: 64, y: 57 },
       { id: 'exit', label: '回古渡 · 可暂缓后续', x: 88, y: 52 },
     ]"
-    @select="$event === 'exit' ? emit('close') : (selected = $event)"
-    @close="selected = ''"
+    @select="select"
+    @close="selected = ''; approach.cancel()"
   >
     <template #world>
-      <img
-        class="reunion-hero"
-        :src="characterArt(heroArt(game.social.gender, game.realm))"
-        alt="你在古渡侧堤"
-      />
+<button v-if="approach.moving.value" class="approach-skip" @click="approach.skip()">略过走近</button>
+<WalkingActor class="reunion-hero" :character="heroArt(game.social.gender,game.realm)" :label="game.name" :position="approach.position.value" :moving="approach.moving.value" :frame="approach.frame.value" :facing="approach.facing.value" sheet="/art/scene2d/foundation-walk/hero-male-v1.png" @ready="walkReady=$event" />
+
       <img
         v-if="present"
         class="reunion-partner"
@@ -190,6 +200,7 @@ const rows = computed(() => {
 }
 .reunion-partner {
   left: 29%;
+  transform:scaleX(-1);
 }
 .tide-mark {
   position: absolute;
@@ -231,4 +242,7 @@ const rows = computed(() => {
 .reunion-choice button:disabled {
   opacity: 0.55;
 }
+.reunion-hero { bottom:auto; width:20%; height:56%; transform:translate(-50%,-100%); }
+.reunion-hero :deep(.character-sprite) { width:100%;height:100%;min-height:0; }
+.approach-skip{position:absolute;top:18%;left:42%;z-index:9;pointer-events:auto}
 </style>

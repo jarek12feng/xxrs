@@ -36,8 +36,8 @@ it("renders female practice and combat art without mutating the save", async () 
     }),
   );
   expect(practice).toContain(characterArt(heroArt("female"), "meditate"));
-  expect(combat).toContain(characterArt(heroArt("female"), "attack"));
-  expect(combat).toContain(characterArt("golem", "hurt"));
+  expect(combat).toContain(characterArt(heroArt("female"), "idle"));
+  expect(combat).toContain(characterArt("golem", "idle"));
   expect(JSON.stringify(game)).toBe(before);
 });
 

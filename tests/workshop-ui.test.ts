@@ -114,3 +114,18 @@ it('retains a selected preparation across an event overlay unmount',async()=>{
   shown.value=false;await flush();shown.value=true;await flush();
   expect(document.querySelector('[aria-label="当前筹备方案"]')?.textContent).toContain('自行炼制 · 回春散');
 });
+it('shows higher-realm batch output before crafting and displays the exact inventory gain', async()=>{
+ const {condensationCheckpoint}=await import('../tools/golden-core-checkpoint');
+ const initial=condensationCheckpoint();initial.stones=100;initial.herbs=20;
+ const state=shallowRef(initial);
+ app=createApp({render:()=>h(WorkshopPanel,{game:state.value,busy:false,onAct:(intent:Intent)=>{state.value=dispatch(state.value,{...intent,id:'batch-ui'});}})});
+ app.mount(document.body.appendChild(document.createElement('div')));await flush();
+ [...document.querySelectorAll('button')].find(b=>b.textContent?.trim()==='丹药')!.click();await flush();
+ const button=[...document.querySelectorAll('button')].find(b=>b.textContent?.trim()==='自行炼制回春散')!;
+ expect(button.disabled).toBe(false);
+ expect(button.parentElement!.textContent).toContain('产出 2 份');
+ const before=state.value.growth.medicines.healing;
+ button.click();await flush();
+ expect(state.value.growth.medicines.healing).toBe(before+2);
+ expect(document.body.textContent).toContain(`回春散 ${before+2}`);
+});

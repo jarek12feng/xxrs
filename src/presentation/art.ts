@@ -46,6 +46,18 @@ export function characterArt(id: CharacterId, pose: Pose = "idle") {
     return `/art/hero-male/foundation-${supported}.webp`;
   return `/art/characters/${id}${supported === "idle" ? "" : `-${supported}`}.webp`;
 }
+/** Reviewed source directions: standing/guard look left, qi strike/hurt look right.
+ * Mirror the image only, so labels and combat motion retain their own coordinates. */
+export function characterFlip(id: CharacterId, pose: Pose = "idle", facing?: number): number {
+  if (facing === undefined || (id !== "hero-male" && id !== "hero-male-qi")) return 1;
+  if (pose === "meditate") return 1;
+  const native = pose === "attack" || (id === "hero-male-qi" && pose === "hurt") ? 1 : -1;
+  return (facing < 0 ? -1 : 1) * native;
+}
+/** Shared visual projection for DOM and Phaser; never mirror the actor's labels. */
+export function actorAppearance(id: CharacterId, pose: Pose, facing?: number, walking = false) {
+  return { src: characterArt(id, pose), flipX: walking ? (facing ?? 1) < 0 : characterFlip(id, pose, facing) < 0 };
+}
 export const rivalArt: Readonly<Record<string, CharacterId>> = {
   巩砚: "gongyan",
   裴逐风: "peizhufeng",

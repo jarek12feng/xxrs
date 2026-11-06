@@ -1,26 +1,18 @@
 <script setup lang="ts">
-import { ref, watch, onBeforeUnmount } from "vue";
+import { computed, watch } from "vue";
+import {useActorPlayback} from "../../presentation/actor-action/use-actor-playback";
 import type { TribulationPresentation } from "./presentation";
 const props = defineProps<{ scene: TribulationPresentation }>();
 const emit = defineEmits<{ performing: [value: boolean] }>();
-const playing = ref(false);
-let timer: ReturnType<typeof setTimeout> | undefined;
-function finish() {
-  clearTimeout(timer);
-  playing.value = false;
-  emit("performing", false);
-}
-watch(
-  () => props.scene.result?.serial,
-  () => {
-    finish();
-    if (!props.scene.result) return;
-    playing.value = true;
-    emit("performing", true);
-    timer = setTimeout(finish, 1300);
-  },
-);
-onBeforeUnmount(finish);
+const playback=useActorPlayback<boolean>({onEnd:()=>emit('performing',false)});
+const playing=computed(()=>playback.frame.value===true);
+const finish=playback.stop;
+watch(()=>props.scene.result?.serial,()=>{
+ finish();
+ if(!props.scene.result)return;
+ playback.play([{value:true,durationMs:1300}]);
+ if(playing.value)emit('performing',true);
+});
 </script>
 <template>
   <div

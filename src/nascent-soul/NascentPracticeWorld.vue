@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import {useActorPlayback} from "../presentation/actor-action/use-actor-playback";
+import { computed, watch } from "vue";
 import { nascentTrialPreview } from "./rules";
 import type { State } from "../world";
 import { characterArt, heroArt } from "../presentation/art";
 const props = defineProps<{ game: State }>();
 const n = computed(() => props.game.nascentSoul);
+const playback=useActorPlayback<'trial'|'channel'>();
+watch(()=>[n.value.trial?.turn,n.value.attempt?.phase],(next,before)=>{
+ if(next.every((value,index)=>value===before[index]))return;
+ playback.stop();
+ if(next[0]!==undefined && next[0]!==before[0])playback.play([{value:'trial',durationMs:800}]);
+ else if(next[1]!==undefined && next[1]!==before[1])playback.play([{value:'channel',durationMs:800}]);
+});
 const pressure = computed(
   () => nascentTrialPreview(props.game, "body")?.pressure,
 );
@@ -41,7 +49,7 @@ const marks = Array.from({ length: 6 }, (_, i) => ({
       v-if="n.trial"
       :key="n.trial.turn"
       class="trial-pressure"
-      :class="`pressure-${n.trial.turn % 3}`"
+      :class="[`pressure-${n.trial.turn % 3}`, {'phase-arriving':playback.frame.value==='trial'}]"
       aria-hidden="true"
     ></div>
     <svg
@@ -76,7 +84,7 @@ const marks = Array.from({ length: 6 }, (_, i) => ({
       v-if="n.attempt"
       :key="phase"
       class="channeling-flow"
-      :class="`phase-${phase}`"
+      :class="[`phase-${phase}`, {'phase-arriving':playback.frame.value==='channel'}]"
       aria-hidden="true"
     >
       <i></i><i></i><i></i><b></b>
@@ -185,7 +193,7 @@ const marks = Array.from({ length: 6 }, (_, i) => ({
   height: 45%;
   border-radius: 50%;
   background: radial-gradient(ellipse at bottom, #e9ab4c44, transparent 65%);
-  animation: phase-arrive 0.8s ease-out;
+
 }
 .trial-pressure.pressure-1 {
   background: radial-gradient(ellipse at top, #90cce04d, transparent 65%);
@@ -231,7 +239,7 @@ const marks = Array.from({ length: 6 }, (_, i) => ({
   width: 22%;
   height: 34%;
   color: #e9c976;
-  animation: phase-arrive 0.8s ease-out;
+
 }
 .channeling-flow i {
   position: absolute;
@@ -370,4 +378,5 @@ const marks = Array.from({ length: 6 }, (_, i) => ({
     font-size: 14px;
   }
 }
+.phase-arriving{animation:phase-arrive .8s ease-out}
 </style>

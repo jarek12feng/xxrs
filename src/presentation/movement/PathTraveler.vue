@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { createFrameClock } from "../actor-action/frame-clock";
+import { observeActionEnvironment } from "../actor-action/environment";
 import { measurePath, pointAt, type MapPoint } from "./path";
 const props = withDefaults(
   defineProps<{
@@ -44,53 +46,43 @@ const lift = computed(() =>
 );
 const path = computed(() => measurePath(props.points));
 const position = computed(() => pointAt(path.value, progress.value));
-let frame = 0,
-  last = 0,
-  media: MediaQueryList | undefined;
-function stop() {
-  cancelAnimationFrame(frame);
-  frame = 0;
-  last = 0;
-}
+let finished=false;
+let environment:ReturnType<typeof observeActionEnvironment>|undefined;
+const clock=createFrameClock({
+ request:callback=>requestAnimationFrame(callback),cancel:id=>cancelAnimationFrame(id),now:()=>performance.now(),
+ advance:elapsed=>{
+  progress.value=Math.min(1,progress.value+elapsed/Math.max(1,props.duration));
+  if(progress.value>=1){finish();return false;}
+  return true;
+ },
+});
+const stop=clock.stop;
 function finish() {
+  if(finished)return;
+  finished=true;
   stop();
   progress.value = 1;
   emit("finished");
 }
-function step(time: number) {
-  if (last)
-    progress.value = Math.min(
-      1,
-      progress.value + (time - last) / Math.max(1, props.duration),
-    );
-  last = time;
-  if (progress.value >= 1) {
-    finish();
-    return;
-  }
-  frame = requestAnimationFrame(step);
-}
 function sync() {
   stop();
-  if (!props.playing) return;
+  if (!props.playing || document.hidden) return;
   if (reduced.value) {
     finish();
     return;
   }
   if (!paused.value && !document.hidden && progress.value < 1)
-    frame = requestAnimationFrame(step);
-}
-function preference() {
-  reduced.value = media?.matches ?? false;
-  sync();
+    clock.start();
 }
 function pause() {
   paused.value = !paused.value;
   sync();
 }
 watch(
-  () => [props.points, props.progress] as const,
-  () => {
+  () => [props.progress, ...props.points.flatMap(point=>[point.x,point.y])],
+  (next,previous) => {
+    if(next.length===previous.length && next.every((value,index)=>value===previous[index]))return;
+    finished=false;
     progress.value = props.progress;
     paused.value = false;
     sync();
@@ -100,6 +92,7 @@ watch(
   () => props.playing,
   (playing) => {
     if (playing) {
+      finished=false;
       progress.value = props.progress;
       paused.value = false;
     }
@@ -107,16 +100,17 @@ watch(
   },
 );
 onMounted(() => {
-  media = window.matchMedia("(prefers-reduced-motion: reduce)");
-  preference();
-  media.addEventListener("change", preference);
-  document.addEventListener("visibilitychange", sync);
+  environment=observeActionEnvironment(()=>{
+    stop();
+    // Escape pauses locally; background resumes from this same visual progress.
+    if(!document.hidden && !reduced.value)paused.value=true;
+  },state=>{
+    reduced.value=state.reduced;
+    // Environment interruption follows notification. Resume on foreground only.
+    if(!state.hidden)sync();
+  });
 });
-onUnmounted(() => {
-  stop();
-  media?.removeEventListener("change", preference);
-  document.removeEventListener("visibilitychange", sync);
-});
+onUnmounted(() => { clock.dispose(); environment?.dispose(); });
 defineExpose({ finish, pause });
 </script>
 <template>

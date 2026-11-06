@@ -1,3 +1,4 @@
+import { estateQuote } from "./estate-life/rules";
 import {isCultivationAction,cultivationQuote} from "./qi-cultivation/rules";
 import {tideQuote} from "./tide-survey";
 import {revisitQuote} from "./world-revisits/rules";
@@ -39,6 +40,7 @@ export function rejectedActionReason(s: State, intent: Intent): string {
   if (intent.type === "ascension") return intent.action === "start" ? ascensionError(s) : s.pending ? "先处理眼前事件，再接续行功" : ascensionOptions(s).find(x=>x.id===intent.action)?.error || "当前行功阶段不能执行此动作";
   let error = "";
   switch (intent.type) {
+    case "estateLife": error=estateQuote(s,intent.action).error; break;
     case "tideSurvey": error=tideQuote(s,intent.action).error; break;
     case "revisit": error=revisitQuote(s,intent.action).error; break;
     case "artifactGrowth": error=artifactQuote(s,intent.action).error; break;

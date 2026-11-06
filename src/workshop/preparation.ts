@@ -1,8 +1,7 @@
 import { quoteSettlement } from "../economy";
 import { actionError, type State, type Intent } from "../core";
 import { activityInterruption } from "../scene-activity";
-import { preparationRates, monthlyStudy, monthlyWorkIncome } from "../preparation-rates";
-import { techniqueActivityEffect } from "../techniques";
+import { monthlyGatherIncome, monthlyStudy, monthlyWorkIncome } from "../preparation-rates";
 import { workshopQuote, type WorkshopOrder } from "./rules";
 export interface PreparationSelection {
   order: WorkshopOrder;
@@ -29,7 +28,7 @@ export function preparationPlan(s: State, order: WorkshopOrder) {
     [
       "herbs",
       "gather",
-      preparationRates.herbs + techniqueActivityEffect(s, "gather").herbs,
+      monthlyGatherIncome(s),
       "采药备灵草",
     ],
     ["study", "study", monthlyStudy(s.wisdom), "研读积累心得"],

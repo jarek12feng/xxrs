@@ -53,6 +53,7 @@ const cards = computed(() => {
   return ids.map((product) => ({
     product,
     ...products[product],
+    stock: preparationOutcome(props.game, { product, method: "buy" }),
     purpose:
       product === "sword" || product === "vial"
         ? equipmentCategoryLabel(product)
@@ -122,7 +123,7 @@ function order(o: WorkshopOrder) {
       <template v-if="planComplete">
         <p>本次筹备已完成，可在下方查看物品与装配选项。</p>
         <button :disabled="busy" @click="selectPlan(selectedOrder!)">
-          再筹备一份
+          再筹备一批
         </button>
       </template>
       <template v-else>
@@ -194,6 +195,7 @@ function order(o: WorkshopOrder) {
       </h4>
       <p class="muted">{{ card.purpose }}</p>
       <p>{{ card.hint }}</p>
+      <small v-if="category === 'medicine'">现有：{{ card.name }} {{ card.stock }} 份</small>
       <p v-if="card.product === 'sword' || card.product === 'vial'">
         现有 {{ game.journey.relics[card.product] }} 阶 ·
         {{
@@ -223,7 +225,7 @@ function order(o: WorkshopOrder) {
             }}{{ card.name }}
           </button>
           <p>
-            {{ choice.cost }} ·
+            <span v-if="['healing', 'clarity'].includes(card.product)">产出 {{ choice.quantity }} 份 · </span>{{ choice.cost }} ·
             {{ choice.months ? `${choice.months} 个月` : "不耗月份"
             }}<span v-if="choice.study"> · 心得 {{ choice.study }}</span>
           </p>

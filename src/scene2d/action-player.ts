@@ -3,7 +3,7 @@ import { createActionSequence, type ActionSnapshot, type ActionFrame, type Actio
 
 /** Scene-only choreography. All outcomes have already been saved by the caller. */
 export function createActionPlayer(scene: Phaser.Scene, options: {
-  initial: ActionSnapshot; reduced: boolean; width: number; height: number; unit: number;
+  initial: ActionSnapshot; reduced: boolean | (() => boolean); width: number; height: number; unit: number;
   sceneKey?: string; hero?: Phaser.GameObjects.Sprite; worker?: Phaser.GameObjects.Image;
   shadow?: Phaser.GameObjects.Ellipse; onCaption?: (text: string) => void;
   restore: (sequence?: ActionSequence, reason?: ActionEndReason) => void;

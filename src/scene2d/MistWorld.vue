@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import {useActorPlayback} from "../presentation/actor-action/use-actor-playback";
 import {mistSpeakerFoot} from "./actor-anchors";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { State } from '../world';
 import CharacterSprite from '../presentation/CharacterSprite.vue';
 import WalkingActor from './WalkingActor.vue';
@@ -11,15 +12,13 @@ import { mistCueText, mistSnapshot, mistTransition, mistWorld, type MistCue } fr
 const props = defineProps<{ game: State }>();
 const emit = defineEmits<{ performing: [] }>();
 const world = computed(() => mistWorld(props.game));
-const cue = ref<MistCue>();
+const playback=useActorPlayback<MistCue>();
+const cue=playback.frame;
 const walkReady=ref(false);
 const walk=useSceneApproach({animated:()=>props.game.realm===0 && props.game.social.gender==='male' && walkReady.value,initial:{x:32,y:87}});
-function approach(point:Point, arrived?:()=>void){stop();walk.walkTo(point,arrived);}
-const hidden = ref(false);
-const reduced = ref(false);
-let media: MediaQueryList | undefined;
-let timer: ReturnType<typeof setTimeout> | undefined;
-function stop() { if (timer !== undefined) clearTimeout(timer); timer = undefined; cue.value = undefined; }
+function approach(point:Point, arrived?:()=>void){stop();walk.walkTo(point,arrived,point.x===mistSpeakerFoot.x-9?mistSpeakerFoot.x:undefined);}
+const {hidden,reduced}=playback;
+const stop=playback.stop;
 defineExpose({ stop, approach, cancel:walk.cancel, reset:walk.reset });
 watch(() => mistSnapshot(props.game.adventure.mist), (after, before) => {
   const next = mistTransition(before, after);
@@ -27,22 +26,9 @@ watch(() => mistSnapshot(props.game.adventure.mist), (after, before) => {
   if(before.stage!==after.stage)walk.reset({x:32,y:87});
   if (!next || hidden.value || reduced.value) return;
   walk.cancel();
-  cue.value = next;
+  playback.play([{value:next,durationMs:1800}]);
   emit('performing');
-  timer = setTimeout(stop, 1800);
-});
-function visibility() { hidden.value = document.hidden; if (hidden.value) stop(); }
-function motion() { reduced.value = !!media?.matches; if (reduced.value) stop(); }
-function key(event: KeyboardEvent) { if (event.key === 'Escape') stop(); }
-onMounted(() => {
-  media = window.matchMedia?.('(prefers-reduced-motion: reduce)'); motion(); visibility();
-  media?.addEventListener('change', motion);
-  document.addEventListener('visibilitychange', visibility);
-  window.addEventListener('keydown', key);
-});
-onBeforeUnmount(() => {
-  stop(); media?.removeEventListener('change', motion);
-  document.removeEventListener('visibilitychange', visibility); window.removeEventListener('keydown', key);
+
 });
 </script>
 <template>

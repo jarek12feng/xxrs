@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useCombatPresentation } from "../scene2d/combat/use-combat-presentation";
 import { mortalWarning } from "../mortality";
 import {revisitView} from "../world-revisits/projection";
 import RevisitPanel from "../world-revisits/RevisitPanel.vue";
@@ -9,7 +10,7 @@ import { computed, ref, watch } from "vue";
 import type { State, Intent } from "../core";
 import NarrativeStage from "../scene2d/NarrativeStage.vue";
 import CombatBar from "../scene2d/combat/CombatBar.vue";
-import { characterArt, heroBattlePose } from "../presentation/art";
+import { characterArt, characterFlip, heroArt } from "../presentation/art";
 import { foundationPower } from "../foundation-journey/combat";
 import { lizhaoOptions } from "./view";
 import {
@@ -77,14 +78,22 @@ const points = computed(() => {
     y: positions[p.id]?.[1] ?? p.y,
   }));
 });
+const combat = useCombatPresentation(() => {
+ const duel = l.value.duel;
+ return duel && !artifactOpen.value && !props.game.itemGrowth.golden.duel ? {
+  id: `lizhao-${duel.kind}`, turn: duel.turn, player: duel.hp, enemy: duel.enemy,
+  enemyName: lizhaoFoe(duel.kind).name, effect: duel.effect,
+ } : null;
+});
+const combatEffect = computed(() => ['strike','impact'].includes(combat.beat.value?.phase ?? '') ? combat.beat.value?.snapshot.effect : '');
 const foeArt = computed(() =>
   l.value.duel?.kind === "han" || l.value.location === "bay"
     ? "/art/review-fixes/han-lizhou.webp"
     : characterArt(
         "golem",
-        l.value.duel?.effect === "strike"
+        combat.beat.value?.phase === "impact" && combat.beat.value.enemyLost
           ? "hurt"
-          : l.value.duel?.effect
+          : combat.beat.value?.phase === "strike"
             ? "attack"
             : "idle",
       ),
@@ -134,8 +143,8 @@ function move(id: string) {
 }
 const hero = computed(() =>
   characterArt(
-    props.game.social.gender === "female" ? "hero-female" : "hero-male",
-    heroBattlePose(l.value.duel?.effect),
+    heroArt(props.game.social.gender, props.game.realm),
+    combat.pose.value,
   ),
 );
 </script>
@@ -156,12 +165,11 @@ const hero = computed(() =>
     @close="selected = ''"
   >
     <template #world>
-      <img class="lizhao-hero" :src="hero" :alt="game.name" />
+      <img class="lizhao-hero" decoding="sync" :src="hero" :style="{ transform: `scaleX(${characterFlip(heroArt(game.social.gender, game.realm), combat.pose.value, 1)})` }" :alt="game.name" />
       <div
         v-if="l.duel?.kind === 'outer'"
         class="tide-array"
-        :key="`array-${l.duel.turn}`"
-        :class="l.duel.effect"
+        :class="combatEffect"
         role="img"
         aria-label="分潮禁阵的三重潮纹"
       >
@@ -170,8 +178,7 @@ const hero = computed(() =>
       <figure
         v-else-if="l.duel || l.location === 'bay'"
         class="lizhao-enemy"
-        :key="`foe-${l.duel?.turn ?? 0}`"
-        :class="l.duel?.effect"
+        :class="combatEffect"
       >
         <img
           :src="foeArt"
@@ -182,10 +189,10 @@ const hero = computed(() =>
         </figcaption>
       </figure>
       <div
-        v-if="l.duel?.effect"
-        :key="`effect-${l.duel.turn}`"
+        v-if="combatEffect"
+        :key="`effect-${combat.beat.value?.snapshot.turn}`"
         class="lizhao-exchange"
-        :class="l.duel.effect"
+        :class="combatEffect"
         aria-hidden="true"
       ></div>
       <span v-if="l.outerCleared && l.location === 'outer'" class="settled-cue"

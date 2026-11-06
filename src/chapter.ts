@@ -1,6 +1,6 @@
 import type { SpiritState } from "./spirit";
 import { senseLimit } from "./spirit";
-import { preparationRates, monthlyStudy, monthlyWorkIncome } from "./preparation-rates";
+import { preparationRates, monthlyStudy, monthlyWorkIncome, monthlyGatherBase } from "./preparation-rates";
 import { quoteMedicineUse } from "./medicines";
 import { breakthroughDetails, breakthroughSuccess, foundationFailure } from "./progression";
 export { breakthroughDetails, breakthroughSuccess } from "./progression";
@@ -734,7 +734,7 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
       if (c.activity === "cultivate")
         s.qi = Math.min(MAX_QI, s.qi + cultivationGainAtAge(s));
       if (c.activity === "gather") {
-        s.herbs += preparationRates.herbs;
+        s.herbs += monthlyGatherBase(s);
         s.qi = Math.min(MAX_QI, s.qi + 3);
       }
       if (c.activity === "train") {
@@ -753,7 +753,7 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
       if (c.activity !== "cultivate")
         record(
           s,
-          `${{ meditate: `凝神内观，神识 +1（本境上限 ${senseLimit(s.realm, s.spirit)}）、修为 +2`, study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: `山下劳作，灵石 +${monthlyWorkIncome(s)}`, rest: "静养经脉，伤势 −1" }[c.activity]}。`,
+          `${{ meditate: `凝神内观，神识 +1（本境上限 ${senseLimit(s.realm, s.spirit)}）、修为 +2`, study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: `采药得灵草${monthlyGatherBase(s)}株，修为 +3`, train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: `山下劳作，灵石 +${monthlyWorkIncome(s)}`, rest: "静养经脉，伤势 −1" }[c.activity]}。`,
         );
       hooks(s);
       if (

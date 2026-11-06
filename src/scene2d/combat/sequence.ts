@@ -1,3 +1,4 @@
+import { createPlayback } from "../../presentation/actor-action/playback";
 /** Presentation snapshots must come from successfully saved domain state. */
 export interface CombatSnapshot {
   id: string;
@@ -40,58 +41,28 @@ export function createCombatSequence<T>(options: {
   show: (beat: CombatBeat | null) => void;
 }) {
   let baseline = options.initial ? { ...options.initial } : null;
-  let timer: T | undefined,
-    revision = 0,
-    disposed = false;
-  function stop() {
-    revision++;
-    if (timer !== undefined) options.cancel(timer);
-    timer = undefined;
-    options.show(null);
-  }
+  let disposed = false;
+  const player = createPlayback<CombatBeat, T>({
+    schedule: options.schedule, cancel: options.cancel, reduced: options.reduced,
+    show: options.show, end: () => options.show(null),
+  });
+  function stop() { player.stop(); }
   return {
     stop,
     sync(next: CombatSnapshot | null) {
       if (disposed) return;
       const exchange = combatExchange(baseline, next);
-      const changed =
-        baseline?.id !== next?.id ||
-        baseline?.turn !== next?.turn ||
-        baseline?.player !== next?.player ||
-        baseline?.enemy !== next?.enemy;
+      const changed = baseline?.id !== next?.id || baseline?.turn !== next?.turn ||
+        baseline?.player !== next?.player || baseline?.enemy !== next?.enemy;
       baseline = next ? { ...next } : null;
       if (!changed) return;
-      stop();
-      if (!exchange || options.reduced()) return;
-      const token = revision;
-      const phases: readonly CombatPhase[] = [
-        "approach",
-        "strike",
-        "impact",
-        "return",
-      ];
+      if (!exchange) { stop(); return; }
+      const phases: readonly CombatPhase[] = ['approach', 'strike', 'impact', 'return'];
       const durations = [180, 240, 300, 220];
-      function frame(i: number) {
-        if (disposed || token !== revision) return;
-        const phase = phases[i];
-        if (!phase) {
-          stop();
-          return;
-        }
-        options.show({ ...exchange!, phase });
-        if (disposed || token !== revision) return;
-        timer = options.schedule(durations[i]!, () => {
-          if (disposed || token !== revision) return;
-          timer = undefined;
-          frame(i + 1);
-        });
-      }
-      frame(0);
+      player.play(phases.map((phase, index) => ({
+        durationMs: durations[index]!, value: { ...exchange, phase },
+      })));
     },
-    dispose() {
-      if (disposed) return;
-      disposed = true;
-      stop();
-    },
+    dispose() { if (!disposed) { disposed = true; player.dispose(); } },
   };
 }

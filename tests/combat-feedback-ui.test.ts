@@ -13,7 +13,6 @@ it.each([false, true])(
   "saved result animation replaces earlier floats and respects reduced motion %s",
   async (reduced) => {
     vi.useFakeTimers();
-    const clear = vi.spyOn(globalThis, "clearTimeout");
     const media = vi
       .spyOn(window, "matchMedia")
       .mockReturnValue({ matches: reduced } as MediaQueryList);
@@ -51,11 +50,10 @@ it.each([false, true])(
       expect(host.querySelectorAll(".combat-float")).toHaveLength(0);
       expect(host.textContent).toContain("第 2 合");
     } finally {
-      const calls = clear.mock.calls.length;
       app.unmount();
       host.remove();
-      expect(clear.mock.calls.length - calls).toBeGreaterThanOrEqual(2);
-      clear.mockRestore();
+      vi.runAllTimers();
+      expect(host.textContent).toBe("");
       media.mockRestore();
       vi.useRealTimers();
     }

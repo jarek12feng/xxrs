@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import {computed,ref} from 'vue';
+import WalkingActor from "../scene2d/WalkingActor.vue";
+import { useSceneApproach } from "../scene2d/use-scene-approach";
+import {computed,ref,watch} from 'vue';
 import type {State,Intent} from '../world';
 import NarrativeStage from '../scene2d/NarrativeStage.vue';
-import {characterArt,heroArt} from '../presentation/art';
+import {heroArt} from '../presentation/art';
 import {nascentQuote,type NascentAction} from './rules';
 import {companionContact} from './contact';
 import {partnerName,covenantMemory,covenantReady} from './covenant';
@@ -20,6 +22,16 @@ const hotspots=computed(()=>[
  ...(present.value&&lover.value?[{id:'table',label:n.value.ceremony==='witnessed'?'灯下饭桌':'信物与约书',x:46,y:73},{id:'lantern',label:'院中灯火',x:25,y:40}]:[]),
  {id:'exit',label:'回古渡静室',x:86,y:84},
 ]);
+const walkReady=ref(false);
+const approach=useSceneApproach({animated:()=>walkReady.value && props.game.social.gender==='male',initial:{x:36.5,y:90}});
+function select(id:string) {
+ approach.cancel();
+ if(id==='exit'){emit('close');return;}
+ selected.value='';
+ const target=id==='lantern'?{x:33,y:90,face:25}:id==='table'?{x:38,y:90,face:46}:{x:39,y:90,face:55.5};
+ approach.walkTo({x:target.x,y:target.y},()=>{selected.value=id;},target.face);
+}
+watch(present,()=>{approach.cancel();});
 const rows=computed(()=>{
  const rows:{label:string;action:NascentAction}[]=[];
  const add=(label:string,action:NascentAction)=>rows.push({label,action});
@@ -55,10 +67,12 @@ const rows=computed(()=>{
 const goal=computed(()=>!present.value?'对方尚未到场，旧信路仍通。相见须有双方约定。':n.value.ceremony==='discussed'?'一同筹备你们愿意的礼式，往后的约定由彼此商议。':n.value.ceremony==='witnessed'?'礼已成，饭还温着。坐下来，与对方说几句家常。':n.value.ceremony==='married'?'约书已收好，往后的长关与远行，都有一条可以报平安的信路。':'潮声在墙外，今夜先不急着告别。');
 </script>
 <template>
- <NarrativeStage class="covenant-scene" image="/art/important-scenes/covenant-courtyard.webp" :title="phase" stage-key="covenant" :goal="goal" :body="n.last" :hotspots="hotspots" :active="selected" @select="$event==='exit'?emit('close'):selected=$event" @close="selected=''">
+ <NarrativeStage class="covenant-scene" image="/art/important-scenes/covenant-courtyard.webp" :title="phase" stage-key="covenant" :goal="goal" :body="n.last" :hotspots="hotspots" :active="selected" @select="select" @close="selected='';approach.cancel()">
   <template #world>
-   <img class="covenant-hero" :src="characterArt(heroArt(game.social.gender,game.realm))" alt="你站在院中" />
-   <img v-if="present" class="covenant-partner" :class="{'vow-complete':['witnessed','married','renewed'].includes(n.ceremony)}" :src="`/art/companionship/${game.social.gender==='male'?'shentinglan':'yinzhaochuan'}-${n.ceremony==='discussed'?'work':'travel'}.webp`" :alt="partner" />
+<button v-if="approach.moving.value" class="approach-skip" @click="approach.skip()">略过走近</button>
+<WalkingActor class="covenant-hero" :character="heroArt(game.social.gender,game.realm)" :label="game.name" :position="approach.position.value" :moving="approach.moving.value" :frame="approach.frame.value" :facing="approach.facing.value" sheet="/art/scene2d/foundation-walk/hero-male-v1.png" @ready="walkReady=$event" />
+
+   <img v-if="present" class="covenant-partner" :class="{'face-player':game.social.gender==='male','vow-complete':['witnessed','married','renewed'].includes(n.ceremony)}" :src="`/art/companionship/${game.social.gender==='male'?'shentinglan':'yinzhaochuan'}-${n.ceremony==='discussed'?'work':'travel'}.webp`" :alt="partner" />
    <div class="vow-lights" :class="{'lit':['witnessed','married','renewed'].includes(n.ceremony)}" aria-hidden="true"><i></i><i></i></div>
    <div v-if="c.token!=='none'" class="covenant-keepsake" :class="{'exchanged':['witnessed','married'].includes(n.ceremony)}" aria-hidden="true"><img src="/art/important-scenes/covenant-keepsakes.webp" alt="" /></div>
    <div v-if="n.ceremony==='witnessed'&&c.witnesses.length" class="covenant-witnesses">{{c.witnesses.join(' · ')}}<small>在院中见证</small></div>
@@ -80,4 +94,14 @@ const goal=computed(()=>!present.value?'对方尚未到场，旧信路仍通。�
 .covenant-dialogue,.covenant-prologue{line-height:1.9;white-space:pre-line}.covenant-actions{display:grid;gap:9px}.covenant-actions button{text-align:left;line-height:1.6}.covenant-actions small{display:block}.covenant-receipt{color:#e8cc8a}
 @media(prefers-reduced-motion:reduce){.covenant-hero,.covenant-partner,.covenant-keepsake,.vow-lights i{transition:none}}
 @media(max-width:900px){.covenant-hero{left:18%;height:45%;width:28%}.covenant-partner{left:43%;height:45%;width:28%}}
+.covenant-hero { bottom:auto; width:23%; height:57%; transform:translate(-50%,-100%); }
+.covenant-hero :deep(.character-sprite) { width:100%;height:100%;min-height:0; }
+.approach-skip{position:absolute;top:18%;left:42%;z-index:9;pointer-events:auto}
+.covenant-partner.face-player{transform:scaleX(-1)}
+.covenant-partner.face-player.vow-complete{transform:translateX(-8%) scaleX(-1)}
+@media(min-width:901px){
+.covenant-scene :deep(.speech-bubble.speech-bubble.speech-bubble.speech-bubble){left:auto;right:24px;top:84px;bottom:auto;width:30%}
+.covenant-scene :deep(.speech-bubble::after){display:none}
+.covenant-scene :deep(.narrative-inspector:not(.narrative-notes)){left:auto;right:24px;top:210px;bottom:auto;width:30%;max-height:calc(100% - 230px);transform:none}
+}
 </style>

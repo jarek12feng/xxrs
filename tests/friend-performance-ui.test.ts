@@ -13,7 +13,7 @@ it('只在已保存探望变化后展开、指图、回应；略过与卸载清�
  saved.value=10;await nextTick();expect(host.textContent).toBe('unfold');
  await vi.advanceTimersByTimeAsync(850);expect(host.textContent).toBe('trace');
  await vi.advanceTimersByTimeAsync(1300);expect(host.textContent).toBe('acknowledge');
- performance.skip();await nextTick();expect(host.textContent).toBe('idle');expect(saved.value).toBe(10);await vi.advanceTimersByTimeAsync(10000);expect(host.textContent).toBe('idle');
+ window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));await nextTick();expect(host.textContent).toBe('idle');expect(saved.value).toBe(10);await vi.advanceTimersByTimeAsync(10000);expect(host.textContent).toBe('idle');
  performance.replay();await nextTick();expect(host.textContent).toBe('unfold');expect(saved.value).toBe(10);app.unmount();await vi.advanceTimersByTimeAsync(10000);expect(performance.phase.value).toBe('idle');
  const reload=createApp({setup(){const p=useVisitPerformance(()=>saved.value,()=>true);return()=>h('span',p.phase.value);}});
  reload.mount(host);expect(host.textContent).toBe('idle');reload.unmount();await vi.advanceTimersByTimeAsync(10000);expect(performance.phase.value).toBe('idle');

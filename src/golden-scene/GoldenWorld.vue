@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
+import {useActorPlayback} from "../presentation/actor-action/use-actor-playback";
+import { computed, ref, watch, onMounted } from "vue";
 import type { State } from "../core";
 import { characterArt } from "../presentation/art";
 import WalkingActor from "../scene2d/WalkingActor.vue";
@@ -79,10 +80,11 @@ watch(
   () => walk.reset(court.value ? { x: 28, y: 82 } : { x: 24, y: 87 }),
 );
 const friends = computed(() => !combat.value && (shore.value || court.value));
-const performance = ref<ReturnType<typeof goldenPerformance>>(null);
+const playback=useActorPlayback<{result:NonNullable<ReturnType<typeof goldenPerformance>>;phase:'gather'|'settle'|'rest'}>({onEnd:()=>walk.cancel()});
+const performance=computed(()=>playback.frame.value?.result ?? null);
 const cue = computed(() => performance.value?.label ?? "");
-const phase = ref<"gather" | "settle" | "rest">("rest");
-const reducedMotion = ref(false);
+const phase=computed(()=>playback.frame.value?.phase ?? 'rest');
+const reducedMotion=playback.reduced;
 const guardian = computed(() => goldenGuardian(props.game, props.domain));
 const ritual = computed(
   () =>
@@ -118,23 +120,7 @@ const objectPosition = computed(() => ({
   left: `${walk.position.value.x}%`,
   top: `${walk.position.value.y}%`,
 }));
-let timer: ReturnType<typeof setTimeout> | undefined;
-let preference: MediaQueryList | undefined;
-function stop() {
-  walk.cancel();
-  if (timer !== undefined) clearTimeout(timer);
-  timer = undefined;
-  performance.value = null;
-  phase.value = "rest";
-}
-function visibility() {
-  reducedMotion.value = !!preference?.matches;
-  if (document.hidden) stop();
-  else if (reducedMotion.value) phase.value = "rest";
-}
-function keyboard(e: KeyboardEvent) {
-  if (e.key === "Escape") stop();
-}
+function stop() { walk.cancel(); playback.stop(); }
 watch(
   () => goldenSnapshot(props.game, props.domain),
   (next, previous) => {
@@ -150,22 +136,16 @@ watch(
       emit("performed");
       if (!document.hidden) {
         walk.cancel();
-        performance.value = result;
+
         if (result.kind === "arrival" && !props.busy && !props.game.pending) {
           walk.reset({ x: 18, y: 87 });
           walk.walkTo({ x: 24, y: 87 });
         }
-        phase.value = reducedMotion.value ? "rest" : "gather";
-        const advance = () => {
-          if (phase.value === "gather") {
-            phase.value = "settle";
-            timer = setTimeout(advance, 800);
-          } else if (phase.value === "settle") {
-            phase.value = "rest";
-            timer = setTimeout(stop, 600);
-          } else stop();
-        };
-        timer = setTimeout(advance, reducedMotion.value ? 1800 : 650);
+        playback.play([
+          {value:{result,phase:'gather'},durationMs:650},
+          {value:{result,phase:'settle'},durationMs:800},
+          {value:{result,phase:'rest'},durationMs:600},
+        ],[{value:{result,phase:'rest'},durationMs:1800}]);
       }
     }
   },
@@ -205,17 +185,6 @@ onMounted(() => {
     const img = new Image();
     img.src = characterArt(hero.value, pose);
   }
-  preference = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-  reducedMotion.value = !!preference?.matches;
-  preference?.addEventListener?.("change", visibility);
-  document.addEventListener("visibilitychange", visibility);
-  window.addEventListener("keydown", keyboard);
-});
-onBeforeUnmount(() => {
-  stop();
-  preference?.removeEventListener?.("change", visibility);
-  document.removeEventListener("visibilitychange", visibility);
-  window.removeEventListener("keydown", keyboard);
 });
 </script>
 <template>

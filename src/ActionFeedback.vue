@@ -1,29 +1,23 @@
 <script setup lang="ts">
+import {useActorPlayback} from "./presentation/actor-action/use-actor-playback";
 import MilestoneStage from "./presentation/MilestoneStage.vue";
 import ItemArt from "./presentation/ItemArt.vue";
-import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import { computed, ref, onMounted, onUnmounted, nextTick } from "vue";
 import type { ActionReceipt } from "./action-feedback";
 const props = defineProps<{ receipt: ActionReceipt; expanded?: boolean }>();
 const emit = defineEmits<{ close: []; inspect: []; equip: [] }>();
-const playing = ref(
-  !!props.expanded && !!(props.receipt.milestone || props.receipt.ritual || props.receipt.process),
-);
-const phase = ref(0);
+const playback=useActorPlayback<number>({onEnd:reason=>{
+ if(reason!=='disposed'&&reason!=='replaced')void nextTick(()=>heading.value?.focus());
+}});
+const playing=computed(()=>playback.frame.value!==null);
+const phase=computed(()=>playback.frame.value ?? 2);
 const duration = props.receipt.milestone ? 4200 : props.receipt.process
   ? props.receipt.process.kind === "talk"
     ? 1200
     : 2700
   : 1400;
-const beatTimers: ReturnType<typeof setTimeout>[] = [];
 const heading = ref<HTMLElement>();
-let timer: ReturnType<typeof setTimeout> | undefined;
-function reveal() {
-  clearTimeout(timer);
-  beatTimers.forEach(clearTimeout);
-  phase.value = 2;
-  playing.value = false;
-  void nextTick(() => heading.value?.focus());
-}
+function reveal() { playback.stop(); }
 function escape(e: KeyboardEvent) {
   if (!props.expanded || e.key !== "Escape") return;
   e.preventDefault();
@@ -35,18 +29,10 @@ onMounted(() => {
   if (!props.expanded) return;
   heading.value?.focus();
   document.addEventListener("keydown", escape, true);
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) reveal();
-  else if (playing.value) {
-    beatTimers.push(
-      setTimeout(() => (phase.value = 1), duration / 3),
-      setTimeout(() => (phase.value = 2), (duration * 2) / 3),
-    );
-    timer = setTimeout(reveal, duration);
-  }
+  if(props.receipt.milestone || props.receipt.ritual || props.receipt.process)
+    playback.play([0,1,2].map(value=>({value,durationMs:duration/3})));
 });
 onUnmounted(() => {
-  clearTimeout(timer);
-  beatTimers.forEach(clearTimeout);
   document.removeEventListener("keydown", escape, true);
 });
 const ritualText = {

@@ -8,3 +8,5 @@ createApp(App).use(createPinia()).mount("#app");
 import "./immersive.css";
 
 import "./readability.css";
+
+import "./start-screen.css";

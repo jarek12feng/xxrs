@@ -123,5 +123,9 @@ export function planOrder(s: State, o: WorkshopOrder) {
   }
   const saved = "product" in o ? Math.min(herbs, preservedHerbSaving(s.itemGrowth, o.product, method)) : 0;
   if (saved) { herbs -= saved; effect += ` 栖尘戒内层隔存药材，本炉节省灵草${saved}。`; }
-  return { name, effect, stones, herbs, iron, months, study, reason };
+  // Ordinary medicine can share a furnace at higher realms. Breakthrough and spirit medicines stay single-output.
+  const quantity = "product" in o && method === "craft" && ["healing", "clarity"].includes(o.product)
+    ? Math.min(4, Math.max(1, s.realm + 1)) : 1;
+  if (quantity > 1) effect += ` 灵力分炉，本炉产出${quantity}份；材料与炉火费用按整炉计。`;
+  return { name, effect, stones, herbs, iron, months, study, reason, quantity };
 }
