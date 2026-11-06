@@ -158,6 +158,11 @@ it("first guidance equips earned power before returning to the promised revisit"
   expect(vi.mocked(save).mock.calls.at(-1)![0].journey.main).toBe("spring");
   const calls = vi.mocked(save).mock.calls.length;
 
+  expect(document.querySelector('.milestone-stage[data-kind="manual"]')).not.toBeNull();
+  button("跳过演出").click();
+  await flush();
+  button("知晓结果").click();
+  await flush();
   button("守势").click();
   await flush();
   expect(

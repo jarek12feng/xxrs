@@ -21,7 +21,9 @@ import { growthComparison } from "./growth-feedback";
 import { enrichReceipt } from "./journey-feedback";
 
 import type { ActionProcess } from "./action-process";
+import { milestoneFeedback, type MilestoneFeedback } from "./milestone-feedback";
 export interface ActionReceipt {
+  milestone?: MilestoneFeedback;
   equipment?: { id: string; stage: string };
   process?: ActionProcess;
   title: string;
@@ -401,6 +403,10 @@ export function actionReceipt(before:State,after:State,intent:Intent):ActionRece
     const age=(n:number)=>`${Math.floor(n/12)}岁${n%12?`又${n%12}月`:''}`;
     const season=(month:number)=>['春','夏','秋','冬'][Math.floor((month%12)/3)];
     receipt.notes.unshift(`山中${season(before.month)}去${season(after.month)}来，实际过去${span>=12?`${Math.floor(span/12)}年`:''}${span%12?`${span%12}个月`:''}。年龄 ${age(before.age)} → ${age(after.age)}。`);
+  }
+  if (receipt) {
+    receipt.milestone = milestoneFeedback(before, after);
+    if (receipt.milestone) receipt.spotlight = true;
   }
   return receipt;
 }

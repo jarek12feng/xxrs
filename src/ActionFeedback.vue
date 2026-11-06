@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import MilestoneStage from "./presentation/MilestoneStage.vue";
 import ItemArt from "./presentation/ItemArt.vue";
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import type { ActionReceipt } from "./action-feedback";
 const props = defineProps<{ receipt: ActionReceipt; expanded?: boolean }>();
 const emit = defineEmits<{ close: []; inspect: []; equip: [] }>();
 const playing = ref(
-  !!props.expanded && !!(props.receipt.ritual || props.receipt.process),
+  !!props.expanded && !!(props.receipt.milestone || props.receipt.ritual || props.receipt.process),
 );
 const phase = ref(0);
-const duration = props.receipt.process
+const duration = props.receipt.milestone ? 4200 : props.receipt.process
   ? props.receipt.process.kind === "talk"
     ? 1200
     : 2700
@@ -19,6 +20,7 @@ let timer: ReturnType<typeof setTimeout> | undefined;
 function reveal() {
   clearTimeout(timer);
   beatTimers.forEach(clearTimeout);
+  phase.value = 2;
   playing.value = false;
   void nextTick(() => heading.value?.focus());
 }
@@ -90,8 +92,9 @@ const ritualText = {
     :aria-labelledby="expanded ? 'feedback-title' : undefined"
     aria-live="polite"
   >
+    <MilestoneStage v-if="expanded && receipt.milestone" :milestone="receipt.milestone" :phase="phase" :playing="playing" />
     <div
-      v-if="expanded && (receipt.ritual || receipt.process)"
+      v-else-if="expanded && (receipt.ritual || receipt.process)"
       class="ritual-sky"
       aria-hidden="true"
     >
@@ -130,7 +133,7 @@ const ritualText = {
       >
         {{
           playing
-            ? receipt.process?.title ||
+            ? receipt.milestone?.title || receipt.process?.title ||
               ritualText[receipt.ritual || "retreat"][0]
             : receipt.title
         }}
@@ -138,7 +141,7 @@ const ritualText = {
       <template v-if="playing">
         <p :key="phase" class="ritual-caption">
           {{
-            receipt.process?.beats[phase] ||
+            receipt.milestone?.beats[phase] || receipt.process?.beats[phase] ||
             ritualText[receipt.ritual || "retreat"][1].split(" · ")[phase]
           }}
         </p>
@@ -149,6 +152,7 @@ const ritualText = {
         <small class="muted">Esc 跳过</small>
       </template>
       <template v-else>
+        <p v-if="receipt.milestone" class="milestone-use">{{ receipt.milestone.beats[2] }}</p>
         <div v-if="receipt.equipment" class="earned-equipment" aria-label="器物成长结果">
           <ItemArt :id="receipt.equipment.id" :size="72" />
           <strong>{{ receipt.equipment.stage }}</strong>

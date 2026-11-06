@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { State } from "../world";
+import { ceremonyGuests } from "./guest-art";
 import { crossingView } from "./crossing";
 import { characterArt, heroArt } from "../presentation/art";
 const props = defineProps<{ game: State }>();
@@ -8,17 +9,7 @@ const n = computed(() => props.game.nascentSoul);
 const crossing = computed(() => crossingView(props.game));
 const voyage = computed(() => n.value.ability !== "none");
 // The saved attendance list is authoritative. An anonymous envoy never impersonates a named elder.
-const guests = computed(() =>
-  n.value.guests.map((name) => ({
-    name,
-    art:
-      name === "苏婉宁"
-        ? "/art/companionship/shentinglan-travel.webp"
-        : name === "尹照川"
-          ? "/art/companionship/yinzhaochuan-travel.webp"
-          : "/art/review-fixes/duty-envoy.webp",
-  })),
-);
+const guests = computed(() => ceremonyGuests(n.value.guests));
 </script>
 <template>
   <div
@@ -129,8 +120,8 @@ const guests = computed(() =>
         :key="guest.name"
         class="ceremony-guest"
         :style="{
-          left: `${6 + index * 10}%`,
-          bottom: `${24 + (index % 2) * 4}%`,
+          left: `${index < 2 ? 7 + index * 15 : 67 + (index - 2) * 15}%`,
+          bottom: `24%`,
         }"
       >
         <img :src="guest.art" :alt="guest.name" />

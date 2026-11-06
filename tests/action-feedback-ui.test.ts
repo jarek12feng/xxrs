@@ -121,7 +121,8 @@ it.each([1, 123456])(
     await click("凝神，开始三段行功");
     for(let n=0;n<3;n++) await click("以灵草药气调和");
     await click("服丹，完成突破");
-    expect(text()).toContain("气聚丹田");
+    expect(text()).toContain("道基初成");
+    expect(document.querySelector('.milestone-stage[data-kind="foundation"]')).not.toBeNull();
     await click("跳过演出");
     const result = document.querySelector('[role="dialog"]')?.textContent;
     expect(result).toContain("筑基已成");
