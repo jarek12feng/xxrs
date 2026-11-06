@@ -4,8 +4,8 @@ import type { State } from './world';
 export function guidanceNotes(s: State): string[] {
   if (s.realm || s.status !== 'alive' || s.pending || s.adventure.step !== 'done') return [];
   const notes: string[] = [];
-  if (s.story.stage === 'waiting' && s.month < 36)
-    notes.push(`青石遗府之约：第36月，尚余${36 - s.month}月；入府需修为180与一种破阵手段。当前修为${s.qi}。`);
+  if (s.story.stage === 'waiting' && s.month < s.story.deadline)
+    notes.push(`青石遗府之约：第${s.story.deadline}月，尚余${s.story.deadline - s.month}月；入府需修为180与一种破阵手段。当前修为${s.qi}。`);
   if (s.story.choice === 'missed' && !s.crafted)
     notes.push('旧约已过，仍可在洞府丹炉处独自重返青石遗府。');
   if (s.journey.learning.book && !s.adventure.road.map)

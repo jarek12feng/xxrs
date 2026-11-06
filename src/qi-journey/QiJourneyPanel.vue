@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CultivationScene from "../qi-cultivation/CultivationScene.vue";
+import CultivationPanel from "../qi-cultivation/CultivationPanel.vue";
 import { movePurpose } from "../player-guidance";
 import QiNarrativeScene from "./QiNarrativeScene.vue";
 import { qiNarrativeActive } from "./narrative";
@@ -66,9 +68,9 @@ const stageKey = computed(() => `qi-${q.value.gates}-${q.value.node}-${!!q.value
 const hotspots = computed(() => q.value.duel ? [] : q.value.node ? [{ id: "journey", label: "灵流险地", x: 53, y: 45 }] : [
   { id: "journey", label: q.value.essence ? "晋升灵材" : site.value?.name || "筑基前路", x: 60, y: 42 },
   { id: "prepare", label: "山道与历练", x: 35, y: 50 },
-  { id: "supplies", label: "坊市摊位", x: 19, y: 72 },
+  { id: "supplies", kind:"person" as const, label: "坊市摊位", speech: "道友需要什么？备好行装再进山，别到了险处才想起缺药。", x: 19, y: 72 },
   { id: "narrative", label: props.game.journey.branch === "none" ? "药坪与药窟 · 求学引荐" : "药坪与药窟", x: 48, y: 65 },
-  { id: "people", label: "许照岚与裴铸", x: 78, y: 65 },
+  { id: "people", kind:"person" as const, label: "许照岚与裴铸", speaker: "许照岚", speech: "进山的路各有难处。你想先问药谷的兽迹，还是手上器物的毛病？", x: 78, y: 65 },
 ]);
 watch(stageKey, () => { active.value = ""; });
 watch(()=>!!q.value.node, entered=>world.value?.reset({x:entered?18:30,y:87}));
@@ -79,13 +81,14 @@ const combatOptions=computed(()=>Object.entries(moves).map(([id,label])=>{
 }));
 </script>
 <template>
-  <QiNarrativeScene v-if="!game.realm && (narrativeOpen || qiNarrativeActive(game))" :game="game" :busy="busy" @act="emit('act',$event)" @close="narrativeOpen=false" />
+  <CultivationScene v-if="q.cultivation.work" :game="game" :busy="busy" @act="emit('act',$event)" />
+  <QiNarrativeScene v-else-if="!game.realm && (narrativeOpen || qiNarrativeActive(game))" :game="game" :busy="busy" @act="emit('act',$event)" @close="narrativeOpen=false" />
   <NarrativeStage class="qi-stage" v-else-if="!game.realm" :stage-key="stageKey" :image="location?.image || '/scenes/mist-path.jpg'"
     :title="location?.name || '听松山道'" :goal="qiGoal(game) || ''" :hotspots="hotspots" :active="active" :battle="!!q.duel"
     @select="select" @close="active = ''; world?.cancel()">
-    <template #world><QiWorld ref="world" :game="game" @performed="active = ''" />
+    <template #world><img v-if="!q.node" class="market-steward" src="/art/characters/market-steward.webp" alt="坊市掌柜" /><img v-if="!q.node" class="valley-scout" src="/art/scene-people/xu-zhaolan-standing-v1.webp" alt="许照岚" /><img v-if="!q.node" class="valley-smith" src="/art/scene-people/pei-zhu-standing-v1.webp" alt="裴铸" /><QiWorld ref="world" :game="game" @performed="active = ''" />
       <CombatBar v-if="q.duel && enemy" :turn="q.duel.turn" :player="q.duel.hp" :player-max="qiPower(game).hp" :enemy="q.duel.enemy" :enemy-max="enemy.hp" :enemy-name="enemy.name" :tell="qiEnemyTell(game)" :options="combatOptions" :busy="busy" :retreat-disabled="locked('withdraw')" retreat-label="撤回山下 · 已用补给不退" @move="act($event as QiAction)" @retreat="act('withdraw')" />
-      <details v-if="q.duel && enemy" class="qi-battle-notes"><summary>敌情与应对</summary><p>{{enemy.trait}}</p><p>{{qiTacticalCue(game,enemy.identity)}}</p><p v-if="enemy.kind==='妖兽'">守势可收力护身：伤害 −3、承伤 −4。</p></details>
+      <details v-if="q.duel && enemy" class="qi-battle-notes"><summary>敌情与应对</summary><p>{{enemy.trait}}</p><p v-if="q.trial">{{q.trial==='sect'?'药车通过':q.trial==='medicine'?'药篓护持':'拆解枢点'}} {{q.trialProgress}}/{{q.trial==='sect'?4:3}}</p><p>{{qiTacticalCue(game,enemy.identity)}}</p><p v-if="enemy.kind==='妖兽'">守势可收力护身：伤害 −3、承伤 −4。</p></details>
     </template>
     <template #status><span>灵石 {{ game.stones }} · 灵草 {{ game.herbs }} · 伤势 {{ game.injury }}</span></template>
   <section class="qi-journey" aria-label="炼气历练与晋升">
@@ -96,6 +99,8 @@ const combatOptions=computed(()=>Object.entries(moves).map(([id,label])=>{
       }}
     </h3>
 
+    <CultivationPanel v-if="active==='journey'" :game="game" :busy="busy" @act="emit('act',$event)" />
+    <CultivationPanel v-if="active==='journey' && q.gates===2" purpose="pill" :game="game" :busy="busy" @act="emit('act',$event)" />
     <p v-if="game.qi < 120">
       先打坐积累修为，熟悉功法。中期再准备药谷历练；灵石留给研修、法器与补给。
     </p>
@@ -346,3 +351,5 @@ summary {
   cursor: not-allowed;
 }
 </style>
+
+<style scoped>.market-steward,.valley-scout,.valley-smith{position:absolute;bottom:12%;height:34%;transform:translateX(-50%);object-fit:contain;pointer-events:none}.market-steward{left:19%}.valley-scout{left:74%}.valley-smith{left:85%}</style>

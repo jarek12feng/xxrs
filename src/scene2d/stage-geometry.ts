@@ -23,3 +23,12 @@ export function groundScale(y: number, height: number) {
 export function approachDuration(distance: number, unit: number) {
   return Math.max(160, Math.min(650, (distance / Math.max(0.1, unit)) * 1.4));
 }
+
+/** Convert an artwork foot anchor through the same centered cover crop as the backdrop. */
+export function coveredArtworkPoint(width: number, height: number, imageWidth: number, imageHeight: number, point: {x:number;y:number}) {
+  const scale = Math.max(width / imageWidth, height / imageHeight);
+  return {
+    x: width / 2 + (point.x / 100 - .5) * imageWidth * scale,
+    y: height / 2 + (point.y / 100 - .5) * imageHeight * scale,
+  };
+}

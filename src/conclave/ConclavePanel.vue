@@ -170,11 +170,11 @@ const hotspots = computed(() => {
   }
   if (c.value.location === "away") ids.add("shore");
   return [
-    { id: "gu", label: "顾沧遥", x: 44, y: 77 },
-    { id: "ye", label: "叶问苓", x: 56, y: 77 },
+    { id: "gu", kind:"person" as const, label: "顾沧遥", speech: "斗法台上的胜负，终究要带到险境里验。准备好了，再来拆我的招。", x: 44, y: 77 },
+    { id: "ye", kind:"person" as const, label: "叶问苓", speech: "秘境里的潮势与台上不同。先看过我们带回的记录，再商议怎么走。", x: 56, y: 77 },
     { id: "shore", label: "古渡石道", x: 78, y: 77 },
     {
-      id: "friends", kind: "person" as const,
+      id: "friends", kind: "person" as const, speaker: "叶问苓", speech: c.value.introduced ? "走哪条路，都得留好接应。把各自能做的事先说清楚。" : "道友也是来赴会的？先坐坐，彼此认个面。",
       label: c.value.introduced ? "商议入境路线" : "与会谷来客相识",
       x: c.value.location === "court" ? 50 : 43,
       y: c.value.location === "court" ? 88 : 63,

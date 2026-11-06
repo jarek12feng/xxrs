@@ -99,7 +99,7 @@ const options = computed(() => {
           : "备护脉阵请人守关 · 把握 +15",
         { kind: "guard" },
       );
-    add(`凝丹行功 · 直接叩关把握 ${goldenChance(s)}%，稳住三段可至100%`, {
+    add(`凝丹行功 · 直接叩关把握 ${goldenChance(s)}%，三段行功增10点、每层紊乱减15点（最高100%）`, {
       kind: "break",
     });
   }
@@ -146,7 +146,7 @@ const hotspots = computed(() => {
     },
     { id: "furnace", label: "合药炉", x: 27, y: 60 },
     {
-      id: "elder", kind: "person" as const,
+      id: "elder",
       label: g.value.champion === "pending" ? "师门传讯" : "护关阵台",
       x: 40,
       y: 62,

@@ -148,7 +148,7 @@ it("explains automatic stops without blocking other work at full qi", () => {
   queued.journey.queue = [{ action: "refine", remaining: 1 }];
   queued.herbs = 0;
   queued.crafted = 1;
-  expect(automaticPause(queued, "work", true)?.text).toContain("需要灵草");
+  expect(automaticPause(queued, "work", true)?.text).toContain("缺少玉髓芝");
   const event = dispatch(s, {
     id: "event",
     type: "advance",

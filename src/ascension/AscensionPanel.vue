@@ -3,7 +3,7 @@ import { computed, ref, watch, nextTick } from 'vue';
 import { characterArt, heroArt } from '../presentation/art';
 import type { State, Intent } from '../core';
 import { ascensionOptions, phaseName, type AscensionAction } from './rules';
-import { ascensionChance } from './state';
+import { breakthroughDetails, goldenChance } from '../progression/breakthrough';
 const props=defineProps<{game:State;busy:boolean;notice?:string}>();
 const emit=defineEmits<{act:[intent:Intent]}>();
 const options=computed(()=>ascensionOptions(props.game));
@@ -40,7 +40,7 @@ const send=(action:AscensionAction)=>emit('act',{type:'ascension',action});
         </div>
       </template>
       <template v-else>
-        <p>本次把握 {{ ascensionChance(game.ascension) }}%。{{ game.ascension.strain ? '强推留下的紊乱仍在；可收势后改变准备再来。' : '三段行功已稳，若寿元足够且未被事件打断，本次必成。' }}</p>
+        <p>本次把握 {{ game.realm===0?breakthroughDetails(game,true).chance:goldenChance(game) }}%。{{ game.ascension.strain ? '强推留下的紊乱仍在；可收势后改变准备再来。' : game.realm===0?'行功已稳，最终把握仍由根基、护法与筑基准备决定。':'三段行功已稳，把握增加10个百分点；最终仍由根基、功法、灵地与护持共同决定。' }}</p>
         <button :disabled="busy" @click="send('commit')">服丹，完成突破</button>
       </template>
       <button :disabled="busy" @click="send('withdraw')">收势调息 · 一月，保留丹药</button>

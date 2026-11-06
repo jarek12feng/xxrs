@@ -21,7 +21,7 @@ const hidden=ref(false);
 const enemy=computed(()=>qiEnemy(props.game));
 const q=computed(()=>props.game.qiJourney);
 const pose=computed(()=>beat.value?.pose ?? (q.value.duel ? heroBattlePose(q.value.duel.effect) : 'idle'));
-const combat=computed(()=>q.value.duel && enemy.value ? {id:`qi-${q.value.gates}-${q.value.node}-${enemy.value.identity}`,turn:q.value.duel.turn,player:q.value.duel.hp,enemy:q.value.duel.enemy,enemyName:enemy.value.name,enemyImage:`/art/scene2d/${enemy.value.identity}-v1.png`,effect:q.value.duel.effect} : null);
+const combat=computed(()=>q.value.duel && enemy.value ? {id:`qi-${q.value.gates}-${q.value.node}-${enemy.value.identity}`,turn:q.value.duel.turn,player:q.value.duel.hp,enemy:q.value.duel.enemy,enemyName:enemy.value.name,enemyImage:q.value.trial?enemy.value.image:`/art/scene2d/${enemy.value.identity}-v1.png`,effect:q.value.duel.effect} : null);
 const material=computed(()=>`/art/qi-progression/${(cue.value?.kind==='refine' ? q.value.gates-1 : q.value.gates) ? 'condensed-essence' : 'dew-herb'}.webp`);
 let timer:ReturnType<typeof setTimeout>|undefined;
 let preference:MediaQueryList|undefined;

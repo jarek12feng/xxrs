@@ -4,9 +4,6 @@ export interface Ascension {
   strain: number;
   history: string[];
 }
-export function ascensionChance(a?: Ascension | null) {
-  return a?.step === 3 ? Math.max(10, 100 - a.strain * 15) : null;
-}
 export function validAscension(a: Ascension | null, realm: number) {
   return a === null || !!a && a.realm === realm && [0,1].includes(a.realm) &&
     Number.isInteger(a.step) && a.step >= 0 && a.step <= 3 &&

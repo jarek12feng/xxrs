@@ -351,7 +351,7 @@ it("migrates v6 without changing resources, scene, old story or RNG; rejects cor
 
   expect(upgraded).toEqual({
     ...s,
-    qiJourney:{...s.qiJourney,narrative:{...s.qiJourney.narrative,initiation:{...s.qiJourney.narrative.initiation,arrival:"legacy"}}},
+    qiJourney:{...s.qiJourney,cultivation:{...s.qiJourney.cultivation,middle:false,relic:false},narrative:{...s.qiJourney.narrative,initiation:{...s.qiJourney.narrative.initiation,arrival:"legacy"}}},
     journey: { ...s.journey, learning: { book: true, relic: false } },
     version: SAVE_VERSION,
     adventure: { ...adventure, rescueChoice: "legacy", road: freshRoad() },

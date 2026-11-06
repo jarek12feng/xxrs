@@ -42,7 +42,7 @@ it('starts in one home scene; only selected local controls expand and Escape res
  expect(document.querySelector<HTMLElement>('.activity-grid')?.style.display).toBe('none');
  expect(panel.textContent).toContain('出关年龄');expect(panel.textContent).toContain('已度过的年月不能撤回');
  document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));await flush();expect(panel.style.display).toBe('none');expect(document.querySelector('[role=dialog]')).toBeNull();
- await click('丹炉 · 突破筹备');expect(document.querySelector<HTMLElement>('[aria-label="突破与固本准备"]')?.style.display).not.toBe('none');expect(panel.textContent).toContain('炼筑基丹 · 三月');
+ await click('丹炉 · 突破筹备');expect(document.querySelector<HTMLElement>('[aria-label="突破与固本准备"]')?.style.display).not.toBe('none');expect(panel.textContent).toContain('炼筑基丹 · 六月温养');
  await click('收起 ×');expect(panel.style.display).toBe('none');expect(save).not.toHaveBeenCalled();
 });
 it('exit opens the qi journey rather than the default road chapter',async()=>{

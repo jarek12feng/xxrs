@@ -131,7 +131,7 @@ it("rejects missing or premature choice fields and preserves completed v10 as le
 
   expect(upgraded).toEqual({
     ...current,
-    qiJourney:{...current.qiJourney,narrative:{...current.qiJourney.narrative,initiation:{...current.qiJourney.narrative.initiation,arrival:"legacy"}}},
+    qiJourney:{...current.qiJourney,cultivation:{...current.qiJourney.cultivation,middle:false,relic:false},narrative:{...current.qiJourney.narrative,initiation:{...current.qiJourney.narrative.initiation,arrival:"legacy"}}},
     journey: { ...current.journey, learning: { book: true, relic: false } },
     adventure: { ...adventure, rescueChoice: "legacy" },
   });

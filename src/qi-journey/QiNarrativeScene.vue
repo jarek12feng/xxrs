@@ -39,13 +39,13 @@ const points = computed(() =>
     ? []
     : n.value.location === "home"
       ? [
-          { id: "teacher", kind: "person" as const, label: "药队与温蘅", x: 27, y: 55 },
+          { id: "teacher", kind: "person" as const, label: "药队与温蘅", speaker: "温蘅", actor: "/art/characters/wenheng.webp", foot: {x:17,y:84}, speech: "想求学便来坐坐。入门之后，护路与辨药的本事仍要自己练。", x: 17, y: 55 },
           { id: "home", label: "家中药囊与家书", x: 43, y: 75 },
           { id: "road", label: "石涧与青嶂支路", x: 75, y: 65 },
         ]
       : n.value.location === "cave"
         ? [
-            { id: "companion", kind: "person" as const, label: "卢雁回的约定", x: 26, y: 69 },
+            { id: "companion", kind: "person" as const, label: "卢雁回的约定", speaker: "卢雁回", actor: "/art/scene-people/lu-yanhui-standing-v1.webp", foot: {x:17,y:86}, speech: "我来找实测札记。若一起进洞，先说好谁看退路，札记又怎么分。", x: 17, y: 69 },
             { id: "bed", label: "废药床与旧阵", x: 43, y: 51 },
             { id: "table", label: "药性处置台", x: 56, y: 54 },
             { id: "notes", label: "额外札记", x: 69, y: 48 },

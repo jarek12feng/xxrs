@@ -1,3 +1,4 @@
+import {qiCultivationStep} from './qi-cultivation-policy';
 import { seekerStep } from "./initiation-policy";
 import {
   createGame,
@@ -98,7 +99,7 @@ export function recoveryRun(seed: number, path: Path, gift = false) {
     month: p.state.month,
   };
 }
-// Equal starting inventory, equal month-35 deadline, no grants or edited state.
+// Equal starting inventory, equal month-119 deadline, no grants or edited state.
 // Each policy may spend at most 16 stones on retreats and 12 stones + 2 herbs on main training.
 export function preparationBudget(
   path: Path,
@@ -110,21 +111,26 @@ export function preparationBudget(
     trainingStones = 0,
     trainingHerbs = 0;
   const commands: Intent[] = [];
-  for (let i = 0; p.state.month < 35 && i < 100; i++) {
+  for (let i = 0; p.state.month < 119 && i < 250; i++) {
     const s = p.state;
     let c: Intent;
     if (s.pending) c = foundationStep(s, false);
+    else if(!s.qiJourney.cultivation.middle){
+      c=qiCultivationStep(s)!;
+      if(c.type==='advance')c={...c,months:1};
+    }
     else if (s.injury) c = { type: "advance", activity: "rest", months: 1 };
     else if (
       policy !== "wait" &&
       s.qi >= 180 &&
       s.foundation < 12 &&
       s.stones >= 8 &&
-      s.month + 6 <= 35
+      s.month + 6 <= 119
     ) {
       c = { type: "prepare", kind: "retreat" };
       retreatStones += 8;
-    } else if (policy === "build" && s.qi >= 180 && s.study < 2)
+    } else if(policy==='build' && !s.journey.relics.sword)c=s.stones<32?{type:'advance',activity:'work',months:1}:s.herbs<4?{type:'supplies'}:{type:'forge',relic:'sword'};
+    else if (policy === "build" && s.qi >= 180 && s.study < 2)
       c = { type: "advance", activity: "study", months: 1 };
     else if (
       policy === "build" &&
@@ -141,7 +147,7 @@ export function preparationBudget(
       path === "sword" &&
       s.qi >= 180 &&
       s.mastery < 12 &&
-      s.month < 34
+      s.month < 118
     )
       c = { type: "advance", activity: "train", months: 1 };
     else

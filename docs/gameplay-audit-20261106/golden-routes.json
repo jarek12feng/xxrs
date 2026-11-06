@@ -1,0 +1,92 @@
+{
+  "scope": "Three deterministic public-command reference journeys; not player success rates or human play time.",
+  "rows": [
+    {
+      "main": "spring",
+      "checkpoints": {
+        "late": {
+          "month": 2603,
+          "age": 232.91666666666666,
+          "limit": 500,
+          "stones": 26
+        },
+        "completion": {
+          "month": 3200,
+          "age": 282.6666666666667,
+          "limit": 500,
+          "stones": 170
+        },
+        "nascent-ready": {
+          "month": 3796,
+          "age": 332.3333333333333,
+          "limit": 500,
+          "stones": 66
+        },
+        "nascent": {
+          "month": 3826,
+          "age": 334.8333333333333,
+          "limit": 1000,
+          "stones": 66
+        }
+      }
+    },
+    {
+      "main": "blade",
+      "checkpoints": {
+        "late": {
+          "month": 2627,
+          "age": 234.91666666666666,
+          "limit": 500,
+          "stones": 62
+        },
+        "completion": {
+          "month": 3218,
+          "age": 284.1666666666667,
+          "limit": 500,
+          "stones": 150
+        },
+        "nascent-ready": {
+          "month": 3814,
+          "age": 333.8333333333333,
+          "limit": 500,
+          "stones": 54
+        },
+        "nascent": {
+          "month": 3844,
+          "age": 336.3333333333333,
+          "limit": 1000,
+          "stones": 54
+        }
+      }
+    },
+    {
+      "main": "breath",
+      "checkpoints": {
+        "late": {
+          "month": 2603,
+          "age": 232.91666666666666,
+          "limit": 500,
+          "stones": 30
+        },
+        "completion": {
+          "month": 3200,
+          "age": 282.6666666666667,
+          "limit": 500,
+          "stones": 190
+        },
+        "nascent-ready": {
+          "month": 3796,
+          "age": 332.3333333333333,
+          "limit": 500,
+          "stones": 94
+        },
+        "nascent": {
+          "month": 3826,
+          "age": 334.8333333333333,
+          "limit": 1000,
+          "stones": 94
+        }
+      }
+    }
+  ]
+}

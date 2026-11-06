@@ -56,7 +56,7 @@ const points = computed(() => {
         ? { opponent: [58, 66], exit: [12, 43] }
         : l.value.location === "harbor"
           ? {
-              friends: [31, 57],
+              friends: [48, 57],
               supplies: [21, 73],
               path: [60, 49],
               exit: [14, 43],
@@ -65,11 +65,11 @@ const points = computed(() => {
             ? { path: [53, 48], furnace: [67, 49], exit: [15, 65] }
             : { path: [58, 46], exit: [15, 70] };
   return [
-    { id: "friends", kind: "person" as const, label: "药船修士与分药台", x: 46, y: 70 },
+    { id: "friends", kind: "person" as const, label: "药船修士与分药台", speaker: "药船修士", actor: "/art/scene-people/lizhao-apothecary-v1.webp", foot: {x:48,y:81}, speech: "药性沾了潮气，不能直接入炉。先辨清它们，再商议各自取用的份额。", x: 46, y: 70 },
     { id: "supplies", label: "药囊与静养处", x: 26, y: 67 },
     { id: "path", label: "前方道路", x: 58, y: 46 },
     { id: "furnace", label: "分药槽与旧丹炉", x: 64, y: 55 },
-    { id: "opponent", label: "韩砺舟 · 人族修士", x: 64, y: 69 },
+    { id: "opponent", kind:"person" as const, label: "韩砺舟 · 人族修士", speech: l.value.pursuit === "defeated" ? "这场是我输了。你要如何了结，说吧。" : "那份药材的账，我们还没说清楚。", x: 64, y: 69 },
     { id: "exit", label: "归港航路", x: 12, y: 76 },
   ].map((p) => ({
     ...p,

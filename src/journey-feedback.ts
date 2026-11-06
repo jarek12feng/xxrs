@@ -287,7 +287,7 @@ export function enrichReceipt(
     const kind = before.pending.kind;
     const response =
       kind === "meeting"
-        ? "这封信，拜托你了。第三十六个月，我在渡口等你。"
+        ? "这封信，拜托你了。开府之月，我在渡口等你。"
         : kind === "letter"
           ? intent.option === "leave"
             ? "好，不提了。渡口的风大，坐里边些。"

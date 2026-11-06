@@ -1,3 +1,4 @@
+import {qiCultivationStep} from '../tools/qi-cultivation-policy';
 import { admissionStep } from '../tools/initiation-policy';
 import { SAVE_VERSION } from "../src/save-version";
 import { legacyEquipment } from "./legacy-equipment";
@@ -27,6 +28,7 @@ export function eligible(main: "spring" | "blade" | "breath" = "spring") {
   }
   // A new member reports after admission to receive the next meeting notice.
   p.send({type:'duty',duty:'copy'});
+  for(let i=0;p.state.qiJourney.cultivation.work&&i<12;i++)p.send(qiCultivationStep(p.state)!);
   expect(validState(p.state)).toBe(true);
   return p.state;
 }
@@ -252,6 +254,7 @@ it("新成绩领取前不会被离场覆盖，同成绩续届不再发奖", () =
   s.age += 12;
   s = dispatch(s, { id: "next-edition", type: "duty", duty: "watch" });
   expect(s.sectContest.edition).toBe(2);
+  for(let i=0;s.qiJourney.cultivation.work&&i<12;i++)s=dispatch(s,{...qiCultivationStep(s)!,id:`finish-duty-${i}`});
   s = opening(s);
   s = compete(compete(compete(s)));
   expect(action(s, { kind: "reward", reward: "medicine" })).toBe(s);

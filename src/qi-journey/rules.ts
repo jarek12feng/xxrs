@@ -1,3 +1,4 @@
+import {isCultivationAction,cultivationQuote,runCultivation} from '../qi-cultivation/rules';
 import { isInitiationAction, initiationError, runInitiation } from '../initiation/rules';
 import { isQiNarrativeAction, runQiNarrative, qiNarrativeQuote, qiNarrativeActive, qiCaveComplete, qiNarrativeGoal, qiNotesPower } from "./narrative";
 import { quoteSettlement, settleResources, type ResourceSettlement } from "../economy";
@@ -35,6 +36,7 @@ export type { QiAction } from "./content";
 export function qiGoal(s: State) {
   const q = s.qiJourney;
   if (s.realm || !q) return null;
+  if(!q.cultivation.middle)return s.qi<119 ? "积累灵息、研习主修功法，为贯通小周天作准备。" : "灵息已满，经脉尚窄。回洞府行功，尝试贯通小周天。";
   if (qiNarrativeActive(s)) return qiNarrativeGoal(s);
   if(q.gates===1 && !q.node && !q.trial && !q.essence && !qiCaveComplete(s)) return "凝元前须化解经脉杂气，石涧药窟留有相关药理与实测之地。";
   if (q.trial)
@@ -44,7 +46,7 @@ export function qiGoal(s: State) {
   if (q.essence)
     return `${qiSites[q.gates]!.material}已取得：自行炼化、请师门护脉或付费请匠师协助。`;
   if (q.gates === 2)
-    return "经脉与凝元已稳，当前目标是筹备筑基。圆满修为与筑基丹必需，根基和伤势影响把握。";
+    return "经脉与凝元已稳，当前目标是筹备筑基。须修至圆满、备好筑基丹，固本至根基12并养好伤势，再择时叩关。";
   if (s.qi >= qiSites[q.gates]!.qi && !preparationReady(s))
     return "药谷采药、师门护送、独闯古阵，择一历练，再入秘境取材。";
   if (q.gates === 1 && preparationReady(s) && !hasFoundationRecipe(s))
@@ -136,6 +138,7 @@ function qiRequirementError(s: State, a: QiAction): string {
   return "未知行动";
 }
 export function qiQuote(s: State, a: QiAction) {
+  if(isCultivationAction(a)){const q=cultivationQuote(s,a);return {...q,settlement:{cost:q.cost,reward:{}}};}
   if(isInitiationAction(a))return {error:initiationError(s,a),months:0,settlement:{cost:{},reward:{}}};
   if(isQiNarrativeAction(a))return qiNarrativeQuote(s,a);
   const error = qiRequirementError(s, a);
@@ -255,6 +258,7 @@ export function runQiJourney(
   id: string,
   tick: (s: State) => State,
 ): State {
+  if(isCultivationAction(a))return runCultivation(input,a,id,tick);
   if(isInitiationAction(a))return runInitiation(input,a,id);
   if(isQiNarrativeAction(a))return runQiNarrative(input,a,id,tick);
   const { quote } = inspectInteraction(input, a, qiQuote);
@@ -309,6 +313,7 @@ export function runQiJourney(
     q.last = qiSites[q.gates]!.intro;
   } else if (q.duel) {
     const d = q.duel;
+    const expected=qiExpectedMove(s,qiEnemy(s)!.identity,qiEnemy(s)!.pattern);
     const turn = executeBattleAction(d, s.herbs, { turnLimit: 16, resolution: "journey" }, () => qiPreview(s, a as Move));
     if (!turn) return input;
     const p = turn.exchange;
@@ -316,8 +321,11 @@ export function runQiJourney(
     Object.assign(d, turn.battle);
     s.herbs = turn.remainingHerbs;
     q.last = `${qiEnemy(s)!.name}气势 −${damage}。`;
-    if (turn.outcome === "win") {
+    if(q.trial && a===expected && (q.trial!=="wander" || a==="discern"))q.trialProgress++;
+    const objective=q.trial && q.trialProgress>=(q.trial==="sect"?4:3);
+    if (turn.outcome === "win" || (turn.outcome!=="loss" && objective)) {
       if (q.trial) {
+        q.last += objective ? "护药、护送或拆枢目标已达成，已不必追击。" : "阻拦者已被击退。";
         completePreparation(s);
       } else if (q.node === 1) {
         q.vigor = d.hp;

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {sceneSpeakerArt} from './presentation/art';
 import {mistSpeakerFoot} from "./scene2d/actor-anchors";
 import { senseLimit } from "./spirit";
 import MistWorld from "./scene2d/MistWorld.vue";
@@ -328,7 +329,7 @@ function selectHotspot(id: string) {
 }
 watch(locked,value=>{if(value){mistWorld.value?.cancel();mistWorld.value?.stop();}});
 const hotspots = computed(() => [
-  { id: "person", kind: "person" as const, label: m.value.stage === "camp" ? "同行约定" : person.value.name, x: mistSpeakerFoot.x, y: 52 },
+  { id: "person", kind: person.value.portrait ? "person" as const : undefined, actor: person.value.name !== "陆迟" ? sceneSpeakerArt[person.value.name] : undefined, foot: mistSpeakerFoot, label: m.value.stage === "camp" ? "同行约定" : person.value.name, speech: !person.value.portrait || (m.value.stage === "home" && props.game.journey.maps.sea === 3) || (m.value.stage === "camp" && m.value.partner === "none") ? undefined : mistQuote(props.game), x: mistSpeakerFoot.x, y: 52 },
   { id: "object", label: ({ letter: "来信", camp: "护归阵图", garden: "引灯草与石渠", station: "送信旧阵", gate: "回声阵", archive: "旧日记录", home: "探灵灯", shrine: "旧石墙", dormant: "来信" })[m.value.stage], x: 55, y: 43 },
   { id: "prepare", label: "行装与补给", x: 18, y: 75 },
   { id: "road", label: "山径与归路", x: 80, y: 57 },
@@ -352,9 +353,10 @@ function invoke(action: MistAction) {
   >
     <NarrativeStage :image="scene.image" :title="scene.title" :body="scene.body" :goal="mistGoal(game)"
       :stage-key="`mist-${m.stage}-${m.revisited}`" :hotspots="hotspots" :active="active" @select="selectHotspot" @close="active = ''; mistWorld?.cancel()">
+      <p v-if="active === 'person' && ((m.stage === 'home' && game.journey.maps.sea === 3) || (m.stage === 'camp' && m.partner === 'none'))">{{ mistQuote(game) }}</p>
       <template #world><MistWorld ref="mistWorld" :game="game" @performing="active = ''" /></template>
       <template #status><span>灵石 {{ game.stones }} · 灵草 {{ game.herbs }} · 伤势 {{ game.injury }}</span></template>
-      <div v-if="active === 'person'" class="mist-person"><img :src="person.portrait || undefined" :alt="person.name" /><h3>{{ person.name }}</h3><p>{{ mistQuote(game) }}</p></div>
+
       <details v-if="m.result"><summary>刚才的经过</summary><SceneResponse :text="m.result" :receipt="receipt?.scene?.chapter === 'mist' ? receipt : null" /></details>
     <section class="scene-controls" aria-label="雾海探索操作区">
       <div v-if="m.stage === 'camp'" class="mist-camp">

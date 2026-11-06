@@ -367,7 +367,7 @@ onBeforeUnmount(() => {
 .shore-world :deep(.walking-actor), .shore-world .meditating-actor { width:19%; height:33%; }
 .shore-world .court-person { top:80%; }
 .shore-world .gu-cangyao { left:43%; }
-.shore-world .ye-wenling { left:54%; }
+.shore-world .ye-wenling { left:47%; top:76%; }
 /* Court figures share the stone terrace's ground plane. Foreground hero is slightly larger. */
 .court-world :deep(.walking-actor), .court-world .meditating-actor {
   width: 19%; height: 33%; z-index: 2;

@@ -5,6 +5,11 @@ import "./speech-bubble.css";
 import { sceneFocus } from "./scene-focus";
 export interface SceneHotspot {
   kind?: "person";
+  /** Only words spoken by this person; never scene narration or rule text. */
+  speech?: string;
+  speaker?: string;
+  actor?: string;
+  foot?: {x:number;y:number};
   id: string;
   label: string;
   x: number;
@@ -36,7 +41,11 @@ const props = withDefaults(
 );
 const emit = defineEmits<{ select: [id: string]; close: [] }>();
 const root = ref<HTMLElement>();
-const bubbleStyle = useSpeechBubble(root, () => target.value);
+const actorHeight = ref(560);
+const bubbleStyle = useSpeechBubble(root, () => target.value ? {
+  x: target.value.foot?.x ?? target.value.x,
+  y: target.value.foot ? target.value.foot.y - ((width.value > 0 && width.value <= 900 ? 200 : 270) - 15) / actorHeight.value * 100 : Math.min(50, target.value.y),
+} : undefined);
 const notes = ref(false);
 const width = ref(0);
 const hidden = ref(false);
@@ -118,9 +127,11 @@ onMounted(() => {
   document.addEventListener("visibilitychange", visibility);
   visibility();
   width.value = root.value?.clientWidth ?? 0;
+  actorHeight.value = root.value?.clientHeight || 560;
   if (typeof ResizeObserver !== "undefined" && root.value) {
     resize = new ResizeObserver((entries) => {
       width.value = entries[0]?.contentRect.width ?? 0;
+      actorHeight.value = entries[0]?.contentRect.height || 560;
     });
     resize.observe(root.value);
   }
@@ -148,12 +159,16 @@ onBeforeUnmount(() => {
         ><div
           :key="backdrop"
           class="scene-landscape"
-          :style="{ backgroundImage: `url(${backdrop})` }"
+          :style="{ backgroundImage: `url(${backdrop})`, backgroundPosition: backdrop === '/scenes/cloud-frontier.jpg' ? 'center bottom' : 'center' }"
           aria-hidden="true"
         ></div
       ></Transition>
       <div class="narrative-vignette" aria-hidden="true"></div>
-      <div class="world-figures"><slot name="world" /></div>
+      <div class="world-figures"><slot name="world" />
+        <template v-if="!battle"><img v-for="person in hotspots.filter(p => p.kind === 'person' && p.actor && p.foot)" :key="person.id"
+          class="hotspot-actor" :src="person.actor" :alt="person.speaker || person.label"
+          :style="{left:person.foot!.x+'%',top:person.foot!.y+'%'}" /></template>
+      </div>
       <button
         v-for="point in hotspots"
         :key="point.id"
@@ -179,7 +194,7 @@ onBeforeUnmount(() => {
           此地见闻
         </button>
       </header>
-      <aside class="narrative-goal" v-if="goal">
+      <aside class="narrative-goal" v-if="goal && !active && !notes && !battle">
         <span>眼前之事</span>
         <p>{{ goal }}</p>
         <slot name="status" />
@@ -197,13 +212,16 @@ onBeforeUnmount(() => {
       <p v-if="body">{{ body }}</p>
       <slot name="notes" />
     </section>
+    <aside v-if="!notes && !battle && target?.kind === 'person' && target.speech"
+      class="speech-bubble npc-speech" :style="bubbleStyle" :data-speaker="target.id" aria-label="人物对白">
+      <strong>{{ target.speaker || target.label }}</strong>
+      <div class="speech-content"><p>{{ target.speech }}</p></div>
+    </aside>
     <section
-      v-else-if="battle ? battleInspector : active"
+      v-if="!notes && (battle ? battleInspector : active)"
       :key="active || stageKey"
       class="narrative-inspector"
-      :class="{ 'battle-inspector': battle, 'speech-bubble': !battle && target?.kind === 'person' }"
-      :data-speaker="target?.kind === 'person' ? target.id : undefined"
-      :style="!battle && target?.kind === 'person' ? bubbleStyle : undefined"
+      :class="{ 'battle-inspector': battle, 'conversation-actions': !battle && target?.kind === 'person' }"
       aria-label="现场操作"
     >
       <div class="narrative-inspector-heading">
@@ -212,9 +230,9 @@ onBeforeUnmount(() => {
           ×
         </button>
       </div>
-      <div :class="{'speech-content': target?.kind === 'person' && !battle}"><slot /></div>
+      <div class="scene-observation"><p v-if="goal" class="inspector-goal">{{ goal }}</p><slot name="status" /><slot /></div>
     </section>
-    <p v-else-if="!battle" class="narrative-hint">
+    <p v-else-if="!battle && !notes" class="narrative-hint">
       选择场景中的人物、器物或道路 · Tab 选择，Enter 查看
     </p>
   </section>
@@ -539,4 +557,15 @@ onBeforeUnmount(() => {
     padding: 8px 12px;
   }
 }
+</style>
+
+<style scoped>
+.hotspot-actor{position:absolute;width:190px;height:270px;object-fit:contain;object-position:bottom;transform:translate(-50%,-100%);pointer-events:none;filter:drop-shadow(0 10px 8px #0008)}
+@media(max-width:900px){.hotspot-actor{width:140px;height:200px}}
+</style>
+
+<style scoped>
+.narrative-stage.inspecting .narrative-heading > small{display:none}
+.narrative-inspector.conversation-actions{top:auto;bottom:16px;max-height:30%;height:auto;width:min(620px,50%)}
+@media(max-width:900px){.narrative-inspector.conversation-actions{left:16px;right:16px;bottom:16px;width:auto;max-height:34%}}
 </style>

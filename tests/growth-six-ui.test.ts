@@ -53,6 +53,7 @@ afterEach(() => {
 });
 it("stops at full qi, links to the actual breakthrough preview and resumes no hidden ticks", async () => {
   const s = expeditionSession().state;
+  s.qiJourney.cultivation.middle=true;
   s.qi = 359;
   s.qiJourney.gates = 2;
   await mount(s);
@@ -74,6 +75,7 @@ it("stops at full qi, links to the actual breakthrough preview and resumes no hi
 });
 it("keeps ordinary work usable when qi was already full", async () => {
   const s = expeditionSession().state;
+  s.qiJourney.cultivation.middle=true;
   s.qi = 360;
   s.qiJourney.gates = 2;
   await mount(s);
@@ -103,7 +105,7 @@ it("pauses a queue on its next unavailable task without spending an extra month"
   await flush();
   expect(
     document.querySelector('[aria-label="修行暂停原因"]')?.textContent,
-  ).toContain("需要灵草");
+  ).toContain("缺少玉髓芝");
   const saved = vi.mocked(save).mock.calls.at(-1)![0];
   expect(saved.month).toBe(s.month + 1);
   const count = vi.mocked(save).mock.calls.length;
@@ -115,6 +117,7 @@ it("pauses a queue on its next unavailable task without spending an extra month"
 });
 it("does not announce a successful milestone if persistence fails", async () => {
   const s = expeditionSession().state;
+  s.qiJourney.cultivation.middle=true;
   s.qi = 359;
   s.qiJourney.gates = 2;
   await mount(s);
@@ -128,6 +131,7 @@ it("does not announce a successful milestone if persistence fails", async () => 
 
 it("explains the mandatory relic pill and blocks breakthrough without it", async () => {
   const s = expeditionSession().state;
+  s.qiJourney.cultivation.middle=true;
   s.qi = 360;
   s.qiJourney.gates = 2;
   s.pills = 0;
@@ -147,6 +151,7 @@ it("explains the mandatory relic pill and blocks breakthrough without it", async
 
 it("offers a sword cultivator the earned recipe, with material costs and real command", async () => {
   const s = expeditionSession().state;
+  s.qiJourney.cultivation.middle=true;
   s.path = "sword";
   s.qiJourney.gates = 2;
   s.story.stage = "resolved";
@@ -154,7 +159,7 @@ it("offers a sword cultivator the earned recipe, with material costs and real co
   s.story.luchi = "foundation";
   s.pills = 0;
   s.herbs = 6;
-  s.stones = 30;
+  s.stones = 30;s.study=4;s.sense=8;s.qiJourney.cultivation.roots=1;
   await mount(s);
   expect(
     document.querySelector('[aria-label="筑基机缘"]')?.textContent,
@@ -163,13 +168,15 @@ it("offers a sword cultivator the earned recipe, with material costs and real co
   await flush();
   button("依方补炼筑基丹").click();
   await flush();
-  expect(vi.mocked(save).mock.calls.at(-1)?.[0].pills).toBe(1);
+  expect(vi.mocked(save).mock.calls.at(-1)?.[0].pills).toBe(0);
+  expect(vi.mocked(save).mock.lastCall?.[0].qiJourney.cultivation.work?.kind).toBe("alchemy");
 });
 
 it("foundation preparation submits a bounded command and persists only to the next story beat", async () => {
   const s = expeditionSession().state;
-  s.month = 34;
-  s.age = 226;
+  s.qiJourney.cultivation.middle=true;
+  s.month = 118;
+  s.age = 310;
   s.qi = 180;
   s.sense = 8;
   s.story.stage = "waiting";
@@ -185,7 +192,7 @@ it("foundation preparation submits a bounded command and persists only to the ne
   button("边劳作边候约").click();
   await flush();
   const saved = vi.mocked(save).mock.calls.at(-1)![0];
-  expect(saved.month).toBe(36);
+  expect(saved.month).toBe(120);
   expect(saved.pending?.kind).toBe("departure");
   expect(saved.story.choice).toBe("none");
   const count = vi.mocked(save).mock.calls.length;
@@ -195,6 +202,7 @@ it("foundation preparation submits a bounded command and persists only to the ne
 
 it("foundation shortcut confirms crossing the appointment and cancelling never spends resources", async () => {
   const s = expeditionSession().state;
+  s.qiJourney.cultivation.middle=true;
   s.month = 30;
   s.age = 222;
   s.qi = 350;
@@ -221,6 +229,7 @@ it("foundation shortcut confirms crossing the appointment and cancelling never s
 
 it("learning swordplay alongside medicine shows the training injury warning", async () => {
   const s = expeditionSession().state;
+  s.qiJourney.cultivation.middle=true;
   s.path = "wood";
   s.journey.known.push("blade");
   s.unlocked = ["sword"];

@@ -56,6 +56,21 @@ export const speakerArt: Readonly<Record<string, CharacterId>> = {
   郁青: "yuqing",
   青嶂: "qingzhang",
 };
+/** Reviewed scene cutouts only. Portraits and illustrated cards must stay in portrait frames. */
+export const sceneSpeakerArt: Readonly<Record<string,string>> = {
+  岑霁: "/art/scene-people/cen-ji-standing-v1.webp",
+  卢雁回: "/art/scene-people/lu-yanhui-standing-v1.webp",
+  温蘅: '/art/characters/wenheng.webp',
+  陆迟: characterArt('luchi'), 郁青: characterArt('yuqing'), 青嶂: characterArt('qingzhang'),
+  阙明棠: '/art/foundation-journey/qu-heir.webp', 郁晚舟: '/art/foundation-journey/healer-sister.webp',
+  程砚: '/art/foundation-journey/frontier-mentor.webp', 陶泊: '/art/foundation-journey/frontier-boatman.webp',
+  苏婉宁: '/art/companionship/shentinglan-travel.webp',
+  尹照川: '/art/companionship/yinzhaochuan-travel.webp',
+  许照岚: '/art/scene-people/xu-zhaolan-standing-v1.webp', 裴铸: '/art/scene-people/pei-zhu-standing-v1.webp',
+  顾沧遥: '/art/conclave/gu-cangyao-v1.webp', 叶问苓: '/art/conclave/ye-wenling-v1.webp',
+  沈观微: '/art/review-fixes/shen-guanwei-teaching-v1.webp',
+  韩砺舟: '/art/review-fixes/han-lizhou.webp', 拍卖管事: '/art/characters/market-steward.webp',
+};
 const items: Readonly<Record<string, string>> = {
   stones: "spirit-stone",
   herbs: "herbs",

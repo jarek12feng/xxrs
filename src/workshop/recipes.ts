@@ -51,6 +51,7 @@ export function planOrder(s: State, o: WorkshopOrder) {
     const p = o.product;
     name = products[p].name;
     effect = products[p].hint;
+    if(p==="foundation")effect += " 每炉另耗玉髓芝主药1株，温养丹液六个月。";
     if (p === "iron") {
       stones = 8;
       if (method !== "buy") reason = "玄铁料从坊市购入";
@@ -98,13 +99,13 @@ export function planOrder(s: State, o: WorkshopOrder) {
                   ? 4
                   : 2
               : 0);
-      months = method === "buy" ? 0 : p === "foundation" ? 3 : 1;
+      months = method === "buy" ? 0 : p === "foundation" ? 6 : 1;
       study =
         method === "craft"
           ? p === "ward"
             ? 2
             : p === "foundation"
-              ? 0
+              ? 4
               : 1
           : 0;
       if (p === "spirit" && s.realm < 2) reason = "金丹后方可筹备养神丹";
@@ -112,6 +113,10 @@ export function planOrder(s: State, o: WorkshopOrder) {
         reason = "坊市不出售筑基丹；取得遗府丹方后可自炼或委托";
       else if (p === "foundation" && !hasFoundationRecipe(s))
         reason = "先闯过青石遗府，取得筑基丹方";
+      else if (p === "foundation" && !s.qiJourney.cultivation.roots)
+        reason = "缺少玉髓芝主药；凝元后循内府药图亲自探采，普通灵草不能替代";
+      else if (p === "foundation" && method === "craft" && s.sense < 8)
+        reason = "自行控火需神识8；也可携主药委托丹师";
       else if (p === "ward" && !s.realm && s.qi < 120)
         reason = "炼气中期开始筹备护脉丹";
     }

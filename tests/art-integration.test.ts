@@ -96,7 +96,7 @@ it("ships every mapped pose and item within a 2 MiB art budget", () => {
       (file) => "public/art/" + dir + "/" + file,
     ),
   );
-  expect(files).toHaveLength(37);
+  expect(files).toHaveLength(39);
   expect(
     files.reduce((total, file) => total + statSync(file).size, 0),
   ).toBeLessThan(2 * 1024 * 1024);

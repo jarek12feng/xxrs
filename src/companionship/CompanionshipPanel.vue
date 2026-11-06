@@ -19,7 +19,7 @@ const actionObject = computed(() =>
     : "companion",
 );
 const hotspots = computed(() => [
-  { id: "companion", kind: "person" as const, label: scene.value.name, x: 52, y: 56 },
+  { id: "companion", kind: "person" as const, label: scene.value.name, speech: props.game.companionship.stage === "done" ? "归路通了。下次各自远行，也记得留下消息。" : "这段路，我们一起看看。你来定自己能担哪一边，我照应另一边。", x: 52, y: 56 },
   {
     id: "route",
     label: props.game.social.gender === "male" ? "尺绳与归路" : "风标与归路",
@@ -43,7 +43,6 @@ const hotspots = computed(() => [
     >
       <template #world
         ><img
-          v-if="game.companionship.stage !== 'unstarted'"
           class="world-companion"
           :src="scene.portrait"
           :alt="scene.name + '在归路旁'"

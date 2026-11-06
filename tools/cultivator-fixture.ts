@@ -6,6 +6,10 @@ import { createGame } from '../src/core';
 export function createCultivator(...args:Parameters<typeof createGame>) {
   const s=createGame(...args);
   s.stones=12;
+  // Historical isolated fixture: initial cultivation trial already learned; not a fresh-game test.
+  s.qiJourney.cultivation.middle=true;
+  s.qiJourney.cultivation.relic=true;
+  s.story.deadline=36;
   s.qiJourney.narrative.initiation.arrival='legacy';
   s.qiJourney.narrative.initiation.kit='legacy';
   return s;

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CultivationPanel from "./qi-cultivation/CultivationPanel.vue";
 import { computed } from "vue";
 import { foundationPreparation } from "./foundation-preparation";
 import {
@@ -14,6 +15,8 @@ const cost = computed(() => refineCost(props.game));
 </script>
 <template>
   <section v-if="!game.realm" class="foundation-journey" aria-label="筑基机缘">
+    <CultivationPanel :game="game" :busy="busy" @act="emit('command',$event)" />
+    <CultivationPanel v-if="hasFoundationRecipe(game)" purpose="pill" :game="game" :busy="busy" @act="emit('command',$event)" />
     <h3>筑基机缘 · 青石遗府</h3>
     <p>{{ foundationGoal(game) }}</p>
     <template v-if="!hasFoundationRecipe(game) && !game.pills">
@@ -91,7 +94,7 @@ const cost = computed(() => refineCost(props.game));
     <template v-if="hasFoundationRecipe(game) && !game.pills">
       <p>当前持有：灵草 {{ game.herbs }}、灵石 {{ game.stones }}。</p>
       <p>
-        补炼一枚：三个月、灵草 {{ cost.herbs }}、灵石
+        补炼一枚：玉髓芝1株、六个月、灵草 {{ cost.herbs }}、灵石
         {{ cost.stones }}。失败后丹方仍在。
       </p>
       <button

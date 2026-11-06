@@ -64,10 +64,11 @@ watch(
   { immediate: true },
 );
 const hotspots = computed(() => [
-  { id: "desk", label: "管事与会讯", x: 25, y: 58 },
+  { id: "desk", kind:"person" as const, label: "拍卖管事", speech: "会期和拍品都记在目录上了，道友可先过目。", x: 25, y: 58 },
   { id: "catalog", label: "拍品陈列", x: 47, y: 44 },
   {
     id: "rostrum",
+    kind:"person" as const,
     label: live.value ? "拍台 · 继续竞价" : "入席参拍",
     x: 66,
     y: 52,
@@ -90,6 +91,7 @@ const hotspots = computed(() => [
       @select="active = $event"
       @close="active = ''"
     >
+      <template #world><img class="auction-steward" src="/art/characters/market-steward.webp" alt="拍卖管事" :style="{left:live?'66%':'25%'}" /></template>
       <template #status
         ><span
           >灵石 {{ game.stones }} · 当前第 {{ game.month }} 月</span
@@ -285,3 +287,5 @@ const hotspots = computed(() => [
   padding-top: 10px;
 }
 </style>
+
+<style scoped>.auction-steward{position:absolute;bottom:13%;height:41%;transform:translateX(-50%);object-fit:contain;pointer-events:none;filter:drop-shadow(0 8px 6px #0007)}</style>

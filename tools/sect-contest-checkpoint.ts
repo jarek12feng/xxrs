@@ -1,3 +1,4 @@
+import {qiCultivationStep} from './qi-cultivation-policy';
 import { admissionStep } from './initiation-policy';
 import { dispatch, validState, type State } from "../src/core";
 import {
@@ -26,6 +27,7 @@ export function contestCheckpoint(
   }
   // A new member reports after admission to receive the next meeting notice.
   p.send({type:'duty',duty:'copy'});
+  for(let i=0;p.state.qiJourney.cultivation.work&&i<12;i++)p.send(qiCultivationStep(p.state)!);
   let s = p.state;
   if (open) {
     s = dispatch(s, {

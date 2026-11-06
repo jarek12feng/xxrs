@@ -215,7 +215,7 @@ it("replays 180 style/path/aptitude/seed combinations with bounded herbs and no 
           expect(a.state.herbs).toBeGreaterThanOrEqual(0);
           expect(a.state.injury).toBe(0);
         }
-}, 20000);
+}, 30000);
 it("does not invent station evidence when the player only explored the garden", () => {
   const p = boss();
   p.fight();

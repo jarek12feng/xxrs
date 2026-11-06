@@ -131,7 +131,7 @@ onMounted(() => {
 watch(
   () => scene.value.key,
   async (now, before) => {
-    entry = now === "apothecary" && (before === "forest" || before === "shrine") ? {x:82,y:84} : now === "forest" || now === "shrine" ? {x:16,y:84} : undefined;
+    entry = now === "apothecary" && (before === "forest" || before === "shrine") ? {x:82,y:84} : now === "shrine" ? {x:16,y:84} : undefined;
     selected.value = "";
     notesOpen.value = false;
     resultOpen.value = false;
@@ -291,21 +291,23 @@ function act(action: AdventureAction) {
         >行装已备 · 可以入林</small
       >
     </aside>
+    <aside v-if="!performance && target?.kind === 'person' && target.speech"
+      class="speech-bubble npc-speech" :style="bubbleStyle" aria-label="人物对白">
+      <strong>{{ target.speaker || target.name }}</strong>
+      <div class="speech-content"><p>{{ target.speech }}</p></div>
+    </aside>
     <div
       v-show="!performance"
       class="stage-interaction"
       :class="{
         'has-target': !!target,
-        'speech-bubble': target?.kind === 'person',
-        conversation: target?.kind === 'person',
       }"
-      :style="target?.kind === 'person' ? bubbleStyle : undefined"
       aria-label="冒险操作区"
       aria-live="polite"
     >
-      <div v-if="target" :class="{'speech-content': target.kind === 'person'}">
+      <div v-if="target">
         <img
-          v-if="target.portrait"
+          v-if="target.portrait && target.kind !== 'person'"
           class="speaker-portrait"
           :src="target.portrait"
           :alt="target.speaker || target.name"
@@ -323,11 +325,11 @@ function act(action: AdventureAction) {
           </h3>
           <button @click="closeInteraction" aria-label="收起现场操作">×</button>
         </div>
-        <p v-if="!arriving" class="observation">{{ target.detail }}</p>
+        <p v-if="!arriving && target.detail" class="observation">{{ target.detail }}</p>
         <ArrivalChoices v-if="arriving" :game="game" :busy="locked" @act="emit('act',$event)" />
         <QiOrigin v-else-if="target.id==='origin'" :game="game" :busy="busy" @act="emit('act',$event)" />
         <p
-          v-if="responseTarget === selected && scene.briefResult"
+          v-if="target.kind !== 'person' && responseTarget === selected && scene.briefResult"
           class="immediate-response"
           role="status"
         >
@@ -363,8 +365,8 @@ function act(action: AdventureAction) {
     </div>
     <div
       v-if="game.adventure.result && !notesOpen"
-      class="scene-receipt"
-      :class="{ expanded: resultOpen }"
+      class="opening-receipt"
+      :class="{ 'receipt-open': resultOpen }"
     >
       <button :aria-expanded="resultOpen" @click="resultOpen = !resultOpen">
         {{ resultOpen ? "收起经过" : "刚才发生的事" }}
@@ -461,7 +463,7 @@ function act(action: AdventureAction) {
   cursor: pointer;
 }
 .notes-toggle,
-.scene-receipt > button {
+.opening-receipt > button {
   background: #102923b8;
   border: 1px solid #b6a07666;
   padding: 8px 12px;
@@ -587,15 +589,15 @@ function act(action: AdventureAction) {
   line-height: 1.6;
   color: #e1d7bf;
 }
-.scene-receipt {
+.opening-receipt {
   position: absolute;
   left: 32px;
-  bottom: 90px;
+  bottom: 16px;
   z-index: 4;
 }
-.scene-receipt.expanded {
-  width: min(420px, calc(100% - 64px));
-  max-height: 45%;
+.opening-receipt.receipt-open {
+  width: min(760px, calc(100% - 64px));
+  max-height: 110px;
   overflow: auto;
   background: #102720fa;
   border: 1px solid #a18b5d88;
@@ -605,10 +607,12 @@ function act(action: AdventureAction) {
   font-size: 14px;
   line-height: 1.8;
 }
-.stage-interaction.has-target ~ .scene-receipt {
-  bottom: auto;
-  top: 220px;
+.stage-interaction.has-target ~ .opening-receipt {
+  bottom: 16px;
+  top: auto;
 }
+.opening-receipt .settled-response { margin: 4px 0 0; }
+
 .scene-notes {
   position: absolute;
   left: 32px;
@@ -692,11 +696,11 @@ button:disabled {
   .stage-interaction p {
     font-size: 12px;
   }
-  .scene-receipt {
+  .opening-receipt {
     left: 12px;
     bottom: 75px;
   }
-  .stage-interaction.has-target ~ .scene-receipt {
+  .stage-interaction.has-target ~ .opening-receipt {
     top: 205px;
   }
   .scene-notes {

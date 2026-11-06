@@ -96,7 +96,7 @@ export function cultivationMonth(s: Cultivator) {
     Math.round(
       cultivationBaseGain(s) *
         lifeEfficiency(s) *
-        (s.realm === 2 ? 12 : s.realm === 1 ? 24 : s.qi < 180 ? 240 : 60),
+        (s.realm === 2 ? 12 : s.realm === 1 ? 24 : s.qiJourney ? (s.qi < 240 ? 48 : 24) : (s.qi < 180 ? 240 : 60)),
     ),
   );
   const total = remainder + units;
@@ -210,9 +210,6 @@ export function incidentalQiGain(s: Cultivator, activity: string) {
           : activity === "meditate"
             ? 2
             : 0;
-  return s.qi < 180
-    ? base
-    : activity === "train"
-      ? Math.ceil(base / 3)
-      : Math.min(1, base);
+  if(!s.qiJourney)return s.qi<180?base:activity==="train"?Math.ceil(base/3):Math.min(1,base);
+  return activity === "train" ? Math.min(2, Math.ceil(base / 5)) : Math.min(1, base);
 }

@@ -1,0 +1,95 @@
+{
+  "scope": "Nine deterministic public-command new-game routes; not human play-time measurements.",
+  "rows": [
+    {
+      "route": "medicine",
+      "seed": 1,
+      "middleMonth": 68,
+      "firstPillMonth": 239,
+      "foundationMonth": 285,
+      "foundationAgeYears": 39,
+      "commands": 150,
+      "attempts": 1
+    },
+    {
+      "route": "medicine",
+      "seed": 42,
+      "middleMonth": 68,
+      "firstPillMonth": 239,
+      "foundationMonth": 285,
+      "foundationAgeYears": 39,
+      "commands": 150,
+      "attempts": 1
+    },
+    {
+      "route": "medicine",
+      "seed": 847293,
+      "middleMonth": 68,
+      "firstPillMonth": 239,
+      "foundationMonth": 285,
+      "foundationAgeYears": 39,
+      "commands": 150,
+      "attempts": 1
+    },
+    {
+      "route": "sect",
+      "seed": 1,
+      "middleMonth": 68,
+      "firstPillMonth": 221,
+      "foundationMonth": 279,
+      "foundationAgeYears": 39,
+      "commands": 153,
+      "attempts": 1
+    },
+    {
+      "route": "sect",
+      "seed": 42,
+      "middleMonth": 68,
+      "firstPillMonth": 221,
+      "foundationMonth": 279,
+      "foundationAgeYears": 39,
+      "commands": 153,
+      "attempts": 1
+    },
+    {
+      "route": "sect",
+      "seed": 847293,
+      "middleMonth": 68,
+      "firstPillMonth": 221,
+      "foundationMonth": 279,
+      "foundationAgeYears": 39,
+      "commands": 153,
+      "attempts": 1
+    },
+    {
+      "route": "wander",
+      "seed": 1,
+      "middleMonth": 68,
+      "firstPillMonth": 238,
+      "foundationMonth": 284,
+      "foundationAgeYears": 39,
+      "commands": 150,
+      "attempts": 1
+    },
+    {
+      "route": "wander",
+      "seed": 42,
+      "middleMonth": 68,
+      "firstPillMonth": 238,
+      "foundationMonth": 284,
+      "foundationAgeYears": 39,
+      "commands": 150,
+      "attempts": 1
+    },
+    {
+      "route": "wander",
+      "seed": 847293,
+      "middleMonth": 68,
+      "firstPillMonth": 238,
+      "foundationMonth": 284,
+      "foundationAgeYears": 39,
+      "commands": 150,
+      "attempts": 1
+    }
+  ]
+}

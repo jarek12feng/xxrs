@@ -38,7 +38,7 @@ function state() {
     months: 3,
     id: "a",
   });
-  s.crafted = 1; // Existing recipe retained from an earlier save.
+  s.crafted = 1;s.qiJourney.cultivation.roots=1;s.study=4;s.sense=8;s.foundation=12; // Existing recipe retained from an earlier save.
   return dispatch(s, {
     type: "choose",
     instanceId: s.pending!.id,
@@ -52,11 +52,12 @@ async function mount(s = state()) {
   app.mount(document.body.appendChild(document.createElement("div")));
   await flush();
   await click("继续游戏");
-  if (!s.foundationJourney.duel && !s.qiJourney.duel) {
+  if (!s.qiJourney.cultivation.work && !s.foundationJourney.duel && !s.qiJourney.duel) {
     await click("洞府修行");
     await click("丹炉 · 突破筹备");
   }
 }
+async function finishFire(){for(const label of ['添火','析出主药精华','收小炉口','调和辅药','添火','添火','收拢成丹'])await click(label);}
 beforeEach(() => {
   vi.useFakeTimers();
   vi.mocked(save).mockReset().mockResolvedValue();
@@ -66,23 +67,19 @@ afterEach(() => {
   document.body.innerHTML = "";
   vi.useRealTimers();
 });
-it("shows an alchemy transition, then actual costs and reward without opening the log", async () => {
-  await mount();
-  await click("炼筑基丹");
-  expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
-    "丹火初燃",
-  );
-  expect(document.querySelector(".shell")?.hasAttribute("inert")).toBe(true);
-  await vi.advanceTimersByTimeAsync(1400);
-  const result = document.querySelector('[role="dialog"]')?.textContent;
-  expect(result).toContain("丹成");
-  expect(result).toContain("灵石 −12");
-  expect(result).toContain("12 → 0");
-  expect(result).toContain("0 → 1");
-  await click("知晓结果");
-  expect(document.querySelector('[role="dialog"]')).toBeNull();
-  expect(save).toHaveBeenCalledTimes(1);
+it("shows committed ingredients, manual fire control, then the actual pill reward",async()=>{
+ await mount();await click('炼筑基丹');
+ expect(vi.mocked(save).mock.lastCall?.[0].pills).toBe(0);
+ expect(text()).toContain('丹炉 · 筑基丹行炉');
+ expect(vi.mocked(save).mock.lastCall?.[0].stones).toBe(4);
+ await finishFire();
+ expect(document.querySelector('[role="dialog"]')?.textContent).toContain('开炉成丹');
+ expect(vi.mocked(save).mock.lastCall?.[0].pills).toBe(1);
+ await vi.advanceTimersByTimeAsync(10000);
+ expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+ await click('知晓结果');expect(document.querySelector('[role="dialog"]')).toBeNull();
 });
+
 it("blocks duplicate clicks while saving and while the result is open", async () => {
   let finish!: () => void;
   vi.mocked(save).mockImplementation(
@@ -100,8 +97,7 @@ it("blocks duplicate clicks while saving and while the result is open", async ()
   refine.click();
   await flush();
   expect(save).toHaveBeenCalledTimes(1);
-  await click("跳过演出");
-  expect(text()).toContain("丹成");
+  expect(text()).toContain("筑基丹行炉");
 });
 it("never shows a successful receipt or applies resources on save failure", async () => {
   vi.mocked(save).mockRejectedValue(new Error("存储不可用"));
@@ -164,38 +160,19 @@ it("ordinary actions show immediate deltas without blocking the next action", as
   await click("行动一月");
   expect(save).toHaveBeenCalledTimes(2);
 });
-it("Escape skips the animation first, then dismisses the result without another transaction", async () => {
-  await mount();
-  await click("炼筑基丹");
-  document.dispatchEvent(
-    new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
-  );
-  await flush();
-  expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
-    "丹成",
-  );
-  document.dispatchEvent(
-    new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
-  );
-  await flush();
-  expect(document.querySelector('[role="dialog"]')).toBeNull();
-  expect(save).toHaveBeenCalledTimes(1);
+it("Escape dismisses the completed alchemy result without another transaction",async()=>{
+ await mount();await click('炼筑基丹');await finishFire();
+ const count=vi.mocked(save).mock.calls.length;
+ document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));await flush();
+ expect(document.querySelector('[role="dialog"]')).toBeNull();expect(save).toHaveBeenCalledTimes(count);
 });
-it("reduced-motion preference skips the ceremonial delay", async () => {
-  const match = vi
-    .spyOn(window, "matchMedia")
-    .mockReturnValue({ matches: true } as MediaQueryList);
-  try {
-    await mount();
-    await click("炼筑基丹");
-    expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
-      "丹成",
-    );
-  } finally {
-    match.mockRestore();
-  }
+
+it("reduced motion still requires actual fire control before a pill exists",async()=>{
+ const match=vi.spyOn(window,'matchMedia').mockReturnValue({matches:true} as MediaQueryList);
+ try{await mount();await click('炼筑基丹');expect(vi.mocked(save).mock.lastCall?.[0].pills).toBe(0);await finishFire();expect(vi.mocked(save).mock.lastCall?.[0].pills).toBe(1);}finally{match.mockRestore();}
 });
-it("refresh during the animation loads the committed pill instead of replaying the action", async () => {
+
+it("refresh during fire control resumes the committed furnace without duplicating ingredients", async () => {
   await mount();
   await click("炼筑基丹");
   const committed = vi.mocked(save).mock.calls[0][0];
@@ -205,7 +182,8 @@ it("refresh during the animation loads the committed pill instead of replaying t
   expect(document.querySelector('[role="dialog"]')).toBeNull();
   expect(save).toHaveBeenCalledTimes(1);
   expect(text()).toContain("筑基丹");
-  expect(committed.pills).toBe(1);
+  expect(committed.pills).toBe(0);expect(committed.qiJourney.cultivation.work?.kind).toBe("alchemy");
+  await finishFire();expect(vi.mocked(save).mock.lastCall?.[0].pills).toBe(1);
 });
 it("automatic queued alchemy does not require dismissing a modal every tick", async () => {
   const s = state();
@@ -221,8 +199,9 @@ it("automatic queued alchemy does not require dismissing a modal every tick", as
   await vi.advanceTimersByTimeAsync(800);
   expect(document.querySelector('[role="dialog"]')).toBeNull();
   expect(document.querySelector(".receipt-dock")?.textContent).toContain(
-    "丹成",
+    "主辅药已入炉",
   );
+  expect(vi.mocked(save).mock.lastCall?.[0].pills).toBe(0);
 });
 it("keeps discoveries inside the scene and shows a named arrival without a blocking receipt", async () => {
   await mount(createGame("行者", "wood"));
@@ -392,31 +371,17 @@ it("opens character and inventory overlays without advancing the world", async (
   expect(vi.mocked(save).mock.calls.length).toBe(before);
 });
 
-it("shows routine sect work in place and offers equipment immediately after promotion", async () => {
-  const member=state();member.journey.branch='dan';
-  await mount(member);
-  await click("师门与委托");
-  await click("整理旧卷");
-  expect(
-    document.querySelector(".world-panel .scene-response")?.textContent,
-  ).toContain("师门事务完成");
-  await click("整理旧卷");
-  await click("整理旧卷");
-  await click("为护住身边的人");
-  await click("晋升外门");
-  expect(document.querySelector(".feedback-layer")?.textContent).toContain(
-    "晋升外门",
-  );
-  expect(document.querySelector(".feedback-layer")?.textContent).toContain(
-    "长春诀",
-  );
-  await click("查看并装配新功法");
-  expect(document.querySelector("[role=dialog]")?.textContent).toContain(
-    "功法",
-  );
-  await click("装配长春诀");
-  expect(vi.mocked(save).mock.lastCall?.[0].journey.main).toBe("spring");
+it("sect duties withhold rewards until actual scene decisions are complete",async()=>{
+ const member=state();member.journey.branch='dan';await mount(member);await click('师门与委托');await click('整理旧卷');
+ expect(vi.mocked(save).mock.lastCall?.[0].journey.duties).toBe(0);
+ for(let n=0;n<3;n++){
+  const progress=vi.mocked(save).mock.lastCall![0].qiJourney.cultivation.work!;
+  await click(['据同日原签校正','留出缺文','保留两条'][progress.pressure]!);
+ }
+ expect(vi.mocked(save).mock.lastCall?.[0].journey.duties).toBe(1);
+ expect(document.querySelector('[role="dialog"]')?.textContent).toContain('验收完成');
 });
+
 it("returns to the selected exploration place after a modal result", async () => {
   const s = mistCheckpoint();
   s.journey.maps.valley = 3;

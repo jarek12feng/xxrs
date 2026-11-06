@@ -1,6 +1,6 @@
+import type {Move} from '../combat';
 import { quoteSettlement, settleResources, type ResourceAmounts } from "../economy";
 import type { State } from "../world";
-import { qiSites } from "./content";
 export const preparationIds = ["medicine", "sect", "wander"] as const;
 export type PreparationRoute = (typeof preparationIds)[number];
 export type PreparationAction =
@@ -145,6 +145,7 @@ export function settlePreparation(s: State, a: PreparationAction) {
     q.last += "前方尚有阻拦，须亲自闯过；也可先回山休整。";
   } else {
     q.trial = route;
+    q.trialProgress = 0;
     q.route =
       route === "medicine"
         ? "medicine"
@@ -159,20 +160,14 @@ export function settlePreparation(s: State, a: PreparationAction) {
   return true;
 }
 export function preparationEnemy(s: State) {
-  const q = s.qiJourney;
-  const base =
-    q.trial === "wander"
-      ? qiSites[1].enemies[0]
-      : qiSites[0].enemies[q.gates ? 1 : 0];
-  return {
-    ...base,
-    name:
-      q.trial === "sect" ? (q.gates ? "阻路青鳞蟒" : "拦路岩獾") : base.name,
-    hp: q.gates ? 90 : 60,
-    attack: q.gates ? 16 : 13,
-    realm: 0 as const,
-    stage: q.gates ? 2 : 1,
+  const q=s.qiJourney;
+  const route=q.trial ?? 'medicine';
+  const definitions={
+    medicine:{name:'逐香灵貂',identity:'herb-marten',kind:'妖兽',image:'/art/qi-people-beasts/herb-marten.webp',trait:'护药而非追猎：正确化解三次扑袭，便能保住药篓并驱走灵貂。也可直接击退。',pattern:['discern','guard','strike'] as Move[],tells:['草梢左右晃动，灵貂的真身藏在下风处。','灵貂跃向药篓，前爪即将抓下。','灵貂落地未稳，露出侧腹。']},
+    sect:{name:q.gates?'断路刀客':'劫道散修',identity:'escort-raider',kind:'人族',image:'/art/characters/raider.webp',trait:'护送目标：正确化解四次阻截，药车便能离开险路；也可抢先击退拦路者。',pattern:['guard','discern','strike','guard'] as Move[],tells:['刀客绕过你扑向药车，须护住车辕。','树后有人影晃动，辨清哪处是真正拦截。','拦路者挥刀落空，空门露出。','重击对准车轴落下。']},
+    wander:{name:'古阵铜卫',identity:'outer-bronze-guard',kind:'傀儡',image:'/art/characters/golem.webp',trait:'破阵目标：正确辨影三次，拆除三个枢点；也可击碎铜卫使阵势停转。',pattern:['discern','guard','discern','strike'] as Move[],tells:['左侧阵线闪过假光，真枢点藏在铜臂下。','铜卫举臂横扫。','脚下阵线重新接合，可辨出另一处枢点。','铜甲张开散热，露出内核。']},
   };
+  return {...definitions[route],hp:q.gates?90:60,attack:q.gates?16:13,realm:0 as const,stage:q.gates?2:1};
 }
 export function completePreparation(s: State) {
   const q = s.qiJourney,

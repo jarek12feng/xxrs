@@ -114,7 +114,7 @@ export function openingGuide(s: State) {
     return { title: "独自再探遗府", body: "旧约已过。洞府丹炉处可独自重返青石遗府，取得筑基丹与丹方；入府仍须修为180与破阵准备。", action: "break" as const, label: "查看遗府筹备" };
   if (s.qi < 360)
     return {
-      title: s.story.stage === "waiting" ? "为三年之约作准备" : "积累修为，准备筑基",
+      title: s.story.stage === "waiting" ? "为青石之约作准备" : "积累修为，准备筑基",
       body: s.story.stage === "waiting" ? `第三十六月赴约，尚余 ${Math.max(0,36-s.month)} 个月。入府需 180 修为与一种破阵手段；修行与历练都会消耗月份。` : "圆满修为与筑基丹是叩关所需，疗伤与固本可改善把握。",
       action: "cultivate" as const,
       label: "回洞府准备",

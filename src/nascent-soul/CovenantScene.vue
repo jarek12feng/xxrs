@@ -16,7 +16,7 @@ const present=computed(()=>companionContact(props.game).availableForMeeting && c
 const lover=computed(()=>props.game.social.bonded||props.game.foundationJourney.bond==='promised'||props.game.foundationJourney.bond==='covenant');
 const phase=computed(()=>n.value.ceremony==='witnessed'?'礼成 · 灯下共餐':n.value.ceremony==='married'||n.value.ceremony==='renewed'?'旧约新灯':n.value.ceremony==='discussed'?'同心之约 · 筹备':'古渡小院 · 重逢');
 const hotspots=computed(()=>[
- {id:'companion',kind:present.value?'person' as const:undefined,label:present.value?partner.value:'约见与来信',x:52,y:50},
+ {id:'companion',kind:present.value?'person' as const:undefined,label:present.value?partner.value:'约见与来信',speech:present.value ? (n.value.ceremony==='married' ? '饭还温着。往后的事，我们慢慢商量。' : '坐一会儿吧，这回不赶路。') : undefined,x:52,y:50},
  ...(present.value&&lover.value?[{id:'table',label:n.value.ceremony==='witnessed'?'灯下饭桌':'信物与约书',x:46,y:73},{id:'lantern',label:'院中灯火',x:25,y:40}]:[]),
  {id:'exit',label:'回古渡静室',x:86,y:84},
 ]);

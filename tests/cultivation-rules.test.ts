@@ -108,7 +108,7 @@ describe("修行、寿元与小境界", () => {
   it("requires a pill and cannot use breakthrough lifespan to revive on its final month", () => {
     const s = player(0);
     s.qi = 360;
-  s.qiJourney.gates = 2;
+  s.qiJourney.gates = 2;s.foundation=12;
     s.pills = 0;
     const command = { id: "break", type: "break", pill: true } as const;
     expect(dispatch(s, command)).toBe(s);
@@ -125,7 +125,7 @@ describe("修行、寿元与小境界", () => {
   it("successful breakthrough keeps real age and adds one hundred years", () => {
     const s = player(0);
     s.qi = 360;
-  s.qiJourney.gates = 2;
+  s.qiJourney.gates = 2;s.foundation=12;
     s.pills = 1;
     s.foundation = 24;
     s.mastery = 12;
@@ -158,7 +158,7 @@ describe("修行、寿元与小境界", () => {
   it("pauses a breakthrough month for a pending story before consuming its pill", () => {
     const s = player(0);
     s.qi = 360;
-  s.qiJourney.gates = 2;
+  s.qiJourney.gates = 2;s.foundation=12;
     s.pills = 1;
     s.story.stage = "unmet";
     s.month = 2;

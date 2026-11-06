@@ -40,13 +40,13 @@ it('道路在出口才发一次命令，未保存不提前切场，锁定清除�
  host.querySelector<HTMLButtonElement>('.road-cue button')!.click();await flush();expect(act).toHaveBeenCalledExactlyOnceWith({type:'road',action:'pass'});expect(game.value.adventure.road.stage).toBe('market');
  host.querySelector<HTMLButtonElement>('[data-hotspot=person]')!.click();await flush();busy.value=true;await flush();expect(host.textContent).not.toContain('略过走近');expect(host.querySelector('.narrative-inspector')).toBeNull();
 });
-it('关口脚点在石阶、云外脚点在左侧平台，不沿空中热点直线穿越',async()=>{
+it('关口脚点在石阶、云外脚点在保留的前景石阶，不沿空中热点直线穿越',async()=>{
  const state=fixture(),game=shallowRef(state),host=document.createElement('div');state.adventure.road.stage='pass';
  app=createApp({render:()=>h(RoadWorld,{game:game.value})});app.mount(host);
  const actor=()=>host.querySelector<HTMLElement>('.walking-actor')!;
  expect(actor().style.left).toBe('57%');expect(actor().style.top).toBe('91%');
  const next=structuredClone(state);next.adventure.road.stage='beyond';game.value=next;await flush();
- expect(actor().style.left).toBe('20%');expect(actor().style.top).toBe('88%');
+ expect(actor().style.left).toBe('48%');expect(actor().style.top).toBe('90%');
 });
 it('无适用步态直接可操作；Escape与后台取消走近，不补发到达动作',async()=>{
  const {host}=harness();host.querySelector<HTMLButtonElement>('[data-hotspot=person]')!.click();await flush();

@@ -54,8 +54,8 @@ it("来信赴会、两胜入境、温养与深处取法均通过真实按钮提�
     await click("留居候会");
     await click("循道友来信");
     await click("与各宗来客");
-    await fund(12);
     await herbs(16);
+    await fund(12);
     await click("随顾沧遥");
     await click("登台争取");
     await fight();

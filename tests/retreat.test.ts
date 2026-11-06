@@ -38,7 +38,7 @@ it("stops the default late-foundation retreat at the circulation milestone", () 
 
 it("scales player choices by realm and stage including golden early practice", () => {
   const s = createGame("闭关", "wood");
-  expect(retreatDurations(s).map((x) => x.months)).toEqual([1, 3, 6]);
+  expect(retreatDurations(s).map((x) => x.months)).toEqual([1, 6, 12]);
   s.qi = 120;
   expect(retreatDurations(s).map((x) => x.months)).toEqual([3, 12, 36]);
   s.realm = 1;

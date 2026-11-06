@@ -1,0 +1,97 @@
+[
+  {
+    "file": "public/art/scene-people/lizhao-apothecary-v1.webp",
+    "size": [
+      1024,
+      1536
+    ],
+    "bytes": 190824,
+    "alpha": [
+      0,
+      254
+    ],
+    "cornerAlpha": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "transparentRatio": 0.6503658294677734
+  },
+  {
+    "file": "public/art/scene-people/cen-ji-standing-v1.webp",
+    "size": [
+      1024,
+      1536
+    ],
+    "bytes": 141574,
+    "alpha": [
+      0,
+      254
+    ],
+    "cornerAlpha": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "transparentRatio": 0.659356435139974
+  },
+  {
+    "file": "public/art/scene-people/xu-zhaolan-standing-v1.webp",
+    "size": [
+      1024,
+      1536
+    ],
+    "bytes": 202894,
+    "alpha": [
+      0,
+      254
+    ],
+    "cornerAlpha": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "transparentRatio": 0.6377836863199869
+  },
+  {
+    "file": "public/art/scene-people/pei-zhu-standing-v1.webp",
+    "size": [
+      1024,
+      1536
+    ],
+    "bytes": 190350,
+    "alpha": [
+      0,
+      254
+    ],
+    "cornerAlpha": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "transparentRatio": 0.6289749145507812
+  },
+  {
+    "file": "public/art/scene-people/lu-yanhui-standing-v1.webp",
+    "size": [
+      1024,
+      1536
+    ],
+    "bytes": 219478,
+    "alpha": [
+      0,
+      254
+    ],
+    "cornerAlpha": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "transparentRatio": 0.6098092397054037
+  }
+]

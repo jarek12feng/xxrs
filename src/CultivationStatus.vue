@@ -19,7 +19,7 @@ const progress = computed(() => {
     blocked:
       s.realm === 1
         ? current >= foundationCap(s) && current < 600
-        : s.qiJourney.gates < 2 &&
+        : (!s.qiJourney.cultivation.middle && current>=119) || s.qiJourney.gates < 2 &&
           current >= (s.qiJourney.gates === 0 ? 239 : 359),
     next: minorStageNames[Math.min(3, stage + 1)],
   };

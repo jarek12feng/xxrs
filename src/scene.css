@@ -398,3 +398,13 @@
 }
 @keyframes scene-rain { to {background-position:-30px 160px;} }
 @media(prefers-reduced-motion:reduce) { [data-atmosphere="rain"] .scene-air {animation:none;} }
+
+/* Dialogue and active challenges own the scene's reading space. */
+body:has(.narrative-stage.inspecting) .quest-tracker,
+body:has(.opening-scene .speech-bubble) .quest-tracker,
+body:has(.speech-bubble) .known-guidance,
+body:has(.narrative-stage.inspecting) .known-guidance,
+body:has(.feedback-layer) .quest-tracker { display:none!important; }
+.narrative-stage.inspecting .narrative-goal {display:none;}
+.scene-speaker {position:relative;border:1px solid #bca26b;border-radius:14px;background:#102720ed;padding:12px 16px;}
+.scene-speaker::after {content:'';position:absolute;bottom:-9px;left:38px;width:15px;height:15px;background:#102720;border-right:1px solid #bca26b;border-bottom:1px solid #bca26b;transform:rotate(45deg);}

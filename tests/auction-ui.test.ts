@@ -42,7 +42,7 @@ it.each(["market", "foundation"] as const)(
       await click("领取目录");
       const saved = structuredClone(state.value.treasures.auction);
       const beforeReopen = structuredClone(state.value);
-      await click("管事与会讯");
+      await click("拍卖管事");
       await click("展开本届目录");
       expect(host.textContent).toContain("拍品目录");
       expect(state.value).toEqual(beforeReopen);

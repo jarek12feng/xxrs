@@ -75,7 +75,7 @@ function continueMist(){
 }
 const hotspots = computed(() => [
   ...(!auctionLocationError(props.game,"market") ? [{id:"auction",label:"坊市拍卖行",x:68,y:36}] : []),
-  { id: "person", kind: "person" as const, label: person.value.name, x: roadSpeakerFoot(road.value.stage).x, y: 52 },
+  { id: "person", kind: person.value.name === "郁青留下的话" ? undefined : "person" as const, label: person.value.name, speech: person.value.name === "郁青留下的话" ? undefined : person.value.line, x: roadSpeakerFoot(road.value.stage).x, y: 52 },
   { id: "objects", label: road.value.stage === "pass" ? "山口与阵纹" : "沿途痕迹", x: 56, y: 42 },
   { id: "prepare", label: ["pass", "camp"].includes(road.value.stage) ? "药队与行装" : "随身行装", x: 22, y: 76 },
   { id: "road", label: "前路与归途", x: 79, y: 57 },
@@ -295,7 +295,7 @@ const person = computed(() =>
     : road.value.stage === "home"
       ? {
           name: "温蘅",
-          image: "/characters/wenheng.png",
+          image: "/art/characters/wenheng.webp",
           line:
             props.game.adventure.method === "medicine"
               ? "药气没走岔，伤口也收住了。那几味药的分量，你还记得吧？"
@@ -355,9 +355,7 @@ const person = computed(() =>
         <template #status><span>灵石 {{ game.stones }} · 灵草 {{ game.herbs }}</span></template>
         <template #notes><OriginNotes :game="game" :busy="busy" @act="emit('act', $event)" /></template>
         <RoadEpilogue v-if="active === 'road' && showEpilogue" :game="game" :locked="locked" @return="epilogueDismissed = true" @continue="continueMist" />
-        <div v-if="active === 'person'" class="road-person">
-          <img :src="person.image || undefined" :alt="person.name" /><h3>{{ person.name }}</h3><p>{{ person.line }}</p>
-        </div>
+
         <details v-if="road.result"><summary>刚才的经过</summary><SceneResponse :text="road.result" :receipt="receipt?.scene?.chapter === 'road' ? receipt : null" /></details>
       <section class="scene-controls" aria-label="行路与准备操作区">
         <ExpeditionPanel
@@ -597,7 +595,7 @@ const person = computed(() =>
               game.realm === 1
                 ? "你已经筑基。返回青嶂关观察一种解法，再按它的条件准备；不必练满神识、剑意或炼制全部灵器。"
                 : game.qi < 360
-                  ? "先用「修炼至下一段进展」积累修为，遇到陆迟的故事会自动停下。修为达到 360 后可查看突破；筑基丹是必需品，固本与护法可进一步提高把握，不必把所有准备项做完。"
+                  ? "先用「修炼至下一段进展」积累修为，遇到陆迟的故事会自动停下。修为达到 360 后可查看突破；还须备好筑基丹、固本至根基12并养好伤势。"
                   : "修为已足，可以查看突破风险。先从遗府取得筑基丹，再按伤势与根基准备；突破成功后返回山口选择解法。"
             }}
           </p>
@@ -607,10 +605,10 @@ const person = computed(() =>
               :disabled="locked || !!preparationError(game, 'refine')"
               @click="emit('act', { type: 'prepare', kind: 'refine' })"
             >
-              炼制筑基丹 · 三月
+              炼制筑基丹 · 六月温养后掌火
               <small>{{
                 preparationError(game, "refine") ||
-                "每次突破必需一枚，成败均会消耗；不足时可先购药补炼"
+                "每次突破必需一枚，成败均会消耗；不足时须采得玉髓芝主药，再备辅药开炉"
               }}</small>
             </button>
             <button

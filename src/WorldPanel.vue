@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { dutyIncome } from "./preparation-rates";
 import AuctionDestination from "./auction/AuctionDestination.vue";
 import SpiritSummary from "./spirit/SpiritSummary.vue";
 import type { PreparationSelection } from "./workshop/preparation";
@@ -116,7 +117,7 @@ const mentors = {
   dan: {
     name: "温蘅",
     hall: "丹堂",
-    image: "/characters/wenheng.png",
+    image: "/art/characters/wenheng.webp",
     quote: "学会救人，才算读懂丹方。",
     story:
       "曾为寻找救治师父的药方远行，如今留在山门教人辨草。她记得每一位病人的名字。",
@@ -475,19 +476,19 @@ const mapImages = {
             :disabled="locked || game.herbs < 2"
             @click="storyTravel.act({ type: 'duty', duty: 'herbs' })"
           >
-            送药济人<small>一月 / 灵草 −2 / 灵石 +10 / 根基 +1 / 贡献 +2</small>
+            送药济人<small>赴诊一月 / 灵草 −2；辨药施治后灵石 +{{ dutyIncome(game, "herbs") }} / 根基 +1 / 贡献 +2</small>
           </button>
           <button
             :disabled="locked || game.injury >= 3"
             @click="storyTravel.act({ type: 'duty', duty: 'watch' })"
           >
-            守护夜路<small>一月 / 灵石 +8 / 伤势 +1 / 炼气修为 +8 / 贡献 +2</small>
+            守护夜路<small>赴路一月；护送全队后灵石 +{{ dutyIncome(game, "watch") }} / 贡献 +2</small>
           </button>
           <button
             :disabled="locked || game.stones < 3"
             @click="storyTravel.act({ type: 'duty', duty: 'copy' })"
           >
-            整理旧卷<small>一月 / 灵石先付 3、完工收 6 / 心得 +1 / 贡献 +2</small>
+            整理旧卷<small>入阁一月 / 灵石先付3；校勘验收后收{{ dutyIncome(game, "copy") }} / 心得 +1 / 贡献 +2</small>
           </button>
         </div>
         </details>

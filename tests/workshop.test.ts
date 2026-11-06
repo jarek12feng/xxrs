@@ -1,3 +1,4 @@
+import {qiCultivationStep} from '../tools/qi-cultivation-policy';
 import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { actionSound } from "../src/action-sound";
 import { describe, expect, it } from "vitest";
@@ -22,7 +23,9 @@ function ready() {
   s.month = 4;
   s.age = 196;
   s.story.stage = "waiting";
-  s.study = 2;
+  s.study = 4;
+  s.sense=8;
+  s.qiJourney.cultivation.roots=1;
   s.stones = 200;
   s.herbs = 30;
   s.qi = 120;
@@ -217,7 +220,9 @@ describe("workshop public commands", () => {
     let s = session.state;
     s.stones = 200;
     s.herbs = 30;
-    s.study = 2;
+    s.study = 4;
+  s.sense=8;
+  s.qiJourney.cultivation.roots=1;
     if (!s.journey.relics.sword)
       s = order(s, { product: "sword", method: "buy" }, "sword");
     s = dispatch(s, { type: "equipRelic", relic: "sword", id: "equip" });
@@ -331,10 +336,12 @@ effect: "none"
       option: "listen",
       id: "answer",
     });
-    const finished = dispatch(answered, {
+    let finished = dispatch(answered, {
       type: "queueTick",
       id: "tick-again",
     });
+    expect(finished.pills).toBe(s.pills);
+    for(let i=0;finished.qiJourney.cultivation.work&&i<20;i++)finished=dispatch(finished,{...qiCultivationStep(finished)!,id:`fire-${i}`});
     expect(finished.pills).toBe(s.pills + 1);
     expect(finished.journey.queue).toEqual([]);
     expect(validState(finished)).toBe(true);
@@ -404,7 +411,7 @@ it.each(["healing", "clarity", "ward", "iron", "foundation"] as const)(
     if (product === "foundation") s.pills = 1e9;
     else if (product === "healing" || product === "clarity") s.growth.medicines[product] = 1e9;
     else s.workshop[product] = 1e9;
-    if (product === "foundation") s.crafted = 1;
+    if (product === "foundation") {s.crafted = 1;s.qiJourney.cultivation.roots=1;}
     const purchase = { product, method: product === "foundation" ? "commission" : "buy" } as const;
     expect(workshopQuote(s, purchase).error).toBe("资源超过可保存上限");
     const snapshot = structuredClone(s);

@@ -323,7 +323,15 @@ export function journeyPresentation(s: State, relationship = false) {
   return {
     image: `/art/foundation-journey/${image}.webp`,
     speaker,
-    portrait: speaker === "岑霁" ? "/art/foundation-growth/cen-ji.webp" : portrait ? `/art/foundation-journey/${portrait}.webp` : undefined,
+    speech: !speaker ? undefined : speaker === '苏婉宁'
+      ? (awaitingFerryConversation(s) ? '你想从这座沉井里找到什么？' : q.whereabouts === 'rescued' ? '先歇一歇。等气息稳下来，我们再把后面的路说清楚。' : '路图还要再核一遍。你的打算，也说给我听听。')
+      : speaker === '尹照川' ? '先坐下来吧。灯讯与归路的事，我们一件件商量。'
+      : speaker === '岑霁' ? '药心性烈，先辨清药性，莫伤了经脉。'
+      : speaker === '阙明棠' ? '庄里的事还没理清。你来问药，还是愿意听听事情的原委？'
+      : speaker === '郁晚舟' ? '伤者还在休养。有什么想问的，坐下说吧。'
+      : speaker === '程砚' ? (q.rescue >= 4 ? '大家都已安顿。接下来，走你自己的路。' : '内侧还有灯号。先稳住归绳，再商议怎样接应。')
+      : speaker === '陶泊' ? '古道深处消息未明，先把补给与退路备好。' : undefined,
+    portrait: speaker === "岑霁" ? "/art/scene-people/cen-ji-standing-v1.webp" : portrait ? `/art/foundation-journey/${portrait}.webp` : undefined,
     body,
   };
 }

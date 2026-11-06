@@ -22,6 +22,7 @@ async function click(text: string) {
 it("古渡旧图为独立现场对象，选择只读、补给扣款且不跳转主场景", async () => {
   const game = shallowRef(conclaveCheckpoint());
   let id = 0;
+  game.value=dispatch(game.value,{type:"advance",activity:"work",months:3,id:"revisit-fund"});
   app = createApp({
     render: () =>
       h(SeaPanel, {

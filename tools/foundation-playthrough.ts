@@ -1,3 +1,4 @@
+import {qiCultivationStep} from './qi-cultivation-policy';
 import { seekerStep } from './initiation-policy';
 import { qiNarrativeActive } from "../src/qi-journey/narrative";
 import type { PreparationRoute } from "../src/qi-journey/preparation";
@@ -16,6 +17,7 @@ export function foundationStep(
   gift = true,
   route: PreparationRoute = "wander",
 ): Intent {
+  if(s.qiJourney.cultivation.work || s.pending?.kind==='relic'&&!s.qiJourney.cultivation.relic)return qiCultivationStep(s)!;
   if (s.pending) {
     const choices = {
       meeting: "promise",
@@ -61,6 +63,7 @@ export function foundationStep(
     return { type: "adventure", action };
   }
   if (!s.journey.learning.book) return { type: "learning", choice: s.path === "sword" ? "blade" : "spring" };
+  const practice=qiCultivationStep(s);if(practice)return practice;
   if (s.qiJourney.node || qiNarrativeActive(s)) return qiJourneyStep(s, route)!;
   if (s.injury) return { type: "advance", activity: "rest", months: 3 };
   if (!hasFoundationRecipe(s) && !s.pills) {
@@ -73,7 +76,7 @@ export function foundationStep(
         : { type: "advance", activity: "work", months: 3 };
     if (
       s.story.choice === "missed" ||
-      (s.story.stage === "waiting" && s.month >= 36)
+      (s.story.stage === "waiting" && s.month >= s.story.deadline)
     )
       return { type: "revisitRelic" };
     return {
@@ -82,15 +85,19 @@ export function foundationStep(
       months: 12,
     };
   }
+  const progression = qiJourneyStep(s, route);
+  if (progression) return progression;
   if (!s.pills) {
+    if(!s.qiJourney.cultivation.roots)return s.stones<6?{type:"advance",activity:"work",months:3}:{type:"qiJourney",action:"cultivation:herb"};
+    if(s.study<4)return {type:"advance",activity:"study",months:2};
+    if(s.sense<8)return {type:"advance",activity:"meditate",months:3};
     const cost = refineCost(s);
     if (s.stones < cost.stones + 16)
       return { type: "advance", activity: "work", months: 6 };
     if (s.herbs < cost.herbs) return { type: "supplies" };
     return { type: "prepare", kind: "refine" };
   }
-  const progression = qiJourneyStep(s, route);
-  if (progression) return progression;
+  if(s.foundation<12)return s.stones<8?{type:"advance",activity:"work",months:3}:{type:"prepare",kind:"retreat"};
   if (s.qi < 360) return { type: "advance", activity: "cultivate", months: 12 };
   return { type: "break", pill: true };
 }

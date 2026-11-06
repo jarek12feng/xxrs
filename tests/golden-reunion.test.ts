@@ -17,6 +17,7 @@ import { freshReunion } from "../src/golden-reunion/state";
 import { messageSources } from "../src/correspondence/sources";
 import { SAVE_VERSION } from "../src/save-version";
 let base: State;
+let serial=0;
 beforeAll(() => {
   base = goldenLateCheckpoint();
   expect(base.goldenStory.companionGoldenAt).not.toBeNull();
@@ -24,7 +25,7 @@ beforeAll(() => {
 function act(
   s: State,
   action: ReunionAction,
-  id = `reunion:${s.seen.length}:${JSON.stringify(action)}`,
+  id = `reunion:${++serial}:${JSON.stringify(action)}`,
 ) {
   const command = {
     type: "goldenStory" as const,

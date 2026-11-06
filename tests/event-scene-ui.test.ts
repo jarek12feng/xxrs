@@ -228,3 +228,22 @@ it("a collapsed scene never cuts a speaker in the middle of a multi-sentence quo
     expect(host.querySelector('.event-prose')?.textContent).toBe('山门外的雪还没化，陆迟已经把药包放在桌上。“上回是你帮我。这次，换我。”');
   } finally { dispose(); }
 });
+
+it('keeps event narration, costs and choices outside the speaking bubble', () => {
+  const host=document.createElement('div');
+  const app=createApp({render:()=>h(EventScene,{image:'',title:'药庐',speaker:'温蘅',portrait:'/characters/wenheng.png',quote:'我替你看着火候。',body:'温蘅拿出三味药。消耗灵草 2。'},()=>h('button','开始配药'))});
+  app.mount(host);
+  try {
+    const bubble=host.querySelector('.event-speech');
+    expect(bubble?.textContent).toContain('我替你看着火候');
+    expect(bubble?.textContent).not.toContain('消耗灵草');
+    expect(bubble?.querySelector('button')).toBeNull();
+    expect(host.querySelector('.event-standing')?.getAttribute('src')).toBe('/art/characters/wenheng.webp');
+  } finally {app.unmount();}
+});
+it('does not use an unreviewed portrait as a full-body scene cutout',()=>{
+  const host=document.createElement('div');
+  const app=createApp({render:()=>h(EventScene,{image:'',title:'路遇',speaker:'未具名旅人',portrait:'/characters/unknown.jpg',body:'旅人递来一张纸。'})});
+  app.mount(host);
+  try {expect(host.querySelector('.event-standing')).toBeNull(); expect(host.querySelector('.event-speech')).toBeNull();}finally{app.unmount();}
+});

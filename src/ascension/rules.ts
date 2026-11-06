@@ -1,5 +1,6 @@
 import type { State, Command } from '../world';
 import { breakthroughError } from '../foundation';
+import { goldenChance, breakthroughDetails } from '../progression/breakthrough';
 import { goldenQuote } from '../golden-core/rules';
 export type AscensionAction = 'start' | 'method' | 'medicine' | 'press' | 'withdraw' | 'commit';
 export const phaseNames = ['引气归流', '稳住经脉', '凝聚道基'] as const;
@@ -13,10 +14,12 @@ export function ascensionOptions(s: State) {
   const need = step === 0 ? `神识 ${golden ? 12 : 6}` : step === 1 ? `根基 ${golden ? 24 : 18}，或已备护脉${golden ? '阵' : '丹纹'}` : `主修研修 ${golden ? 2 : 1} 层，或根基 ${golden ? 24 : 20}`;
   const herbs = golden ? 4 : 2;
   const strain = s.ascension?.strain ?? 0;
+  const forced = {...s, ascension: {realm: (golden ? 1 : 0) as 0 | 1, step: 3, strain: strain + 2, history: []}};
+  const forcedChance = golden ? goldenChance(forced) : breakthroughDetails(forced, true).chance;
   return [
     {id:'method' as const,label:step===0?'以神识引导灵流':step===1?'以根基与护持稳脉':'循熟练功法凝聚',detail:`${need}；不耗材料，不新增紊乱。`,error:ready?'':`尚需${need}`,herbs:0,strain:0},
     {id:'medicine' as const,label:'以灵草药气调和',detail:`灵草 ${herbs}；不新增紊乱，已有紊乱减少 1。`,error:s.herbs>=herbs?'':`缺少灵草，需要 ${herbs}`,herbs,strain:-1},
-    {id:'press' as const,label:'强行推动灵流',detail:`不耗材料；紊乱 +2。若未调和，最终把握最多降至 ${Math.max(10,100-(strain+2)*15)}%。`,error:'',herbs:0,strain:2},
+    {id:'press' as const,label:'强行推动灵流',detail:`不耗材料；紊乱 +2。若未调和，最终把握最多降至 ${forcedChance}%。`,error:'',herbs:0,strain:2},
   ];
 }
 export function ascensionError(s: State) {

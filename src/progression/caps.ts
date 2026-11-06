@@ -1,6 +1,7 @@
 import { pactTrialComplete, type SecretPact } from "../secret-pact/state";
 import type { FoundationProgress } from "../foundation-journey/growth-state";
-export function qiCap(s: { realm: number; qiJourney?: { gates: number } }) {
+export function qiCap(s: { realm: number; qiJourney?: { gates: number; cultivation?: {middle:boolean} } }) {
+  if(!s.realm && s.qiJourney?.cultivation && !s.qiJourney.cultivation.middle)return 119;
   return s.realm || !s.qiJourney || s.qiJourney.gates === 2
     ? 360
     : s.qiJourney.gates === 0

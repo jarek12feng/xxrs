@@ -18,7 +18,7 @@ export function retreatDurations(
       ? [12, 60, 120]
       : s.realm === 0
         ? early
-          ? [1, 3, 6]
+          ? [1, 6, 12]
           : [3, 12, 36]
         : early
           ? [6, 24, 60]

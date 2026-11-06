@@ -142,7 +142,11 @@ const hotspots = computed(() => [
   ...(props.mode === "journey" && !auctionLocationError(props.game,"foundation") ? [{id:"auction",label:"晴川交易院 · 拍卖行",x:68,y:35}] : []),
   {
     id: "encounter",
-    kind: presentation.value.speaker ? "person" as const : undefined,
+    kind: props.mode !== 'board' && presentation.value.speaker ? "person" as const : undefined,
+    speech: props.mode !== 'board' ? presentation.value.speech : undefined,
+    speaker: presentation.value.speaker,
+    actor: props.mode !== 'board' && !['苏婉宁','青嶂勘路人'].includes(presentation.value.speaker ?? '') ? presentation.value.portrait : undefined,
+    foot: {x:foundationSpeakerFoot.x,y:foundationSpeakerFoot.y},
     label:
       props.mode === "board"
         ? "试剑石台"

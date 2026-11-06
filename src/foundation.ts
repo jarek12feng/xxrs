@@ -12,6 +12,8 @@ export function breakthroughError(s: State) {
   if (s.pending) return "先处理眼前的选择";
   if (s.realm) return "已经筑基";
   if(s.qiJourney && s.qiJourney.gates<2) return "先完成淬脉与内府凝元，取得圆满晋升资格";
+  if(s.qiJourney && s.injury) return "先养好伤势，再让经脉承受筑基药力";
+  if(s.qiJourney && s.foundation<12) return "先固本至根基12；道基不稳，不能承受筑基药力";
   if (s.qi < 360) return `还差 ${360 - s.qi} 修为`;
   if (!s.pills)
     return hasFoundationRecipe(s)
@@ -23,8 +25,8 @@ export function relicJourneyError(s: State) {
   if (s.status !== "alive" || s.pending) return "先处理眼前事件";
   if (s.realm || hasFoundationRecipe(s)) return "遗府机缘已经取得";
   if (s.story.choice === "missed") return "";
-  if (s.story.stage === "waiting" && s.month >= 36) return "";
-  return "第三十六月遗府开启，先修行并准备破阵手段";
+  if (s.story.stage === "waiting" && s.month >= s.story.deadline) return "";
+  return "约定开府之月遗府开启，先修行并准备破阵手段";
 }
 export function foundationGoal(s: State) {
   if (s.realm) return "筑基已成：重返青嶂旧阵，尝试炼气时无法承受的交锋。";
@@ -35,7 +37,7 @@ export function foundationGoal(s: State) {
     return "遗府丹方已记下。备齐灵草与灵石，补炼筑基丹；失败不必重闯遗府，剑修也可凭丹方炼制。";
   if (s.story.choice === "missed")
     return "陆迟已独行，旧约无法挽回；你仍可独自重返遗府，闯过石阵取丹。";
-  return "第三十六月与陆迟探青石遗府，争取自己的筑基丹与补炼丹方。修为达到 180，再备一种破阵手段即可；不必把所有属性练满。";
+  return "约定开府之月与陆迟探青石遗府，争取自己的筑基丹与补炼丹方。修为达到 180，再备一种破阵手段即可；不必把所有属性练满。";
 }
 
 // Shared by the preparation view and actual choice validation.

@@ -51,7 +51,7 @@ export function luchiView(
                 : s.story.stage === "crossing" || s.story.stage === "relic"
                   ? "青石遗府 · 与你同行"
                   : s.month >= 24
-                    ? "渡口 · 准备三年之约"
+                    ? "渡口 · 准备青石之约"
                     : "山下集市 · 为赴约奔走";
   const delivered = s.journey?.maps.sea === 3;
   const known = delivered
@@ -78,7 +78,7 @@ export function luchiView(
               ? "“上回是你帮我。这次，换我。”"
               : s.memories.confided
                 ? "“我想找到父亲。我娘还在等他。”"
-                : "“三年之期一到，我在渡口等你。”";
+                : "“约期开府之时，我在渡口等你。”";
   return {
     portrait: "/characters/luchi-" + portrait + ".png",
     scene,

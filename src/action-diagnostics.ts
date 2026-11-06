@@ -1,3 +1,4 @@
+import {isCultivationAction,cultivationQuote} from "./qi-cultivation/rules";
 import {tideQuote} from "./tide-survey";
 import {revisitQuote} from "./world-revisits/rules";
 import { correspondenceQuote } from "./correspondence/rules";
@@ -28,6 +29,8 @@ import { trainingError, medicineError } from "./growth";
 import { studyError } from "./wayfaring/rules";
 /** Explain a rejected command using existing domain quotes. Never execute or consume RNG. */
 export function rejectedActionReason(s: State, intent: Intent): string {
+  if(intent.type==="qiJourney" && isCultivationAction(intent.action))return cultivationQuote(s,intent.action).error||"当前事务不能执行此动作";
+  if(s.qiJourney.cultivation.work)return "先完成当前行功或事务，也可在现场收手退回";
   if (intent.type === "correspondence") return correspondenceQuote(s, intent.action) || "暂无新的来信";
   if (s.itemGrowth.golden.duel && intent.type !== "artifactGrowth") return "先结束器室交锋或撤回药船";
   if (s.itemGrowth.trial && intent.type !== "itemGrowth") return "先完成石匣解禁或收念撤回";

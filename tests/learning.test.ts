@@ -1,3 +1,5 @@
+import {cultivationMonthlyGain} from "../src/progression";
+import {cultivationMonth} from '../src/progression/cultivation';
 import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 import { expect, it } from "vitest";
@@ -10,7 +12,7 @@ import {
   type State,
   type Intent,
 } from "../src/core";
-import { cultivationMonthlyGain } from "../src/progression";
+
 const send = (s: State, c: Intent, id = `lesson-${s.seen.length}`) =>
   dispatch(s, { ...c, id });
 function rescued(path: "wood" | "sword" = "wood") {
@@ -68,8 +70,8 @@ it("learning and equipping are separate, and paid study allows both gathering an
   expect(n.mastery).toBe(s.mastery + 1);
   expect(n.month).toBe(s.month + 1);
   const equipped = send(s, { type: "equip", technique: "spring" });
-  expect(cultivationMonthlyGain(equipped)).toBeGreaterThan(
-    cultivationMonthlyGain(s),
+  expect(cultivationMonth(equipped).gain*240+cultivationMonth(equipped).remainder).toBeGreaterThan(
+    cultivationMonth(s).gain*240+cultivationMonth(s).remainder,
   );
 });
 it("rewards cannot be taken prematurely, during events or after death", () => {

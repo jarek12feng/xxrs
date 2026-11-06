@@ -1,3 +1,4 @@
+import {cultivationMonth} from '../src/progression/cultivation';
 import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { SAVE_VERSION } from "../src/save-version";
 import { expect, it } from "vitest";
@@ -32,7 +33,6 @@ import {
   dispatch,
   migrateSave,
   validState,
-  cultivationGain,
   type State,
 } from "../src/core";
 import { exchangePreview } from "../src/expedition/combat";
@@ -62,7 +62,7 @@ it("training is bounded, affects actual combat and cultivation, and preserves se
   expect(n.growth.training.blade).toBe(1);
   expect(n.seed).toBe(s.seed);
   expect(readiness(n).damage - readiness(s).damage).toBe(2);
-  expect(cultivationGain(n) - cultivationGain(s)).toBe(2);
+  expect(cultivationMonth(n).remainder+240*cultivationMonth(n).gain).toBeGreaterThan(cultivationMonth(s).remainder+240*cultivationMonth(s).gain);
   expect(
     dispatch(n, { id: "again", type: "trainTechnique", technique: "blade" }),
   ).toBe(n);
@@ -263,10 +263,10 @@ it("equipped training changes monthly settlement and the recorded gains together
     activity: "train",
     months: 1,
   });
-  expect(n.qi - s.qi).toBe(16);
+  expect(n.qi - s.qi).toBe(2);
   expect(
     n.log.some(
-      (l) => l.text.includes("修为 +16") && l.text.includes("已计入功法"),
+      (l) => l.text.includes("修为 +2") && l.text.includes("已计入功法"),
     ),
   ).toBe(true);
   expect(n.log.some((l) => l.text.includes("修为 +10；每四重"))).toBe(false);

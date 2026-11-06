@@ -1,0 +1,529 @@
+[
+  {
+    "file": "public/art/characters/golem-hurt.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/qiuxingluo.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/hero-male-meditate.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/yuqing.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/raider-attack.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/peizhufeng.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/hero-female-meditate.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/hero-female-attack.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/qingzhang.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/raider.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/luchi.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/hero-female.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/raider-hurt.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/golem.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      253
+    ]
+  },
+  {
+    "file": "public/art/characters/hero-male.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/xu-zhaolan-standing-v1.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/wenheng.webp",
+    "size": [
+      667,
+      1000
+    ],
+    "alpha": [
+      0,
+      255
+    ]
+  },
+  {
+    "file": "public/art/characters/hero-male-attack.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/market-steward.webp",
+    "size": [
+      667,
+      1000
+    ],
+    "alpha": [
+      0,
+      255
+    ]
+  },
+  {
+    "file": "public/art/characters/golem-attack.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      253
+    ]
+  },
+  {
+    "file": "public/art/characters/gongyan.webp",
+    "size": [
+      427,
+      640
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/characters/pei-zhu-standing-v1.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/yinzhaochuan-growth.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/recovery-stop.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/frontier-valley.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/shentinglan-growth.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/rank-jiangwenhe.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      255
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/frontier-boatman.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/wuming-ferry.webp",
+    "size": [
+      1280,
+      549
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/shentinglan-reunion.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/outer-rescue.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/vow-terrace.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/qu-heir.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/journey-fork.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/yinzhaochuan-vow.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/snow-gates.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/inheritance-room.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/ferry-return.webp",
+    "size": [
+      1280,
+      640
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/shentinglan-vow.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/ferry-guard.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/rank-mengzhaoye.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      255
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/signal-refuge.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/reunion-courtyard.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/sunken-entry.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/healer-sister.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/yinzhaochuan-reunion.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/frontier-mentor.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/rank-zhouyanhui.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      255
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/herb-estate.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-journey/rank-luoli.webp",
+    "size": [
+      512,
+      768
+    ],
+    "alpha": [
+      0,
+      255
+    ]
+  },
+  {
+    "file": "public/art/foundation-journey/roadside-pavilion.webp",
+    "size": [
+      1280,
+      721
+    ],
+    "alpha": null
+  },
+  {
+    "file": "public/art/foundation-growth/cen-ji.webp",
+    "size": [
+      576,
+      768
+    ],
+    "alpha": null
+  }
+]

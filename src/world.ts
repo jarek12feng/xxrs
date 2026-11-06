@@ -1,3 +1,6 @@
+import { monthlyWorkIncome } from "./preparation-rates";
+import {freshQiCultivation,validQiCultivation} from './qi-cultivation/state';
+import {isCultivationAction,cultivationActive,runCultivation} from './qi-cultivation/rules';
 import { guidanceNotes } from './player-guidance';
 import { freshLegacyMaterialPractice, validLegacyMaterialPractice } from './golden-story/legacy-material-practice';
 import { validDeath, type DeathRecord } from './mortality';
@@ -184,7 +187,7 @@ export const queueActions: Record<QueueAction, string> = {
   rest: "养伤",
   meditate: "凝神",
   study: "研读",
-  refine: "炼丹（三月一次）",
+  refine: "温养丹液（六月，随后亲手掌火）",
 };
 export const places = {
   valley: {
@@ -410,8 +413,9 @@ export function createGame(
   aptitude: chapter.Aptitude = "insightful",
   gender: Gender | null = null,
 ): State {
+  const initial=chapter.createGame(name,path,seed,aptitude);
   return lift(
-    {...chapter.createGame(name, path, seed, aptitude),stones:0},
+    {...initial,stones:0,story:{...initial.story,deadline:120}},
     fresh(),
     freshSocial(gender),
     freshAdventure(),
@@ -424,7 +428,7 @@ export const eventView = (s: State) => {
       ...event,
       title: "渡口再逢 · 未寄的家书",
       body:
-        "救回药工后，你再次遇见陆迟。这次他提起了自己的家事，托你寄一封家书，并邀你在第三十六个月一起寻找青石遗府的筑基机缘。" +
+        "救回药工后，你再次遇见陆迟。这次他提起了自己的家事，托你寄一封家书，并邀你在第十年一起寻找青石遗府的筑基机缘。" +
         (s.inherited === "bond" ? "他的旧剑又唤起了你前世的记忆。" : ""),
     };
   return event;
@@ -436,6 +440,7 @@ export const breakthroughDetails = (s: State, pill = false) =>
 export const refineCost = (s: State) => chapter.refineCost(base(s));
 export const replayHints = (s: State) => chapter.replayHints(base(s));
 export const actionError = (s: State, a: chapter.Activity) =>
+  s.qiJourney.cultivation.work ? "先完成或退出眼前行功与事务" :
   nascentActive(s) || s.lizhao.duel ? "先结束眼前的试炼" :
   s.realm === 3 && a === "cultivate" ? "元婴已成，先安顿出关与大典，亲自验证新得神通。" :
   s.conclave.duel || s.conclave.location === "vault" ? "先结束诸宗交锋或撤出秘境" :
@@ -449,7 +454,7 @@ export const actionError = (s: State, a: chapter.Activity) =>
     : s.qiJourney.node
     ? "先结束秘境历练或撤回"
     : a === "cultivate" && !s.realm && s.qi >= qiCap(s)
-      ? "修为已抵瓶颈，先去历练取得晋升材料"
+      ? !s.qiJourney.cultivation.middle ? "灵息已满，回洞府贯通小周天，方可晋入中期" : "修为已抵瓶颈，先去历练取得晋升材料"
       : s.foundationJourney.duel
         ? "先结束筑基交锋"
         : a === "cultivate" && s.realm === 1
@@ -610,6 +615,7 @@ function normalize(n: State, old: State) {
   n.qiJourney =
     n.life === old.life ? structuredClone(old.qiJourney) : freshQiJourney();
   if (n.status !== "alive") {
+    n.qiJourney.cultivation.work = null;
     n.qiJourney.node = 0;
     n.qiJourney.duel = null;
     n.qiJourney.trial = null;
@@ -693,6 +699,10 @@ function dispatchCommand(input: State, c: Command): State {
   if (c.type === "correspondence") return runCorrespondence(input, c.action, c.id);
   if(!hasCultivationKit(input) && !['adventure','choose','join','next','beginChapter'].includes(c.type)
     && !(c.type === 'qiJourney' && (isInitiationAction(c.action) || c.action.startsWith('origin:')))) return input;
+  if(c.type==='qiJourney' && isCultivationAction(c.action))return runCultivation(input,c.action,c.id,s=>workshopMonth(s,'修行与历练'));
+  if(cultivationActive(input))return input;
+  if(input.pending?.kind==='relic' && !input.qiJourney.cultivation.relic)return input;
+  if(c.type==='duty')return runCultivation(input,`cultivation:${c.duty}`,c.id,s=>workshopMonth(s,'师门行程'));
   if (input.itemGrowth.golden.duel && c.type !== "artifactGrowth" && c.type !== "choose") return input;
   if (c.type === "artifactGrowth") return runArtifactGrowth(input,c.action,c.id,s=>workshopMonth(s,"法宝温养"));
   if (input.itemGrowth.trial && c.type !== "itemGrowth" && c.type !== "choose") return input;
@@ -747,7 +757,7 @@ function dispatchCommand(input: State, c: Command): State {
       ),
     );
   if (input.qiJourney.node) return input;
-  if (c.type === "break" && input.qiJourney.gates < 2) return input;
+  if (c.type === "break" && chapter.breakthroughError(input)) return input;
   if (c.type === "foundationJourney")
     return runFoundationJourney(input, c.action, c.id, (s) =>
       normalize(
@@ -944,7 +954,7 @@ function dispatchCommand(input: State, c: Command): State {
       result = chapter.dispatch(b, command);
     if (result === b) return input;
     if (c.type === "next" || c.type === "beginChapter")
-      return lift({...result,stones:0}, fresh(), freshSocial(), freshAdventure());
+      return lift({...result,stones:0,story:{...result.story,deadline:120}}, fresh(), freshSocial(), freshAdventure());
     return normalize(
       lift(
         result,
@@ -988,9 +998,9 @@ function dispatchCommand(input: State, c: Command): State {
       });
     s = normalize(lift(n, s.journey, s.social, s.adventure), input);
     if (s.status === "alive") {
-      s.stones -= 5; // no labour income while travelling
+      s.stones -= monthlyWorkIncome(b); // no labour income while travelling
       s.log = s.log.filter(
-        (l) => !(l.month === s.month && l.text === "山下劳作，灵石 +5。"),
+        (l) => !(l.month === s.month && l.text === `山下劳作，灵石 +${monthlyWorkIncome(b)}。`),
       );
     }
     return s.status === "alive";
@@ -1117,7 +1127,7 @@ function dispatchCommand(input: State, c: Command): State {
           : { id: c.id, type: "advance", activity: task.action, months: 1 },
       );
       if (n === input) return input;
-      if (task.action === "refine" && n.pills <= input.pills) return n;
+      if (task.action === "refine" && n.pills <= input.pills && n.qiJourney.cultivation.work?.kind!=="alchemy") return n;
       n.journey.queue[0].remaining--;
       if (
         !n.journey.queue[0].remaining ||
@@ -1176,41 +1186,6 @@ function dispatchCommand(input: State, c: Command): State {
           s,
           "陆迟听说你入门，送来一张旧营地草图：“若有一日能进雾岭，替我留心这道刻痕。”",
         );
-      return accept();
-    case "duty":
-      if (
-        s.journey.branch === "none" ||
-        !["herbs", "watch", "copy"].includes(c.duty)
-      )
-        return input;
-      if (c.duty === "herbs" && s.herbs < 2) return input;
-      if (c.duty === "copy" && s.stones < 3) return input;
-      if (c.duty === "watch" && s.injury >= 3) return input;
-      if (!travel()) return accept();
-      if (c.duty === "herbs") {
-        s.herbs -= 2;
-        s.foundation = Math.min(24, s.foundation + 1);
-      }
-      if (c.duty === "copy") {
-        s.stones -= 3;
-        s.study = Math.min(4, s.study + 1);
-      }
-      if (c.duty === "watch") {
-        s.injury = Math.min(6, s.injury + 1);
-        s.qi = Math.min(360, s.qi + (s.realm === 0 ? 8 : 0));
-      }
-      s.stones += c.duty === "herbs" ? 10 : c.duty === "watch" ? 8 : 6;
-      s.journey.duties++;
-      s.journey.contribution += 2;
-      log(
-        s,
-        {
-          herbs: "送药下山，温蘅让你记住病人的名字，而不只是一笔贡献。",
-          watch: "守夜归来，季衡接过你的灯：“今夜山路上的人，平安到家了。”",
-          copy: "整理旧卷，你在采药名册上发现陆迟父亲的名字；旁边写着“雾岭”。",
-        }[c.duty] +
-          ` 灵石 +${c.duty === "herbs" ? 10 : c.duty === "watch" ? 8 : 6}，贡献 +2。`,
-      );
       return accept();
     case "promote":
       if (promotionError(s)) return input;
@@ -1357,13 +1332,14 @@ export function validState(x: unknown): x is State {
 }
 function validWorldState(
   x: unknown,
-  version: 58 | 57 | 56 | 55 | 54 | 53 | 52 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51,
+  version: 59 | 58 | 57 | 56 | 55 | 54 | 53 | 52 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51,
 ): boolean {
   if (!x || typeof x !== "object") return false;
   const s = x as State,
     j = s.journey;
   if (
     (x as { version: unknown }).version !== version ||
+    (version >= 59 && (!validQiCultivation(s.qiJourney?.cultivation) || !Number.isInteger(s.qiJourney.trialProgress) || s.qiJourney.trialProgress<0 || s.qiJourney.trialProgress>4)) ||
     (version >= 57 && !validDeath(s)) ||
     (version >= 56 && s.goldenStory?.practice && s.goldenStory.practice.topic !== "spirit" && !(version >= 58 ? validMaterialPractice(s.goldenStory.practice.material) : validLegacyMaterialPractice(s.goldenStory.practice.material))) ||
     (version >= 55 && s.goldenStory?.practice?.topic === "spirit" && !validSpiritPractice(s.goldenStory.practice.spirit)) ||
@@ -1483,6 +1459,20 @@ function validWorldState(
 }
 export function migrateSave(x:unknown):State {
   if(validState(x))return structuredClone(x);
+  if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=59)throw new Error('未知或损坏的存档，原档未修改。');
+  let next:State;
+  if(x && typeof x==='object' && 'version' in x && x.version===58){
+    if(!validWorldState(x,58))throw new Error('旧存档损坏，原档未修改。');
+    next=structuredClone(x) as State;
+  }else next=migrateBeforeQiCultivation(x);
+  next.qiJourney.trialProgress ??= 0;
+  next.qiJourney.cultivation=validQiCultivation(next.qiJourney.cultivation)?next.qiJourney.cultivation:{...freshQiCultivation(),middle:next.realm>0||next.qi>=120,relic:["self","gift"].includes(next.story.choice)||next.crafted>0};
+  next.version=SAVE_VERSION;
+  if(!validState(next))throw new Error('旧存档无法安全迁移，原档未修改。');
+  return next;
+}
+function migrateBeforeQiCultivation(x:unknown):State {
+  if(validState(x))return structuredClone(x);
   if(x && typeof x==='object' && 'version' in x && typeof x.version==='number' && x.version>=58)throw new Error('未知或损坏的存档，原档未修改。');
   let next:State;
   if(x && typeof x==='object' && 'version' in x && x.version===57){
@@ -1492,7 +1482,7 @@ export function migrateSave(x:unknown):State {
   const p=next.goldenStory.practice;
   if(p && p.topic!=='spirit')p.material=upgradeMaterialPractice(p.topic,p.material,p.step);
   next.version=SAVE_VERSION;
-  if(!validState(next))throw new Error('旧存档无法安全迁移，原档未修改。');
+  if(!validWorldState({...next,version:58},58))throw new Error('旧存档无法安全迁移，原档未修改。');
   return next;
 }
 function migrateBeforePracticeAgency(x:unknown):State {

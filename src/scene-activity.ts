@@ -24,6 +24,7 @@ export function combatOwner(s: State): EncounterOwner | "arena" | null {
   return null;
 }
 export function sceneOwner(s: State): EncounterOwner | null {
+  if(s.qiJourney.cultivation?.work)return "qi";
   if(s.treasures.auction?.entered && !s.treasures.auction.closed)return s.treasures.auction.venue === "golden" ? "sea" : s.treasures.auction.venue === "market" ? "road" : "foundation";
   if (s.itemGrowth?.golden?.duel) return s.lizhao.location === "harbor" ? "lizhao" : "sea";
   if (s.itemGrowth?.trial) return "foundation";
@@ -48,6 +49,7 @@ export function sceneOwner(s: State): EncounterOwner | null {
 /** Places where a monthly activity must wait for an explicit player response. */
 export function activityInterruption(s: State): string {
   if (s.status !== "alive") return "此生已结束，可读取进度或回看履历";
+  if (s.qiJourney.cultivation.work) return "先完成眼前行功、炼丹或师门事务，也可按现场选项收手";
   if (s.pending || s.social.scene) return "先回应眼前的事件，再继续修行";
   if (combatOwner(s)) return "当前交锋尚未结束，请先完成战斗或按现场选项撤退";
   if (s.wayfaring.trip || s.wayfaring.passage)

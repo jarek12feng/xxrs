@@ -1,3 +1,4 @@
+import {qiCultivationStep} from './qi-cultivation-policy';
 import { admissionStep } from './initiation-policy';
 import { qiNarrativeNext, qiNarrativeActive } from "../src/qi-journey/narrative";
 import {
@@ -11,6 +12,7 @@ export function qiJourneyStep(
   s: State,
   preferred: PreparationRoute = "wander",
 ): Intent | null {
+  if(!s.pending){const practice=qiCultivationStep(s);if(practice)return practice;}
   const q = s.qiJourney;
   if (s.realm || q.gates >= 2) return null;
   const send = (

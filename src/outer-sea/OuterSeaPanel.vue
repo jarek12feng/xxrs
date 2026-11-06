@@ -153,7 +153,7 @@ const hotspots = computed(() => {
       y: 70,
     },
     {
-      id: "friends", kind: "person" as const,
+      id: "friends", kind: "person" as const, speaker: "顾沧遥", speech: o.value.met ? "潮水退下去，旧路才会露出来。入府前，先说好怎样接应。" : "这边的石基还没稳，道友脚下留神。你也来探这片海？",
       label: o.value.met ? "顾沧遥与叶问苓" : "堤边修士",
       x: 49,
       y: 83,

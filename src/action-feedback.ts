@@ -1,3 +1,4 @@
+import {battleConclusion} from './battle-conclusion';
 import { senseLimit } from "./spirit";
 import { treasures, treasureIds } from "./treasures/catalog";
 import { pactView } from "./secret-pact/view";
@@ -53,7 +54,7 @@ export interface ActionReceipt {
 }
 
 // A read-only presentation projection. No extra roll, command, or saved field.
-export function actionReceipt(
+function baseActionReceipt(
   before: State,
   after: State,
   intent: Intent,
@@ -376,4 +377,30 @@ export function actionReceipt(
                   ? "线索仍在。查看当前挑战提示，提升实力或寻求帮助后再来。"
                   : "成果已自动保存，可以继续行动。",
   });
+}
+
+export function actionReceipt(before:State,after:State,intent:Intent):ActionReceipt|null {
+  const battle=battleConclusion(before,after,intent);
+  const receipt=baseActionReceipt(before,after,intent);
+  if(battle){
+    const changes:ActionReceipt['changes']=[];
+    for(const [key,label] of [['stones','灵石'],['herbs','灵草'],['injury','伤势'],['qi','修为']] as const){
+      if(before[key]!==after[key])changes.push({label,before:before[key],after:after[key],good:key==='injury'?after[key]<before[key]:after[key]>before[key]});
+    }
+    return {...receipt,title:receipt?.title && receipt.title!=='行动已完成'?`${battle.title} · ${receipt.title}`:battle.title,tone:battle.tone,ritual:receipt?.ritual??null,spotlight:true,months:after.month-before.month,changes:receipt?.changes?.length?receipt.changes:changes,notes:[battle.body,...(receipt?.notes??[])],cost:receipt?.cost||'本场实际得失',next:receipt?.next||battle.next};
+  }
+  if(receipt && after.qiJourney.cultivation.work?.kind==='alchemy' && !before.qiJourney.cultivation.work){
+    receipt.title='主辅药已入炉 · 请亲手掌火';receipt.ritual=null;receipt.process=undefined;receipt.spotlight=false;receipt.notes=[after.qiJourney.cultivation.last];receipt.next='进入丹炉现场，调节火候、析药、调和与成丹。';
+  }
+  if(receipt && before.qiJourney.cultivation.work && !after.qiJourney.cultivation.work){
+    receipt.title=after.crafted>before.crafted?'筑基丹 · 开炉成丹':after.qiJourney.cultivation.relic&&!before.qiJourney.cultivation.relic?'遗府封纹 · 破禁成功':after.qiJourney.cultivation.middle&&!before.qiJourney.cultivation.middle?'炼气中期 · 小周天贯通':after.qiJourney.cultivation.roots>before.qiJourney.cultivation.roots?'玉髓芝已收入药匣':after.journey.duties>before.journey.duties?'师门委托 · 验收完成':'收势退回';
+    receipt.spotlight=true;receipt.notes=[after.qiJourney.cultivation.last];
+  }
+  if(receipt && after.month>before.month && intent.type==='advance'){
+    const span=after.month-before.month;
+    const age=(n:number)=>`${Math.floor(n/12)}岁${n%12?`又${n%12}月`:''}`;
+    const season=(month:number)=>['春','夏','秋','冬'][Math.floor((month%12)/3)];
+    receipt.notes.unshift(`山中${season(before.month)}去${season(after.month)}来，实际过去${span>=12?`${Math.floor(span/12)}年`:''}${span%12?`${span%12}个月`:''}。年龄 ${age(before.age)} → ${age(after.age)}。`);
+  }
+  return receipt;
 }

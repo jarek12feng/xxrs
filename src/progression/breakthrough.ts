@@ -1,4 +1,4 @@
-import { ascensionChance, type Ascension } from "../ascension/state";
+import { type Ascension } from "../ascension/state";
 export interface FoundationBreakthroughContext {
   ascension?: Ascension | null;
   foundation: number;
@@ -27,11 +27,11 @@ export function breakthroughDetails(
   ];
   return {
     parts,
-    chance: ascensionChance(s.ascension) ?? Math.max(
+    chance: Math.max(
       10,
       Math.min(
         95,
-        parts.reduce((n, p) => n + p.value, 0),
+        parts.reduce((n, p) => n + p.value, 0) - (s.ascension?.step === 3 ? s.ascension.strain*15 : 0),
       ),
     ),
   };
@@ -96,7 +96,7 @@ export function goldenBreakthroughError(s: GoldenBreakthroughContext) {
             : "";
 }
 export function goldenChance(s: GoldenBreakthroughContext) {
-  return ascensionChance(s.ascension) ?? Math.min(
+  return Math.max(10, Math.min(
     100,
     55 +
       Math.floor(s.foundation / 2) +
@@ -107,6 +107,7 @@ export function goldenChance(s: GoldenBreakthroughContext) {
           ? 8
           : 12) +
       (s.goldenCore.guard ? 15 : 0) +
-      Math.min(10, s.goldenCore.attempts * 5),
-  );
+      Math.min(10, s.goldenCore.attempts * 5) +
+      (s.ascension?.step === 3 ? 10 - s.ascension.strain * 15 : 0),
+  ));
 }

@@ -1,6 +1,6 @@
 import type { SpiritState } from "./spirit";
 import { senseLimit } from "./spirit";
-import { preparationRates, monthlyStudy } from "./preparation-rates";
+import { preparationRates, monthlyStudy, monthlyWorkIncome } from "./preparation-rates";
 import { quoteMedicineUse } from "./medicines";
 import { breakthroughDetails, breakthroughSuccess, foundationFailure } from "./progression";
 export { breakthroughDetails, breakthroughSuccess } from "./progression";
@@ -282,11 +282,11 @@ export function nextGoal(s: State) {
   if (s.pending) return "完成眼前的选择，时间已暂停。";
   if (s.story.stage === "unmet") return "第三个月，去渡口认识同行之人。";
   if (s.story.stage === "waiting" && !s.memories.letter && s.month < 12)
-    return `第十二月，陆迟邀你煮茶叙旧；还有 ${12 - s.month} 个月。第三十六月仍须赴约。`;
+    return `第十二月，陆迟邀你煮茶叙旧；还有 ${12 - s.month} 个月。约定开府之月仍须赴约。`;
   if (s.story.stage === "waiting" && !s.memories.visit && s.month < 24)
-    return `第二十四月，陆迟将带回山外消息；还有 ${24 - s.month} 个月。第三十六月仍须赴约。`;
+    return `第二十四月，陆迟将带回山外消息；还有 ${24 - s.month} 个月。约定开府之月仍须赴约。`;
   if (s.story.stage === "waiting")
-    return `第三十六个月与陆迟会合，还剩 ${Math.max(0, 36 - s.month)} 个月。闭关六个月若跨过约期，将失约。`;
+    return `约定开府之月与陆迟会合，还剩 ${Math.max(0, s.story.deadline - s.month)} 个月。闭关六个月若跨过约期，将失约。`;
   if (s.realm === 0) return foundationGoal(s);
   return "此段修行将告一段落。";
 }
@@ -305,7 +305,7 @@ export function eventView(s: State): EventView | null {
         body:
           s.inherited === "bond"
             ? "渡口少年自称陆迟。他剑柄上的刻痕，与你梦中的旧约一模一样。那场遗府之行，仿佛已经发生过。"
-            : "负伤的散修陆迟托你寄一封家书。他提起第三十六个月开启的青石遗府，愿与你一起寻找筑基机缘。",
+            : "负伤的散修陆迟托你寄一封家书。他提起约定开府之月开启的青石遗府，愿与你一起寻找筑基机缘。",
         options: [
           ...(s.inherited === "bond"
             ? [o("remember", "说出梦中的旧约", "无需灵石 · 信任 3 · 前缘专属")]
@@ -313,13 +313,13 @@ export function eventView(s: State): EventView | null {
           o(
             "aid",
             "买药相助，约定同行",
-            "灵石 −8 · 信任 2 · 第三十六个月赴约",
+            "灵石 −8 · 信任 2 · 约定开府之月赴约",
             s.stones < 8 ? "灵石不足" : undefined,
           ),
           o(
             "promise",
             "替他送信，约定同行",
-            "不花灵石 · 信任 1 · 第三十六个月赴约",
+            "不花灵石 · 信任 1 · 约定开府之月赴约",
           ),
         ],
       };
@@ -358,7 +358,7 @@ export function eventView(s: State): EventView | null {
       };
     case "departure":
       return {
-        title: "三年之约",
+        title: "青石之约",
         body: `陆迟已经在渡口等你。${s.realm >= 1 ? "你已筑基，可以从容护送他越过遗府石阵。" : "你尚在炼气。遗府有石阵与毒瘴，准备的灵草或剑意将派上用场。"}现在出发，往返需三个月；留下会失去同行与护法，但此后仍可独自探府。`,
         options: [
           o(
@@ -447,7 +447,7 @@ function finish(s: State, dead = false) {
   s.result = dead
     ? "灯尽山中：寿元已尽，你走过的路与结识的人留在修行履历中。"
     : s.story.choice === "gift"
-      ? "双星照渡：你与陆迟都已筑基，今后可并肩而行。那句三年之约，终于有了回音。"
+      ? "双星照渡：你与陆迟都已筑基，今后可并肩而行。那句青石之约，终于有了回音。"
       : s.story.choice === "self"
         ? s.story.luchi === "distant"
           ? "独剑入云：你独自闯过遗府，以孤丹叩开天关。丹方与护脉丹纹已经记下，渡口的旧约却无法重来。"
@@ -486,7 +486,7 @@ function hooks(s: State) {
     return;
   }
   if (s.story.stage !== "waiting") return;
-  if (s.month >= 36) {
+  if (s.month >= s.story.deadline) {
     decision(s, "departure");
     return;
   }
@@ -527,7 +527,7 @@ export function preparationError(s: State, kind: "refine" | "retreat") {
       return `需要灵草 ${cost.herbs}、灵石 ${cost.stones}`;
     if (
       (s.story.stage === "unmet" && s.month + 3 >= 3) ||
-      (s.story.stage === "waiting" && s.month + 3 >= 36)
+      (s.story.stage === "waiting" && s.month + 3 >= s.story.deadline)
     )
       return "即将有约，先处理渡口之事再炼丹";
   } else {
@@ -600,7 +600,7 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
       if (c.option === "aid") s.stones -= 8;
       record(
         s,
-        `${option.label}。陆迟与你定下第三十六个月的渡口之约。信任 ${s.story.trust}。`,
+        `${option.label}。陆迟与你定下约定开府之月的渡口之约。信任 ${s.story.trust}。`,
         "major",
       );
     } else if (kind === "letter") {
@@ -748,12 +748,12 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
       }
       if (c.activity === "study")
         s.study = Math.min(4, s.study + monthlyStudy(s.wisdom));
-      if (c.activity === "work") s.stones += preparationRates.stones;
+      if (c.activity === "work") s.stones += monthlyWorkIncome(s);
       if (c.activity === "rest") s.injury = Math.max(0, s.injury - preparationRates.healing);
       if (c.activity !== "cultivate")
         record(
           s,
-          `${{ meditate: `凝神内观，神识 +1（本境上限 ${senseLimit(s.realm, s.spirit)}）、修为 +2`, study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: "山下劳作，灵石 +5", rest: "静养经脉，伤势 −1" }[c.activity]}。`,
+          `${{ meditate: `凝神内观，神识 +1（本境上限 ${senseLimit(s.realm, s.spirit)}）、修为 +2`, study: `研读残卷，心得 +${s.wisdom >= 8 ? 2 : 1}（上限 4）`, gather: "采药得灵草二株，修为 +3", train: "历练剑意 +1，修为 +10；每四重剑意累积一层伤势", work: `山下劳作，灵石 +${monthlyWorkIncome(s)}`, rest: "静养经脉，伤势 −1" }[c.activity]}。`,
         );
       hooks(s);
       if (
@@ -787,9 +787,9 @@ export function dispatch(input: State, c: Command, learnedAccess = false): State
       for (let i = 0; i < 6; i++) if (!month(s)) break;
       if (s.status === "alive") {
         s.foundation = Math.min(24, s.foundation + 6);
-        s.qi = Math.min(MAX_QI, s.qi + 30);
-        record(s, "闭关六个月：根基 +6、修为 +30。世间约期仍在流逝。");
-        if (s.story.stage === "waiting" && s.month >= 36) missed(s);
+        s.qi = Math.min(MAX_QI, s.qi + 12);
+        record(s, "闭关六个月：根基 +6、修为 +12。世间约期仍在流逝。");
+        if (s.story.stage === "waiting" && s.month >= s.story.deadline) missed(s);
         maybeFinish(s);
         hooks(s);
       }
@@ -901,7 +901,7 @@ export function validState(x: unknown): x is State {
       "resolved",
     ]) ||
     !int(s.story.trust, 0, 6) ||
-    s.story.deadline !== 36 ||
+    ![36,120].includes(s.story.deadline) ||
     !oneOf(s.story.choice, ["none", "self", "gift", "missed"]) ||
     !oneOf(s.story.luchi, ["stranger", "companion", "foundation", "distant"])
   )

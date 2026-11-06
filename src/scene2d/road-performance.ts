@@ -11,7 +11,7 @@ export function roadSceneTransition(a:RoadSnapshot,b:RoadSnapshot):{label:string
   if(a.pills<b.pills && b.stage==='camp')return {label:'丹药已收妥',pose:'meditate'};
 }
 export function roadWorldState(s:State){const r=s.adventure.road;return {
-  person:r.stage==='market'?'yuqing' as const:r.stage==='pass'?'qingzhang' as const:undefined,
+  person:(r.stage==='market' || (r.stage==='camp' && r.ally))?'yuqing' as const:r.stage==='pass'?'qingzhang' as const:undefined,
   route:r.passed && ['pass','beyond','lookout'].includes(r.stage)?r.solution:'none',
   wind:r.stage==='pass' && !r.passed,
   map:r.map && ['market','lookout'].includes(r.stage),

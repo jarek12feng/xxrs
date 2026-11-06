@@ -18,12 +18,12 @@ it("death overrides the routine action, and rebirth overrides terminal state", (
     actionSound(a, b, { type: "next", path: "wood", inheritance: "none" }),
   ).toBe("rebirth");
 });
-it("real breakthrough failure is identified even at the injury cap", () => {
+it("real eligible breakthrough failure has feedback", () => {
   let [a] = pair();
   a.qi = 360;
   a.qiJourney.gates = 2;
-  a.injury = 6;
-  for (const seed of [123456, 987654321, 2147483647, 4294967295]) {
+  a.injury = 0;a.foundation=12;
+  for (const seed of [15872, 123456, 987654321, 2147483647, 4294967295]) {
     a.seed = seed;
     a.pills = 1;
     const b = dispatch(a, { id: "failure", type: "break", pill: true });

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { monthlyWorkIncome } from "./preparation-rates";
+import {cultivationQuote} from "./qi-cultivation/rules";
+import CultivationScene from "./qi-cultivation/CultivationScene.vue";
+import CultivationPanel from "./qi-cultivation/CultivationPanel.vue";
 import { hasCultivationKit } from "./initiation/rules";
 import SpiritSummary from "./spirit/SpiritSummary.vue";
 import AscensionPanel from "./ascension/AscensionPanel.vue";
@@ -518,7 +522,7 @@ const activities: { id: Activity; name: string; hint: string }[] = [
   },
   { id: "gather", name: "采药", hint: "灵草 +2 · 修为 +3" },
   { id: "train", name: "历练", hint: "剑意 +1 · 修为 +10；每四重受伤" },
-  { id: "work", name: "劳作", hint: "每月共得 5 灵石" },
+  { id: "work", name: "劳作", hint: "按境界承接帮工，报酬随本领提高" },
   { id: "rest", name: "养伤", hint: "每月伤势 −1" },
 ];
 const regularRetreat = computed(() => game.value ? retreatPlan(game.value) : null);
@@ -557,6 +561,7 @@ async function executeAct(intent: Intent) {
   const ok = await persist(n);
   if (ok) {
     advanceStoryPreference(old, n, localStorage);
+    if(n.qiJourney.cultivation.work){ui.running=false;dialog.value="";view.value="story";}
     combatFeedback.value = projectCombatFeedback(old, n, intent);
     if (!automatic) pauseReason.value = null;
     const changedScene =
@@ -970,12 +975,11 @@ onUnmounted(() => {
       >
         {{ soundPrefs.enabled ? "声音已开" : "开启声音" }}
       </button>
+      <small v-if="game && !titleScreen" class="world-date" aria-label="当前修行年月">
+        修行 {{ Math.floor(game.month / 12) }} 年 {{ game.month % 12 }} 月
+      </small>
       <div class="location-entry" v-if="game && !titleScreen">
-        <button @click="openPanel('world')">{{ currentScene.name }}</button
-        ><small
-          >修行 {{ Math.floor(game.month / 12) }} 年
-          {{ game.month % 12 }} 月</small
-        >
+        <button @click="openPanel('world')">{{ currentScene.name }}</button>
       </div>
       <button
         class="system-entry"
@@ -1243,9 +1247,10 @@ onUnmounted(() => {
                     ? `还差 ${MAX_QI - game.qi} 修为可尝试筑基。`
                     : "修为已满，可查看把握后决定是否突破。"
                 }}
-                淬脉、凝元与筑基丹是必需准备；固本与护法可进一步提高把握，不要求全部完成。伤势会降低成功率，可先静养。
+                须完成淬脉、凝元，备好筑基丹，固本至根基12并养好伤势；更深的根基与同道护法能提高把握。
               </p>
-              <CultivationOutlook @standing="openPanel('sect')"
+              <CultivationPanel :game="game" :busy="ui.busy" @act="act" />
+                <CultivationOutlook @standing="openPanel('sect')"
                 v-show="cultivationPane === 'practice'"
                 v-if="activity === 'cultivate'"
                 compact
@@ -1273,7 +1278,7 @@ onUnmounted(() => {
                       : a.id === "train"
                         ? `剑意 +1${game.realm ? "" : " · 修为 +" + incidentalQiGain(game, "train")}；${game.journey.support === "guard" ? "护身诀免历练伤势" : "每四重受伤"}`
                         : a.id === "work"
-                          ? `每月灵石 +5${!game.realm && game.journey.main ? " · 修为 +" + incidentalQiGain(game, "work") : ""}`
+                          ? `每月灵石 +${monthlyWorkIncome(game)}${!game.realm && game.journey.main ? " · 修为 +" + incidentalQiGain(game, "work") : ""}`
                           : a.id === "gather"
                             ? `灵草 +${2 + (game.journey.support === "herb" ? 1 + game.growth.training.herb : 0)} · 修为 +${incidentalQiGain(game, "gather")}`
                             : a.id === "meditate"
@@ -1326,7 +1331,7 @@ onUnmounted(() => {
                   :disabled="ui.busy || !!preparationError(game, 'refine')"
                   @click="prepare('refine')"
                 >
-                  炼筑基丹 · 三月<small>{{
+                  炼筑基丹 · 六月温养后亲手掌火<small>{{
                     preparationError(game, "refine") ||
                     `灵草 −${costs?.herbs} / 灵石 −${costs?.stones} / 筑基丹 +1`
                   }}</small></button
@@ -1641,7 +1646,7 @@ onUnmounted(() => {
           <p>
             {{
               game.story.stage === "resolved"
-                ? "这场三年之约已有结局。"
+                ? "这场青石之约已有结局。"
                 : "第三十六个月，回渡口见陆迟。"
             }}
           </p>
@@ -1777,7 +1782,11 @@ onUnmounted(() => {
         </div>
       </template>
       <template v-else-if="event && game && !titleScreen">
-        <EventScene
+        <template v-if="game.pending?.kind==='relic' && !game.qiJourney.cultivation.relic">
+          <CultivationScene v-if="game.qiJourney.cultivation.work" :game="game" :busy="ui.busy" @act="act" />
+          <section v-else class="relic-seal-entry"><h2 id="modal-title">青石遗府 · 封丹石台</h2><p>丹匣被六重封纹托在石台上。走到这里还不算取得丹药；须稳住阵压、剥离封纹，才能保住这枚孤丹。</p><p>{{game.qiJourney.cultivation.last}}</p><p>{{cultivationQuote(game,'cultivation:relic').error}}</p><button :disabled="ui.busy||!!cultivationQuote(game,'cultivation:relic').error" @click="act({type:'qiJourney',action:'cultivation:relic'})">屏息入阵 · 亲手解开封丹阵</button><button :disabled="ui.busy" @click="act({type:'qiJourney',action:'cultivation:withdraw'})">退出遗府 · 丹药未取，可独自再来</button></section>
+        </template>
+        <EventScene v-else
           :image="eventScene || '/scenes/mist-path.jpg'"
           :title="event.title"
           :body="event.body"
@@ -2000,3 +2009,5 @@ onUnmounted(() => {
     </section>
   </div>
 </template>
+
+<style scoped>.relic-seal-entry{min-height:60vh;background:linear-gradient(#12271ecc,#12271ecc),url(/art/qi-progression/qingshi-inner-platform.webp) center/cover;padding:8vh 10vw;color:#f4ead3}.relic-seal-entry p{max-width:650px;line-height:1.8}.relic-seal-entry button{padding:14px;margin:10px}</style>

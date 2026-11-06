@@ -48,8 +48,8 @@ it("opens a named defeat result on voluntary withdrawal without claiming new wou
   };
   const c = { type: "arenaWithdraw" } as const,
     r = actionReceipt(s, send(s, c), c)!;
-  expect(r.ritual).toBe("duel");
-  expect(r.title).toContain("认负");
+  expect(r.spotlight).toBe(true);
+  expect(r.title).toContain("主动撤离");
   expect(r.notes.join()).toContain("巩砚");
   expect(r.changes.find((c) => c.label === "伤势")).toBeUndefined();
 });
@@ -117,7 +117,7 @@ it("a genuine combat defeat shows increased injury and no victory reward", () =>
   const c = { type: "arenaTurn", stance: "discern" } as const,
     n = send(s, c),
     r = actionReceipt(s, n, c)!;
-  expect(r.title).toContain("本场落败");
+  expect(r.title).toContain("战败");
   expect(r.tone).toBe("warning");
   expect(r.changes.find((c) => c.label === "伤势")?.after).toBe(1);
   expect(r.unlocks).toEqual([]);

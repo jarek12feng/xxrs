@@ -1,3 +1,4 @@
+import {qiCultivationStep} from '../tools/qi-cultivation-policy';
 import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { admissionStep } from '../tools/initiation-policy';
 import { SAVE_VERSION } from "../src/save-version";
@@ -87,7 +88,7 @@ describe("v4 world progression", () => {
         act(s, { type: "join", branch: branch === "dan" ? "jian" : "dan" }),
       ).toBe(s);
       expect(act(s, { type: "promote" })).toBe(s);
-      for (let i = 0; i < 3; i++) s = act(s, { type: "duty", duty: "copy" });
+      for (let i = 0; i < 3; i++) {s = act(s, { type: "duty", duty: "copy" });for(let n=0;s.qiJourney.cultivation.work&&n<20;n++)s=act(s,qiCultivationStep(s)!);}
       expect(act(s, { type: "promote" })).toBe(s);
       s = act(s, { type: "mentor", answer: "care" });
       expect(act(s, { type: "mentor", answer: "seek" })).toBe(s);
@@ -174,7 +175,7 @@ describe("v4 world progression", () => {
     s = act(s, { type: "equip", technique: "spring" });
     const qi = s.qi;
     s = advance(s, "cultivate");
-    expect(s.qi - qi).toBe(13);
+    expect(s.qi - qi).toBe(2);
     s = act(s, { type: "equip", technique: "herb" });
     const herbs = s.herbs;
     s = advance(s, "gather");
@@ -183,14 +184,14 @@ describe("v4 world progression", () => {
     expect(s.journey.main).toBe("breath");
     const before = s.qi;
     s = advance(s);
-    expect(s.qi - before).toBe(4);
+    expect(s.qi - before).toBe(1);
     s.path = "sword";
     s.mastery = 3;
     s = act(s, { type: "equip", technique: "blade" });
     s = act(s, { type: "equip", technique: "guard" });
     const previous = s.qi;
     s = advance(s, "train");
-    expect(s.qi - previous).toBe(14);
+    expect(s.qi - previous).toBe(2);
     expect(s.injury).toBe(0);
     s = act(s, { type: "equip", technique: "lantern" });
     s = advance(s, "meditate");
@@ -202,13 +203,13 @@ describe("v4 world progression", () => {
     s.journey.main = "spring";
     s = advance(s, "cultivate", 12);
     expect(s.month).toBe(3);
-    expect(s.qi).toBe(39);
+    expect(s.qi).toBe(7);
     expect(s.pending?.kind).toBe("meeting");
     s = choose(s, "promise");
     s.qi = 350;
     s.qiJourney.gates=2;
     s = advance(s, "cultivate", 12);
-    expect(s.month).toBe(7);
+    expect(s.month).toBe(11);
     expect(s.qi).toBe(360);
   });
   it("prioritizes death over duty and exploration rewards", () => {
@@ -336,12 +337,14 @@ describe("online queue", () => {
     s = act(s, { type: "enqueue", action: "work", repeat: 1 });
     expect(act(s, { type: "queueTick" })).toBe(s);
     expect(s.month).toBe(3);
-    s.crafted = 1; // Existing recipe; this test isolates the resource gate.
+    s.crafted = 1;s.study=4;s.sense=8;s.qiJourney.cultivation.roots=1; // Existing recipe; this test isolates the resource gate.
     s.herbs = 6;
     s.stones = 20;
     s = act(s, { type: "queueTick" });
+    expect(s.pills).toBe(0);
+    for(let n=0;s.qiJourney.cultivation.work&&n<20;n++)s=act(s,qiCultivationStep(s)!);
     expect(s.pills).toBe(1);
-    expect(s.month).toBe(6);
+    expect(s.month).toBe(9);
     expect(s.journey.queue[0].action).toBe("work");
   });
   it("finishes healing early and leaves the next job untouched at full qi", () => {
@@ -474,7 +477,7 @@ it("replays 60 journeys through exploration and independent fresh starts", () =>
         const step=admissionStep(s,branch); if(!step)throw Error('Missing admission witness');
         send(step);
       }
-      for (let i = 0; i < 3; i++) send({ type: "duty", duty: "copy" });
+      for (let i = 0; i < 3; i++) {send({ type: "duty", duty: "copy" });for(let n=0;s.qiJourney.cultivation.work&&n<20;n++)send(qiCultivationStep(s)!);}
       send({ type: "mentor", answer: "seek" });
       send({ type: "promote" });
     } else {

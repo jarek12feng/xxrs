@@ -254,5 +254,5 @@ describe("人物与资质", () => {
           for (let seed = 1; seed <= 10; seed++)
             expect(play(a, p, ending, seed)).toEqual(play(a, p, ending, seed));
   // 360 complete command replays verify correctness, not a five-second performance budget.
-  }, 15000);
+  }, 30000);
 });

@@ -41,18 +41,18 @@ export function foundationPreparation(s: State) {
     !s.realm &&
     !hasFoundationRecipe(s) &&
     s.story.stage === "waiting" &&
-    s.month < 36;
+    s.month < s.story.deadline;
   // These are review stops for this shortcut only, not new domain batch semantics.
-  // Finish a six-month retreat strictly before month 36 (month 35 is safe).
+  // Finish a six-month retreat strictly before month s.story.deadline (month 35 is safe).
   const stop =
     waiting && s.qi >= 180 && s.foundation < 12 && s.month < 23
       ? 23
       : waiting && s.foundation < 24 && s.month < 29
         ? 29
-        : 36;
+        : s.story.deadline;
   const waitingMonths = Math.min(12, stop - s.month);
   const foundationGain = Math.min(6, 24 - s.foundation);
-  const qiGain = Math.min(30, 360 - s.qi);
+  const qiGain = Math.min(12, 360 - s.qi);
   const trainInjury =
     s.journey.support !== "guard" && (s.mastery + 1) % 4 === 0
       ? Math.min(1, 6 - s.injury)
@@ -73,7 +73,7 @@ export function foundationPreparation(s: State) {
   return {
     trainingHint: `本次历练：剑意 +${s.mastery < 12 ? 1 : 0}、修为 +${s.mastery < 12 ? trainQi : 0}、伤势 +${s.mastery < 12 ? trainInjury : 0}；当前把握净变化 ${s.mastery < 12 ? trainChance : 0} 个百分点。每四重剑意增加一层伤势（装配护身诀可避免）；可免费静养一月恢复一层伤势。`,
     timing: waiting
-      ? `距赴约还有 ${36 - s.month} 月。固本一次需六月、灵石 8，根基 +${foundationGain}、修为 +${qiGain}；结束在第三十六月或更晚会失约。提前积满修为，可把余下月份用于固本、历练或劳作，也可直接候约，不必练满。`
+      ? `距赴约还有 ${s.story.deadline - s.month} 月。固本一次需六月、灵石 8，根基 +${foundationGain}、修为 +${qiGain}；结束在约定开府之月或更晚会失约。提前积满修为，可把余下月份用于固本、历练或劳作，也可直接候约，不必练满。`
       : `${hasFoundationRecipe(s) || s.pills ? "取丹后" : "探府前"}固本需六月、灵石 8；根基 +${foundationGain}、修为 +${qiGain}。准备会消耗月份，提高把握与尽早叩关请自行权衡。`,
     optional:
       !s.realm && s.qi >= 180 && !locked
@@ -135,9 +135,9 @@ export function foundationPreparation(s: State) {
             : null
           : s.qi < 180
             ? cultivate(180)
-            : ready && s.story.stage === "waiting" && s.month < 36
+            : ready && s.story.stage === "waiting" && s.month < s.story.deadline
               ? action(
-                  `边劳作边候约 · 最多 ${waitingMonths} 月${stop < 36 ? "，停下查看准备" : ""}`,
+                  `边劳作边候约 · 最多 ${waitingMonths} 月${stop < s.story.deadline ? "，停下查看准备" : ""}`,
                   {
                     type: "advance",
                     activity: "work",

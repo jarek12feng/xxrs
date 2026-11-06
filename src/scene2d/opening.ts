@@ -10,6 +10,7 @@ export interface SceneObject {
   x: number;
   y: number;
   detail: string;
+  speech?: string;
   actions: AdventureAction[];
   art?: string;
   foot?: {x:number;y:number};
@@ -32,7 +33,8 @@ export function openingScene(a: Adventure) {
     name,
     x: id === "medicine" ? 22 : x,
     y: id === "luchi" ? 55 : y,
-    detail,
+    detail: id === "luchi" || id === "medicine" ? "" : detail,
+    ...(id === "luchi" || id === "medicine" ? {speech:detail} : {}),
     actions,
     art,
     ...(id === "medicine" ? {foot:{x:22,y:72}} : id === "luchi" ? {foot:{x,y:72}} : {}),
@@ -46,7 +48,7 @@ export function openingScene(a: Adventure) {
       ? { speaker: "陆迟", portrait: "/art/characters/luchi.webp" }
       : {}),
     ...(id === "medicine"
-      ? { speaker: "温蘅", portrait: "/characters/wenheng.png" }
+      ? { speaker: "温蘅", portrait: "/art/characters/wenheng.webp" }
       : {}),
   });
   const objects: SceneObject[] = [];
@@ -234,6 +236,8 @@ export function openingScene(a: Adventure) {
       ...(a.step === "home" && o.id === "exit"
         ? {
             kind: "person" as const,
+            detail: "",
+            speech: o.detail,
             speaker: "陆迟",
             portrait: "/art/characters/luchi.webp",
           }

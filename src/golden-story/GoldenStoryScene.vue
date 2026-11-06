@@ -54,6 +54,7 @@ const hotspots = computed(() =>
         {
           id: "teaching",
           kind: teacherPresent.value ? "person" as const : undefined,
+          speech: teacherPresent.value ? (g.value.practice ? "先看清眼前的变化，亲手试过，再谈其中的道理。" : "想问哪一门，便从你亲历过的疑处说起。") : undefined,
           label: teachingSpeaker(props.game, props.place === "conclave" ? "seat" : "public").hotspot,
           x: teacherPresent.value ? 29 : tide.value ? 48 : 40,
           y: g.value.practice ? 82 : tide.value ? 77 : 48,

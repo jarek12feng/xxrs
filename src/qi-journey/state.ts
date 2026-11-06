@@ -1,3 +1,4 @@
+import { freshQiCultivation, type QiCultivation } from '../qi-cultivation/state';
 import { freshQiNarrative, validQiNarrative, type QiNarrative } from "./narrative-state";
 import { freshQiPeople, validQiPeople, type QiPeople } from "./people";
 import {
@@ -8,10 +9,12 @@ import {
 } from "./preparation";
 export type QiRoute = "medicine" | "sword" | "array";
 export interface QiJourney {
+  cultivation: QiCultivation;
   narrative: QiNarrative;
   people: QiPeople;
   preparations: PreparationProgress[];
   trial: PreparationRoute | null;
+  trialProgress: number;
   gates: number;
   node: number;
   route: QiRoute | null;
@@ -22,10 +25,12 @@ export interface QiJourney {
   last: string;
 }
 export const freshQiJourney = (): QiJourney => ({
+  cultivation: freshQiCultivation(),
   narrative: freshQiNarrative(),
   people: freshQiPeople(),
   preparations: [freshPreparation(), freshPreparation()],
   trial: null,
+  trialProgress: 0,
   gates: 0,
   node: 0,
   route: null,

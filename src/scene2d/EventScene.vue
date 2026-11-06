@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {sceneSpeakerArt} from "../presentation/art";
 import { computed, nextTick, ref, useId, watch } from "vue";
 const props = defineProps<{
   image: string;
@@ -8,6 +9,7 @@ const props = defineProps<{
   portrait?: string | null;
   quote?: string;
 }>();
+const standing=computed(()=>props.speaker ? sceneSpeakerArt[props.speaker] : undefined);
 const expanded = ref(false);
 const scene = ref<HTMLElement>();
 const heading = ref<HTMLElement>();
@@ -59,16 +61,14 @@ function toggleProse() {
       <small>此刻 · 时光暂驻</small>
       <h2 ref="heading" id="modal-title" tabindex="-1">{{ title }}</h2>
     </div>
+    <img v-if="standing" class="event-standing" :src="standing!" :alt="speaker" />
+    <aside v-if="speaker && quote" class="event-speech" aria-label="人物对白">
+      <strong>{{ speaker }}</strong><p class="event-quote">{{ quote }}</p>
+    </aside>
     <div :key="revision" class="event-dialogue">
       <div class="event-voice">
         <div class="event-speaker">
-          <img
-            v-if="portrait"
-            :src="portrait"
-            :alt="(speaker || '人物') + '肖像'"
-          />
-          <strong v-if="speaker">{{ speaker }}</strong>
-          <span v-else>眼前所见</span>
+          <span>眼前所见</span>
         </div>
         <div class="event-copy">
           <div
@@ -78,7 +78,7 @@ function toggleProse() {
             tabindex="0"
             aria-label="眼前经过"
           >
-            <p v-if="quote" class="event-quote">“{{ quote }}”</p>
+
             <p>{{ expanded ? body : brief }}</p>
           </div>
           <button
@@ -302,4 +302,19 @@ function toggleProse() {
     font-size: 15px;
   }
 }
+</style>
+
+<style scoped>
+.event-standing{position:absolute;left:20%;bottom:7%;height:55%;max-width:30%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 8px 8px #0007)}
+.event-dialogue.event-speech{left:56%;bottom:18%;width:min(620px,48%);max-height:70%;display:flex;flex-direction:column;gap:14px;border-radius:18px;overflow:visible}
+.event-speech::before{content:'';position:absolute;left:-10px;bottom:70px;width:18px;height:18px;background:#102720;border-left:1px solid #bba06b;border-bottom:1px solid #bba06b;transform:rotate(45deg)}
+.event-speech .event-speaker{flex:0 0 auto}.event-speech .event-speaker img{display:none}.event-speech .event-voice{display:block}.event-speech .event-prose{max-height:24vh}.event-speech .event-options{max-height:27vh;overflow:auto}
+@media(max-width:900px){.event-standing{left:4%;height:38%}.event-dialogue.event-speech{left:62%;width:65%;bottom:10%;padding:14px}}
+</style>
+
+<style scoped>
+.event-speech {position:absolute;left:12%;top:20%;width:min(420px,42%);max-height:22%;overflow:auto;z-index:4;padding:14px 18px;border:1px solid #bba06b;border-radius:16px;background:#102720f5;color:#f2ead7;box-sizing:border-box}
+.event-speech .event-quote{margin:8px 0 0}
+.event-speech::before{display:none}
+@media(max-width:900px){.event-speech{left:16px;top:18%;width:calc(100% - 32px);max-height:20%}}
 </style>

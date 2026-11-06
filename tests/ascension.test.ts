@@ -29,7 +29,7 @@ describe('三段行功',()=>{
    s=migrateSave(JSON.parse(JSON.stringify(s)));
   }
   expect(s.seed).toBe(seed);expect(s.pills).toBe(pills);
-  expect(breakthroughDetails(s,true).chance).toBe(100);
+  expect(breakthroughDetails(s,true).chance).toBe(89);
   s=send(s,{type:'ascension',action:'commit'});
   expect(s.realm).toBe(1);expect(s.pills).toBe(pills-1);expect(s.ascension).toBeNull();
   expect(dispatch(s,{type:'ascension',action:'commit',id:'repeat'})).toBe(s);
@@ -58,8 +58,8 @@ describe('三段行功',()=>{
   expect(()=>migrateSave({...s,version:SAVE_VERSION + 1})).toThrow();
   expect(validState({...s,ascension:{realm:1,step:3,strain:-1,history:[]}})).toBe(false);
  });
- it('凝丹行功的稳定结果独立于旧随机把握',()=>{
+ it('凝丹稳定行功在准备把握上增加10点而不覆盖准备',()=>{
   const s=outerSeaCheckpoint();
-  expect(goldenChance({...s,ascension:{realm:1,step:3,strain:0,history:['引气','稳脉','凝聚']}})).toBe(100);
+  expect(goldenChance({...s,ascension:{realm:1,step:3,strain:0,history:['引气','稳脉','凝聚']}})).toBe(Math.min(100,goldenChance(s)+10));
  });
 });

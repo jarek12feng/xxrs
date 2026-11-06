@@ -57,6 +57,7 @@ const outlook = computed(() => cultivationProjection(props.game, target.value));
         查看亲历与任用
       </button>
     </p>
+    <p>山中第 {{Math.floor(game.month/12)+1}} 年 · {{["春","夏","秋","冬"][Math.floor(game.month%12/3)]}}，如今 {{Math.floor(game.age/12)}} 岁。每次闭关的年月都会计入此生。</p>
     <p>剩余寿元 {{ formatLifeMonths(outlook.remainingMonths) }}。</p>
     <details>
       <summary>{{ compact ? '修行成效与逐月明细' : '逐月修行明细' }}</summary>
@@ -85,7 +86,7 @@ const outlook = computed(() => cultivationProjection(props.game, target.value));
       {{
         game.realm === 2 ? goldenBlock(game) : game.realm === 1
           ? foundationBlock(game)
-          : "修为已抵当前瓶颈，出门历练取得材料并炼化后，才能继续晋升。"
+          : !game.qiJourney.cultivation.middle ? "灵息已满，先在洞府贯通小周天。" : "修为已抵当前瓶颈，出门历练取得材料并炼化后，才能继续晋升。"
       }}
     </p>
     <p v-else>

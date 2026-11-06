@@ -247,6 +247,7 @@ const ritualText = {
   overflow: hidden;
 }
 .action-feedback.expanded {
+  min-height: 0;
   width: min(580px, 100%);
   max-height: calc(100dvh - 40px);
   overflow: auto;

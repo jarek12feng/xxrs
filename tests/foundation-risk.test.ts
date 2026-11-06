@@ -1,3 +1,4 @@
+import {qiCultivationStep} from '../tools/qi-cultivation-policy';
 import { createCultivator as createGame } from "../tools/cultivator-fixture";
 import { describe, expect, it } from "vitest";
 import {
@@ -196,8 +197,9 @@ it("successful gift breakthrough acknowledges mutual growth, without inventing a
   s = send(s, choose(s, "sense"));
   s = send(s, choose(s, "gift"));
   s.herbs = 6;
-  s.stones = 50;
+  s.stones = 50;s.study=4;s.sense=8;s.foundation=12;s.qiJourney.cultivation.roots=1;
   s = send(s, { type: "prepare", kind: "refine" });
+  for(let i=0;s.qiJourney.cultivation.work&&i<20;i++)s=send(s,qiCultivationStep(s)!);
   s.seed = 1;
   const intent = { type: "break", pill: true } as const,
     n = send(s, intent);
@@ -257,7 +259,7 @@ it("optional cultivation preserves the preparation window and projection never m
   )!;
   expect(send(s, cultivate.intent).month).toBe(23);
   expect(s).toEqual(before);
-  expect(p.timing).toContain("第三十六月或更晚会失约");
+  expect(p.timing).toContain("约定开府之月或更晚会失约");
 });
 
 it("timing and capped preparation gains reflect the actual stage and inventory", async () => {

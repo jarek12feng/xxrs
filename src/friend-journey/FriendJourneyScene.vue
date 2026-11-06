@@ -35,7 +35,7 @@ watch(present,()=>{approach.cancel();performance.skip();});
 const quote=computed(()=>correspondenceQuote(props.game,{kind:'visitFriend'}));
 </script>
 <template>
- <NarrativeStage class="friend-journey-scene" image="/art/world-story/golden/tide-dike-council.webp" title="古渡侧堤 · 勘潮归处" stage-key="friend-journey" :goal="present?'她已返渡，可到石台旁问候。':'沿旧记号查看去向，信路仍通。'" :active="selected" :hotspots="[{id:'friend',kind:present?'person':undefined,label:present?'苏婉宁 · 返渡休养':'石台与旧信路',x:57,y:78},{id:'exit',label:'回古渡',x:85,y:82}]" @select="select" @close="selected='';approach.cancel();performance.skip()">
+ <NarrativeStage class="friend-journey-scene" image="/art/world-story/golden/tide-dike-council.webp" title="古渡侧堤 · 勘潮归处" stage-key="friend-journey" :goal="present?'她已返渡，可到石台旁问候。':'沿旧记号查看去向，信路仍通。'" :active="selected" :hotspots="[{id:'friend',kind:present?'person':undefined,label:present?'苏婉宁 · 返渡休养':'石台与旧信路',speech:present?'你来了。测记就在石台上，坐下说吧。':undefined,x:57,y:78},{id:'exit',label:'回古渡',x:85,y:82}]" @select="select" @close="selected='';approach.cancel();performance.skip()">
   <template #world>
    <div class="friend-actors" :data-phase="phase" :class="{'visit-saved':game.friendJourney.visitedAt!==null,'has-loss':game.friendJourney.suppliedAt===null}">
     <div class="visit-hero" :class="{approaching:moving,acknowledging:phase==='acknowledge'}" :style="heroPosition">

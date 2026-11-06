@@ -10,7 +10,7 @@ export type WorkshopCommand = {
   order: WorkshopOrder;
 };
 export function workshopLock(s: State): string {
-  return s.wayfaring.trip || s.wayfaring.passage || s.conclave?.duel ||
+  return s.qiJourney.cultivation.work || s.wayfaring.trip || s.wayfaring.passage || s.conclave?.duel ||
     s.conclave?.location === "vault" ||
     s.outerSea?.location === "ruins" ||
     s.goldenCore?.duel ||
@@ -90,7 +90,8 @@ export function runWorkshop(
       return s;
 
   }
-  const reward = workshopReward(order);
+  const selfFoundation="product" in order && order.product==="foundation" && order.method==="craft";
+  const reward = selfFoundation?{}:workshopReward(order);
   if (settleResources(s, { stones: quote.stones, herbs: quote.herbs, iron: quote.iron }, reward).error) return input;
   if ("relic" in order) {
     if (applyEquipmentChange(s, {
@@ -108,13 +109,14 @@ export function runWorkshop(
         }).error) return input;
         break;
       case "foundation":
-        if (order.method === "craft") s.crafted++;
+        s.qiJourney.cultivation.roots--;
+        if (selfFoundation){s.qiJourney.cultivation.work={kind:"alchemy",vigor:12,progress:0,pressure:1,prepared:false,turn:0};s.qiJourney.cultivation.last="六月温养丹液，玉髓芝与辅药已入炉。先以中火析出主药精华，再调和辅药、收火成丹。材料已经消耗；火候失控会毁丹。";}
         break;
     }
   s.log.unshift({
     month: s.month,
     kind: "major",
-    text: `${quote.name}${order.method === "buy" ? "已购入" : "炼制完成"}：${quote.cost}，耗时 ${quote.months} 月。${quote.effect}`,
+    text: selfFoundation?s.qiJourney.cultivation.last:`${quote.name}${order.method === "buy" ? "已购入" : "炼制完成"}：${quote.cost}，耗时 ${quote.months} 月。${quote.effect}`,
   });
   s.log = s.log.slice(0, 180);
   s.seen = [...input.seen, id].slice(-512);

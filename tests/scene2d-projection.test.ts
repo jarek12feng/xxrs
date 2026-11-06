@@ -58,7 +58,7 @@ it("places dialogue portraits on real speakers without using a painted backgroun
   expect(healer).toMatchObject({
     kind: "person",
     speaker: "温蘅",
-    portrait: "/characters/wenheng.png",
+    portrait: "/art/characters/wenheng.webp",
   });
   expect(healer.art).toBeUndefined();
   const companion = scene.objects.find((object) => object.id === "luchi")!;

@@ -79,7 +79,7 @@ export function preparationValues(s: State, pill: boolean) {
     {
       key: "retreat",
       title: "闭关固本",
-      cost: `六月、灵石 8；根基 +${Math.min(6, 24 - s.foundation)}、修为 +${Math.min(30, 360 - s.qi)}。${s.story.stage === "waiting" && s.month < 36 ? (s.month + 6 >= 36 ? "本次固本会越过约期，陆迟将独行" : `完成后距赴约还有 ${36 - s.month - 6} 月`) : "会推迟叩关时间"}`,
+      cost: `六月、灵石 8；根基 +${Math.min(6, 24 - s.foundation)}、修为 +${Math.min(12, 360 - s.qi)}。${s.story.stage === "waiting" && s.month < s.story.deadline ? (s.month + 6 >= s.story.deadline ? "本次固本会越过约期，陆迟将独行" : `完成后距赴约还有 ${s.story.deadline - s.month - 6} 月`) : "会推迟叩关时间"}`,
       gain: difference({ ...s, foundation: Math.min(24, s.foundation + 6) }),
       unavailable: preparationError(s, "retreat"),
     },
@@ -88,7 +88,7 @@ export function preparationValues(s: State, pill: boolean) {
       title: "筑基丹是叩关必需品",
       cost: s.pills
         ? "消耗已有筑基丹 1 枚"
-        : `炼制需三月、灵草 ${cost.herbs}、灵石 ${cost.stones}`,
+        : `需玉髓芝主药1株，温养六月后亲手掌火；灵草 ${cost.herbs}、灵石 ${cost.stones}`,
       gain: difference(s, true),
       unavailable:
         usingPill && s.pills > 0

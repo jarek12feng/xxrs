@@ -1,7 +1,7 @@
 import { quoteSettlement } from "../economy";
 import { actionError, type State, type Intent } from "../core";
 import { activityInterruption } from "../scene-activity";
-import { preparationRates, monthlyStudy } from "../preparation-rates";
+import { preparationRates, monthlyStudy, monthlyWorkIncome } from "../preparation-rates";
 import { techniqueActivityEffect } from "../techniques";
 import { workshopQuote, type WorkshopOrder } from "./rules";
 export interface PreparationSelection {
@@ -25,7 +25,7 @@ export function preparationPlan(s: State, order: WorkshopOrder) {
     intent: Intent;
   }[] = [];
   for (const [key, activity, rate, label] of [
-    ["stones", "work", preparationRates.stones, "劳作筹灵石"],
+    ["stones", "work", monthlyWorkIncome(s), "劳作筹灵石"],
     [
       "herbs",
       "gather",

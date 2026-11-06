@@ -16,11 +16,11 @@ const sheet=computed(()=>props.game.realm===1?'/art/scene2d/foundation-walk/hero
 function foot(target:string) {
   const stage=props.game.adventure.road.stage;
   if(target==='person'){const npc=roadSpeakerFoot(stage);return {x:npc.x-9,y:npc.y};}
-  // Reviewed foreground only: pass uses its central stair; cloud-frontier stays on the left platform.
+  // Reviewed foreground only: pass uses its central stair; cloud-frontier keeps the foreground stair visible.
   const places=stage==='pass'
     ? {entry:[57,91],person:[53,85],objects:[55,81],prepare:[57,90],road:[53,77],forward:[52,73],back:[58,92]}
     : stage==='beyond' || stage==='lookout'
-      ? {entry:[20,88],person:[23,86],objects:[25,84],prepare:[19,90],road:[26,82],forward:[27,80],back:[18,91]}
+      ? {entry:[48,90],person:[50,87],objects:[46,85],prepare:[45,91],road:[51,84],forward:[53,81],back:[46,93]}
       : stage==='camp'
         ? {entry:[50,90],person:[42,88],objects:[55,85],prepare:[46,92],road:[68,91],forward:[72,92],back:[44,93]}
         : {entry:[40,88],person:[35,85],objects:[50,87],prepare:[30,91],road:[62,88],forward:[68,88],back:[28,91]};
@@ -50,7 +50,9 @@ defineExpose({skip,approach,cancel:walk.cancel});
     <div v-if="field.route==='medicine'" class="root-path" aria-label="恢复生机的镇风草窄径"><img v-for="n in 4" :key="n" :src="itemArt('herbs')" alt="" /></div>
     <div v-if="field.route==='sword'" class="open-pass" aria-label="斩开风脉后的宽路"><i></i><i></i></div>
     <WalkingActor :key="sheet" :character="heroArt(game.social.gender,game.realm)" :pose="cue?.pose || 'idle'" :label="game.name" :position="walk.position.value" :moving="walk.moving.value" :frame="walk.frame.value" :facing="walk.facing.value" :sheet="sheet" @ready="walkReady=$event" />
+    <img v-if="game.adventure.road.stage==='home'" class="road-npc" :style="{left:roadSpeakerFoot('home').x+'%',bottom:(100-roadSpeakerFoot('home').y)+'%'}" src="/art/characters/wenheng.webp" alt="温蘅" />
     <CharacterSprite v-if="field.person" class="road-npc" :style="{left:roadSpeakerFoot(game.adventure.road.stage).x+'%',bottom:(100-roadSpeakerFoot(game.adventure.road.stage).y)+'%'}" :class="{'pass-npc':game.adventure.road.stage==='pass'}" :character="field.person" :label="field.person==='yuqing'?'郁青':'青嶂'" />
+    <img v-if="game.adventure.road.stage==='market'" class="market-steward" src="/art/characters/market-steward.webp" alt="坊市掌柜" />
     <img v-if="field.map" class="road-map" :src="itemArt('map')" alt="已补全的行路图" />
     <div v-if="walk.moving.value" class="road-cue" role="status"><span>沿近处石路走近</span><button @click.stop="walk.skip">略过走近</button></div>
     <div v-if="cue" class="road-cue" role="status"><span>{{cue.label}}</span><button @click.stop="skip">跳过演出</button></div>
@@ -76,3 +78,5 @@ defineExpose({skip,approach,cancel:walk.cancel});
 @media(prefers-reduced-motion:reduce){.pass-wind i{animation:none}}
 @media(max-width:900px){.road-npc{left:40%;bottom:38%;height:200px;width:140px}.road-cue{left:10%;bottom:48%}}
 </style>
+
+<style scoped>.market-steward{position:absolute;left:70%;bottom:13%;height:39%;object-fit:contain}</style>

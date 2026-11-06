@@ -1089,3 +1089,22 @@ body:has(.story-scenes[data-chapter="practice"]) .receipt-dock .receipt-body { p
 
 .ending-sound { display:flex; align-items:center; flex-wrap:wrap; gap:12px; color:#c9b88e; }
 .ending-sound button { margin:0; padding:6px 12px; }
+
+/* Keep elapsed world time visible independently of the scene's location controls. */
+.game-hud .world-date {
+  display: block;
+  flex-shrink: 0;
+  white-space: nowrap;
+  visibility: visible;
+  color: #f0d7a4;
+  background: #10251eed;
+  border: 1px solid #ae9a6b66;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .game-hud .world-date { font-size: 11px; padding: 4px 6px; }
+}

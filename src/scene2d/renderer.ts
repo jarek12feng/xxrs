@@ -3,7 +3,7 @@ import type { Adventure } from "../adventure";
 import type { SceneObject } from "./opening";
 import { createActionPlayer } from "./action-player";
 import { planWalk } from "./navigation";
-import { approachPoint, groundScale } from "./stage-geometry";
+import { approachPoint, groundScale, coveredArtworkPoint } from "./stage-geometry";
 interface StageState { prepared: boolean; rescued: boolean; method?: Adventure["method"] }
 export interface StageConfig {
   method?: Adventure["method"];
@@ -135,6 +135,7 @@ export function mountStage(
     preload() {
       this.load.image("backdrop", config.image);
       this.load.image("hero", config.hero);
+      if(config.sceneKey === "apothecary")this.load.image("wenheng", "/art/characters/wenheng.webp");
       if(config.sceneKey === "apothecary" || config.sceneKey === "shrine") this.load.spritesheet("opening-people", "/art/scene2d/opening-people-v1.png", {frameWidth:627,frameHeight:1254});
       if(config.heroSequence && (config.sceneKey === "apothecary" || config.sceneKey === "shrine")) this.load.spritesheet("hero-sequence",config.heroSequence.url,{frameWidth:config.heroSequence.frameWidth,frameHeight:config.heroSequence.frameHeight});
       if (config.heroWalk) this.load.spritesheet("hero-walk", config.heroWalk.url, { frameWidth: config.heroWalk.frameWidth, frameHeight: config.heroWalk.frameHeight });
@@ -152,6 +153,11 @@ export function mountStage(
         backdrop.setScale(
           Math.max(width / backdrop.width, height / backdrop.height),
         );
+        // The red-rope trail enters along the central stone path, not the left cliff.
+        // Keep the foot attached to the painted road when cover crops a narrow viewport.
+        if (config.sceneKey === "forest" && !config.entry) {
+          Object.assign(position, coveredArtworkPoint(width, height, backdrop.width, backdrop.height, {x:56,y:84}));
+        }
       }
       this.add
         .rectangle(width / 2, height / 2, width, height, 0x061c20, 0.06)
@@ -178,7 +184,7 @@ export function mountStage(
       }
       if(this.textures.exists("opening-people")) {
         if(config.sceneKey === "apothecary") {
-          const npc=this.add.image(width*.22,height*.72,"opening-people",0).setOrigin(.5,.99).setDepth(height*.72);
+          const npc=this.add.image(width*.22,height*.72,"wenheng").setOrigin(.5,.99).setDepth(height*.72);
           npc.setScale(230 * unit / (npc.height * .97));people.set("medicine",npc);
         }
         if(config.sceneKey === "shrine") {

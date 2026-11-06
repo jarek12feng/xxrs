@@ -12,7 +12,7 @@ function met() {
     activity: "gather",
     months: 3,
   });
-  s.crafted = 1; // Existing recipe retained from an earlier save.
+  s.crafted = 1;s.qiJourney.cultivation.roots=1;s.study=4;s.sense=8;s.foundation=12; // Existing recipe retained from an earlier save.
   return send(s, {
     type: "choose",
     instanceId: s.pending!.id,
@@ -24,21 +24,17 @@ it("reports actual alchemy gain, gross inputs and net stones without passive inc
     c = { type: "prepare", kind: "refine" } as const;
   const n = send(s, c),
     r = actionReceipt(s, n, c)!;
-  expect(r.title).toContain("丹成");
-  expect(r.cost).toContain("灵石 −12");
-  expect(r.months).toBe(3);
+  expect(r.title).toContain("主辅药已入炉");
+  expect(r.cost).toContain("灵石 −8");
+  expect(r.months).toBe(6);
   expect(r.changes).toContainEqual({
     label: "灵石",
     before: 12,
-    after: 0,
+    after: 4,
     good: false,
   });
-  expect(r.changes).toContainEqual({
-    label: "筑基丹",
-    before: 0,
-    after: 1,
-    good: true,
-  });
+  expect(n.pills).toBe(0);
+  expect(n.qiJourney.cultivation.work?.kind).toBe("alchemy");
   expect(r.notes.join()).not.toContain("约定同行");
 });
 it("does not announce a pill when lifespan ends during refining", () => {
@@ -72,7 +68,7 @@ it("preserves pending story after alchemy and points to its continuation", () =>
 });
 it("displays true seeded breakthrough successes and failures without changing states", () => {
   const outcomes = new Set<string>();
-  for (const seed of [1, 42, 10000, 123456, 987654321]) {
+  for (const seed of [1, 42, 15872, 123456, 987654321]) {
     const s = met();
     s.seed = seed;
     s.qi = 360;
@@ -113,7 +109,7 @@ it("identifies failed first-chapter rescue even though its log kind is story", (
 it("labels queued alchemy correctly", () => {
   const s = send(met(), { type: "enqueue", action: "refine", repeat: 1 });
   const c = { type: "queueTick" } as const;
-  expect(actionReceipt(s, send(s, c), c)?.title).toContain("丹成");
+  expect(actionReceipt(s, send(s, c), c)?.title).toContain("主辅药已入炉");
 });
 it("handles a full log ring without recycling old entries", () => {
   const s = met();
@@ -124,6 +120,6 @@ it("handles a full log ring without recycling old entries", () => {
   }));
   const c = { type: "advance", activity: "gather", months: 3 } as const;
   const r = actionReceipt(s, send(s, c), c)!;
-  expect(r.notes).toHaveLength(3);
+  expect(r.notes).toHaveLength(4);
   expect(r.notes.join()).not.toContain("旧事");
 });

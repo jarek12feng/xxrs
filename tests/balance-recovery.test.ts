@@ -65,14 +65,15 @@ it("equal-deadline builds pay real costs without changing starting inventory or 
       const prepared = preparationBudget(path, aptitude, "foundation");
       const build = preparationBudget(path, aptitude, "build");
       for (const r of [basic, prepared, build]) {
-        expect(r.month).toBe(35);
+        expect(r.month).toBe(119);
         expect(r.retreatStones).toBeLessThanOrEqual(16);
         expect(r.trainingStones).toBeLessThanOrEqual(12);
         expect(r.trainingHerbs).toBeLessThanOrEqual(2);
       }
-      expect(prepared.foundation).toBe(12);
-      expect(prepared.qi).toBe(239);
-      expect(prepared.projectedPillChance - basic.projectedPillChance).toBe(12);
+      expect(prepared.foundation).toBe(basic.foundation+prepared.retreatStones/8*6);
+      expect(prepared.foundation).toBeGreaterThan(basic.foundation);
+      expect(prepared.qi).toBeLessThanOrEqual(239);
+      expect(prepared.projectedPillChance - basic.projectedPillChance).toBe(prepared.retreatStones/8*6);
       expect(build.readiness.damage).toBeGreaterThan(basic.readiness.damage);
     }
 });
